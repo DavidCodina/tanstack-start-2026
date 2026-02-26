@@ -1,0 +1,120 @@
+/* ======================
+        :is()
+====================== */
+
+.is-container {
+  background-color: #fff;
+  border: 1px solid #333;
+  border-radius: 10px;
+  margin: 0 auto;
+  max-width: 600px;
+  padding: 16px;
+}
+
+/* https://www.w3schools.com/cssref/sel_is.php
+The CSS :is() pseudo-class is used to apply the same style to all the elements inside 
+the parentheses, at the same time. The pseudo-select :is() in CSS allows you to write 
+compound selectors more tersely. It's essentially a shorthand for doing:
+.is-container h1, .is-container h3, .is-container h5 { ... }
+
+:is() is really more about checking the current element, so the fact that we're using it to
+check child elements is kind of weird.
+
+Note: .is-container :is(h1, .my-class) { ... } will create a selector with the specificiity of  
+.is-container .my-class. In other words, the .is-container h1 will actually inherit the specificity 
+of the value with the highest specificity overall. This can sometimes make the specificity difficult
+to overwrite, which is precisely why there is the :where() alternative.
+*/
+
+.is-container :is(h1, h3, h5) {
+  color: #15c213;
+}
+
+/*  <div className='not-hovering h-32 w-32 bg-neutral-400'></div>  */
+.not-hovering:not(:is(:hover)) {
+  background-color: #15c213;
+}
+
+/* ======================
+       :where()
+====================== */
+/* https://www.w3schools.com/cssref/sel_where.php
+The CSS :where() pseudo-class is used to apply the same style to all the elements inside the parentheses, at the same time.
+The :where() pseudo-class requires a comma-separated selector list as its argument. The :where() pseudo-class is equal to 
+the :is() pseudo-class, except in specificity: :where() always has 0 specificity, and :is() takes on the specificity of the 
+most specific selector in its argument. */
+
+.where-container {
+  background-color: #fff;
+  border: 1px solid #333;
+  border-radius: 10px;
+  margin: 0 auto;
+  max-width: 600px;
+  padding: 16px;
+}
+
+.where-container h1 {
+  color: red;
+}
+
+/* Because :where() doesn't have any specificity, the h1 will actually be red.
+If we changed :where() to is(), it would NOT be red, but green. Kind of weird, but
+that's how it works. Otherwise it behaves exactly the same as :is(). */
+
+.where-container :where(h1, h3, h5) {
+  color: #15c213;
+}
+
+/* ======================
+         :has()
+====================== */
+
+/* This is probably the most powerful of the three pseudo selectors.
+Here we can style a parent based on the presence of a child.
+This is why it's sometimes called the "parent selector".
+
+However, we can also do some crazy stuff like check the parent container
+for the presence of a child, then style a different child.
+Traditionally, we've always been able to select siblings that come after after
+
+  .has-container h1 ~ h2 {
+    color: #15c213;
+  }
+
+  .has-container h1 + h2 {
+    color: #15c213;
+  }
+
+but not before. With this workaround we can now select before elements.
+
+.has-container:has(h2) > h1 {
+  color: #15c213;
+}
+
+However, a better approach is to just do this, which is essentially a before selector 
+which is saying if there's an h2 that has a h1 before it, then style the h1 as follows.
+Kevin Powell discusses this here at 10:00: https://www.youtube.com/watch?v=OGJvhpoE8b4
+Thus we can also think of :has() as a sibling selector.
+
+.has-container h1:has(+ h2) {
+  color: orange;
+}
+ */
+
+.has-container {
+  background-color: #fff;
+  border: 1px solid #333;
+  border-radius: 10px;
+  margin: 0 auto;
+  max-width: 600px;
+  padding: 16px;
+}
+
+.has-container:has(h2) > h1 {
+  color: #15c213;
+}
+
+/* We can also style a container based on the absence of a particular child element. */
+/* .has-container:not(:has(h3)) {
+  outline: 2px dashed red;
+} */

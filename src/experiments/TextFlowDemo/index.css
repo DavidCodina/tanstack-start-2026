@@ -1,0 +1,10 @@
+.shape-container::before {
+  content: ' ';
+  float: left;
+  /* background-image: url("moon.jpg"); */
+  background-size: 100% 100%;
+  width: 350px;
+  height: 350px;
+  margin: 57px 0 0 -50px;
+  shape-outside: content-box circle(120px at 160px 150px);
+}

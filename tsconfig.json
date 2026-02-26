@@ -1,0 +1,70 @@
+{
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    ".storybook/**/*.ts",
+    ".storybook/**/*.tsx"
+    // "eslint.config.ts",   // ❌ Redundant
+    // "prettier.config.ts", // ❌ Redundant
+    // "vite.config.ts"      // ❌ Redundant
+  ],
+
+  "compilerOptions": {
+    "target": "ES2023",
+    "jsx": "react-jsx",
+    "module": "ESNext",
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "types": [
+      "vite/client",
+      "vitest/globals",
+      "vitest/importMeta"
+      // "react/experimental"
+    ],
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": false,
+    "noEmit": true,
+
+    /* Linting */
+    "skipLibCheck": true,
+    "strict": true,
+
+    ///////////////////////////////////////////////////////////////////////////
+    //
+    // Warns you when you do create a function that is not used
+    // and not exported:
+    //
+    //   const myFunc = () => null
+    //   const me = 'David'
+    //
+    // However, ESLint already handles this perfectly with pattern matching:
+    //
+    //   '@typescript-eslint/no-unused-vars': [
+    //     'warn',
+    //     {
+    //       argsIgnorePattern: '^_',
+    //       varsIgnorePattern: '^_',
+    //       caughtErrorsIgnorePattern: '^_',
+    //       destructuredArrayIgnorePattern: '^_'
+    //     }
+    //   ]
+    //
+    // For this reason, I'm switching it to false her. So that prepending _ works
+    // everywhere.
+    //
+    ///////////////////////////////////////////////////////////////////////////
+    "noUnusedLocals": false,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedSideEffectImports": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+      // To add support for syntax like this: import { Button} from 'components'
+      // Do this: "*": ["./src/*"]
+      // However, it's recommended to stick to a single convention.
+    }
+  }
+}

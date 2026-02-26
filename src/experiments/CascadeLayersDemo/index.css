@@ -1,0 +1,118 @@
+/* 
+In this example, .box comes after div.box. However, div.box has a higher specificity:
+
+div.box { background-color: #15c213; }
+
+.box {
+  background-color: rgba(230, 230, 230);
+  height: 100px;
+  width: 100px;
+  border: 1px solid #333;
+  border-radius: 10px;
+}
+
+Everything that is in a layer will have lower specificity than something not inside of a layer. 
+In this case, div.box would normally be higher than .box, but because we're wrapping it in a layer, it's lower.
+
+@layer sub-layer-1 {
+  div.box { background-color: #15c213;}
+}
+
+.box {
+  background-color: rgba(230, 230, 230);
+  height: 100px;
+  width: 100px;
+  border: 1px solid #333;
+  border-radius: 10px;
+}
+
+
+Where things get more interesing is when we have multiple layers.
+In Tailwind you might see something like this: 
+
+  @layer theme, base, components, utilities;
+
+In this case, the layers are defined from weakest to strongest.
+Similarly, we can do this:
+
+  @layer weak-layer, strong-layer;
+
+Now when we subsequently use one of those layers, it maintains the specificity of the original definition order.
+This allows us to do this kind of thing::after
+
+@layer weak-layer, strong-layer;
+
+@layer strong-layer {
+  .box { background-color: #15c213; }           Green wins! 
+}
+
+@layer weak-layer {
+  .box {
+    background-color: rgba(230, 230, 230);
+    height: 100px;
+    width: 100px;
+    border: 1px solid #333;
+    border-radius: 10px;
+  }
+}
+
+
+However, there is actually a problem here. Currently I'm using Tailwind v3, which defines its layers before we
+define ours here. The Tailwind v3 @layer base includes a preflight.css, which among other things sets border-color 
+to borderColor.DEFAULT for all things. In theory, this should not have a higher specificity than our layers here.
+Why? Because these layers are defined LATER in the cascade which means they would naturally have a higher
+specificity. However, the issue is likely that Tailwind v3 is not actually using native cascade layers.
+That means that our actual cascade layers going to have LOWER specificity.
+
+As a general practice when using Tailwind, I would suggest NOT using any additional
+named layers. Instead, use normal CSS as the super layer, and possibly @layer {}
+as the sub-layer (below @layer base). Generally, I would try to avoid regular CSS 
+when using Tailwind. If you do need regular CSS, then do it in the main.css in a layer, 
+or in a Tailwind plugin.
+
+Conversely, if you're NOT using Tailwind, then consider creating a similar system 
+with theme, base, components, and utilities layers.
+
+Conclusion: The @layer directive provides an escape hatch for manipulating cascade layers.
+However, it also introduces complexity and alters the more default, more intuitive CSS behavior.
+Generally, if your CSS and/or Tailwind is well constructed I don't see a need for additional layers.
+Avoid using them on top of Tailwind's system because it breaks the normal behavior. In this sense, it
+should be avoided for the same reason that !importan is avoided because it can create pitfalls and
+lead to more problems than it solves.
+
+
+In theory this might be useful in Tailwind v4:
+
+@layer theme, base, components, super-components, utilities;
+
+
+However, at least in Tailwind v3 this actually didn't work:
+
+@tailwind base;
+@tailwind components;
+@layer super-components;
+@tailwind utilities;
+
+Presumably, this happens because the v3 @layers are not actually true cascade layers.
+Thus @layer super-components; actually creates a true cascade layer, which immediately 
+has LESS specificity than the compiled Tailwind.
+
+*/
+
+@layer weak-layer, strong-layer;
+
+@layer strong-layer {
+  .box {
+    background-color: #15c213;
+  }
+}
+
+@layer weak-layer {
+  .box {
+    background-color: rgba(230, 230, 230);
+    height: 100px;
+    width: 100px;
+    border: 1px solid #333;
+    border-radius: 10px;
+  }
+}
