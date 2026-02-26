@@ -8,6 +8,11 @@ export const Route = createFileRoute('/')({ component: PageHome })
 /* ========================================================================
 
 ======================================================================== */
+//# Update Tanstack Start specific dependencies.
+
+//# Create ControlledInputDemo and UncontrolledInputDemo
+
+//# Deep dive on latest recharts version.
 
 function PageHome() {
   /* ======================
