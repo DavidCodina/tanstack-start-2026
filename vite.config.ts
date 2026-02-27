@@ -1,6 +1,6 @@
-import path from 'path' // eslint-disable-line
+import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { defineConfig /*, configDefaults */ } from 'vitest/config'
+import { configDefaults, defineConfig } from 'vitest/config'
 import viteReact from '@vitejs/plugin-react'
 import viteTsConfigPaths from 'vite-tsconfig-paths'
 import { devtools } from '@tanstack/devtools-vite'
@@ -11,6 +11,10 @@ import tailwindcss from '@tailwindcss/vite'
 import { storybookTest } from '@storybook/addon-vitest/vitest-plugin'
 import { playwright } from '@vitest/browser-playwright'
 
+/* ======================
+
+====================== */
+
 const dirname =
   typeof __dirname !== 'undefined'
     ? __dirname
@@ -18,6 +22,11 @@ const dirname =
 
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 const isVitest = process.env.VITEST ? true : false
+
+/* ========================================================================
+
+======================================================================== */
+
 const config = defineConfig({
   plugins: [
     devtools(),
@@ -102,38 +111,81 @@ const config = defineConfig({
     // It does not reset the mock’s implementation. If you used mockImplementation, that stays the same.
     // Use this if you want to keep your custom mock logic, but just want to reset the call count between tests.
     clearMocks: true,
-    // https://vitest.dev/config/ :  Allows global access to describe(), test(), it(), etc.
-    // The docs indicate to also add this to tsconfig.json  "compilerOptions": { "types": ["vitest/globals"] }
-    // However, that seems problematic because of the way types work. If you define
-    // it explicitly, it will ONLY include those items included in types, rather than
-    // everything in node_modules/@types. For example, specifying the above type will cause
-    // the following error: Property 'toHaveTextContent' does not exist on type 'Assertion<HTMLElement>'.
-    // Conversely, removing  "types": ["vitest/globals"] doesn't seem to cause any issues, so
-    // for now I'm NOT doing that step. Alternatively, we'd have to look at our node_modules/@types and
-    // manually add in every singe thing.
-    globals: true,
-    environment: 'jsdom',
-    setupFiles: './src/setupTests.ts',
-    css: true,
-    // https://vitest.dev/config/#css,
-
-    // https://vitest.dev/guide/in-source.html
-    // If you're going to use in-source testing, you need to tell vitest
-    // to also look inside of normal files (i.e., non .spec. .test. files).
-    includeSource: ['src/**/*.{js,jsx,ts,tsx}'],
-    // coverage: { provider: 'c8' // No need for this if using 'c8'
 
     projects: [
+      // Normal Vitest unit tests.
+      {
+        extends: true,
+        test: {
+          // To ONLY run the unit tests in CLI do this:
+          // npx vitest --project=unit
+          name: 'unit',
+          ///////////////////////////////////////////////////////////////////////////
+          //
+          // https://vitest.dev/config/ :  Allows global access to describe(), test(), it(), etc.
+          // The docs indicate to also add this to tsconfig.json  "compilerOptions": { "types": ["vitest/globals"] }
+          // However, that seems problematic because of the way types work. If you define
+          // it explicitly, it will ONLY include those items included in types, rather than
+          // everything in node_modules/@types. For example, specifying the above type will cause
+          // the following error: Property 'toHaveTextContent' does not exist on type 'Assertion<HTMLElement>'.
+          // Conversely, removing  "types": ["vitest/globals"] doesn't seem to cause any issues, so
+          // for now I'm NOT doing that step. Alternatively, we'd have to look at our node_modules/@types and
+          // manually add in every singe thing.
+          //
+          ///////////////////////////////////////////////////////////////////////////
+
+          globals: true,
+          environment: 'jsdom',
+          css: true, // https://vitest.dev/config/#css
+
+          // https://vitest.dev/guide/in-source.html
+          // If you're going to use in-source testing, you need to tell vitest
+          // to also look inside of normal files (i.e., non .spec. .test. files).
+          includeSource: ['src/**/*.{js,jsx,ts,tsx}'],
+          // coverage: { provider: 'c8' // No need for this if using 'c8'
+
+          ///////////////////////////////////////////////////////////////////////////
+          //
+          // ⚠️ Gotcha: Vitest replaces the default exclusion patterns with the patterns you specify.
+          // This means the built-in defaults are not automatically included anymore
+          // —only the globs you specify in your array are used for exclusion.
+          // If you want to exclude both your own paths (like tests/) and also retain all the
+          // default exclusions, you need to merge them yourself
+          //
+          ///////////////////////////////////////////////////////////////////////////
+
+          exclude: [...configDefaults.exclude, 'tests/**'], // 👈 Exclude Playwright tests!
+
+          ///////////////////////////////////////////////////////////////////////////
+          //
+          // Gotcha : When you had a global setup, Vite’s path resolution
+          // (with vite-tsconfig-paths and your Vite plugins) was applied globally, so your
+          // path aliases (like "mocks/server") worked everywhere.
+          //
+          // When you use the projects array, each project runs in a more isolated context.
+          // If the project config doesn’t inherit the Vite plugins (like vite-tsconfig-paths),
+          // or if the test runner isn’t picking up your path aliases, you’ll get these
+          // “Failed to resolve import” errors.
+          // When using the projects array, make sure each project inherits the Vite plugins (especially vite-tsconfig-paths).
+          // If you’re using extends: true in your project config, it should inherit the root Vite plugins.
+          //
+          ///////////////////////////////////////////////////////////////////////////
+          setupFiles: './src/setupTests.ts'
+        }
+      },
       {
         extends: true,
         plugins: [
           // The plugin will run tests for the stories defined in your Storybook config
+          // In other words, this transforms stories into tests.
           // See options at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon#storybooktest
           storybookTest({
             configDir: path.join(dirname, '.storybook')
           })
         ],
         test: {
+          // To ONLY run the storybook tests in CLI do this:
+          // npx vitest --project=storybook
           name: 'storybook',
           browser: {
             enabled: true,

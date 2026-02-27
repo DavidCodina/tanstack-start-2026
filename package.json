@@ -13,6 +13,8 @@
     "test:verbose": "vitest --reporter verbose",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
+    "test:unit": "vitest --project=unit",
+    "test:storybook": "vitest --project=storybook",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "prettier:check": "prettier --check .",
