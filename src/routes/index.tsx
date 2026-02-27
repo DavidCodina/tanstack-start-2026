@@ -8,6 +8,12 @@ export const Route = createFileRoute('/')({ component: PageHome })
 /* ========================================================================
 
 ======================================================================== */
+
+//# Fix vite.config.ts so tests work correctly again.
+//# This entails creating two separate projects for testing
+//# See older Vite projects.
+//# Also see backup Tanstack Start for pre-storybook __vite.config.ts
+
 //# Update Tanstack Start specific dependencies.
 
 //# Create ControlledInputDemo and UncontrolledInputDemo
