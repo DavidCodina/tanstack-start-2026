@@ -5,6 +5,8 @@ import { Slider } from '@base-ui/react/slider'
 
 ======================================================================== */
 // See: https://github.com/mui/base-ui/issues/4090
+// This was happening as of  "@base-ui/react": "^1.2.0"
+// It seems to be fixed as of version 1.3.0.
 
 export const SliderBugDemo = () => {
   return (
@@ -28,7 +30,7 @@ export const SliderBugDemo = () => {
             <Slider.Indicator className='rounded bg-gray-700 select-none data-invalid:bg-red-500 data-valid:bg-green-500' />
             <Slider.Thumb
               aria-label='Volume'
-              className='size-4 rounded-full bg-white outline outline-1 outline-gray-300 select-none has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-blue-800'
+              className='size-4 rounded-full bg-white outline-1 outline-gray-300 select-none has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-blue-800'
             />
           </Slider.Track>
         </Slider.Control>

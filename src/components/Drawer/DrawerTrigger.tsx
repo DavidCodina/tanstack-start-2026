@@ -1,4 +1,4 @@
-import { DrawerPreview as Drawer } from '@base-ui/react/drawer'
+import { Drawer } from '@base-ui/react/drawer'
 import { PanelRightOpen } from 'lucide-react'
 import { cn } from '@/utils'
 

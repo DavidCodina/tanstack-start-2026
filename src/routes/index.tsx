@@ -2,17 +2,13 @@ import { createFileRoute /* , useRouter */ } from '@tanstack/react-router'
 import { Page, PageContainer } from '@/components'
 
 //# import { SwitchDemo1 } from '@/components/Switch/demos/SwitchDemo1'
+import { SliderBugDemo } from '@/components/Slider/demos/SliderBugDemo'
 
 export const Route = createFileRoute('/')({ component: PageHome })
 
 /* ========================================================================
 
 ======================================================================== */
-
-//# Fix vite.config.ts so tests work correctly again.
-//# This entails creating two separate projects for testing
-//# See older Vite projects.
-//# Also see backup Tanstack Start for pre-storybook __vite.config.ts
 
 //# Update Tanstack Start specific dependencies.
 
@@ -46,6 +42,8 @@ function PageHome() {
         </h1>
 
         {/* <SwitchDemo1 /> */}
+
+        <SliderBugDemo />
       </PageContainer>
     </Page>
   )
