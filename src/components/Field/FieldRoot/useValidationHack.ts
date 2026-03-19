@@ -123,6 +123,10 @@ export const useValidationHack = ({
       "[data-slot='autocomplete-trigger']"
     )
 
+    const switchRoot = fieldRoot.querySelector("[data-slot='switch-root']")
+
+    const switchThumb = fieldRoot.querySelector("[data-slot='switch-thumb']")
+
     if (validating) {
       fieldRoot.setAttribute('data-validating', '')
 
@@ -210,6 +214,16 @@ export const useValidationHack = ({
         autocompleteTrigger.setAttribute('data-validating', '')
       }
 
+      //* Added...
+      if (switchRoot) {
+        switchRoot.setAttribute('data-validating', '')
+      }
+
+      //* Added...
+      if (switchThumb) {
+        switchThumb.setAttribute('data-validating', '')
+      }
+
       return
     }
 
@@ -292,6 +306,16 @@ export const useValidationHack = ({
 
       if (autocompleteTrigger) {
         autocompleteTrigger.removeAttribute('data-validating')
+      }
+
+      //* Added...
+      if (switchRoot) {
+        switchRoot.removeAttribute('data-validating')
+      }
+
+      //* Added...
+      if (switchThumb) {
+        switchThumb.removeAttribute('data-validating')
       }
     }
 
@@ -407,6 +431,18 @@ export const useValidationHack = ({
         autocompleteTrigger.removeAttribute('data-valid')
       }
 
+      //* Added...
+      if (switchRoot) {
+        switchRoot.setAttribute('data-invalid', '')
+        switchRoot.removeAttribute('data-valid')
+      }
+
+      //* Added...
+      if (switchThumb) {
+        switchThumb.setAttribute('data-invalid', '')
+        switchThumb.removeAttribute('data-valid')
+      }
+
       return
     }
 
@@ -519,6 +555,18 @@ export const useValidationHack = ({
         autocompleteTrigger.removeAttribute('data-invalid')
       }
 
+      //* Added...
+      if (switchRoot) {
+        switchRoot.setAttribute('data-valid', '')
+        switchRoot.removeAttribute('data-invalid')
+      }
+
+      //* Added...
+      if (switchThumb) {
+        switchThumb.setAttribute('data-valid', '')
+        switchThumb.removeAttribute('data-invalid')
+      }
+
       return
     }
 
@@ -629,6 +677,18 @@ export const useValidationHack = ({
     if (autocompleteTrigger) {
       autocompleteTrigger.removeAttribute('data-valid')
       autocompleteTrigger.removeAttribute('data-invalid')
+    }
+
+    //* Added...
+    if (switchRoot) {
+      switchRoot.removeAttribute('data-valid')
+      switchRoot.removeAttribute('data-invalid')
+    }
+
+    //* Added...
+    if (switchThumb) {
+      switchThumb.removeAttribute('data-valid')
+      switchThumb.removeAttribute('data-invalid')
     }
   }, [forceValidity, invalid, validating]) // eslint-disable-line
 }

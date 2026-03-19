@@ -3,6 +3,12 @@ import { cn } from '@/utils'
 
 export type SwitchThumbProps = Switch.Thumb.Props
 
+const FIELD_VALID_MIXIN = `not-group-data-validating/root:data-valid:not-data-disabled:data-checked:bg-success`
+
+const FIELD_INVALID_MIXIN = `not-group-data-validating/root:data-invalid:not-data-disabled:data-checked:bg-destructive`
+
+const FIELD_DISABLED_MIXIN = `data-disabled:bg-neutral-400`
+
 // data-checked:translate-x-4
 const BORDER_MIXIN = `
 border border-[rgba(0,0,0,0.25)]
@@ -24,8 +30,11 @@ data-checked:bg-primary
 data-checked:translate-x-[calc(var(--spacing)*4_+_1px)]
 ${BORDER_MIXIN}
 ${SHADOW_MIXIN}
+${FIELD_VALID_MIXIN}
+${FIELD_INVALID_MIXIN}
+${FIELD_DISABLED_MIXIN}
 transition-transform
-duration-150
+
 `
 
 /* ========================================================================

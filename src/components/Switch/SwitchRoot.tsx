@@ -3,33 +3,27 @@ import { cn } from '@/utils'
 
 export type SwitchRootProps = Switch.Root.Props
 
-// shadow-gray-200
-// active:bg-gray-100 // Does nothing
-// data-[checked]:active:bg-gray-500 // Does nothing
+const FIELD_FOCUS_MIXIN = `
+not-data-disabled:focus-visible:border-primary
+not-data-disabled:focus-visible:ring-[3px]
+not-data-disabled:focus-visible:ring-primary/40
+`
 
-// Background is too fancy...
-// bg-linear-to-r from-gray-700
-// from-35% to-gray-200 to-65%
-// bg-[length:6.5rem_100%] bg-[100%_0%]
-// bg-no-repeat
+const FIELD_VALID_MIXIN = `
+not-group-data-validating/root:data-valid:not-data-disabled:outline-success
+not-group-data-validating/root:data-valid:not-data-disabled:focus-visible:outline-success
+not-group-data-validating/root:data-valid:not-data-disabled:not-data-disabled:focus-visible:ring-success/40
+`
 
-// shadow-[inset_0_1.5px_2px]
+const FIELD_INVALID_MIXIN = `
+not-group-data-validating/root:data-invalid:not-data-disabled:outline-destructive
+not-group-data-validating/root:data-invalid:not-data-disabled:focus-visible:outline-destructive
+not-group-data-validating/root:data-invalid:not-data-disabled:focus-visible:ring-destructive/40
+`
 
-// before:absolute
-// before:rounded-full
-// before:outline-offset-2
-// before:outline-blue-800
+const FIELD_DISABLED_MIXIN = ``
 
-// focus-visible:before:inset-0
-// focus-visible:before:outline
-// focus-visible:before:outline-2
-
-// dark:from-gray-500
-//
-// dark:outline-white/15
-// dark:data-[checked]:shadow-none
-
-const SHADOW_MIXIN = `
+const FIELD_BOX_SHADOW_MIXIN = `
 shadow-[inset_0_1.5px_2px]
 dark:shadow-black/75
 `
@@ -40,13 +34,12 @@ bg-card
 flex h-6 w-10 p-px 
 rounded-full cursor-pointer
 outline -outline-offset-1 outline-border
-${SHADOW_MIXIN}
-
 transition-[background-position]
-
-duration-[125ms]
-ease-[cubic-bezier(0.26,0.75,0.38,0.45)]
-data-[checked]:bg-[0%_0%]
+${FIELD_BOX_SHADOW_MIXIN}
+${FIELD_FOCUS_MIXIN}
+${FIELD_VALID_MIXIN}
+${FIELD_INVALID_MIXIN}
+${FIELD_DISABLED_MIXIN}
 `
 
 /* ========================================================================
