@@ -13,6 +13,7 @@ type UseValidationHackParam = {
 ///////////////////////////////////////////////////////////////////////////
 //
 // See https://github.com/mui/base-ui/issues/3777
+// Issues still exists as of v1.3.0
 //
 // The actual Base UI Field.Root component uses a FieldRootContext to propagate
 // awareness of internal states to the composable children. Unfortunately, FieldRootContext

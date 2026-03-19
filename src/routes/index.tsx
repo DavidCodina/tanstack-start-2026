@@ -1,8 +1,7 @@
 import { createFileRoute /* , useRouter */ } from '@tanstack/react-router'
 import { Page, PageContainer } from '@/components'
-
-//# import { SwitchDemo1 } from '@/components/Switch/demos/SwitchDemo1'
-import { SliderBugDemo } from '@/components/Slider/demos/SliderBugDemo'
+// import { SwitchDemo1 } from '@/components/Switch/demos/SwitchDemo1'
+import { Demo1 } from '@/components/Input/demos/Demo1'
 
 export const Route = createFileRoute('/')({ component: PageHome })
 
@@ -41,9 +40,7 @@ function PageHome() {
           _HOME
         </h1>
 
-        {/* <SwitchDemo1 /> */}
-
-        <SliderBugDemo />
+        <Demo1 />
       </PageContainer>
     </Page>
   )

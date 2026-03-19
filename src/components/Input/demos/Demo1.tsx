@@ -1,4 +1,4 @@
-// import * as React from 'react'
+import * as React from 'react'
 import { Input } from '../'
 import type { FieldRootProps } from '@base-ui/react/field'
 // export type Errors = Record<string, string | string[]>;
@@ -54,6 +54,14 @@ const validateFile: Validate = (value, _formValues) => {
 // https://github.com/orgs/mui/projects/1/views/4
 
 export const Demo1 = () => {
+  const [disabled, _setDisabled] = React.useState(false)
+
+  // React.useEffect(() => {
+  //   setTimeout(() => {
+  //     setDisabled(true)
+  //   }, 5000)
+  // })
+
   return (
     <div className='space-y-6'>
       <Input
@@ -83,8 +91,9 @@ export const Demo1 = () => {
             return 'max-w-[600px] mx-auto'
           },
 
-          // disabled: true,
-          // invalid: true,
+          disabled: disabled,
+          // invalid: false,
+          // forceValidity: true,
           // style: { border: '2px dashed var(--color-pink-500)' }
           name: 'firstName',
           // touched: true,
@@ -123,7 +132,7 @@ export const Demo1 = () => {
         }}
       />
 
-      <Input
+      {/* <Input
         fieldRootProps={{
           className: 'max-w-[600px] mx-auto',
           // disabled: true,
@@ -138,7 +147,7 @@ export const Demo1 = () => {
         fieldLabelProps={{
           children: 'Your File'
         }}
-      />
+      /> */}
     </div>
   )
 }

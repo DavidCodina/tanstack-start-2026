@@ -19,7 +19,9 @@ shadow-xs
 // See: https://github.com/mui/base-ui/issues/3987
 //      https://github.com/mui/base-ui/pull/3996
 //
-// This issue still persists as of the latest v1.2 update.
+// This issue still persists as of the latest v1.3.0 update:
+// Do this to test:
+// React.useEffect(() => { setTimeout(() => { setDisabled(true) }, 5000) })
 //
 ///////////////////////////////////////////////////////////////////////////
 

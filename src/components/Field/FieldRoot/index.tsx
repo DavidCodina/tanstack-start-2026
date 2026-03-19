@@ -40,6 +40,8 @@ export const FieldRoot = ({
   const internalRef = React.useRef<HTMLDivElement>(null)
   const mergedRef = useMergedRef(internalRef, ref)
 
+  ///////////////////////////////////////////////////////////////////////////
+  //
   // See https://github.com/mui/base-ui/issues/3777
   // invalid={false} before validation does nothing.
   // invalid={undefined} after validation falls back
@@ -47,6 +49,10 @@ export const FieldRoot = ({
   // means that the invalid prop is NOT the final arbiter
   // of the field's data-valid/data-invalid attributes.
   // This hack attempts to correct for that.
+  //
+  // Issues still exists as of v1.3.0
+  //
+  ///////////////////////////////////////////////////////////////////////////
 
   useValidationHack({
     forceValidity,
