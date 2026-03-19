@@ -127,6 +127,22 @@ export const useValidationHack = ({
 
     const switchThumb = fieldRoot.querySelector("[data-slot='switch-thumb']")
 
+    const sliderRoot = fieldRoot.querySelector("[data-slot='slider-root']")
+
+    const sliderValue = fieldRoot.querySelector("[data-slot='slider-value']")
+
+    const sliderControl = fieldRoot.querySelector(
+      "[data-slot='slider-control']"
+    )
+
+    const sliderTrack = fieldRoot.querySelector("[data-slot='slider-track']")
+
+    const sliderIndicator = fieldRoot.querySelector(
+      "[data-slot='slider-indicator']"
+    )
+
+    const sliderThumb = fieldRoot.querySelector("[data-slot='slider-thumb']")
+
     if (validating) {
       fieldRoot.setAttribute('data-validating', '')
 
@@ -214,14 +230,36 @@ export const useValidationHack = ({
         autocompleteTrigger.setAttribute('data-validating', '')
       }
 
-      //* Added...
       if (switchRoot) {
         switchRoot.setAttribute('data-validating', '')
       }
 
-      //* Added...
       if (switchThumb) {
         switchThumb.setAttribute('data-validating', '')
+      }
+
+      if (sliderRoot) {
+        sliderRoot.setAttribute('data-validating', '')
+      }
+
+      if (sliderValue) {
+        sliderValue.setAttribute('data-validating', '')
+      }
+
+      if (sliderControl) {
+        sliderControl.setAttribute('data-validating', '')
+      }
+
+      if (sliderTrack) {
+        sliderTrack.setAttribute('data-validating', '')
+      }
+
+      if (sliderIndicator) {
+        sliderIndicator.setAttribute('data-validating', '')
+      }
+
+      if (sliderThumb) {
+        sliderThumb.setAttribute('data-validating', '')
       }
 
       return
@@ -308,14 +346,36 @@ export const useValidationHack = ({
         autocompleteTrigger.removeAttribute('data-validating')
       }
 
-      //* Added...
       if (switchRoot) {
         switchRoot.removeAttribute('data-validating')
       }
 
-      //* Added...
       if (switchThumb) {
         switchThumb.removeAttribute('data-validating')
+      }
+
+      if (sliderRoot) {
+        sliderRoot.removeAttribute('data-validating')
+      }
+
+      if (sliderValue) {
+        sliderValue.removeAttribute('data-validating')
+      }
+
+      if (sliderControl) {
+        sliderControl.removeAttribute('data-validating')
+      }
+
+      if (sliderTrack) {
+        sliderTrack.removeAttribute('data-validating')
+      }
+
+      if (sliderIndicator) {
+        sliderIndicator.removeAttribute('data-validating')
+      }
+
+      if (sliderThumb) {
+        sliderThumb.removeAttribute('data-validating')
       }
     }
 
@@ -431,16 +491,44 @@ export const useValidationHack = ({
         autocompleteTrigger.removeAttribute('data-valid')
       }
 
-      //* Added...
       if (switchRoot) {
         switchRoot.setAttribute('data-invalid', '')
         switchRoot.removeAttribute('data-valid')
       }
 
-      //* Added...
       if (switchThumb) {
         switchThumb.setAttribute('data-invalid', '')
         switchThumb.removeAttribute('data-valid')
+      }
+
+      if (sliderRoot) {
+        sliderRoot.setAttribute('data-invalid', '')
+        sliderRoot.removeAttribute('data-valid')
+      }
+
+      if (sliderValue) {
+        sliderValue.setAttribute('data-invalid', '')
+        sliderValue.removeAttribute('data-valid')
+      }
+
+      if (sliderControl) {
+        sliderControl.setAttribute('data-invalid', '')
+        sliderControl.removeAttribute('data-valid')
+      }
+
+      if (sliderTrack) {
+        sliderTrack.setAttribute('data-invalid', '')
+        sliderTrack.removeAttribute('data-valid')
+      }
+
+      if (sliderIndicator) {
+        sliderIndicator.setAttribute('data-invalid', '')
+        sliderIndicator.removeAttribute('data-valid')
+      }
+
+      if (sliderThumb) {
+        sliderThumb.setAttribute('data-invalid', '')
+        sliderThumb.removeAttribute('data-valid')
       }
 
       return
@@ -555,16 +643,44 @@ export const useValidationHack = ({
         autocompleteTrigger.removeAttribute('data-invalid')
       }
 
-      //* Added...
       if (switchRoot) {
         switchRoot.setAttribute('data-valid', '')
         switchRoot.removeAttribute('data-invalid')
       }
 
-      //* Added...
       if (switchThumb) {
         switchThumb.setAttribute('data-valid', '')
         switchThumb.removeAttribute('data-invalid')
+      }
+
+      if (sliderRoot) {
+        sliderRoot.setAttribute('data-valid', '')
+        sliderRoot.removeAttribute('data-invalid')
+      }
+
+      if (sliderValue) {
+        sliderValue.setAttribute('data-valid', '')
+        sliderValue.removeAttribute('data-invalid')
+      }
+
+      if (sliderControl) {
+        sliderControl.setAttribute('data-valid', '')
+        sliderControl.removeAttribute('data-invalid')
+      }
+
+      if (sliderTrack) {
+        sliderTrack.setAttribute('data-valid', '')
+        sliderTrack.removeAttribute('data-invalid')
+      }
+
+      if (sliderIndicator) {
+        sliderIndicator.setAttribute('data-valid', '')
+        sliderIndicator.removeAttribute('data-invalid')
+      }
+
+      if (sliderThumb) {
+        sliderThumb.setAttribute('data-valid', '')
+        sliderThumb.removeAttribute('data-invalid')
       }
 
       return
@@ -679,16 +795,44 @@ export const useValidationHack = ({
       autocompleteTrigger.removeAttribute('data-invalid')
     }
 
-    //* Added...
     if (switchRoot) {
       switchRoot.removeAttribute('data-valid')
       switchRoot.removeAttribute('data-invalid')
     }
 
-    //* Added...
     if (switchThumb) {
       switchThumb.removeAttribute('data-valid')
       switchThumb.removeAttribute('data-invalid')
+    }
+
+    if (sliderRoot) {
+      sliderRoot.removeAttribute('data-valid')
+      sliderRoot.removeAttribute('data-invalid')
+    }
+
+    if (sliderValue) {
+      sliderValue.removeAttribute('data-valid')
+      sliderValue.removeAttribute('data-invalid')
+    }
+
+    if (sliderControl) {
+      sliderControl.removeAttribute('data-valid')
+      sliderControl.removeAttribute('data-invalid')
+    }
+
+    if (sliderTrack) {
+      sliderTrack.removeAttribute('data-valid')
+      sliderTrack.removeAttribute('data-invalid')
+    }
+
+    if (sliderIndicator) {
+      sliderIndicator.removeAttribute('data-valid')
+      sliderIndicator.removeAttribute('data-invalid')
+    }
+
+    if (sliderThumb) {
+      sliderThumb.removeAttribute('data-valid')
+      sliderThumb.removeAttribute('data-invalid')
     }
   }, [forceValidity, invalid, validating]) // eslint-disable-line
 }

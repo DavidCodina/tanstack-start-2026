@@ -47,11 +47,6 @@ export type SliderProps = {
 /* ========================================================================
 
 ======================================================================== */
-//# As of v1.2.0 there seems to be a bug whereby validation occurs immediately
-//# after clicking and dragging the thumb.
-//# https://github.com/mui/base-ui/issues/4090
-
-//# Add nodes to useValidationHack().
 
 export const Slider = ({
   fieldRootProps = {},
