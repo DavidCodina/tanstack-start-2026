@@ -1,13 +1,11 @@
 import { createFileRoute /* , useRouter */ } from '@tanstack/react-router'
 import { Page, PageContainer } from '@/components'
-import { SliderDemo1 } from '@/components/Slider/demos/SliderDemo1'
 
 export const Route = createFileRoute('/')({ component: PageHome })
 
 /* ========================================================================
 
 ======================================================================== */
-
 //# Update Tanstack Start specific dependencies.
 
 //# Create ControlledInputDemo and UncontrolledInputDemo
@@ -38,8 +36,6 @@ function PageHome() {
         >
           _HOME
         </h1>
-
-        <SliderDemo1 />
       </PageContainer>
     </Page>
   )
