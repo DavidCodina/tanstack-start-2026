@@ -132,7 +132,7 @@ export const Demo1 = () => {
         }}
       />
 
-      {/* <Input
+      <Input
         fieldRootProps={{
           className: 'max-w-[600px] mx-auto',
           // disabled: true,
@@ -147,7 +147,7 @@ export const Demo1 = () => {
         fieldLabelProps={{
           children: 'Your File'
         }}
-      /> */}
+      />
     </div>
   )
 }
