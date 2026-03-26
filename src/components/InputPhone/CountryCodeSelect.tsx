@@ -1,7 +1,6 @@
 'use client'
 
 import * as React from 'react'
-
 ///////////////////////////////////////////////////////////////////////////
 //
 // Note: libphonenumber-js uses the term "country code" rather broadly and it includes both the official
@@ -13,23 +12,17 @@ import * as React from 'react'
 // XA, XO, XC, and others which are not implemented in libphonenumber-js.
 //
 ///////////////////////////////////////////////////////////////////////////
-
 import { getCountries, getCountryCallingCode } from 'libphonenumber-js'
-
-//# Compare these countries to the ones returned by getCountries() from libphonenumber-js
-//# import { getCountries as getMyCountries } from 'react-phone-number-input'
-
 // A hardcoded dictionary of codes to country names.
 import en from 'react-phone-number-input/locale/en'
-import { hasFlag } from 'country-flag-icons'
+// import { hasFlag } from 'country-flag-icons'
 import * as flags from 'country-flag-icons/react/3x2'
-
 import { Select, SelectItem } from '../Select'
 import type { SelectProps } from '../Select'
 import type { Select as SelectPrimitive } from '@base-ui/react/select'
-
 // Yes: AC, TA, SH, XK, No: XA, XO, XC
 import type { CountryCode } from 'libphonenumber-js'
+import { cn } from '@/utils'
 
 export type CountryCodeSelectAPI = {
   reset: () => void
@@ -53,15 +46,16 @@ export type CountryCodeSelectProps = Omit<
 }
 
 /* ======================
-
+        items
 ====================== */
 
 // All country codes are derived directly from libphonenumber-js and act as the source of truth.
 const countryCodes = getCountries() || []
 
-// Unfortunately, libphonenumber-js itself doesn't have a labelling helper.
-// This should include all country codes since both libraries are made by the same person.
-// However, `code` itself is used as a fallback value just in case.
+// Unfortunately, libphonenumber-js itself doesn't have a labeling helper, but
+// react-phone-number-input does. This should include all country codes since
+// both libraries are made by the same person. However, `code` itself is used
+// as a fallback value just in case.
 const labelsObject = en
 const countryNameToCodeCodeDictionary = Object.fromEntries(
   countryCodes.map((code) => [labelsObject[code] || code, code])
@@ -72,6 +66,8 @@ const countryNames = Object.keys(countryNameToCodeCodeDictionary).sort((a, b) =>
   a.localeCompare(b)
 )
 
+// Use countryNames to create items - an array of {label: string; value: CountryCode;}[],
+// that is appropriately formatted for the Base UI Select component.
 const items = countryNames.map((countryName, _index) => {
   // Each countryName will have a countryCode, since countryNames was originally derived from countryCodes.
   const countryCode = countryNameToCodeCodeDictionary[countryName]
@@ -82,12 +78,11 @@ const items = countryNames.map((countryName, _index) => {
   }
 })
 
-//!  "errorMessage": "Unknown country: XX",
-//! items.push({ label: 'Country XX', value: 'XX' })
-
 /* ========================================================================
 
 ======================================================================== */
+///////////////////////////////////////////////////////////////////////////
+//
 // CountryCodeSelect is intended to be used in conjunction with InputPhone.
 // It passes back a CountryCode when selected (e.g., 'US', 'GB', etc.).
 // This is then used by InputPhone to derive the country calling code.
@@ -95,19 +90,13 @@ const items = countryNames.map((countryName, _index) => {
 //
 // CountryCodeSelect is an abstraction on top of the Base UI Select component.
 // It has its own internalValue state. This allows us to clear it when needed.
-
-//# Test two-way binding again...
-
-//# We may be able to strip out the internalValue
-
-//# Additionally, There is an actionsRef.current.unmount() method.
-//# Test this out in the basic select demo
+//
+///////////////////////////////////////////////////////////////////////////
 
 export const CountryCodeSelect = ({
   apiRef,
   onValueChange,
   value: externalValue = '',
-
   fieldRootProps = {},
   fieldLabelProps = {},
   selectRootProps = {},
@@ -120,13 +109,6 @@ export const CountryCodeSelect = ({
   fieldDescriptionProps = {},
   fieldErrorProps = {}
 }: CountryCodeSelectProps) => {
-  /* ======================
-        state & refs
-  ====================== */
-
-  // actionsRef.current: {unmount: ƒ}
-  const actionsRef = React.useRef<SelectPrimitive.Root.Actions>(null)
-
   const [internalValue, setInternalValue] = React.useState<CountryCode | ''>(
     () => {
       return externalValue || ''
@@ -159,7 +141,7 @@ export const CountryCodeSelect = ({
   /* ======================
     Two-Way Binding (Part 2)
   ====================== */
-  // Any time inernalValue changes, call onChange() so consumer can update externalValue.
+  // Any time inernalValue changes, call onValueChange() so consumer can update externalValue.
   // Arguably, this could also be done from within the select's onChange prop. However, it's better
   // to separate the concerns of the onChange prop, which should only be responsible for updating the
   // internalValue.
@@ -173,10 +155,7 @@ export const CountryCodeSelect = ({
   ====================== */
 
   const renderFlag = () => {
-    // Use hasFlag() to make sure it even exists. However, this convenience helper
-    // isn't really even necessary, If it didn't exist FlagComponent would simply be
-    // undefined, which we already check for below.
-    if (!internalValue || !hasFlag(internalValue)) return null
+    if (!internalValue) return null
 
     const FlagComponent = flags[internalValue as keyof typeof flags]
 
@@ -184,8 +163,7 @@ export const CountryCodeSelect = ({
       return <FlagComponent className='h-[1.25em]' />
     }
 
-    //# Test this out...
-    // Fallback SVG
+    // Fallback SVG (Taken from react-phone-number-input).
     if (!FlagComponent && internalValue) {
       return (
         <svg
@@ -235,10 +213,18 @@ export const CountryCodeSelect = ({
   const renderCountryCallingCode = () => {
     if (!internalValue) return null
 
-    const countryCallingCode = getCountryCallingCode(internalValue)
-
-    if (countryCallingCode) {
-      return <div className='leading-none'>+{countryCallingCode}</div>
+    try {
+      // ⚠️ Will throw an error if country doesn't exist or isn't supported by this libphonenumber-js.
+      const countryCallingCode = getCountryCallingCode(internalValue)
+      if (countryCallingCode) {
+        return <div className='leading-none'>+{countryCallingCode}</div>
+      }
+    } catch (err) {
+      if (err instanceof Error) {
+        // Example: {name: 'Error', message: 'Unknown country: XX'}
+        // console.log({ name: err.name, message: err.message })
+        return <div className='ml-1 text-[0.8em] leading-none'>❌ Error</div>
+      }
     }
 
     return null
@@ -249,10 +235,12 @@ export const CountryCodeSelect = ({
   ====================== */
 
   const renderItems = () => {
-    return items.map(({ label, value }, index) => (
+    return items.map(({ label, value }, _index) => (
       <SelectItem
-        // I was using label as the key, but that's not possible if one or more items is JSX.
-        key={index}
+        // Can use `label` as long as the labels are strings and not JSX.
+        // Here it makes more sense than using `value`, just in case two
+        // countries share the same countryCode value (?).
+        key={label}
         children={label}
         selectItemTextProps={{
           children: label
@@ -271,14 +259,10 @@ export const CountryCodeSelect = ({
     <Select
       fieldRootProps={{
         name: 'country_code',
-
         // validate: (value, _formValues) => {
-        //   if (!value) return 'You must select a value.'
-        //   // if (value === 'seasonal') {
-        //   //   return 'The seasonal apple is currently unavailable.'
-        //   // }
+        //   if (!value) return 'Required'
         //   return null
-        // }
+        // },
         ...fieldRootProps
       }}
       fieldLabelProps={{
@@ -287,7 +271,6 @@ export const CountryCodeSelect = ({
         // labelRequired: true
       }}
       selectRootProps={{
-        actionsRef: actionsRef, //* New...
         items: items,
         onValueChange: (value, _eventDetails) => {
           setInternalValue(value as CountryCode | '')
@@ -298,18 +281,29 @@ export const CountryCodeSelect = ({
       selectTriggerProps={{
         placeholder: 'Country',
         ...selectTriggerProps,
-        className: 'w-[8em]' //# Use cn()
+        className: (selectTriggerState) => {
+          if (typeof selectTriggerProps.className === 'function') {
+            return selectTriggerProps.className(selectTriggerState) || ''
+          }
+          return cn('w-[7.25em]', selectTriggerProps.className)
+        }
       }}
       selectValueProps={{
         ...selectValueProps,
-        className: 'flex items-center gap-[0.25em] -mr-1', //# Use cn()
-
-        // Rather than returning the same item.label as in the menu,
-        // we can hack the Select.Value as follows
+        className: (selectValueState) => {
+          if (typeof selectValueProps.className === 'function') {
+            return selectValueProps.className(selectValueState) || ''
+          }
+          return cn(
+            'flex items-center gap-[0.25em] -mr-1',
+            selectValueProps.className
+          )
+        },
+        // Rather than returning the same item.label as in
+        // the menu, we can hack the Select.Value as follows:
         render: (props, state) => {
           const value = state.value
           if (!value) return <span {...props} />
-
           return (
             <span {...props}>
               <div>{renderFlag()}</div>
@@ -318,25 +312,12 @@ export const CountryCodeSelect = ({
           )
         }
       }}
-      selectPortalProps={{
-        ...selectPortalProps
-      }}
-      selectPositionerProps={{
-        side: 'bottom',
-        ...selectPositionerProps
-      }}
-      selectPopupProps={{
-        ...selectPopupProps
-      }}
-      selectListProps={{
-        ...selectListProps
-      }}
-      fieldDescriptionProps={{
-        ...fieldDescriptionProps
-      }}
-      fieldErrorProps={{
-        ...fieldErrorProps
-      }}
+      selectPortalProps={selectPortalProps}
+      selectPositionerProps={selectPositionerProps}
+      selectPopupProps={selectPopupProps}
+      selectListProps={selectListProps}
+      fieldDescriptionProps={fieldDescriptionProps}
+      fieldErrorProps={fieldErrorProps}
     >
       {renderItems()}
     </Select>

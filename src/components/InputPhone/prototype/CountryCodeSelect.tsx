@@ -18,12 +18,9 @@ import { ChevronDown } from 'lucide-react'
 
 import { getCountries, getCountryCallingCode } from 'libphonenumber-js'
 
-//# Compare these countries to the ones returned by getCountries() from libphonenumber-js
-//# import { getCountries as getMyCountries } from 'react-phone-number-input'
-
 // A hardcoded dictionary of codes to country names.
 import en from 'react-phone-number-input/locale/en'
-import { hasFlag } from 'country-flag-icons'
+// import { hasFlag } from 'country-flag-icons'
 import * as flags from 'country-flag-icons/react/3x2'
 import type { VariantProps } from 'class-variance-authority'
 
@@ -125,8 +122,6 @@ const countryNames = Object.keys(countryNameToCodeCodeDictionary).sort((a, b) =>
 // This is then used by InputPhone to derive the country calling code.
 // This is the pattern that react-phone-number-input uses.
 
-//# Add Lucide caret icon.
-
 export const CountryCodeSelect = ({
   apiRef,
   className = '',
@@ -181,10 +176,7 @@ export const CountryCodeSelect = ({
   ====================== */
 
   const renderFlag = () => {
-    // Use hasFlag() to make sure it even exists. However, this convenience helper
-    // isn't really even necessary, If it didn't exist FlagComponent would simply be
-    // undefined, which we already check for below.
-    if (!internalValue || !hasFlag(internalValue)) return null
+    if (!internalValue) return null
 
     const FlagComponent = flags[internalValue as keyof typeof flags]
 
@@ -242,10 +234,18 @@ export const CountryCodeSelect = ({
   const renderCountryCallingCode = () => {
     if (!internalValue) return null
 
-    const countryCallingCode = getCountryCallingCode(internalValue)
-
-    if (countryCallingCode) {
-      return <div className='leading-none'>+{countryCallingCode}</div>
+    try {
+      // ⚠️ Will throw an error if country doesn't exist or isn't supported by this library.
+      const countryCallingCode = getCountryCallingCode(internalValue)
+      if (countryCallingCode) {
+        return <div className='leading-none'>+{countryCallingCode}</div>
+      }
+    } catch (err) {
+      if (err instanceof Error) {
+        // Example: {name: 'Error', message: 'Unknown country: XX'}
+        // console.log({ name: err.name, message: err.message })
+        return <div className='ml-1 text-[0.8em] leading-none'>❌ Error</div>
+      }
     }
 
     return null
@@ -254,7 +254,6 @@ export const CountryCodeSelect = ({
   /* ======================
       renderOverlay()
   ====================== */
-  //# This needs to be wide enough to accomodate the Flag, CountryCallingCode and Lucide caret.
 
   const renderOverlay = () => {
     return (

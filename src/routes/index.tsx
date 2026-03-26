@@ -2,8 +2,6 @@ import { createFileRoute /* , useRouter */ } from '@tanstack/react-router'
 import { Page, PageContainer } from '@/components'
 import { InputPhoneDemo } from '@/components/InputPhone/demos'
 
-import { SelectDemo1 } from '@/components/Select/demos'
-
 export const Route = createFileRoute('/')({ component: PageHome })
 
 /* ========================================================================
@@ -41,12 +39,6 @@ function PageHome() {
         </h1>
 
         <InputPhoneDemo />
-
-        <br />
-
-        <br />
-
-        <SelectDemo1 />
       </PageContainer>
     </Page>
   )
