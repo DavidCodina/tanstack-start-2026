@@ -110,9 +110,12 @@ const selectTriggerVariants = cva(baseClasses, {
   }
 })
 
+export type SelectValueProps = Select.Value.Props
+
 export type SelectTriggerProps = Select.Trigger.Props &
   VariantProps<typeof selectTriggerVariants> & {
     placeholder?: React.ReactNode
+    selectValueProps?: SelectValueProps
   }
 
 /* ========================================================================
@@ -123,6 +126,7 @@ export const SelectTrigger = ({
   className = '',
   fieldSize,
   placeholder = '',
+  selectValueProps = {},
   ...otherProps
 }: SelectTriggerProps) => {
   /* ======================
@@ -159,7 +163,17 @@ export const SelectTrigger = ({
         return cn(selectTriggerVariants({ fieldSize }), className)
       }}
     >
-      <Select.Value className={ELLIPSIS_MIXIN} placeholder={placeholder} />
+      <Select.Value
+        {...selectValueProps}
+        data-slot='select-value'
+        className={(selectValueState) => {
+          if (typeof selectValueProps.className === 'function') {
+            className = selectValueProps.className(selectValueState) || ''
+          }
+          return cn(ELLIPSIS_MIXIN, selectValueProps.className)
+        }}
+        placeholder={placeholder}
+      />
 
       {renderSelectIcon()}
     </Select.Trigger>

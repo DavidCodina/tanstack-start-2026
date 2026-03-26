@@ -1,6 +1,8 @@
 'use client'
 
 import * as React from 'react'
+import { cva } from 'class-variance-authority'
+import { ChevronDown } from 'lucide-react'
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -23,34 +25,77 @@ import { getCountries, getCountryCallingCode } from 'libphonenumber-js'
 import en from 'react-phone-number-input/locale/en'
 import { hasFlag } from 'country-flag-icons'
 import * as flags from 'country-flag-icons/react/3x2'
-
-import { Select, SelectItem } from '../Select'
-import type { SelectProps } from '../Select'
-import type { Select as SelectPrimitive } from '@base-ui/react/select'
+import type { VariantProps } from 'class-variance-authority'
 
 // Yes: AC, TA, SH, XK, No: XA, XO, XC
 import type { CountryCode } from 'libphonenumber-js'
+import { cn } from '@/utils'
+
+const FIELD_BOX_SHADOW_MIXIN = `shadow-xs`
+
+const FIELD_FOCUS_MIXIN = `
+focus-visible:shadow-none
+focus-visible:border-primary
+focus-visible:ring-[3px]
+focus-visible:ring-primary/40
+`
+
+// const FIELD_VALID_MIXIN = `
+// not-group-data-validating/root:data-valid:not-data-disabled:border-success
+// not-group-data-validating/root:data-valid:focus-visible:border-success
+// not-group-data-validating/root:data-valid:focus-visible:ring-success/40
+// `
+
+// const FIELD_INVALID_MIXIN = `
+// not-group-data-validating/root:data-invalid:not-data-disabled:border-destructive
+// not-group-data-validating/root:data-invalid:focus-visible:border-destructive
+// not-group-data-validating/root:data-invalid:focus-visible:ring-destructive/40
+// `
+
+// const FIELD_DISABLED_MIXIN = `
+// data-disabled:cursor-not-allowed
+// data-disabled:border-neutral-400
+//`
+
+const baseClasses = `
+appearance-none
+flex bg-card
+min-w-0 w-full
+px-[0.5em] py-[0.25em] rounded-[0.375em]
+border outline-none rounded-[0.375em]
+cursor-pointer
+${FIELD_BOX_SHADOW_MIXIN}
+${FIELD_FOCUS_MIXIN}
+`
+
+const selectVariants = cva(baseClasses, {
+  variants: {
+    fieldSize: {
+      xs: 'text-xs leading-[1.5]',
+      sm: 'text-sm leading-[1.5]',
+      md: 'text-base leading-[1.5]',
+      lg: 'text-lg leading-[1.5]',
+      xl: 'text-xl leading-[1.5]'
+    },
+    defaultVariants: {
+      fieldSize: 'md'
+    }
+  }
+})
 
 export type CountryCodeSelectAPI = {
   reset: () => void
 }
 
-export type CountryCodeSelectProps = Omit<
-  SelectProps,
-  'children' | 'selectRootProps'
-> & {
-  // export CountrySelectAPI  above for convenience, but DO NOT use it as
-  // the apiRef type here. Why? It would make passing a ref to the consumed
-  // component's apiRef prop too strict.
-  apiRef?: React.RefObject<unknown>
-  onValueChange?: (value: CountryCode | '') => void
-  value?: CountryCode | ''
-
-  selectRootProps?: Omit<
-    React.ComponentProps<typeof SelectPrimitive.Root>,
-    'onValueChange' | 'value'
-  >
-}
+export type CountryCodeSelectProps = React.ComponentProps<'select'> &
+  VariantProps<typeof selectVariants> & {
+    // export CountrySelectAPI  above for convenience, but DO NOT use it as
+    // the apiRef type here. Why? It would make passing a ref to the consumed
+    // component's apiRef prop too strict.
+    apiRef?: React.RefObject<unknown>
+    onValueChange?: (value: CountryCode | '') => void
+    value?: CountryCode | ''
+  }
 
 /* ======================
 
@@ -72,19 +117,6 @@ const countryNames = Object.keys(countryNameToCodeCodeDictionary).sort((a, b) =>
   a.localeCompare(b)
 )
 
-const items = countryNames.map((countryName, _index) => {
-  // Each countryName will have a countryCode, since countryNames was originally derived from countryCodes.
-  const countryCode = countryNameToCodeCodeDictionary[countryName]
-
-  return {
-    label: `${countryName}: +${getCountryCallingCode(countryCode)}`,
-    value: countryCode
-  }
-})
-
-//!  "errorMessage": "Unknown country: XX",
-//! items.push({ label: 'Country XX', value: 'XX' })
-
 /* ========================================================================
 
 ======================================================================== */
@@ -92,41 +124,17 @@ const items = countryNames.map((countryName, _index) => {
 // It passes back a CountryCode when selected (e.g., 'US', 'GB', etc.).
 // This is then used by InputPhone to derive the country calling code.
 // This is the pattern that react-phone-number-input uses.
-//
-// CountryCodeSelect is an abstraction on top of the Base UI Select component.
-// It has its own internalValue state. This allows us to clear it when needed.
 
-//# Test two-way binding again...
-
-//# We may be able to strip out the internalValue
-
-//# Additionally, There is an actionsRef.current.unmount() method.
-//# Test this out in the basic select demo
+//# Add Lucide caret icon.
 
 export const CountryCodeSelect = ({
   apiRef,
+  className = '',
+  fieldSize,
   onValueChange,
   value: externalValue = '',
-
-  fieldRootProps = {},
-  fieldLabelProps = {},
-  selectRootProps = {},
-  selectTriggerProps = {},
-  selectValueProps = {},
-  selectPortalProps = {},
-  selectPositionerProps = {},
-  selectPopupProps = {},
-  selectListProps = {},
-  fieldDescriptionProps = {},
-  fieldErrorProps = {}
+  ...otherProps
 }: CountryCodeSelectProps) => {
-  /* ======================
-        state & refs
-  ====================== */
-
-  // actionsRef.current: {unmount: ƒ}
-  const actionsRef = React.useRef<SelectPrimitive.Root.Actions>(null)
-
   const [internalValue, setInternalValue] = React.useState<CountryCode | ''>(
     () => {
       return externalValue || ''
@@ -184,7 +192,6 @@ export const CountryCodeSelect = ({
       return <FlagComponent className='h-[1.25em]' />
     }
 
-    //# Test this out...
     // Fallback SVG
     if (!FlagComponent && internalValue) {
       return (
@@ -245,22 +252,31 @@ export const CountryCodeSelect = ({
   }
 
   /* ======================
-        renderItems()
+      renderOverlay()
   ====================== */
+  //# This needs to be wide enough to accomodate the Flag, CountryCallingCode and Lucide caret.
 
-  const renderItems = () => {
-    return items.map(({ label, value }, index) => (
-      <SelectItem
-        // I was using label as the key, but that's not possible if one or more items is JSX.
-        key={index}
-        children={label}
-        selectItemTextProps={{
-          children: label
-        }}
-        selectItemIndicatorProps={{}}
-        value={value}
-      />
-    ))
+  const renderOverlay = () => {
+    return (
+      <div
+        className={
+          'pointer-events-none absolute inset-0 flex items-center gap-[0.25em] px-[0.5em]'
+        }
+      >
+        {internalValue ? (
+          <>
+            <div>{renderFlag()}</div>
+            <div>{renderCountryCallingCode()}</div>
+          </>
+        ) : (
+          <div className='text-muted-foreground leading-none font-medium'>
+            Country
+          </div>
+        )}
+
+        <ChevronDown className='text-muted-foreground ml-auto size-[1.25em]' />
+      </div>
+    )
   }
 
   /* ======================
@@ -268,77 +284,33 @@ export const CountryCodeSelect = ({
   ====================== */
 
   return (
-    <Select
-      fieldRootProps={{
-        name: 'country_code',
+    <div className='relative w-[9em]'>
+      <select
+        {...otherProps}
+        className={cn(
+          selectVariants({ fieldSize }),
+          className,
+          'text-transparent'
+        )}
+        onChange={(e) => {
+          const targetValue = (e.target.value as CountryCode) || ''
+          setInternalValue(targetValue)
+        }}
+        value={internalValue}
+      >
+        <option value=''>Select A Country...</option>
 
-        // validate: (value, _formValues) => {
-        //   if (!value) return 'You must select a value.'
-        //   // if (value === 'seasonal') {
-        //   //   return 'The seasonal apple is currently unavailable.'
-        //   // }
-        //   return null
-        // }
-        ...fieldRootProps
-      }}
-      fieldLabelProps={{
-        ...fieldLabelProps
-        // children: 'Country',
-        // labelRequired: true
-      }}
-      selectRootProps={{
-        actionsRef: actionsRef, //* New...
-        items: items,
-        onValueChange: (value, _eventDetails) => {
-          setInternalValue(value as CountryCode | '')
-        },
-        value: internalValue,
-        ...selectRootProps
-      }}
-      selectTriggerProps={{
-        placeholder: 'Country',
-        ...selectTriggerProps,
-        className: 'w-[8em]' //# Use cn()
-      }}
-      selectValueProps={{
-        ...selectValueProps,
-        className: 'flex items-center gap-[0.25em] -mr-1', //# Use cn()
-
-        // Rather than returning the same item.label as in the menu,
-        // we can hack the Select.Value as follows
-        render: (props, state) => {
-          const value = state.value
-          if (!value) return <span {...props} />
-
+        {countryNames.map((countryName, index) => {
+          // Each countryName will have a countryCode, since countryNames was originally derived from countryCodes.
+          const countryCode = countryNameToCodeCodeDictionary[countryName]
           return (
-            <span {...props}>
-              <div>{renderFlag()}</div>
-              <div>{renderCountryCallingCode()}</div>
-            </span>
+            <option key={index} value={countryCode}>
+              {countryName}: +{getCountryCallingCode(countryCode)}
+            </option>
           )
-        }
-      }}
-      selectPortalProps={{
-        ...selectPortalProps
-      }}
-      selectPositionerProps={{
-        side: 'bottom',
-        ...selectPositionerProps
-      }}
-      selectPopupProps={{
-        ...selectPopupProps
-      }}
-      selectListProps={{
-        ...selectListProps
-      }}
-      fieldDescriptionProps={{
-        ...fieldDescriptionProps
-      }}
-      fieldErrorProps={{
-        ...fieldErrorProps
-      }}
-    >
-      {renderItems()}
-    </Select>
+        })}
+      </select>
+      {renderOverlay()}
+    </div>
   )
 }

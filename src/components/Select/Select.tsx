@@ -5,7 +5,8 @@ import { FieldDescription, FieldError, FieldLabel, FieldRoot } from '../Field'
 import { SelectTrigger } from './SelectTrigger'
 import { SelectMenu } from './SelectMenu'
 
-import type { SelectTriggerProps } from './SelectTrigger'
+import type { SelectTriggerProps, SelectValueProps } from './SelectTrigger'
+
 import type { SelectPortalProps } from './SelectPortal'
 import type { SelectPopupProps } from './SelectPopup'
 import type { SelectPositionerProps } from './SelectPositioner'
@@ -28,6 +29,7 @@ export type SelectProps = {
 
   selectRootProps?: React.ComponentProps<typeof SelectPrimitive.Root>
   selectTriggerProps?: SelectTriggerProps
+  selectValueProps?: SelectValueProps
 
   selectPortalProps?: SelectPortalProps
   selectPositionerProps?: SelectPositionerProps
@@ -48,6 +50,7 @@ export const Select = ({
   fieldLabelProps = {},
   selectRootProps = {},
   selectTriggerProps = {},
+  selectValueProps = {},
   selectPortalProps = {},
   selectPositionerProps = {},
   selectPopupProps = {},
@@ -84,7 +87,10 @@ export const Select = ({
         // data-slot='select-root'
         {...selectRootProps}
       >
-        <SelectTrigger {...selectTriggerProps} />
+        <SelectTrigger
+          {...selectTriggerProps}
+          selectValueProps={selectValueProps}
+        />
 
         <SelectMenu
           selectPortalProps={selectPortalProps}
