@@ -1,5 +1,4 @@
 import * as React from 'react'
-
 import { CountryCodeSelect, InputPhone } from '../.'
 import type { CountryCode } from 'libphonenumber-js'
 import type { InputPhoneAPI } from '../types'
@@ -9,7 +8,7 @@ import { Button } from '@/components'
 /* ========================================================================
 
 ======================================================================== */
-//# Expose props for InputPhone and CountrySelect (or wait until final version).
+//# Expose props for InputPhone.
 
 export const InputPhoneDemo = () => {
   const inputPhoneApiRef = React.useRef<InputPhoneAPI>(undefined)
@@ -74,13 +73,24 @@ export const InputPhoneDemo = () => {
             setCountryCode(value)
           }}
           value={countryCode}
+          fieldRootProps={{}}
+          fieldLabelProps={{}}
+          selectRootProps={{}}
+          selectTriggerProps={{}}
+          selectValueProps={{}}
+          selectPortalProps={{}}
+          selectPositionerProps={{}}
+          selectPopupProps={{}}
+          selectListProps={{}}
+          fieldDescriptionProps={{}}
+          fieldErrorProps={{}}
         />
 
         <InputPhone
           apiRef={inputPhoneApiRef}
           countryCode={countryCode}
           onValueChange={(data) => {
-            console.log('value changed:', data)
+            // console.log('value changed:', data)
             setInputPhoneValue(data.formattedValue)
           }}
           value={inputPhoneValue}

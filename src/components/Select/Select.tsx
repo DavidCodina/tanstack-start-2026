@@ -66,9 +66,8 @@ export const Select = ({
     <FieldRoot {...fieldRootProps}>
       <FieldLabel
         {...fieldLabelProps}
-        // ⚠️ Gotcha: text-sm actually will reset the line-height to 1.5.
+        // ⚠️ Gotcha: text-sm actually will reset the line-height to 1.5,
         // so you need to explicitly set leading-none again.
-
         className={(fieldLabelState) => {
           if (typeof fieldLabelProps.className === 'function') {
             fieldLabelProps.className =

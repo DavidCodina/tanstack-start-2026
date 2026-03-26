@@ -1,8 +1,6 @@
 import * as React from 'react'
-
 import { CountryCodeSelect } from '../.'
 import type { CountryCode } from 'libphonenumber-js'
-
 import type { CountryCodeSelectAPI } from '../CountryCodeSelect'
 import { Button } from '@/components'
 
@@ -12,7 +10,6 @@ import { Button } from '@/components'
 
 export const CountryCodeSelectDemo = () => {
   const countrySelectApiRef = React.useRef<CountryCodeSelectAPI>(undefined)
-
   const [countryCode, setCountryCode] = React.useState<CountryCode | ''>('')
 
   const renderControls = () => {

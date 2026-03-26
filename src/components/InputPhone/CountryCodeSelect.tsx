@@ -283,29 +283,40 @@ export const CountryCodeSelect = ({
         ...selectTriggerProps,
         className: (selectTriggerState) => {
           if (typeof selectTriggerProps.className === 'function') {
-            return selectTriggerProps.className(selectTriggerState) || ''
+            selectTriggerProps.className =
+              selectTriggerProps.className(selectTriggerState) || ''
           }
           return cn('w-[7.25em]', selectTriggerProps.className)
         }
       }}
       selectValueProps={{
         ...selectValueProps,
-        className: (selectValueState) => {
-          if (typeof selectValueProps.className === 'function') {
-            return selectValueProps.className(selectValueState) || ''
-          }
-          return cn(
-            'flex items-center gap-[0.25em] -mr-1',
-            selectValueProps.className
-          )
-        },
+        // ⚠️ Using `className` here doesn't work well when the render prop is also
+        // being implemented. It's better to instead put classed directly on the
+        // JSX from within the render prop.
+
         // Rather than returning the same item.label as in
         // the menu, we can hack the Select.Value as follows:
         render: (props, state) => {
           const value = state.value
-          if (!value) return <span {...props} />
+          if (!value)
+            return (
+              <span
+                {...props}
+                className={cn(
+                  '-mr-1 flex items-center gap-[0.25em]',
+                  props.className
+                )}
+              />
+            )
           return (
-            <span {...props}>
+            <span
+              {...props}
+              className={cn(
+                '-mr-1 flex items-center gap-[0.25em]',
+                props.className
+              )}
+            >
               <div>{renderFlag()}</div>
               <div>{renderCountryCallingCode()}</div>
             </span>
