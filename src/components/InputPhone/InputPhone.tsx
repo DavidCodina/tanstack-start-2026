@@ -274,10 +274,10 @@ export const InputPhone = ({
           //
           // See here around line 45 for dealing with backspace/delete:
           // https://gitlab.com/catamphetamine/react-phone-number-input/-/blob/master/source/InputBasic.js?ref_type=heads
-          // This solution is intended to fix the followign issue:
+          // This solution is similar to the one used by react-phone-number-input, and is intended to fix the following issue:
           //
           //   The user removed characters from the right side of the displayed value,
-          //   but after re-formatting, we ended up with the same string — meaning they
+          //   but after re-formatting, we end up with the same string — meaning they
           //   only deleted formatting/punctuation characters, not any actual digits."
           //
           // AsYouType seems to handle "-" and spaces and "+" fine. Strangely, it's only "("" and ")" that it fails at.
@@ -303,5 +303,3 @@ export const InputPhone = ({
     />
   )
 }
-
-// 303) 532-7870
