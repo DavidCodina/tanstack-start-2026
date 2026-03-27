@@ -305,7 +305,7 @@ export const CountryCodeSelect = ({
               <span
                 {...props}
                 className={cn(
-                  '-mr-1 flex items-center gap-[0.25em]',
+                  'text-muted-foreground -mr-1 flex items-center gap-[0.25em]',
                   props.className
                 )}
               />

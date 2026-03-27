@@ -1,10 +1,15 @@
 import * as React from 'react'
 
+///////////////////////////////////////////////////////////////////////////
+//
 // libphonenumber-js is the library that react-phone-number-input is
 // built on top of. Here we're using libphonenumber-js directly because
 // we want to continue to use the Base UI Input component, rather than
 // the PhoneInput from react-phone-number-input.
 // https://www.npmjs.com/package/libphonenumber-js
+//
+///////////////////////////////////////////////////////////////////////////
+
 import parsePhoneNumber, {
   AsYouType,
   isPossiblePhoneNumber, // Only validates phone number length
@@ -62,6 +67,8 @@ export const InputPhone = ({
 
   const mountedRef = React.useRef(false)
 
+  ///////////////////////////////////////////////////////////////////////////
+  //
   // Why is internalValue a { value: string } object? When countryCode changes, we
   // always want to reevaluate the formattedValue and then update the internalValue.
   // Ultimately, we want ANY update to internalValue to trigger the useEffect() that
@@ -69,6 +76,9 @@ export const InputPhone = ({
   // to countryCode will not actually create a different formattedValue. In order to force
   // that useEffect() to always run after calling setInternalValue(), we wrap the actual
   // value primitive in a reference object.
+  //
+  ///////////////////////////////////////////////////////////////////////////
+
   const [internalValue, setInternalValue] = React.useState<InternalValue>(
     () => {
       const formattedValue = new AsYouType(countryCode).input(

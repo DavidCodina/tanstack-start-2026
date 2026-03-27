@@ -8,7 +8,7 @@ import { Button } from '@/components'
 /* ========================================================================
 
 ======================================================================== */
-//# Expose props for InputPhone.
+//Todo: Add validation to example.
 
 export const InputPhoneDemo = () => {
   const inputPhoneApiRef = React.useRef<InputPhoneAPI>(undefined)
@@ -80,7 +80,9 @@ export const InputPhoneDemo = () => {
           }}
           value={countryCode}
           fieldRootProps={{}}
-          fieldLabelProps={{}}
+          fieldLabelProps={{
+            children: 'Country'
+          }}
           selectRootProps={{}}
           selectTriggerProps={{}}
           selectValueProps={{}}
@@ -105,7 +107,9 @@ export const InputPhoneDemo = () => {
             style: {}
           }}
           inputProps={{}}
-          fieldLabelProps={{}}
+          fieldLabelProps={{
+            children: 'Phone Number'
+          }}
           fieldErrorProps={{}}
           fieldDescriptionProps={{}}
         />
