@@ -13,15 +13,66 @@ import parsePhoneNumber, {
   // parsePhoneNumberFromString
   // parsePhoneNumberWithError
 } from 'libphonenumber-js'
-import { Input } from '../Input'
+
 import type { InputPhoneAPI, InputPhoneProps } from './types'
 import { cn } from '@/utils'
+
+const FIELD_BOX_SHADOW_MIXIN = `shadow-xs`
+
+const FIELD_FOCUS_MIXIN = `
+focus-visible:shadow-none
+focus-visible:border-primary
+focus-visible:ring-[3px]
+focus-visible:ring-primary/40
+`
+
+const FIELD_VALID_MIXIN = `
+not-group-data-validating/root:data-valid:not-data-disabled:border-success
+not-group-data-validating/root:data-valid:focus-visible:border-success
+not-group-data-validating/root:data-valid:focus-visible:ring-success/40
+`
+
+const FIELD_INVALID_MIXIN = `
+not-group-data-validating/root:data-invalid:not-data-disabled:border-destructive
+not-group-data-validating/root:data-invalid:focus-visible:border-destructive
+not-group-data-validating/root:data-invalid:focus-visible:ring-destructive/40
+`
+
+const FIELD_DISABLED_MIXIN = `
+data-disabled:cursor-not-allowed 
+data-disabled:border-neutral-400
+`
+
+const baseClasses = `
+flex bg-card
+w-full min-w-0
+[&:not([type='file'])]:px-[0.5em]
+[&:not([type='file'])]:py-[0.25em]
+rounded-[0.375em]
+border outline-none
+placeholder:text-muted-foreground
+file:text-primary-foreground
+file:bg-primary
+file:border-r
+file:border-border
+file:font-medium
+file:px-[0.5em]
+file:py-[0.25em]
+file:inline-flex
+${FIELD_BOX_SHADOW_MIXIN}
+${FIELD_FOCUS_MIXIN}
+${FIELD_VALID_MIXIN}
+${FIELD_INVALID_MIXIN}
+${FIELD_DISABLED_MIXIN}
+`
 
 type InternalValue = { value: string }
 
 /* ========================================================================
 
 ======================================================================== */
+//# Once the prototype has been built (without Base UI), then integrate Base UI's Input.
+
 ///////////////////////////////////////////////////////////////////////////
 //
 // 'GB' Example:
@@ -49,13 +100,7 @@ export const InputPhone = ({
   onValueChange,
   // DO NOT set a default value of '' here.
   // It's important to know when externalValue is undefined vs typeof 'string'.
-  value: externalValue,
-
-  fieldRootProps = {},
-  inputProps = {},
-  fieldLabelProps = {},
-  fieldErrorProps = {},
-  fieldDescriptionProps = {}
+  value: externalValue
 }: InputPhoneProps) => {
   // If !countryCode, then set it back to undefined.
   countryCode = countryCode || undefined
@@ -236,43 +281,33 @@ export const InputPhone = ({
   ====================== */
 
   return (
-    <Input
-      fieldRootProps={{
-        name: 'input_phone',
-        ...fieldRootProps,
-        className: (fieldRootState) => {
-          if (typeof fieldRootProps.className === 'function') {
-            fieldRootProps.className =
-              fieldRootProps.className(fieldRootState) || ''
-          }
-          return cn('flex-1', fieldRootProps.className)
-        }
+    <input
+      autoCapitalize='none'
+      autoComplete='new-password'
+      autoCorrect='off'
+      spellCheck={false}
+      data-slot='input-phone'
+      className={cn(baseClasses, '')}
+      value={internalValue.value}
+      onChange={(e) => {
+        const v = e.target.value
+        ///////////////////////////////////////////////////////////////////////////
+        //
+        // Will parse out non-numeric characters.
+        // Valid formatted 'US' values can be:
+        //
+        //   "1 (303) 454-1234"
+        //   "(303) 454-1234"
+        //   "+1 303 532 7870"
+        //
+        // Note: The end user must use < or > to navigate around the parentheses.
+        // In other words, the delete button is insufficient.
+        //
+        ///////////////////////////////////////////////////////////////////////////
+        const formattedValue = new AsYouType(countryCode).input(v)
+
+        setInternalValue({ value: formattedValue })
       }}
-      fieldLabelProps={fieldLabelProps}
-      inputProps={{
-        placeholder: 'Phone Number...',
-        ...inputProps,
-        value: internalValue.value,
-        onValueChange: (val, _eventDetails) => {
-          ///////////////////////////////////////////////////////////////////////////
-          //
-          // Will parse out non-numeric characters.
-          // Valid formatted 'US' values can be:
-          //
-          //   "1 (303) 454-1234"
-          //   "(303) 454-1234"
-          //   "+1 303 532 7870"
-          //
-          // Note: The end user must use < or > to navigate around the parentheses.
-          // In other words, the delete button is insufficient.
-          //
-          ///////////////////////////////////////////////////////////////////////////
-          const formattedValue = new AsYouType(countryCode).input(val)
-          setInternalValue({ value: formattedValue })
-        }
-      }}
-      fieldErrorProps={fieldErrorProps}
-      fieldDescriptionProps={fieldDescriptionProps}
     />
   )
 }

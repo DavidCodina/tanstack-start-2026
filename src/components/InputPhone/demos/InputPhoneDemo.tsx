@@ -13,7 +13,6 @@ import { Button } from '@/components'
 export const InputPhoneDemo = () => {
   const inputPhoneApiRef = React.useRef<InputPhoneAPI>(undefined)
   const countrySelectApiRef = React.useRef<CountryCodeSelectAPI>(undefined)
-
   const [countryCode, setCountryCode] = React.useState<CountryCode | ''>('')
   const [inputPhoneValue, setInputPhoneValue] = React.useState('')
 
@@ -66,7 +65,14 @@ export const InputPhoneDemo = () => {
       {/* ⚠️ It's tempting to make an InputPhoneInternational component. However, leaving CountrySelect and 
       InputPhone as two distinct components allows for maximimum flexibility and composability. The trade-off,
       of course, is that the developer must compose them as needed for every instance. */}
-      <div className='mx-auto flex max-w-[600px] gap-2'>
+      <div
+        className='mx-auto flex max-w-[600px] gap-2'
+        style={
+          {
+            //! outline: '2px dashed var(--color-pink-500)'
+          }
+        }
+      >
         <CountryCodeSelect
           apiRef={countrySelectApiRef}
           onValueChange={(value) => {
@@ -94,6 +100,14 @@ export const InputPhoneDemo = () => {
             setInputPhoneValue(data.formattedValue)
           }}
           value={inputPhoneValue}
+          fieldRootProps={{
+            className: '',
+            style: {}
+          }}
+          inputProps={{}}
+          fieldLabelProps={{}}
+          fieldErrorProps={{}}
+          fieldDescriptionProps={{}}
         />
       </div>
     </>

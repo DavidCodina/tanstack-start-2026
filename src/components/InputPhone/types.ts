@@ -1,4 +1,6 @@
 import type { CountryCode, PhoneNumber } from 'libphonenumber-js'
+import type { InputProps } from '../Input'
+import type { InputPrimitiveProps } from '../Input/InputPrimitive'
 
 type MaybeCountryCode = CountryCode | '' | null | undefined
 
@@ -25,7 +27,7 @@ export type InputPhoneAPI = InputPhoneData & {
   reset: () => void
 }
 
-export type InputPhoneProps = {
+export type InputPhoneProps = Omit<InputProps, 'inputProps' | 'compose'> & {
   // export InputPhoneAPI above for convenience, but DO NOT use it as
   // the apiRef type here. Why? It would make passing a ref to the consumed
   // component's apiRef prop too strict.
@@ -44,7 +46,8 @@ export type InputPhoneProps = {
   // by libphonenumber-js methods below.
   //
   ///////////////////////////////////////////////////////////////////////////
-  countryCode: MaybeCountryCode // Required here.
+  countryCode: MaybeCountryCode // ⚠️ Required
   onValueChange?: OnValueChange
   value?: string
+  inputProps?: Omit<InputPrimitiveProps, 'onValueChange' | 'value'>
 }

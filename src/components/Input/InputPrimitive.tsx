@@ -114,6 +114,7 @@ const inputVariants = cva(baseClasses, {
 export type InputPrimitiveProps = Input.Props &
   VariantProps<typeof inputVariants>
 
+export type DataAttribute = InputPrimitiveProps['datatype']
 /* ========================================================================
 
 ======================================================================== */
@@ -144,6 +145,8 @@ export const InputPrimitive = ({
       autoCorrect='off'
       spellCheck={false}
       {...otherProps}
+      // Note: Putting data-slot below {...otherProps} means we'll never be able to
+      // change the data-slot (e.g., data-slot='input-phone'). This is intentional.
       data-slot='input'
       defaultValue={defaultValue}
       onValueChange={onValueChange}

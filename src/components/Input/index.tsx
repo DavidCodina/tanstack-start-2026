@@ -41,8 +41,8 @@ export type InputProps = {
 
 export const Input = ({
   fieldRootProps = {},
-  inputProps = {},
   fieldLabelProps = {},
+  inputProps = {},
   fieldErrorProps = {},
   fieldDescriptionProps = {},
   compose
