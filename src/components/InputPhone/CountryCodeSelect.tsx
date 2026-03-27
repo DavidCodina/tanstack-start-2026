@@ -87,6 +87,7 @@ const items = countryNames.map((countryName, _index) => {
 // It passes back a CountryCode when selected (e.g., 'US', 'GB', etc.).
 // This is then used by InputPhone to derive the country calling code.
 // This is the pattern that react-phone-number-input uses.
+// See here: https://gitlab.com/catamphetamine/react-phone-number-input/-/blob/master/source/CountrySelect.js?ref_type=heads
 //
 // CountryCodeSelect is an abstraction on top of the Base UI Select component.
 // It has its own internalValue state. This allows us to clear it when needed.

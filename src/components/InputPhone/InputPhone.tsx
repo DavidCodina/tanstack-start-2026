@@ -267,7 +267,34 @@ export const InputPhone = ({
           // In other words, the delete button is insufficient.
           //
           ///////////////////////////////////////////////////////////////////////////
+
           const formattedValue = new AsYouType(countryCode).input(val)
+
+          ///////////////////////////////////////////////////////////////////////////
+          //
+          // See here around line 45 for dealing with backspace/delete:
+          // https://gitlab.com/catamphetamine/react-phone-number-input/-/blob/master/source/InputBasic.js?ref_type=heads
+          // This solution is intended to fix the followign issue:
+          //
+          //   The user removed characters from the right side of the displayed value,
+          //   but after re-formatting, we ended up with the same string — meaning they
+          //   only deleted formatting/punctuation characters, not any actual digits."
+          //
+          // AsYouType seems to handle "-" and spaces and "+" fine. Strangely, it's only "("" and ")" that it fails at.
+          //
+          ///////////////////////////////////////////////////////////////////////////
+          if (
+            formattedValue === internalValue.value &&
+            internalValue.value.startsWith(val)
+          ) {
+            const digits = val.replace(/\D/g, '')
+            const reFormatted = new AsYouType(countryCode).input(
+              digits.slice(0, -1)
+            )
+            setInternalValue({ value: reFormatted })
+            return
+          }
+
           setInternalValue({ value: formattedValue })
         }
       }}
@@ -276,3 +303,5 @@ export const InputPhone = ({
     />
   )
 }
+
+// 303) 532-7870

@@ -114,7 +114,6 @@ const inputVariants = cva(baseClasses, {
 export type InputPrimitiveProps = Input.Props &
   VariantProps<typeof inputVariants>
 
-export type DataAttribute = InputPrimitiveProps['datatype']
 /* ========================================================================
 
 ======================================================================== */
