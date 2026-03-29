@@ -35,6 +35,19 @@ type DropzoneAPI = {
 /* ========================================================================
                                 InternalDropZone
 ======================================================================== */
+//# Next Steps:
+
+//# Convert .css files to Tailwind.
+
+//# Add back validation styles.
+
+//# Rewatch following videos + any new ones you can find:
+//# Hamed Bahram:  https://www.youtube.com/watch?v=eGVC8UUqCBE
+//# James Q Quick: https://www.youtube.com/watch?v=SBL3dhKs21o
+
+//# Test with file-upload-server-2026
+
+//# Bonus: Convert demos to use Tanstack Form instead of RHF.
 
 export const InternalDropZone = ({
   acceptMessage = 'PNG and JPG files are allowed',
