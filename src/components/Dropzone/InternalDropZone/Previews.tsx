@@ -1,7 +1,7 @@
 'use client'
 
 import './Preview.css'
-import type { PreviewProps } from './types'
+import type { PreviewProps } from '../types'
 
 /* ========================================================================
 

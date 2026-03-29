@@ -1,6 +1,6 @@
 import { createFileRoute /* , useRouter */ } from '@tanstack/react-router'
 import { Page, PageContainer } from '@/components'
-import { ControlledDropzoneDemo } from '@/components/Dropzone/ControlledDropzoneDemo'
+import { ControlledDropzoneDemo } from '@/components/Dropzone/demos/ControlledDropzoneDemo'
 
 export const Route = createFileRoute('/')({ component: PageHome })
 

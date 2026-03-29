@@ -9,17 +9,12 @@
         .dropzone
 ====================== */
 /*
-# Double-check this file for accuracy.
-# Make sure this file also contains all styled for Preview.tsx.
-# Begin to remove styles from formPlugin.ts 
-# Temporarily add in form-label styles here.
 # May also need is-valid (?), is-invalid (?), invalid-feedback
 # --form-disabled-color
-
 */
 
 .dropzone {
-  /* ❌ --dropzone-default-theme-color: theme('colors.violet.800'); */
+  /*^ Change to --color-primary */
   --dropzone-default-theme-color: var(--color-violet-800);
   --dropzone-disabled-color: #ccc; /*  Too dark: var(--form-disabled-color) */
   --dropzone-preview-size: 100px;
@@ -65,108 +60,6 @@
     /* ❌ border-color: theme('colors.green.500'); */
     border-color: var(--color-green-500);
     box-shadow: 0 0 0 0.25rem rgba(var(--form-valid-rgb), 0.25);
-  }
-}
-
-/* =================== */
-
-.dropzone-p1 {
-  /* ❌ font-size: theme('fontSize.lg'); */
-  font-size: var(--text-lg);
-  font-weight: bold;
-  /* ❌ margin-bottom: theme('spacing.1'); */
-  margin-bottom: calc(var(--spacing) * 1);
-  user-select: none;
-}
-
-.dropzone-p1-span {
-  color: var(--dropzone-theme-color, var(--dropzone-default-theme-color));
-}
-
-.dropzone.disabled .dropzone-p1,
-.dropzone.disabled .dropzone-p1-span {
-  color: var(--dropzone-disabled-color);
-}
-
-.drag-active .dropzone-p1 {
-  /* ❌ color: theme('colors.green.500'); */
-  color: var(--color-green-500);
-}
-
-/* =================== */
-
-.dropzone-p2 {
-  /* ❌ color: theme('colors.gray.600'); */
-  color: var(
-    --color-gray-600
-  ); /*^ possibly switch to text-muted-foreground color. */
-  /* ❌ font-size: theme('fontSize.sm'); */
-  font-size: var(--text-sm);
-  /* ❌ padding-top: theme('spacing.2'); */
-  padding-top: calc(var(--spacing) * 2);
-  user-select: none;
-}
-
-.dropzone.disabled .dropzone-p2 {
-  color: var(--dropzone-disabled-color);
-}
-
-.drag-active .dropzone-p2 {
-  /* ❌  color: theme('colors.green.500'); */
-  color: var(--color-green-500);
-}
-
-.dropzone-p2-btn {
-  color: var(--dropzone-theme-color, var(--dropzone-default-theme-color));
-  /* ❌ font-family: theme('fontFamily.mono'); */
-  font-family: var(--font-mono);
-  &:hover {
-    /* ❌ color: theme('colors.red.500'); */
-    color: var(--color-red-500);
-  }
-}
-
-.dropzone.disabled .dropzone-p2-btn {
-  color: var(--dropzone-disabled-color);
-}
-
-.drag-active .dropzone-p2-btn {
-  /* ❌ color: theme('colors.green.500'); */
-  color: var(--color-green-500);
-  &:hover {
-    /* ❌ color: theme('colors.green.500'); */
-    color: var(--color-green-500);
-  }
-}
-
-/* =================== */
-
-.dropzone-btn-delete {
-  color: var(--dropzone-theme-color, var(--dropzone-default-theme-color));
-  /* ❌ padding: theme('spacing.2'); */
-  padding: calc(var(--spacing) * 2);
-  position: absolute;
-  /* ❌ right: theme('spacing.2'); */
-  right: calc(var(--spacing) * 2);
-  /* ❌ top: theme('spacing.2'); */
-  top: calc(var(--spacing) * 2);
-  z-index: 1;
-  &:hover {
-    /* ❌ color: theme('colors.red.500'); */
-    color: var(--color-red-500);
-  }
-}
-
-.dropzone.disabled .dropzone-btn-delete {
-  color: var(--dropzone-disabled-color);
-}
-
-.drag-active .dropzone-btn-delete {
-  /* ❌ color: theme('colors.green.500'); */
-  color: var(--color-green-500);
-  &:hover {
-    /* ❌ color: theme('colors.green.500'); */
-    color: var(--color-green-500);
   }
 }
 

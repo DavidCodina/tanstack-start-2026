@@ -1,16 +1,19 @@
 'use client'
 
 import { Fragment, useEffect, useRef, useState } from 'react'
-import { useForm, SubmitHandler, SubmitErrorHandler } from 'react-hook-form'
-import { z } from 'zod'
+import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { toast } from 'react-toastify'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faTriangleExclamation } from '@fortawesome/free-solid-svg-icons'
+import { toast } from 'sonner'
 
-import { DropZone, DropzoneAPI } from '../'
+//! import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+//! import { faTriangleExclamation } from '@fortawesome/free-solid-svg-icons'
+
+import { DropZone } from '../../'
 import { schema } from './schema'
-// import { uploadImage } from './uploadImage'
+import { uploadImage } from './uploadImage'
+import type { SubmitErrorHandler, SubmitHandler } from 'react-hook-form'
+import type { z } from 'zod'
+import { Button } from '@/components'
 
 type FormValues = z.infer<typeof schema>
 // type FormValues = Omit<z.infer<typeof schema>, 'files'> & { files: null }
@@ -23,15 +26,11 @@ const defaultValues: FormValues = {
 }
 
 /* ========================================================================
-                                UncontrolledDropzoneDemo
+                                ControlledDropzoneDemo
 ======================================================================== */
-// This version still uses React Hook Form, but it doesn't implement: value={values.files}
-// This means we need some alternative approach to clear the Dropzone after submitting.
-// Dropzone exposes api through the apiRef. Currently, api has one method on it: api.clear().
-// This can be invoked programmatically at any point, but is most useful in the isSubmitSuccessful useEffect.
+//! Temporarily installed react-hook-form and @hookform/resolvers for this demo.
 
-export const UncontrolledDropzoneDemo = () => {
-  const apiRef = useRef<DropzoneAPI | null>(null)
+export const ControlledDropzoneDemo = () => {
   const dropZoneRef = useRef<HTMLDivElement | null>(null)
   const [disabled, setDisabled] = useState(false)
   const [showPreviews, setShowPreviews] = useState(true)
@@ -72,13 +71,15 @@ export const UncontrolledDropzoneDemo = () => {
     resolver: zodResolver(schema)
   })
 
+  const values = getValues()
+
   /* ======================
         onSubmit()
   ====================== */
 
-  const onSubmit: SubmitHandler<FormValues> = /* async */ (data, _e) => {
-    toast.success('Form validation success!')
-    console.log('onSubmit called.', data)
+  const onSubmit: SubmitHandler<FormValues> = async (data, _e) => {
+    // toast.success('Form validation success!')
+    // console.log('onSubmit called.', data)
 
     // Because of the validation on data.files, we know that there will
     // be an image. However, Typescript doesn't know this.
@@ -88,13 +89,14 @@ export const UncontrolledDropzoneDemo = () => {
       return
     }
 
-    // const result = await uploadImage(image)
-    // if (result.success === true) {
-    //   toast.success('Image uploaded.')
-    // } else {
-    //   console.log('uploadImages() response:', result)
-    //   toast.error('Unable to upload image.')
-    // }
+    const result = await uploadImage(image)
+
+    if (result.success === true) {
+      toast.success('Image uploaded.')
+    } else {
+      console.log('uploadImages() response:', result)
+      toast.error('Unable to upload image.')
+    }
   }
 
   /* ======================
@@ -110,13 +112,9 @@ export const UncontrolledDropzoneDemo = () => {
   /* ======================
         useEffect()
   ====================== */
-  // This is the isSubmitSuccessful useEffect.
 
   useEffect(() => {
     if (isSubmitSuccessful === true) {
-      // Manually, clearing the Dropzone is necessary for uncontrolled
-      // implementation. Simply resetting RHF is not sufficient.
-      apiRef.current?.clear()
       reset(undefined, {})
     }
 
@@ -133,35 +131,36 @@ export const UncontrolledDropzoneDemo = () => {
   return (
     <>
       <div className='mb-6 flex justify-center gap-4'>
-        <button
+        <Button
           onClick={() => {
             setDisabled((v) => !v)
           }}
-          className='btn-blue btn-sm'
+          size='sm'
         >
           disabled: {disabled ? 'true' : 'false'}
-        </button>
+        </Button>
 
-        <button
+        <Button
           onClick={() => {
             setShowPreviews((v) => !v)
           }}
-          className='btn-blue btn-sm'
+          size='sm'
         >
           showPreviews: {showPreviews ? 'true' : 'false'}
-        </button>
+        </Button>
 
-        <button
+        <Button
           onClick={() => {
-            const api = apiRef.current
-            api?.clear()
-            // There's no need to do this so long as the onChange is updating values.files.
-            // setValue('files', null, { shouldDirty: true, shouldTouch: true, shouldValidate: true })
+            setValue('files', null, {
+              shouldDirty: true,
+              shouldTouch: true,
+              shouldValidate: true
+            })
           }}
-          className='btn-blue btn-sm'
+          size='sm'
         >
           Clear Files
-        </button>
+        </Button>
       </div>
 
       <form
@@ -173,19 +172,18 @@ export const UncontrolledDropzoneDemo = () => {
         noValidate
       >
         {/* For react-hook-form implementations, it might seem reasonable to use Controller.
-        However, it isn't all that useful. Why? Because React Dropzone's input <input {...getInputProps() />
-        doesn't actually get triggered onChange, onBlur, etc. For this reason, it also doesn't make 
-        sense to spread { ...register('files') }. That said, it's still possible to integrate with 
-        react-hook-form as follows. Needless to say, there's a lot of logic on the consuming side that 
-        is easy to get wrong. */}
+      However, it isn't all that useful. Why? Because React Dropzone's input <input {...getInputProps() />
+      doesn't actually get triggered onChange, onBlur, etc. For this reason, it also doesn't make 
+      sense to spread { ...register('files') }. That said, it's still possible to integrate with 
+      react-hook-form as follows. Needless to say, there's a lot of logic on the consuming side that 
+      is easy to get wrong. */}
 
         <DropZone
-          apiRef={apiRef}
           ref={dropZoneRef}
           error={errors?.files?.message}
-          label='Drop A File (Uncontrolled)'
+          label='Drop A File (Controlled)'
           labelRequired
-          labelClassName='font-bold text-blue-500 text-sm'
+          //` labelClassName='font-bold text-blue-500 text-sm'
           dropzoneOptions={{
             maxFiles: 1,
 
@@ -261,12 +259,12 @@ export const UncontrolledDropzoneDemo = () => {
           }}
           touched={touchedFields?.files as boolean}
           acceptMessage='PNG and JPG files are allowed.'
-          className='[--dropzone-preview-size:50px] [--dropzone-theme-color:--tw-blue-500]'
+          //` className='[--dropzone-preview-size:50px] [--dropzone-theme-color:--tw-blue-500]'
           style={{}}
           showPreviews={showPreviews}
           formGroupClassName='mx-auto mb-4 w-full'
           formGroupStyle={{}}
-          id='uncontrolled-dropzone'
+          id='my-dropzone'
           inputId='files'
           inputName='files'
           onBlur={(e) => {
@@ -283,6 +281,12 @@ export const UncontrolledDropzoneDemo = () => {
             }
           }}
           onChange={(newValue: any) => {
+            // console.log({
+            //   newValue,
+            //   type: typeof newValue,
+            //   isArray: Array.isArray(newValue)
+            // })
+
             setValue('files', newValue, {
               // When the react-hook-form calls reset(undefined, {}), it then triggers the onChange() handler.
               // In order to prevent validation AFTER reset, we need to specify to ONLY validate if filesTouched.
@@ -291,16 +295,19 @@ export const UncontrolledDropzoneDemo = () => {
               shouldTouch: true
             })
           }}
+          value={values.files}
         />
 
         {/* =====================
-           Submit Button
-      ===================== */}
+              Submit Button
+        ===================== */}
 
         {isSubmitting ? (
-          <button
-            className='btn-green btn-sm block w-full'
+          <Button
+            className='flex w-full'
             disabled
+            size='sm'
+            variant='success'
             type='button'
           >
             <span
@@ -309,29 +316,31 @@ export const UncontrolledDropzoneDemo = () => {
               role='status'
             ></span>
             Submitting...
-          </button>
+          </Button>
         ) : (
-          <button
-            className='btn-green btn-sm block w-full'
+          <Button
+            className='flex w-full'
             // You could also add || !isDirty. In the case of an update form,
             // it still makes sense because there's no need to send an update if
             // nothing's actually been updated.
             disabled={isSubmitted && !isValid ? true : false}
             onClick={handleSubmit(onSubmit, onError)}
+            size='sm'
+            variant='success'
             type='button'
           >
             {isSubmitted && !isValid ? (
               <Fragment>
-                <FontAwesomeIcon
+                {/* <FontAwesomeIcon
                   icon={faTriangleExclamation}
                   style={{ marginRight: 5 }}
-                />{' '}
+                /> */}
                 Please Fix Errors...
               </Fragment>
             ) : (
               'Submit'
             )}
-          </button>
+          </Button>
         )}
       </form>
     </>
