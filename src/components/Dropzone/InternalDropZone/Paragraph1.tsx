@@ -1,11 +1,23 @@
 'use client'
 
-import './Paragraph1.css'
+import { cn } from '@/utils'
 
 type Paragraph1Props = {
-  isDragActive: boolean
+  disabled: boolean
   files: File[] | null
+  isDragActive: boolean
 }
+
+//! dropzone-p1
+const baseClasses = `
+mb-1 text-lg font-bold
+select-none
+`
+
+//! dropzone-p1-span
+const spanClasses = `
+text-(--dropzone-theme-color,var(--dropzone-default-theme-color))
+`
 
 /* ========================================================================
 
@@ -14,31 +26,34 @@ type Paragraph1Props = {
 // It will render in one of three ways depending on whether or not
 // there are files and/or isDragActive.
 
-export const Paragraph1 = ({ isDragActive, files }: Paragraph1Props) => {
-  /* ======================
-    renderParagraph1() 
-  ====================== */
-
-  const renderParagraph1 = () => {
-    if (isDragActive) {
-      return <p className='dropzone-p1'>Drop it like it's hot!</p>
-    }
-
-    if (files && Array.isArray(files) && files.length > 0) {
-      return <p className='dropzone-p1'>Selected files:</p>
-    } else {
-      return (
-        <p className='dropzone-p1'>
-          Drop your files here, or{' '}
-          <span className='dropzone-p1-span'>browse</span>
-        </p>
-      )
-    }
-  }
+export const Paragraph1 = ({
+  disabled = false,
+  isDragActive = false,
+  files
+}: Paragraph1Props) => {
+  const paragraphClasses = cn(
+    baseClasses,
+    isDragActive && 'text-success',
+    disabled && 'text-neutral-400'
+  )
 
   /* ======================
           return
   ====================== */
 
-  return renderParagraph1()
+  if (isDragActive) {
+    return <p className={paragraphClasses}>Drop it like it's hot!</p>
+  }
+
+  if (files && Array.isArray(files) && files.length > 0) {
+    return <p className={paragraphClasses}>Selected files:</p>
+  }
+  return (
+    <p className={paragraphClasses}>
+      Drop your files here, or{' '}
+      <span className={cn(spanClasses, disabled && 'text-neutral-400')}>
+        browse
+      </span>
+    </p>
+  )
 }

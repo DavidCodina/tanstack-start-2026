@@ -62,7 +62,7 @@ export const setFilePreviews = async (
 
       setPreviews(previewObjects)
       return previewObjects
-    } catch (err) {
+    } catch (_err) {
       // console.error('Error generating file previews:', err)
       setPreviews(null)
       return null

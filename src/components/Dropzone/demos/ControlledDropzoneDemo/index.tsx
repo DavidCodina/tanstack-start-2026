@@ -164,8 +164,8 @@ export const ControlledDropzoneDemo = () => {
       </div>
 
       <form
-        className='mx-auto mb-6 rounded-lg border border-neutral-400 p-4 shadow'
-        style={{ backgroundColor: '#fafafa', maxWidth: 800 }}
+        // rounded-lg border border-neutral-400 p-4 shadow bg-[#fafafa]
+        className='mx-auto mb-6 max-w-[800px]'
         onSubmit={(e) => {
           e.preventDefault()
         }}
@@ -179,8 +179,11 @@ export const ControlledDropzoneDemo = () => {
       is easy to get wrong. */}
 
         <DropZone
-          ref={dropZoneRef}
           error={errors?.files?.message}
+          touched={touchedFields?.files as boolean}
+          // error={'Nope'}
+          // touched={true}
+          ref={dropZoneRef}
           label='Drop A File (Controlled)'
           labelRequired
           //` labelClassName='font-bold text-blue-500 text-sm'
@@ -257,7 +260,6 @@ export const ControlledDropzoneDemo = () => {
               // 'application/json': ['.json']
             }
           }}
-          touched={touchedFields?.files as boolean}
           acceptMessage='PNG and JPG files are allowed.'
           //` className='[--dropzone-preview-size:50px] [--dropzone-theme-color:--tw-blue-500]'
           style={{}}

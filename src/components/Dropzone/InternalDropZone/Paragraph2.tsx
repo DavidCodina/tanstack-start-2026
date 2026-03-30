@@ -1,14 +1,31 @@
 'use client'
 
 import { Fragment } from 'react'
-import './Paragraph2.css'
+import { cn } from '@/utils'
 
 type Paragraph2Props = {
   acceptMessage: string
   deleteFileByName: (fileName: string) => void
+  disabled: boolean
   files: File[] | null
   fileNames: string[] | null
+  isDragActive: boolean
 }
+
+//^ possibly switch to text-muted-foreground color.
+//! dropzone-p2
+const baseClasses = `
+pt-2
+text-sm text-gray-600
+select-none
+`
+
+//! dropzone-p2-btn
+const deleteButtonClasses = `
+text-(--dropzone-theme-color,var(--dropzone-default-theme-color))
+font-mono
+hover:text-destructive
+`
 
 /* ========================================================================
 
@@ -19,21 +36,33 @@ type Paragraph2Props = {
 
 export const Paragraph2 = ({
   acceptMessage,
+  disabled = false,
   deleteFileByName,
   files,
-  fileNames
+  fileNames,
+  isDragActive = false
 }: Paragraph2Props) => {
+  const paragraphClasses = cn(
+    baseClasses,
+    isDragActive && 'text-success',
+    disabled && 'text-neutral-400'
+  )
+
   /* ======================
           return
   ====================== */
 
   if (files && Array.isArray(fileNames) && fileNames.length > 0) {
     return (
-      <p className='dropzone-p2'>
+      <p className={paragraphClasses}>
         {fileNames.map((name, index) => (
           <Fragment key={index}>
             <button
-              className='dropzone-p2-btn'
+              className={cn(
+                deleteButtonClasses,
+                isDragActive && 'text-success',
+                disabled && 'pointer-events-none text-neutral-400'
+              )}
               onClick={(e) => {
                 e.stopPropagation()
                 deleteFileByName(name)
@@ -50,5 +79,5 @@ export const Paragraph2 = ({
     )
   }
 
-  return <p className='dropzone-p2'>{acceptMessage}</p>
+  return <p className={paragraphClasses}>{acceptMessage}</p>
 }

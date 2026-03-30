@@ -32,22 +32,31 @@ type DropzoneAPI = {
   clear: () => void
 }
 
+//# Change --dropzone-default-theme-color to --color-primary
+//# Add/test focus styles
+
+const baseClasses = `
+[--dropzone-default-theme-color:var(--color-violet-800)]
+[--dropzone-preview-size:100px]
+relative flex flex-col justify-center items-center
+w-full p-6 bg-card 
+border border-dashed border-(--dropzone-theme-color,var(--dropzone-default-theme-color)) rounded-xl
+
+outline-none
+focus:border-solid
+focus:border-primary
+focus:ring-[3px]
+focus:ring-primary/50
+`
+
+//! dropzone-svg
+const svgClasses = `
+ text-(--dropzone-theme-color,var(--dropzone-default-theme-color))
+`
+
 /* ========================================================================
                                 InternalDropZone
 ======================================================================== */
-//# Next Steps:
-
-//# Convert .css files to Tailwind.
-
-//# Add back validation styles.
-
-//# Rewatch following videos + any new ones you can find:
-//# Hamed Bahram:  https://www.youtube.com/watch?v=eGVC8UUqCBE
-//# James Q Quick: https://www.youtube.com/watch?v=SBL3dhKs21o
-
-//# Test with file-upload-server-2026
-
-//# Bonus: Convert demos to use Tanstack Form instead of RHF.
 
 export const InternalDropZone = ({
   acceptMessage = 'PNG and JPG files are allowed',
@@ -78,12 +87,15 @@ export const InternalDropZone = ({
   const fileInputId = useId()
   inputId = inputId || fileInputId
 
+  const isInvalid = !!error
+  const isValid = !error && touched
+
   /* ======================
         state & refs 
   ====================== */
 
-  // This is used to prevent onChange from firing on mount or immediately
-  // after mount within the associated useEffect() below.
+  // hasChangedRef is used to prevent onChange from firing on mount or
+  // immediately after mount within the associated useEffect() below.
   const hasChangedRef = useRef(false)
 
   const [files, setFiles] = useState<File[] | null>(value || null)
@@ -221,6 +233,7 @@ export const InternalDropZone = ({
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     // Pass: dropzoneOptions={{ accept: {} }} from the outside to accept all.
+    //# Hardcoding accept here is probably not the best idea.
     accept: {
       'image/jpeg': ['.jpeg', '.jpg'],
       'image/png': ['.png']
@@ -247,17 +260,23 @@ export const InternalDropZone = ({
   //
   ///////////////////////////////////////////////////////////////////////////
 
-  //# Add Tailwind classes here directly....
-  //# Make sure everything works in light/dark mode.
+  const dropzoneClasses = cn(
+    baseClasses,
+
+    isInvalid &&
+      'border-solid border-destructive focus:border-destructive focus:ring-destructive/50',
+    isValid &&
+      'border-solid border-success focus:border-success focus:ring-success/50',
+    isDragActive && 'border-success focus:border-success focus:ring-success/50',
+    className,
+    // Setting pointer-events: none is important. Otherwise when disabled
+    // if one drops a file it will open a new tab with that file.
+    disabled &&
+      'border-solid pointer-events-none border-neutral-400 focus:border-neutral-400 focus:ring-0'
+  )
+
   const { ref: rootPropsRef, ...otherRootProps }: any = getRootProps({
-    className: cn(
-      'dropzone',
-      disabled && 'disabled',
-      isDragActive && 'drag-active',
-      error && 'is-invalid',
-      !error && touched && 'is-valid',
-      className
-    ),
+    className: dropzoneClasses,
     id: id,
     onBlur: (e: React.FocusEvent<HTMLDivElement, Element>) => {
       onBlur?.(e as any)
@@ -461,7 +480,13 @@ export const InternalDropZone = ({
       />
 
       <svg
-        className='dropzone-svg'
+        className={cn(
+          svgClasses,
+          isInvalid && 'text-destructive',
+          isValid && 'text-success',
+          isDragActive && 'text-success',
+          disabled && 'text-neutral-400'
+        )}
         fill='currentColor'
         height='80px'
         stroke='currentColor'
@@ -473,13 +498,19 @@ export const InternalDropZone = ({
         <path d='M19.35 10.04A7.49 7.49 0 0012 4C9.11 4 6.6 5.64 5.35 8.04A5.994 5.994 0 000 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4 0-2.05 1.53-3.76 3.56-3.97l1.07-.11.5-.95A5.469 5.469 0 0112 6c2.62 0 4.88 1.86 5.39 4.43l.3 1.5 1.53.11A2.98 2.98 0 0122 15c0 1.65-1.35 3-3 3zM8 13h2.55v3h2.9v-3H16l-4-4z'></path>
       </svg>
 
-      <Paragraph1 files={files} isDragActive={isDragActive} />
+      <Paragraph1
+        disabled={disabled}
+        files={files}
+        isDragActive={isDragActive}
+      />
 
       <Paragraph2
         acceptMessage={acceptMessage}
         deleteFileByName={deleteFileByName}
+        disabled={disabled}
         files={files}
         fileNames={fileNames}
+        isDragActive={isDragActive}
       />
 
       <Previews
@@ -491,6 +522,7 @@ export const InternalDropZone = ({
       <DeleteButton
         disabled={disabled}
         files={files}
+        isDragActive={isDragActive}
         setFiles={setFiles}
         setPreviews={setPreviews}
       />

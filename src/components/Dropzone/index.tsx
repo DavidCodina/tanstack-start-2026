@@ -1,6 +1,5 @@
 'use client'
 
-import './Dropzone.css'
 import { InternalDropZone } from './InternalDropZone'
 import type { DropZoneProps } from './types'
 import { cn } from '@/utils'
@@ -8,6 +7,30 @@ import { cn } from '@/utils'
 export type DropzoneAPI = {
   clear: () => void
 }
+
+//# Next Steps:
+
+//# Update <label> and error JSX to match what I'm doing in Base UI.
+
+//# Familiarize yourself with how the previews are implemented.
+
+//# Rewatch following videos + any new ones you can find:
+//# Hamed Bahram:  https://www.youtube.com/watch?v=eGVC8UUqCBE
+//# James Q Quick: https://www.youtube.com/watch?v=SBL3dhKs21o
+
+//# Test validation styles
+
+//# Test disabled styles.
+
+//# Test all styles against dark theme.
+
+//# Test non-image previews.
+
+//# Test two-way bindings.
+
+//# Test with file-upload-server-2026
+
+//# Bonus: Convert demos to use Tanstack Form instead of RHF.
 
 /* ========================================================================
                                 DropZone
