@@ -4,8 +4,11 @@ import { cn } from '@/utils'
 
 type Paragraph1Props = {
   disabled: boolean
+  error: string
   files: File[] | null
   isDragActive: boolean
+
+  touched: boolean
 }
 
 //! dropzone-p1
@@ -28,11 +31,27 @@ text-(--dropzone-theme-color,var(--dropzone-default-theme-color))
 
 export const Paragraph1 = ({
   disabled = false,
+  error = '',
   isDragActive = false,
-  files
+  files,
+  touched = false
 }: Paragraph1Props) => {
+  /* ======================
+          constants 
+  ====================== */
+
+  // Needs to match DropzoneBase.tsx
+  const isInvalid = !!error
+  const isValid = !error && touched
+
+  /* ======================
+
+  ====================== */
+
   const paragraphClasses = cn(
     baseClasses,
+    isInvalid && 'text-destructive',
+    isValid && 'text-success',
     isDragActive && 'text-success',
     disabled && 'text-neutral-400'
   )
@@ -51,7 +70,14 @@ export const Paragraph1 = ({
   return (
     <p className={paragraphClasses}>
       Drop your files here, or{' '}
-      <span className={cn(spanClasses, disabled && 'text-neutral-400')}>
+      <span
+        className={cn(
+          spanClasses,
+          isInvalid && 'text-destructive',
+          isValid && 'text-success',
+          disabled && 'text-neutral-400'
+        )}
+      >
         browse
       </span>
     </p>

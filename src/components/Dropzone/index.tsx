@@ -1,16 +1,18 @@
 'use client'
 
-import { InternalDropZone } from './InternalDropZone'
-import type { DropZoneProps } from './types'
-import { cn } from '@/utils'
+import { useId } from 'react'
+
+import { DropzoneBase } from './DropzoneBase'
+import { DropzoneError } from './DropzoneError'
+import { DropzoneLabel } from './DropzoneLabel'
+
+import type { DropzoneProps } from './types'
 
 export type DropzoneAPI = {
   clear: () => void
 }
 
 //# Next Steps:
-
-//# Update <label> and error JSX to match what I'm doing in Base UI.
 
 //# Familiarize yourself with how the previews are implemented.
 
@@ -28,12 +30,19 @@ export type DropzoneAPI = {
 
 //# Test two-way bindings.
 
+//# Controlled Demo seems broken when you click submit with nothing.
+
 //# Test with file-upload-server-2026
+
+//# Update to v15
 
 //# Bonus: Convert demos to use Tanstack Form instead of RHF.
 
+//# Bonus: If you wanted to go all in on Base UI, you could
+//# integrate with Field.Root, Field.Label, Field.Error, and Field.Description.
+
 /* ========================================================================
-                                DropZone
+                                Dropzone
 ======================================================================== */
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -45,35 +54,37 @@ export type DropzoneAPI = {
 //
 ///////////////////////////////////////////////////////////////////////////
 
-export const DropZone = ({
+export const Dropzone = ({
   acceptMessage = 'PNG and JPG files are allowed',
   apiRef,
   className = '',
   disabled,
   dropzoneOptions = {},
-  error,
-  formGroupClassName = '',
-  formGroupStyle = {},
+  error = '',
+  groupClassName = '',
+  groupStyle = {},
   id,
   inputId,
   inputName,
-  label = '',
-  labelClassName = '',
-  labelRequired = false,
-  labelStyle = {},
   style = {},
   onBlur,
   onChange,
   ref,
   showPreviews = true,
-  touched,
+  touched = false,
   value = null,
+  labelProps = {},
+  errorProps = {},
   // otherProps include anything else that can be passed to the <div>.
   ...otherProps
-}: DropZoneProps) => {
+}: DropzoneProps) => {
   /* ======================
           constants 
   ====================== */
+
+  // Done here, rather than in DropzoneBase, so it can be passed to DropzoneLabel.
+  const fileInputId = useId()
+  inputId = inputId || fileInputId
 
   // disabled can be set directly as a prop (which has priority), or it can be set through dropzoneOptions
   disabled =
@@ -82,60 +93,6 @@ export const DropZone = ({
       : typeof dropzoneOptions.disabled === 'boolean'
         ? dropzoneOptions.disabled
         : false
-
-  /* ======================
-        renderLabel()
-  ====================== */
-  //# Add valid/invalid styles.
-
-  const renderLabel = () => {
-    const labelBaseClasses = `
-      group
-      flex items-center 
-      leading-none select-none
-      w-fit cursor-pointer
-      mb-1 text-sm font-medium
-      `
-
-    if (label) {
-      return (
-        <label
-          htmlFor={id}
-          className={cn(
-            labelBaseClasses,
-            labelClassName,
-            disabled && 'text-muted-foreground opacity-65'
-          )}
-          style={labelStyle}
-        >
-          {label}
-          {labelRequired && (
-            <sup
-              className={cn(
-                'text-destructive relative -top-0.5 text-[1.25em]'
-                // 'not-group-data-validating/root:group-data-valid:not-group-data-disabled:text-success',
-                // 'group-data-disabled:text-inherit'
-              )}
-            >
-              *
-            </sup>
-          )}
-        </label>
-      )
-    }
-    return null
-  }
-
-  /* ======================
-        renderError() 
-  ====================== */
-
-  const renderError = () => {
-    if (error) {
-      return <div className='text-destructive block'>{error}</div>
-    }
-    return null
-  }
 
   /* ======================
           return
@@ -155,10 +112,16 @@ export const DropZone = ({
   ///////////////////////////////////////////////////////////////////////////
 
   return (
-    <section className={formGroupClassName} style={formGroupStyle}>
-      {renderLabel()}
+    <section className={groupClassName} style={groupStyle}>
+      <DropzoneLabel
+        htmlFor={inputId}
+        {...labelProps}
+        disabled={disabled}
+        error={error}
+        touched={touched}
+      />
 
-      <InternalDropZone
+      <DropzoneBase
         acceptMessage={acceptMessage}
         apiRef={apiRef}
         className={className}
@@ -178,7 +141,13 @@ export const DropZone = ({
         {...otherProps}
       />
 
-      {renderError()}
+      <DropzoneError
+        {...errorProps}
+        children={error}
+        disabled={disabled}
+        error={error}
+        touched={touched}
+      />
     </section>
   )
 }

@@ -12,18 +12,17 @@ type Paragraph2Props = {
   isDragActive: boolean
 }
 
-//^ possibly switch to text-muted-foreground color.
 //! dropzone-p2
 const baseClasses = `
 pt-2
-text-sm text-gray-600
+text-sm text-muted-foreground
 select-none
 `
 
 //! dropzone-p2-btn
+//! text-(--dropzone-theme-color,var(--dropzone-default-theme-color))
 const deleteButtonClasses = `
-text-(--dropzone-theme-color,var(--dropzone-default-theme-color))
-font-mono
+text-foreground font-mono cursor-pointer
 hover:text-destructive
 `
 

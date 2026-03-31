@@ -19,9 +19,9 @@ import { Previews } from './Previews'
 import { DeleteButton } from './DeleteButton'
 
 import type {
-  // DropZoneProps,
-  // DropZoneRef,
-  InternalDropZoneProps,
+  // DropzoneProps,
+  // DropzoneRef,
+  DropzoneBaseProps,
   OnDrop,
   PreviewObject
 } from '../types'
@@ -36,7 +36,7 @@ type DropzoneAPI = {
 //# Add/test focus styles
 
 const baseClasses = `
-[--dropzone-default-theme-color:var(--color-violet-800)]
+[--dropzone-default-theme-color:var(--color-primary)]
 [--dropzone-preview-size:100px]
 relative flex flex-col justify-center items-center
 w-full p-6 bg-card 
@@ -55,16 +55,16 @@ const svgClasses = `
 `
 
 /* ========================================================================
-                                InternalDropZone
+
 ======================================================================== */
 
-export const InternalDropZone = ({
+export const DropzoneBase = ({
   acceptMessage = 'PNG and JPG files are allowed',
   apiRef,
   className = '',
   disabled = false,
   dropzoneOptions = {},
-  error,
+  error = '',
   id,
   inputId,
   inputName,
@@ -73,10 +73,10 @@ export const InternalDropZone = ({
   onChange,
   ref,
   showPreviews = true,
-  touched,
+  touched = false,
   value = null,
   ...otherProps
-}: InternalDropZoneProps) => {
+}: DropzoneBaseProps) => {
   /* ======================
           constants 
   ====================== */
@@ -84,8 +84,9 @@ export const InternalDropZone = ({
   const dropzoneId = useId()
   id = id || dropzoneId
 
-  const fileInputId = useId()
-  inputId = inputId || fileInputId
+  // This is now done in Dropzone.tsx, so it can also be passed to DropzoneLabel.
+  // const fileInputId = useId()
+  // inputId = inputId || fileInputId
 
   const isInvalid = !!error
   const isValid = !error && touched
@@ -500,8 +501,10 @@ export const InternalDropZone = ({
 
       <Paragraph1
         disabled={disabled}
+        error={error}
         files={files}
         isDragActive={isDragActive}
+        touched={touched}
       />
 
       <Paragraph2

@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
 
-import { DropZone } from '../../'
+import { Dropzone } from '../../'
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 // import { faTriangleExclamation } from '@fortawesome/free-solid-svg-icons'
 import { schema } from './schema'
@@ -21,7 +21,7 @@ type FormValues = z.infer<typeof schema>
 
 const defaultValues: FormValues = {
   // One could also default to [] and the validation logic would still behave the same.
-  // That said, it's best to be consistent with the internal default state of DropZone,
+  // That said, it's best to be consistent with the internal default state of Dropzone,
   // which is that files is null.
   files: null
 }
@@ -183,13 +183,15 @@ export const UncontrolledDropzoneDemo = () => {
         react-hook-form as follows. Needless to say, there's a lot of logic on the consuming side that 
         is easy to get wrong. */}
 
-        <DropZone
+        <Dropzone
+          labelProps={{
+            children: 'Drop A File (Uncontrolled)',
+            // className: 'font-bold text-blue-500 text-sm',
+            labelRequired: true
+          }}
           apiRef={apiRef}
           ref={dropZoneRef}
           error={errors?.files?.message}
-          label='Drop A File (Uncontrolled)'
-          labelRequired
-          labelClassName='font-bold text-blue-500 text-sm'
           dropzoneOptions={{
             maxFiles: 1,
 
@@ -268,14 +270,14 @@ export const UncontrolledDropzoneDemo = () => {
           className='[--dropzone-preview-size:50px] [--dropzone-theme-color:--tw-blue-500]'
           style={{}}
           showPreviews={showPreviews}
-          formGroupClassName='mx-auto mb-4 w-full'
-          formGroupStyle={{}}
+          groupClassName='mx-auto mb-4 w-full'
+          groupStyle={{}}
           id='uncontrolled-dropzone'
           inputId='files'
           inputName='files'
           onBlur={(e) => {
             const currentFocusElement = document.activeElement
-            // If new focus element is outside of DropZone, then call trigger(), or preferably setValue().
+            // If new focus element is outside of Dropzone, then call trigger(), or preferably setValue().
             // trigger('files') will work, but we actually want to update touched as well.
             if (!e.target.contains(currentFocusElement)) {
               const values = getValues()

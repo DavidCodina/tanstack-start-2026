@@ -8,7 +8,7 @@ import { toast } from 'sonner'
 //! import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 //! import { faTriangleExclamation } from '@fortawesome/free-solid-svg-icons'
 
-import { DropZone } from '../../'
+import { Dropzone } from '../../'
 import { schema } from './schema'
 import { uploadImage } from './uploadImage'
 import type { SubmitErrorHandler, SubmitHandler } from 'react-hook-form'
@@ -20,7 +20,7 @@ type FormValues = z.infer<typeof schema>
 
 const defaultValues: FormValues = {
   // One could also default to [] and the validation logic would still behave the same.
-  // That said, it's best to be consistent with the internal default state of DropZone,
+  // That said, it's best to be consistent with the internal default state of Dropzone,
   // which is that files is null.
   files: null
 }
@@ -178,15 +178,17 @@ export const ControlledDropzoneDemo = () => {
       react-hook-form as follows. Needless to say, there's a lot of logic on the consuming side that 
       is easy to get wrong. */}
 
-        <DropZone
+        <Dropzone
           error={errors?.files?.message}
           touched={touchedFields?.files as boolean}
           // error={'Nope'}
           // touched={true}
+          labelProps={{
+            children: 'Drop A File (Controlled)',
+            // className: 'font-bold text-blue-500 text-sm',
+            labelRequired: true
+          }}
           ref={dropZoneRef}
-          label='Drop A File (Controlled)'
-          labelRequired
-          //` labelClassName='font-bold text-blue-500 text-sm'
           dropzoneOptions={{
             maxFiles: 1,
 
@@ -264,14 +266,14 @@ export const ControlledDropzoneDemo = () => {
           //` className='[--dropzone-preview-size:50px] [--dropzone-theme-color:--tw-blue-500]'
           style={{}}
           showPreviews={showPreviews}
-          formGroupClassName='mx-auto mb-4 w-full'
-          formGroupStyle={{}}
+          groupClassName='mx-auto mb-4 w-full'
+          groupStyle={{}}
           id='my-dropzone'
           inputId='files'
           inputName='files'
           onBlur={(e) => {
             const currentFocusElement = document.activeElement
-            // If new focus element is outside of DropZone, then call trigger(), or preferably setValue().
+            // If new focus element is outside of Dropzone, then call trigger(), or preferably setValue().
             // trigger('files') will work, but we actually want to update touched as well.
             if (!e.target.contains(currentFocusElement)) {
               const values = getValues()
