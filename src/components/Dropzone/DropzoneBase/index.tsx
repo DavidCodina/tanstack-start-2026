@@ -32,24 +32,21 @@ type DropzoneAPI = {
   clear: () => void
 }
 
-//# Change --dropzone-default-theme-color to --color-primary
-//# Add/test focus styles
-
+// Removed: border-(--dropzone-theme-color,var(--dropzone-default-theme-color))
 const baseClasses = `
 [--dropzone-default-theme-color:var(--color-primary)]
 [--dropzone-preview-size:100px]
 relative flex flex-col justify-center items-center
 w-full p-6 bg-card 
-border border-dashed border-(--dropzone-theme-color,var(--dropzone-default-theme-color)) rounded-xl
-
+border rounded-xl
 outline-none
+cursor-pointer
 focus:border-solid
 focus:border-primary
 focus:ring-[3px]
 focus:ring-primary/50
 `
 
-//! dropzone-svg
 const svgClasses = `
  text-(--dropzone-theme-color,var(--dropzone-default-theme-color))
 `
@@ -57,6 +54,7 @@ const svgClasses = `
 /* ========================================================================
 
 ======================================================================== */
+// https://react-dropzone.js.org/
 
 export const DropzoneBase = ({
   acceptMessage = 'PNG and JPG files are allowed',
@@ -68,6 +66,7 @@ export const DropzoneBase = ({
   id,
   inputId,
   inputName,
+  internalRef,
   style = {},
   onBlur,
   onChange,
@@ -242,6 +241,33 @@ export const DropzoneBase = ({
     },
     disabled: disabled,
     ...dropzoneOptions, // maxSize, multiple:false, etc.
+    ///////////////////////////////////////////////////////////////////////////
+    //
+    // https://github.com/react-dropzone/react-dropzone?tab=readme-ov-file#file-dialog-cancel-callback
+    // Note: The onFileDialogCancel() cb is unstable in most browsers, meaning, there's a good chance
+    // of it being triggered even though you have selected files. This can be mitigated by opting into
+    // the File System Access API.
+    //
+    //   useFsAccessApi: true
+    //
+    // However, legacy browsers may still fall back to the legacy approach,
+    // which could potentially lead to unexpected behavior. In practice, this means you may want to
+    // completely avoid the use of the onFileDialogCancel() callback.
+    //
+    // ⚠️ Gotcha: The label's htmlFor is correctly wired up to the inputId, such that the file dialog will open
+    // when the label is clicked. However, this seems to bypass giving focus to the input first,
+    // prior to opening the fila dialog (I think). Essentially, it bypasses some mechanism that is
+    // important to work in conjunction with the File System Access API that's triggered by the
+    // onFileDialogCancel() callback. Consequently, a more robust approach entails programmatically
+    // clicking the DropzoneBase's <div> element from within the DropzoneLabel.
+    //
+    //   onClick={() => {
+    //     if (!internalRef.current) return
+    //     internalRef.current.click()
+    //   }}
+    //
+    ///////////////////////////////////////////////////////////////////////////
+    useFsAccessApi: true,
     onDrop
   })
 
@@ -466,6 +492,10 @@ export const DropzoneBase = ({
 
         if (rootPropsRef && 'current' in rootPropsRef) {
           rootPropsRef.current = node
+        }
+
+        if (internalRef && 'current' in internalRef) {
+          internalRef.current = node
         }
       }}
       {...otherRootProps}

@@ -12,7 +12,6 @@ type DeleteButtonProps = {
   setPreviews: React.Dispatch<React.SetStateAction<PreviewObject[] | null>>
 }
 
-//! dropzone-btn-delete
 const baseClasses = `
 absolute top-2 right-2 p-2
 text-(--dropzone-theme-color,var(--dropzone-default-theme-color))

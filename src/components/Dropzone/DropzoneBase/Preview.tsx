@@ -9,13 +9,11 @@ type PreviewProps = {
   preview: PreviewObject
 }
 
-//! dropzone-preview
 const baseClasses = `
 relative block
 size-(--dropzone-preview-size)
 `
 
-//! dropzone-preview-with-img
 const imageClasses = `
 h-full w-full object-contain 
 bg-neutral-700
@@ -23,7 +21,6 @@ border border-neutral-950 rounded-lg
 select-none
 `
 
-//! dropzone-preview-without-img
 const nonImageClasses = `
 h-full w-full p-2
 text-white text-[10px] font-semibold break-all
@@ -31,7 +28,6 @@ bg-neutral-700
 border border-neutral-950 rounded-lg
 `
 
-//! dropzone-preview-delete-btn
 const previewDeleteButtonClasses = `
 absolute -top-2 -right-2
 flex items-center justify-center size-6

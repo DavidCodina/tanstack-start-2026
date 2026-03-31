@@ -1,137 +1,162 @@
 'use client'
 
-import { Fragment, useEffect, useRef, useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
+import { useRef, useState } from 'react'
 import { toast } from 'sonner'
-
-//! import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-//! import { faTriangleExclamation } from '@fortawesome/free-solid-svg-icons'
-
 import { Dropzone } from '../../'
-import { schema } from './schema'
-import { uploadImage } from './uploadImage'
-import type { SubmitErrorHandler, SubmitHandler } from 'react-hook-form'
-import type { z } from 'zod'
+// import { uploadImage } from './uploadImage'
+// import type { z } from 'zod'
 import { Button } from '@/components'
-
-type FormValues = z.infer<typeof schema>
-// type FormValues = Omit<z.infer<typeof schema>, 'files'> & { files: null }
-
-const defaultValues: FormValues = {
-  // One could also default to [] and the validation logic would still behave the same.
-  // That said, it's best to be consistent with the internal default state of Dropzone,
-  // which is that files is null.
-  files: null
-}
+import { sleep } from '@/utils'
 
 /* ========================================================================
-                                ControlledDropzoneDemo
+                          ControlledDropzoneDemo
 ======================================================================== */
-//! Temporarily installed react-hook-form and @hookform/resolvers for this demo.
 
 export const ControlledDropzoneDemo = () => {
   const dropZoneRef = useRef<HTMLDivElement | null>(null)
+
+  const [files, setFiles] = useState<File[] | null>(null)
+  const [filesTouched, setFilesTouched] = useState(false)
+  const [filesError, setFilesError] = useState('')
+
   const [disabled, setDisabled] = useState(false)
   const [showPreviews, setShowPreviews] = useState(true)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  // Derived state
+  const isErrors = filesError !== ''
+  const allTouched = filesTouched
 
   /* ======================
-        useForm()
+      validateFiles()
   ====================== */
 
-  const {
-    reset,
-    handleSubmit,
-    getValues,
-    setValue,
-    setError,
-    // trigger,
-    // watch,
-    // control,
-    // register,
-    // unregister,
-    formState: {
-      errors,
-      isValid,
-      // isDirty,
-      touchedFields,
-      isSubmitting,
-      isSubmitted,
-      isSubmitSuccessful
-    }
-  } = useForm<FormValues>({
-    defaultValues: defaultValues,
+  const validateFiles = (value?: File[] | null) => {
+    value = typeof value !== 'undefined' ? value : files
+    console.log('validateFiles() called:', {
+      value,
+      isArray: Array.isArray(value)
+    }) //! Temporary...
+    let error = ''
 
-    // Do NOT use mode: 'all'. Instead use mode: 'onTouched'.
-    // This will validate onBlur. Then will subsequently, validate onChange.
-    // It will also validate onSubmit.
-    // The reason this is important is because the form field components
-    // are designed to ALWAYS SHOW Error if there is an error.
-    mode: 'onTouched',
-    resolver: zodResolver(schema)
-  })
-
-  const values = getValues()
-
-  /* ======================
-        onSubmit()
-  ====================== */
-
-  const onSubmit: SubmitHandler<FormValues> = async (data, _e) => {
-    // toast.success('Form validation success!')
-    // console.log('onSubmit called.', data)
-
-    // Because of the validation on data.files, we know that there will
-    // be an image. However, Typescript doesn't know this.
-    const image = data.files?.[0]
-
-    if (!(image instanceof File)) {
-      return
+    const validType = value === null || Array.isArray(value)
+    if (!validType) {
+      error = 'Invalid type'
+      setFilesError(error)
+      return error
     }
 
-    const result = await uploadImage(image)
-
-    if (result.success === true) {
-      toast.success('Image uploaded.')
-    } else {
-      console.log('uploadImages() response:', result)
-      toast.error('Unable to upload image.')
+    if (!value || (Array.isArray(value) && value.length === 0)) {
+      error = 'Required'
+      setFilesError(error)
+      return error
     }
+
+    if (Array.isArray(value) && value.length > 1) {
+      error = 'Only one file is allowed'
+      setFilesError(error)
+      return error
+    }
+
+    const isFile = value[0] instanceof File
+    if (!isFile) {
+      error = 'Not a file'
+      setFilesError(error)
+      return error
+    }
+
+    //# Also validate for file type, size, etc.
+
+    // Otherwise unset the password error in state and return ''
+    setFilesError('')
+    return ''
   }
 
   /* ======================
-        onError()
+        validate()
   ====================== */
 
-  const onError: SubmitErrorHandler<FormValues> = (errors, _e) => {
-    const values = getValues()
-    console.log({ values, errors })
-    // toast.error('Please correct form validation errors!')
+  const validate = () => {
+    const errors: string[] = []
+
+    // Set true on all toucher functions.
+    const touchers: React.Dispatch<React.SetStateAction<boolean>>[] = [
+      setFilesTouched
+    ]
+
+    touchers.forEach((toucher) => {
+      toucher(true)
+    })
+
+    const validators: (() => string)[] = [validateFiles]
+
+    validators.forEach((validator) => {
+      const error = validator()
+      if (error) {
+        errors.push(error)
+      }
+    })
+
+    // Return early if errors
+    if (errors.length >= 1) {
+      toast.error('Form validation errors found.')
+      return { isValid: false, errors: errors }
+    }
+
+    return { isValid: true, errors: null }
   }
 
   /* ======================
-        useEffect()
+        handleSubmit()
   ====================== */
 
-  useEffect(() => {
-    if (isSubmitSuccessful === true) {
-      reset(undefined, {})
-    }
+  const handleSubmit = async (e: any) => {
+    e.preventDefault()
+    if (!validate().isValid) return
 
-    // We need isSubmitted as well because isSubmitSuccessful will be false by default.
-    else if (isSubmitted && !isSubmitSuccessful) {
+    setIsSubmitting(true)
+
+    try {
+      await sleep(1000)
+      toast.success('Form validation success!')
+    } catch (err) {
       toast.error('Unable to submit the form!')
+    } finally {
+      setIsSubmitting(false)
     }
-  }, [isSubmitted, isSubmitSuccessful, reset])
+  }
+
+  // const onSubmit: SubmitHandler<FormValues> = async (data, _e) => {
+  //   // toast.success('Form validation success!')
+  //   // console.log('onSubmit called.', data)
+
+  //   // Because of the validation on data.files, we know that there will
+  //   // be an image. However, Typescript doesn't know this.
+  //   const image = data.files?.[0]
+
+  //   if (!(image instanceof File)) {
+  //     return
+  //   }
+
+  //   const result = await uploadImage(image)
+
+  //   if (result.success === true) {
+  //     toast.success('Image uploaded.')
+  //   } else {
+  //     console.log('uploadImages() response:', result)
+  //     toast.error('Unable to upload image.')
+  //   }
+  // }
 
   /* ======================
-          return
+      renderControls()
   ====================== */
 
-  return (
-    <>
+  const renderControls = () => {
+    return (
       <div className='mb-6 flex justify-center gap-4'>
         <Button
+          className='min-w-[150px]'
           onClick={() => {
             setDisabled((v) => !v)
           }}
@@ -141,48 +166,60 @@ export const ControlledDropzoneDemo = () => {
         </Button>
 
         <Button
+          className='min-w-[150px]'
           onClick={() => {
             setShowPreviews((v) => !v)
           }}
           size='sm'
         >
-          showPreviews: {showPreviews ? 'true' : 'false'}
+          Previews: {showPreviews ? 'true' : 'false'}
         </Button>
 
         <Button
+          className='min-w-[150px]'
           onClick={() => {
-            setValue('files', null, {
-              shouldDirty: true,
-              shouldTouch: true,
-              shouldValidate: true
-            })
+            validateFiles()
+            setFiles(null)
+            setFilesTouched(true)
           }}
           size='sm'
         >
           Clear Files
         </Button>
+
+        <Button
+          className='min-w-[150px]'
+          onClick={() => {
+            setFilesError('')
+            setFiles(null)
+            setFilesTouched(false)
+          }}
+          size='sm'
+        >
+          Reset Dropzone
+        </Button>
       </div>
+    )
+  }
+
+  /* ======================
+          return
+  ====================== */
+
+  return (
+    <>
+      {renderControls()}
 
       <form
-        // rounded-lg border border-neutral-400 p-4 shadow bg-[#fafafa]
-        className='mx-auto mb-6 max-w-[800px]'
+        className='bg-card mx-auto mb-6 max-w-[800px] rounded-lg border p-6 shadow'
         onSubmit={(e) => {
           e.preventDefault()
         }}
         noValidate
       >
-        {/* For react-hook-form implementations, it might seem reasonable to use Controller.
-      However, it isn't all that useful. Why? Because React Dropzone's input <input {...getInputProps() />
-      doesn't actually get triggered onChange, onBlur, etc. For this reason, it also doesn't make 
-      sense to spread { ...register('files') }. That said, it's still possible to integrate with 
-      react-hook-form as follows. Needless to say, there's a lot of logic on the consuming side that 
-      is easy to get wrong. */}
-
         <Dropzone
-          error={errors?.files?.message}
-          touched={touchedFields?.files as boolean}
-          // error={'Nope'}
-          // touched={true}
+          error={filesError}
+          touched={filesTouched}
           labelProps={{
             children: 'Drop A File (Controlled)',
             // className: 'font-bold text-blue-500 text-sm',
@@ -192,50 +229,54 @@ export const ControlledDropzoneDemo = () => {
           dropzoneOptions={{
             maxFiles: 1,
 
-            // While React Dropzone does expose onDropAccepted, we actually want
+            ///////////////////////////////////////////////////////////////////////////
+            //
+            // While React Dropzone does expose onDropAccepted, we generally want
             // to use the custom onChange because it hooks into ALL changes to files,
             // NOT just when files are dropped. This means we can also know when files
             // has been reset to null, which would otherwise not be impossible here.
+            //
+            // Note: Dropping an item wil not trigger a focus event on the Dropzone. Thus, it
+            // makes sense to call setFilesTouched(true) here as well.
+            //
+            ///////////////////////////////////////////////////////////////////////////
             onDropAccepted: (_files, _event) => {
-              // console.log('\nDrop Accepted:', { files, event })
+              setFilesTouched(true)
+              console.log('\nDrop Accepted:', { _files, _event }) //! Temporary...
             },
 
-            // The goal with onDropRejected is to show a toast.error when something was rejected, but something
-            // was also currently or previously accepted. Conversely, if there is nothing already accepted then show the error as
-            // an actual RHF validation error.
+            ///////////////////////////////////////////////////////////////////////////
+            //
+            // The goal here is to NOT set an error when at least one file was accepted. Thus:
+            //
+            //   1. If files is currently null or an empty array and onDropRejected is called, then call
+            //     setFilsError, setFilesTouched.
+            //   2. If files is an array already, then simply notify the user with a toast that something was rejected.
+            //
+            ///////////////////////////////////////////////////////////////////////////
+
             onDropRejected: (fileRejections, _event) => {
               const message =
                 fileRejections?.[0]?.errors[0]?.message ||
                 'One or more files were rejected.'
 
-              // In cases where one file is accepted and one rejected, values.files may not yet
-              // reflect the accepted file. In order to ensure that values.files shows the
+              console.log('onDropRejected() called:', { message }) //! Temporary
+
+              // In cases where one file is accepted and one rejected, files may not yet
+              // reflect the accepted file. In order to ensure that files shows the
               // accepted file, wrap in setTimeout to push to bottom of stack.
               setTimeout(() => {
-                const values = getValues()
-
-                if (
-                  !values.files ||
-                  (Array.isArray(values.files) && values.files.length === 0)
-                ) {
-                  //Again, wrap in setTimeout. Otherwise the default validation will have precedence.
-
-                  setError('files', { type: 'custom', message: message })
-                  setValue('files', values.files, {
-                    // If you validate here, it will overwrite the error we just set.
-                    shouldValidate: false,
-                    shouldDirty: true,
-                    shouldTouch: true
-                  })
+                if (!files || (Array.isArray(files) && files.length === 0)) {
+                  // Again, wrap in setTimeout. Otherwise the default validation will have precedence.
+                  setFilesError(message)
+                  setFilesTouched(true)
                 } else {
-                  setValue('files', values.files, {
-                    shouldValidate: true,
-                    shouldDirty: true,
-                    shouldTouch: true
-                  })
                   // Note: All files will be rejected if the number of files exceeds maxFiles,
                   // if a file is over/under maxSize/minSize, etc.
                   // Here I'm merely showing the first error.
+                  validateFiles()
+                  setFilesTouched(true)
+
                   toast.error(message, {
                     autoClose: 5000
                   })
@@ -243,13 +284,24 @@ export const ControlledDropzoneDemo = () => {
               }, 0)
             },
 
+            ///////////////////////////////////////////////////////////////////////////
+            //
+            // https://github.com/react-dropzone/react-dropzone?tab=readme-ov-file#file-dialog-cancel-callback
+            // Note: The onFileDialogCancel() cb is unstable in most browsers, meaning, there's a good chance
+            // of it being triggered even though you have selected files. This can be mitigated by opting into
+            // the File System Access API.
+            //
+            //   useFsAccessApi: true
+            //
+            // However, legacy browsers may still fall back to the legacy approach,
+            // which could potentially lead to unexpected behavior. In practice, this means you may want to
+            // completely avoid the use of the onFileDialogCancel() callback.
+            //
+            ///////////////////////////////////////////////////////////////////////////
             onFileDialogCancel: () => {
-              const values = getValues()
-              setValue('files', values.files, {
-                shouldValidate: true,
-                shouldDirty: true,
-                shouldTouch: true
-              })
+              console.log('onFileDialogCancel() called.') //! Temporary
+              validateFiles()
+              setFilesTouched(true)
             },
 
             disabled: disabled,
@@ -263,7 +315,7 @@ export const ControlledDropzoneDemo = () => {
             }
           }}
           acceptMessage='PNG and JPG files are allowed.'
-          //` className='[--dropzone-preview-size:50px] [--dropzone-theme-color:--tw-blue-500]'
+          className='[--dropzone-preview-size:50px] [--dropzone-theme-color:var(--color-sky-500)]'
           style={{}}
           showPreviews={showPreviews}
           groupClassName='mx-auto mb-4 w-full'
@@ -273,77 +325,56 @@ export const ControlledDropzoneDemo = () => {
           inputName='files'
           onBlur={(e) => {
             const currentFocusElement = document.activeElement
-            // If new focus element is outside of Dropzone, then call trigger(), or preferably setValue().
-            // trigger('files') will work, but we actually want to update touched as well.
+
             if (!e.target.contains(currentFocusElement)) {
-              const values = getValues()
-              setValue('files', values.files, {
-                shouldValidate: true,
-                shouldDirty: true,
-                shouldTouch: true
-              })
+              //! Temporary...
+              console.log('onBlur() called.')
+              validateFiles()
+              setFilesTouched(true)
             }
           }}
-          onChange={(newValue: any) => {
-            // console.log({
-            //   newValue,
-            //   type: typeof newValue,
-            //   isArray: Array.isArray(newValue)
-            // })
-
-            setValue('files', newValue, {
-              // When the react-hook-form calls reset(undefined, {}), it then triggers the onChange() handler.
-              // In order to prevent validation AFTER reset, we need to specify to ONLY validate if filesTouched.
-              shouldValidate: touchedFields.files ? true : false,
-              shouldDirty: true,
-              shouldTouch: true
+          onChange={(newValue: File[] | null) => {
+            //! Temporary...
+            console.log('onChange() called:', {
+              newValue,
+              type: typeof newValue,
+              isArray: Array.isArray(newValue),
+              filesTouched
             })
+
+            setFiles(newValue)
+
+            if (filesTouched) {
+              validateFiles(newValue)
+            }
           }}
-          value={values.files}
+          value={files}
         />
 
         {/* =====================
               Submit Button
         ===================== */}
 
-        {isSubmitting ? (
+        {allTouched && isErrors ? (
           <Button
             className='flex w-full'
-            disabled
+            disabled={allTouched && isErrors ? true : false}
             size='sm'
-            variant='success'
             type='button'
+            variant='success'
           >
-            <span
-              aria-hidden='true'
-              className='spinner-border spinner-border-sm mr-2'
-              role='status'
-            ></span>
-            Submitting...
+            Please Fix Errors...
           </Button>
         ) : (
           <Button
             className='flex w-full'
-            // You could also add || !isDirty. In the case of an update form,
-            // it still makes sense because there's no need to send an update if
-            // nothing's actually been updated.
-            disabled={isSubmitted && !isValid ? true : false}
-            onClick={handleSubmit(onSubmit, onError)}
+            loading={isSubmitting}
+            onClick={handleSubmit}
             size='sm'
-            variant='success'
             type='button'
+            variant='success'
           >
-            {isSubmitted && !isValid ? (
-              <Fragment>
-                {/* <FontAwesomeIcon
-                  icon={faTriangleExclamation}
-                  style={{ marginRight: 5 }}
-                /> */}
-                Please Fix Errors...
-              </Fragment>
-            ) : (
-              'Submit'
-            )}
+            {isSubmitting ? 'Submitting...' : 'Submit'}
           </Button>
         )}
       </form>

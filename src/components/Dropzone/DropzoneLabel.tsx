@@ -22,6 +22,7 @@ export const DropzoneLabel = ({
   htmlFor,
   className = '',
   labelRequired = false,
+  internalRef,
   touched = false,
   ...otherProps
 }: DropzoneLabelProps) => {
@@ -52,6 +53,20 @@ export const DropzoneLabel = ({
         isValid && 'text-success',
         disabled && 'text-muted-foreground opacity-65' // ???
       )}
+      ///////////////////////////////////////////////////////////////////////////
+      //
+      // The label's htmlFor is correctly wired up to the inputId, such that the file dialog will open
+      // when the label is clicked. However, this seems to bypass giving focus to the input first,
+      // prior to opening the fila dialog (I think). Essentially, it bypasses some mechanism that is
+      // important to work in conjunction with the File System Access API that's triggered by the
+      // onFileDialogCancel() callback. Consequently, a more robust approach entails programmatically
+      // clicking the DropzoneBase's <div> element from within the DropzoneLabel.
+      //
+      ///////////////////////////////////////////////////////////////////////////
+      onClick={() => {
+        if (!internalRef.current) return
+        internalRef.current.click()
+      }}
     >
       {children}
       {labelRequired && (

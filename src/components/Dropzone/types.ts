@@ -9,6 +9,8 @@ export type OnDrop = NonNullable<DropzoneOptions['onDrop']>
 // type OnDrop2 = Exclude<DropzoneOptions['onDrop'], undefined>
 // type OnDrop3 = Exclude<Pick<DropzoneOptions, 'onDrop'>, undefined>
 
+type InternalRef = React.RefObject<HTMLDivElement | null>
+
 export type DropzoneBaseProps = Omit<
   ComponentPropsWithRef<'div'>,
   'onChange'
@@ -20,6 +22,7 @@ export type DropzoneBaseProps = Omit<
   error?: string
   inputId?: string
   inputName?: string
+  internalRef: InternalRef
   onChange?: (newValue: File[] | null) => void
   showPreviews?: boolean
   touched?: boolean
@@ -28,6 +31,7 @@ export type DropzoneBaseProps = Omit<
 
 export type DropzoneLabelProps = React.ComponentProps<'label'> & {
   disabled: boolean // Used internally
+  internalRef: InternalRef
   error: string // Used internally
   labelRequired?: boolean
   touched: boolean // Used internally
@@ -39,10 +43,13 @@ export type DropzoneErrorProps = React.ComponentProps<'div'> & {
   touched: boolean // Used internally
 }
 
-export type DropzoneProps = DropzoneBaseProps & {
+export type DropzoneProps = Omit<DropzoneBaseProps, 'internalRef'> & {
   groupClassName?: string
   groupStyle?: React.CSSProperties
-  labelProps?: Omit<DropzoneLabelProps, 'disabled' | 'error' | 'touched'>
+  labelProps?: Omit<
+    DropzoneLabelProps,
+    'disabled' | 'internalRef' | 'error' | 'touched'
+  >
   errorProps?: Omit<
     DropzoneErrorProps,
     'children' | 'disabled' | 'error' | 'touched'

@@ -1,6 +1,6 @@
 'use client'
 
-import { useId } from 'react'
+import { useId, useRef } from 'react'
 
 import { DropzoneBase } from './DropzoneBase'
 import { DropzoneError } from './DropzoneError'
@@ -14,7 +14,7 @@ export type DropzoneAPI = {
 
 //# Next Steps:
 
-//# Familiarize yourself with how the previews are implemented.
+//# Create UncontroledDropzoneDemo (No RHF).
 
 //# Rewatch following videos + any new ones you can find:
 //# Hamed Bahram:  https://www.youtube.com/watch?v=eGVC8UUqCBE
@@ -27,6 +27,8 @@ export type DropzoneAPI = {
 //# Test all styles against dark theme.
 
 //# Test non-image previews.
+
+//# Familiarize yourself with how the previews are implemented.
 
 //# Test two-way bindings.
 
@@ -78,6 +80,7 @@ export const Dropzone = ({
   // otherProps include anything else that can be passed to the <div>.
   ...otherProps
 }: DropzoneProps) => {
+  const internalRef = useRef<HTMLDivElement | null>(null)
   /* ======================
           constants 
   ====================== */
@@ -117,6 +120,7 @@ export const Dropzone = ({
         htmlFor={inputId}
         {...labelProps}
         disabled={disabled}
+        internalRef={internalRef}
         error={error}
         touched={touched}
       />
@@ -131,6 +135,7 @@ export const Dropzone = ({
         id={id}
         inputId={inputId}
         inputName={inputName}
+        internalRef={internalRef}
         style={style}
         onBlur={onBlur}
         onChange={onChange}

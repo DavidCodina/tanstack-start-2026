@@ -11,13 +11,11 @@ type Paragraph1Props = {
   touched: boolean
 }
 
-//! dropzone-p1
 const baseClasses = `
 mb-1 text-lg font-bold
 select-none
 `
 
-//! dropzone-p1-span
 const spanClasses = `
 text-(--dropzone-theme-color,var(--dropzone-default-theme-color))
 `
