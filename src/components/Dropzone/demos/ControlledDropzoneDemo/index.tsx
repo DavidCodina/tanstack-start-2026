@@ -234,9 +234,23 @@ export const ControlledDropzoneDemo = () => {
             // internal onDrop() logic is set up to be cumulative. Thus, while this could prevent
             // multiple simultaneious files from being dropped, one should not use this as a reliable
             // means of validation, and instead rely on an external validation function.
-            maxFiles: 2,
+            maxFiles: 1,
 
-            maxSize: 300000,
+            ///////////////////////////////////////////////////////////////////////////
+            //
+            // Note: By default, Next.js has a 1MB bodySizeLimit.
+            //
+            //   bodySizeLimit: https://nextjs.org/docs/app/api-reference/config/next-config-js/serverActions#bodysizelimit
+            //
+            //   By default, the maximum size of the request body sent to a Server Action is 1MB, to prevent
+            //   the consumption of excessive server resources in parsing large amounts of data, as well as
+            //   potential DDoS attacks.
+            //
+            //   However, you can configure this limit using the serverActions.bodySizeLimit option. It can take
+            //   the number of bytes or any string format supported by bytes, for example 1000, '500kb' or '3mb'.
+            //
+            ///////////////////////////////////////////////////////////////////////////
+            // maxSize: 300000, // arbitrary value for testing.
 
             accept: {
               'image/jpeg': ['.jpeg', '.jpg'],
@@ -284,6 +298,10 @@ export const ControlledDropzoneDemo = () => {
             // to select the files, then let the validator do its job. The whole flow of files getting rejected
             // and subsequent toast notifications is not necessary.
             //
+            // Finally, if you wanted to hardcode this kind of behavior into the Dropzone abstraction, we
+            // could do it from within the onDrop() callback, which also receives fileRejections. Then we
+            // could have a custom prop to opt out of rejection notifications.
+            //
             ///////////////////////////////////////////////////////////////////////////
 
             onDropRejected: (fileRejections, _event) => {
@@ -295,7 +313,11 @@ export const ControlledDropzoneDemo = () => {
 
                   <ul className='list-disc space-y-1'>
                     {fileRejections.map((item, index) => {
-                      return <li key={index}>{item.errors[0].message}</li>
+                      return (
+                        <li key={index}>
+                          {item.file.name}: {item.errors[0].message}
+                        </li>
+                      )
                     })}
                   </ul>
                 </div>
@@ -329,7 +351,7 @@ export const ControlledDropzoneDemo = () => {
             disabled: disabled
           }}
           acceptMessage='PNG and JPG files are allowed.'
-          className='[--dropzone-preview-size:50px] [--dropzone-theme-color:var(--color-sky-500)]'
+          className='[--dropzone-preview-size:100px] [--dropzone-theme-color:var(--color-sky-500)]'
           style={{}}
           showPreviews={showPreviews}
           groupClassName='mx-auto mb-4 w-full'

@@ -14,11 +14,19 @@ export type DropzoneAPI = {
 
 //# Next Steps:
 
+//# Update to v15
+
+//# Review Preview component -especially nonImageClasses.
+//# Possibly add an ellipsis style, since the names seem to be getting truncated.
+
 //# Create UncontroledDropzoneDemo (No RHF).
 
-//# Rewatch following videos + any new ones you can find:
-//# Hamed Bahram:  https://www.youtube.com/watch?v=eGVC8UUqCBE
-//# James Q Quick: https://www.youtube.com/watch?v=SBL3dhKs21o
+//# Test Previews container against multiple files
+//# const baseClasses = `flex items-center flex-wrap gap-4 justify-center`
+//# Possibly switch to a grid implementation.
+
+//# Change DropzoneProps so instead of omitting certain properties, the actual
+//# sub types don't include them in their exported type.
 
 //# Test validation styles
 
@@ -36,12 +44,26 @@ export type DropzoneAPI = {
 
 //# Test with file-upload-server-2026
 
-//# Update to v15
+//# Bonus: Jan Marshal - https://www.youtube.com/watch?v=83bECYmPbI4
+
+//# Bonus Cand Dev - https://www.youtube.com/watch?v=ohXb62KwTak
 
 //# Bonus: Convert demos to use Tanstack Form instead of RHF.
 
-//# Bonus: If you wanted to go all in on Base UI, you could
-//# integrate with Field.Root, Field.Label, Field.Error, and Field.Description.
+///////////////////////////////////////////////////////////////////////////
+//
+// Note: By default, Next.js has a 1MB body size upload limit.
+//
+//   bodySizeLimit: https://nextjs.org/docs/app/api-reference/config/next-config-js/serverActions#bodysizelimit
+//
+//   By default, the maximum size of the request body sent to a Server Action is 1MB, to prevent
+//   the consumption of excessive server resources in parsing large amounts of data, as well as
+//   potential DDoS attacks.
+//
+//   However, you can configure this limit using the serverActions.bodySizeLimit option. It can take
+//   the number of bytes or any string format supported by bytes, for example 1000, '500kb' or '3mb'.
+//
+///////////////////////////////////////////////////////////////////////////
 
 /* ========================================================================
                                 Dropzone
@@ -57,7 +79,7 @@ export type DropzoneAPI = {
 ///////////////////////////////////////////////////////////////////////////
 
 export const Dropzone = ({
-  acceptMessage = 'PNG and JPG files are allowed',
+  acceptMessage = '',
   apiRef,
   className = '',
   disabled,

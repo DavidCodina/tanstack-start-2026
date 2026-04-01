@@ -38,10 +38,10 @@ const baseClasses = `
 [--dropzone-preview-size:100px]
 relative flex flex-col justify-center items-center
 w-full p-6 bg-card 
-border rounded-xl
+border-2 border-dashed rounded-xl
 outline-none
 cursor-pointer
-focus:border-solid
+
 focus:border-primary
 focus:ring-[3px]
 focus:ring-primary/50
@@ -57,7 +57,7 @@ const svgClasses = `
 // https://react-dropzone.js.org/
 
 export const DropzoneBase = ({
-  acceptMessage = 'PNG and JPG files are allowed',
+  acceptMessage,
   apiRef,
   className = '',
   disabled = false,
@@ -138,7 +138,7 @@ export const DropzoneBase = ({
       // However, there's already options.onDropRejected().
       //
       // Note: Suppose you drop a single file and it gets rejected. In that case,
-      // acceptedFiles will be: []. This is what through James Q Quick off in this
+      // acceptedFiles will be: []. This is what James Q Quick discussed in this
       // tutorial: https://www.youtube.com/watch?v=SBL3dhKs21o
       //
       // To mitigate this gotcha here, we make sure to check if it's an array AND
@@ -221,7 +221,7 @@ export const DropzoneBase = ({
   ====================== */
   ///////////////////////////////////////////////////////////////////////////
   //
-  // There's a lot more we can destructure, but currently don't need.
+  // There's more we can destructure, but currently don't need.
   //
   //   type DropzoneState = DropzoneRef & {
   //     isFocused: boolean;
@@ -271,13 +271,6 @@ export const DropzoneBase = ({
   ///////////////////////////////////////////////////////////////////////////
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    // Pass: dropzoneOptions={{ accept: {} }} from the outside to accept all.
-    //# Hardcoding accept here is probably not the best idea.
-    accept: {
-      'image/jpeg': ['.jpeg', '.jpg'],
-      'image/png': ['.png']
-      // 'image/gif': ['.gif'],
-    },
     disabled: disabled,
     ...dropzoneOptions, // maxSize, multiple:false, etc.
     ///////////////////////////////////////////////////////////////////////////
@@ -328,17 +321,15 @@ export const DropzoneBase = ({
 
   const dropzoneClasses = cn(
     baseClasses,
-
     isInvalid &&
-      'border-solid border-destructive focus:border-destructive focus:ring-destructive/50',
-    isValid &&
-      'border-solid border-success focus:border-success focus:ring-success/50',
+      'border-destructive focus:border-destructive focus:ring-destructive/50',
+    isValid && 'border-success focus:border-success focus:ring-success/50',
     isDragActive && 'border-success focus:border-success focus:ring-success/50',
     className,
     // Setting pointer-events: none is important. Otherwise when disabled
     // if one drops a file it will open a new tab with that file.
     disabled &&
-      'border-solid pointer-events-none border-neutral-400 focus:border-neutral-400 focus:ring-0'
+      'pointer-events-none border-neutral-400 focus:border-neutral-400 focus:ring-0'
   )
 
   // Rather than doing <div { ...getRootProps() } />, we can configure & destructure them here.
@@ -600,7 +591,7 @@ export const DropzoneBase = ({
         setPreviews={setPreviews}
       />
 
-      {_renderDataTest()}
+      {/* {_renderDataTest()} */}
     </div>
   )
 }

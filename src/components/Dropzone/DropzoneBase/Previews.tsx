@@ -3,7 +3,7 @@
 import { Preview } from './Preview'
 import type { PreviewProps } from '../types'
 
-const baseClasses = `flex items-center flex-wrap gap-4 justify-center`
+const baseClasses = `flex items-center flex-wrap gap-4 justify-center pt-2`
 
 /* ========================================================================
 

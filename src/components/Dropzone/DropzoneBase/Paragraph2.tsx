@@ -4,7 +4,7 @@ import { Fragment } from 'react'
 import { cn } from '@/utils'
 
 type Paragraph2Props = {
-  acceptMessage: string
+  acceptMessage?: string
   deleteFileByName: (fileName: string) => void
   disabled: boolean
   files: File[] | null
@@ -74,6 +74,8 @@ export const Paragraph2 = ({
       </p>
     )
   }
+
+  if (!acceptMessage) return null
 
   return <p className={paragraphClasses}>{acceptMessage}</p>
 }
