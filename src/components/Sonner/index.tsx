@@ -14,6 +14,8 @@ import type { ToasterProps } from 'sonner'
 // https://github.com/emilkowalski/sonner/blob/main/src/styles.css
 // https://emilkowal.ski/ui/building-a-toast-component
 // https://www.codu.co/articles/how-to-implement-toast-notifications-in-react-with-sonner-85ko0vlz
+//
+// ⚠️ If you need to modify styles, do it from within defaultToastOptions.tsx.
 
 const Toaster = ({
   toastOptions = defaultToastOptions,
@@ -90,6 +92,11 @@ const Toaster = ({
           '--warning-bg': 'var(--card)',
           '--warning-border': 'var(--color-warning)',
           '--warning-text': 'var(--color-warning)'
+
+          //! "[data-sonner-toast][data-styled='true']": {
+          //!   border: '2px dashed blue'
+          //! },
+          //! border: '2px dashed green'
         } as React.CSSProperties
       }
       {...props}

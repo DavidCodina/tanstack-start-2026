@@ -83,9 +83,14 @@ export const DropzoneBase = ({
   const dropzoneId = useId()
   id = id || dropzoneId
 
-  // This is now done in Dropzone.tsx, so it can also be passed to DropzoneLabel.
-  // const fileInputId = useId()
-  // inputId = inputId || fileInputId
+  ///////////////////////////////////////////////////////////////////////////
+  //
+  // This is now done in Dropzone.tsx, so it can also be passed to DropzoneLabel:
+  //
+  //   const fileInputId = useId()
+  //   inputId = inputId || fileInputId
+  //
+  ///////////////////////////////////////////////////////////////////////////
 
   const isInvalid = !!error
   const isValid = !error && touched
@@ -116,7 +121,7 @@ export const DropzoneBase = ({
   /* ======================
           onDrop() 
   ====================== */
-  // onDrop?: <T extends File>( acceptedFiles: T[], fileRejections: FileRejection[], event: DropEvent) => void;
+  // onDrop?: (<T extends File>(acceptedFiles: T[], fileRejections: FileRejection[], event: DropEvent) => void) | undefined
   // The basic idea here is that we update files state with acceptedFiles.
 
   const onDrop = useCallback<OnDrop>(
@@ -140,8 +145,6 @@ export const DropzoneBase = ({
       // that it has length greater than 0, and of course it doesn't hurt to double-check
       // that all elements within the array are actually of type File.
       //
-      // If we drop a single file, and it gets rejected,
-      //
       ///////////////////////////////////////////////////////////////////////////
 
       if (
@@ -154,7 +157,43 @@ export const DropzoneBase = ({
         if (hasChangedRef.current === false) {
           hasChangedRef.current = true
         }
-        setFiles(acceptedFiles)
+
+        ///////////////////////////////////////////////////////////////////////////
+        //
+        // Initially, this was done: setFiles(acceptedFiles)
+        // However, Hamed Bahram at 7:00 of https://www.youtube.com/watch?v=eGVC8UUqCBE
+        // Creates logic to cumulatively add files.
+        //
+        //   setFiles((prevFiles) => {
+        //     prevFiles = prevFiles || []
+        //     return [...prevFiles, ...acceptedFiles]
+        //   })
+        //
+        // Either solution works, but with the cumulative approach, we probably also
+        // want to deduplicates files as follows.
+        //
+        // Additionally, it's important to understand that dropzoneOptions.maxFiles
+        // only applies to a single drop, which means that an end user can get around
+        // onDropRejected() by dropping selecting/dropping multiple files, one at a time.
+        // Ultimately, this means that one should not rely solely on maxFiles as a source
+        // of validation, and should also use external validation logic.
+        //
+        ///////////////////////////////////////////////////////////////////////////
+
+        setFiles((prevFiles) => {
+          prevFiles = prevFiles || []
+          const existingKeys = new Set(
+            // If you want to allow for dulicate file names, but deduplicate
+            // exact duplicates the you can do something like this instead:
+            // prevFiles.map((f) => `${f.name}-${f.size}-${f.lastModified}`)
+            prevFiles.map((f) => `${f.name}`)
+          )
+          const uniqueNewFiles = acceptedFiles.filter(
+            // (f) => !existingKeys.has(`${f.name}-${f.size}-${f.lastModified}`)
+            (f) => !existingKeys.has(`${f.name}`)
+          )
+          return [...prevFiles, ...uniqueNewFiles]
+        })
       }
     },
     ///////////////////////////////////////////////////////////////////////////
@@ -302,14 +341,18 @@ export const DropzoneBase = ({
       'border-solid pointer-events-none border-neutral-400 focus:border-neutral-400 focus:ring-0'
   )
 
+  // Rather than doing <div { ...getRootProps() } />, we can configure & destructure them here.
   const { ref: rootPropsRef, ...otherRootProps }: any = getRootProps({
     className: dropzoneClasses,
     id: id,
+    'aria-labelledby': id,
+    'aria-label': 'File upload area',
     onBlur: (e: React.FocusEvent<HTMLDivElement, Element>) => {
-      onBlur?.(e as any)
+      onBlur?.(e)
     },
     onFocus: (_e: React.FocusEvent<HTMLDivElement, Element>) => {},
     style: style,
+    role: 'region',
     ...otherProps
   })
 
@@ -450,12 +493,12 @@ export const DropzoneBase = ({
   // that are not enumerable. When you use JSON.stringify(), it only serializes the enumerable
   // own properties of the object, and path is one of them. If you want to display other properties
   // like name, size, type, etc., you can create a new object that only contains the properties
-  // you’re interested in, and then stringify that object
+  // you’re interested in, and then stringify that object.
 
   const _renderDataTest = () => {
     if (Array.isArray(files) && files.length > 0) {
       return (
-        <pre className='mx-auto mt-12 w-full max-w-[800px] rounded-xl border border-violet-800 bg-white p-6 text-sm shadow'>
+        <pre className='mx-auto mt-6 w-full rounded-xl border-2 border-green-500 bg-neutral-900 p-6 text-sm text-green-500 shadow'>
           <code>
             {files
               .map((file) => {
@@ -477,9 +520,6 @@ export const DropzoneBase = ({
 
   return (
     <div
-      aria-labelledby={id}
-      aria-label='File upload area'
-      role='region'
       ref={(node) => {
         // We can't know in advance whether ref will be a function or an object literal.
         // For that reason, we need to use the following conditional logic.
@@ -498,7 +538,7 @@ export const DropzoneBase = ({
           internalRef.current = node
         }
       }}
-      {...otherRootProps}
+      {...otherRootProps} // Everything else from getRootProps()
     >
       <input
         // When files are dropped onto the dropzone, it doesn’t trigger the onChange event of this internal input element.
@@ -559,6 +599,8 @@ export const DropzoneBase = ({
         setFiles={setFiles}
         setPreviews={setPreviews}
       />
+
+      {_renderDataTest()}
     </div>
   )
 }

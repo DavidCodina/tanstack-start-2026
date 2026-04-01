@@ -57,7 +57,7 @@ export const DropzoneLabel = ({
       //
       // The label's htmlFor is correctly wired up to the inputId, such that the file dialog will open
       // when the label is clicked. However, this seems to bypass giving focus to the input first,
-      // prior to opening the fila dialog (I think). Essentially, it bypasses some mechanism that is
+      // prior to opening the fil dialog. Essentially, it bypasses some mechanism that is
       // important to work in conjunction with the File System Access API that's triggered by the
       // onFileDialogCancel() callback. Consequently, a more robust approach entails programmatically
       // clicking the DropzoneBase's <div> element from within the DropzoneLabel.
