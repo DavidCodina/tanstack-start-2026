@@ -2,10 +2,6 @@
 
 import React, { useCallback, useEffect, useId, useRef, useState } from 'react'
 import {
-  // The useDropzone hook from the react-dropzone library is considered headless.
-  // This means that it provides the core functionality and logic for handling file drops,
-  // but it doesn’t include any UI components. Instead, it gives you the flexibility to
-  // build your own custom UI around the dropzone functionality.
   useDropzone
   // DropzoneOptions
   // FileRejection,
@@ -17,10 +13,9 @@ import { Paragraph1 } from './Paragraph1'
 import { Paragraph2 } from './Paragraph2'
 import { Previews } from './Previews'
 import { DeleteButton } from './DeleteButton'
+// import { DataTest } from './DataTest'
 
 import type {
-  // DropzoneProps,
-  // DropzoneRef,
   DropzoneBaseProps,
   InternalRef,
   OnDrop,
@@ -38,7 +33,6 @@ type InternalDropzoneBaseProps = {
   internalRef: InternalRef
 }
 
-// Removed: border-(--dropzone-theme-color,var(--dropzone-default-theme-color))
 const baseClasses = `
 [--dropzone-default-theme-color:var(--color-primary)]
 [--dropzone-preview-size:100px]
@@ -394,7 +388,7 @@ export const DropzoneBase = ({
   }, []) // eslint-disable-line
 
   /* ======================
-        useEffect() //* ✅ Looks good!
+        useEffect() 
   ====================== */
 
   useEffect(() => {
@@ -423,9 +417,9 @@ export const DropzoneBase = ({
   }, [files, showPreviews])
 
   /* ======================
-        useEffect()
+  useEffect: Two-way Binding Part 1
   ====================== */
-  // Two-way binding part 1: Any time files changes internally, call the external onChange().
+  // Any time files changes internally, call the external onChange().
   // Initially, I was using onChangeRef.current?.(files) to bypass the dependency array.
   // However, onChange is often used to check a dynamic value of touchedFields.files, so
   // we definitely don't want to use that approach.
@@ -437,7 +431,7 @@ export const DropzoneBase = ({
   }, [files]) // eslint-disable-line
 
   /* ======================
-        useEffect()  
+  useEffect: Two-way Binding Part 2
   ====================== */
   ///////////////////////////////////////////////////////////////////////////
   //
@@ -446,8 +440,8 @@ export const DropzoneBase = ({
   // Any time value changes externally, call internal setFiles().
   // The gotcha here is that value will often be an array, and each
   // array is a new reference type, which will end up causing an
-  // infinite loop. On way of fixing this would be to run a  deepEqual()
-  // check for value vs files and return early if they're lready the same
+  // infinite loop. On way of fixing this would be to run a deepEqual()
+  // check for value vs files and return early if they're already the same
   //
   // The other option is to create a valueOrFiles constant that represents the single source of
   // truth for files. The valueOrFiles solution is appealing, but it could create unexpected
@@ -481,34 +475,6 @@ export const DropzoneBase = ({
       return value
     })
   }, [value])
-
-  /* ======================
-      renderDataTest() 
-  ====================== */
-  // The File object in JavaScript contains a lot of prototype methods and properties
-  // that are not enumerable. When you use JSON.stringify(), it only serializes the enumerable
-  // own properties of the object, and path is one of them. If you want to display other properties
-  // like name, size, type, etc., you can create a new object that only contains the properties
-  // you’re interested in, and then stringify that object.
-
-  const _renderDataTest = () => {
-    if (Array.isArray(files) && files.length > 0) {
-      return (
-        <pre className='mx-auto mt-6 w-full rounded-xl border-2 border-green-500 bg-neutral-900 p-6 text-sm text-green-500 shadow'>
-          <code>
-            {files
-              .map((file) => {
-                const { name, size, type } = file
-                return JSON.stringify({ name, size, type }, null, 2)
-              })
-              .join(', \n\n')}
-          </code>
-        </pre>
-      )
-    }
-
-    return null
-  }
 
   /* ======================
           return
@@ -595,8 +561,7 @@ export const DropzoneBase = ({
         setFiles={setFiles}
         setPreviews={setPreviews}
       />
-
-      {/* {_renderDataTest()} */}
+      {/* <DataTest files={files} /> */}
     </div>
   )
 }

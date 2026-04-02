@@ -12,17 +12,20 @@ export type DropzoneAPI = {
   clear: () => void
 }
 
-//# Next Steps:
+// Todo:
+// Test against file-upload-server-2026
+// Bonus: Jan Marshal - https://www.youtube.com/watch?v=83bECYmPbI4
+// Bonus: Cand Dev - https://www.youtube.com/watch?v=ohXb62KwTak
+// Bonus: Convert demos to use Tanstack Form instead of RHF.
 
-//# Test two-way bindings.
-
-//# Test with file-upload-server-2026
-
-//# Bonus: Jan Marshal - https://www.youtube.com/watch?v=83bECYmPbI4
-//# Bonus: Cand Dev - https://www.youtube.com/watch?v=ohXb62KwTak
-//# Bonus: Convert demos to use Tanstack Form instead of RHF.
-
+/* ========================================================================
+                                Dropzone
+======================================================================== */
 ///////////////////////////////////////////////////////////////////////////
+//
+// Docs:          https://react-dropzone.js.org/#!/Dropzone
+// Hamed Bahram:  https://www.youtube.com/watch?v=eGVC8UUqCBE
+// James Q Quick: https://www.youtube.com/watch?v=SBL3dhKs21o
 //
 // Note: By default, Next.js has a 1MB body size upload limit.
 //
@@ -34,19 +37,6 @@ export type DropzoneAPI = {
 //
 //   However, you can configure this limit using the serverActions.bodySizeLimit option. It can take
 //   the number of bytes or any string format supported by bytes, for example 1000, '500kb' or '3mb'.
-//
-///////////////////////////////////////////////////////////////////////////
-
-/* ========================================================================
-                                Dropzone
-======================================================================== */
-///////////////////////////////////////////////////////////////////////////
-//
-// All of the styles for this component are located within formPlugin.ts
-//
-// Docs:          https://react-dropzone.js.org/#!/Dropzone
-// Hamed Bahram:  https://www.youtube.com/watch?v=eGVC8UUqCBE
-// James Q Quick: https://www.youtube.com/watch?v=SBL3dhKs21o
 //
 ///////////////////////////////////////////////////////////////////////////
 
@@ -98,7 +88,6 @@ export const Dropzone = ({
   //
   // The styles here are a modified version of what's done in
   // https://horizon-ui.com/docs-tailwind/docs/react/dropzone
-  // but without dark mode and responsive classes.
   // Horizon UI does not have open source code for this component.
   //
   // horizon-ui makes the top-level JSX element a button, but because in this implementation
