@@ -14,8 +14,6 @@ export type DropzoneAPI = {
 
 //# Next Steps:
 
-//# Create UncontroledDropzoneDemo (No RHF).
-
 //# Test two-way bindings.
 
 //# Test with file-upload-server-2026
