@@ -3,6 +3,9 @@
 import type { DropzoneErrorProps } from './types'
 import { cn } from '@/utils'
 
+const baseClasses = `
+block text-destructive mt-1 text-sm w-full overflow-scroll
+`
 /* ========================================================================
 
 ======================================================================== */
@@ -27,18 +30,18 @@ export const DropzoneError = ({
           return
   ====================== */
 
-  if (!children) {
+  if (!children || disabled) {
     return null
   }
   return (
     <div
       {...otherProps}
       className={cn(
-        'text-destructive block',
+        baseClasses,
         className,
         // isInvalid && 'text-destructive',
         // isValid && '',
-        disabled && 'text-neutral-400'
+        disabled && 'hidden text-neutral-400'
       )}
     >
       {children}

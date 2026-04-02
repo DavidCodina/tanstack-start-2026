@@ -234,7 +234,7 @@ export const ControlledDropzoneDemo = () => {
             // internal onDrop() logic is set up to be cumulative. Thus, while this could prevent
             // multiple simultaneious files from being dropped, one should not use this as a reliable
             // means of validation, and instead rely on an external validation function.
-            maxFiles: 1,
+            //` maxFiles: 1,
 
             ///////////////////////////////////////////////////////////////////////////
             //
@@ -252,13 +252,13 @@ export const ControlledDropzoneDemo = () => {
             ///////////////////////////////////////////////////////////////////////////
             // maxSize: 300000, // arbitrary value for testing.
 
-            accept: {
-              'image/jpeg': ['.jpeg', '.jpg'],
-              'image/png': ['.png']
-              // 'image/gif': ['.gif'],
-              // 'image/webp': ['.webp'],
-              // 'application/json': ['.json']
-            },
+            //` accept: {
+            //   'image/jpeg': ['.jpeg', '.jpg'],
+            //   'image/png': ['.png']
+            //   // 'image/gif': ['.gif'],
+            //   // 'image/webp': ['.webp'],
+            //   // 'application/json': ['.json']
+            // },
 
             ///////////////////////////////////////////////////////////////////////////
             //
@@ -351,7 +351,7 @@ export const ControlledDropzoneDemo = () => {
             disabled: disabled
           }}
           acceptMessage='PNG and JPG files are allowed.'
-          className='[--dropzone-preview-size:100px] [--dropzone-theme-color:var(--color-sky-500)]'
+          className='[--dropzone-preview-size:150px] [--dropzone-theme-color:var(--color-sky-500)]'
           style={{}}
           showPreviews={showPreviews}
           groupClassName='mx-auto mb-4 w-full'

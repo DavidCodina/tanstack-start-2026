@@ -3,7 +3,13 @@
 import { Preview } from './Preview'
 import type { PreviewProps } from '../types'
 
-const baseClasses = `flex items-center flex-wrap gap-4 justify-center pt-2`
+// Note: auto-fit (i.e., not auto-fill) works much better when
+// using justify-center. Why? Because we don't want ghost columns.
+const baseClasses = `
+grid gap-4 justify-center w-full mt-2
+auto-rows-(--dropzone-preview-size)
+grid-cols-[repeat(auto-fit,var(--dropzone-preview-size))]
+`
 
 /* ========================================================================
 

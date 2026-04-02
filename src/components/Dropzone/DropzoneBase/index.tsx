@@ -41,7 +41,6 @@ w-full p-6 bg-card
 border-2 border-dashed rounded-xl
 outline-none
 cursor-pointer
-
 focus:border-primary
 focus:ring-[3px]
 focus:ring-primary/50

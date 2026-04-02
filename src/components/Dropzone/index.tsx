@@ -14,33 +14,12 @@ export type DropzoneAPI = {
 
 //# Next Steps:
 
-//# Update to v15
-
-//# Review Preview component -especially nonImageClasses.
-//# Possibly add an ellipsis style, since the names seem to be getting truncated.
-
-//# Create UncontroledDropzoneDemo (No RHF).
-
-//# Test Previews container against multiple files
-//# const baseClasses = `flex items-center flex-wrap gap-4 justify-center`
-//# Possibly switch to a grid implementation.
-
 //# Change DropzoneProps so instead of omitting certain properties, the actual
 //# sub types don't include them in their exported type.
 
-//# Test validation styles
-
-//# Test disabled styles.
-
-//# Test all styles against dark theme.
-
-//# Test non-image previews.
-
-//# Familiarize yourself with how the previews are implemented.
-
 //# Test two-way bindings.
 
-//# Controlled Demo seems broken when you click submit with nothing.
+//# Create UncontroledDropzoneDemo (No RHF).
 
 //# Test with file-upload-server-2026
 
