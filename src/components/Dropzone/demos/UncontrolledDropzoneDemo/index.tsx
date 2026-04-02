@@ -124,7 +124,7 @@ export const UncontrolledDropzoneDemo = () => {
     try {
       await sleep(1000)
       toast.success('Form validation success!')
-    } catch (err) {
+    } catch (_err) {
       toast.error('Unable to submit the form!')
     } finally {
       setIsSubmitting(false)
