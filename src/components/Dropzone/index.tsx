@@ -14,9 +14,6 @@ export type DropzoneAPI = {
 
 //# Next Steps:
 
-//# Change DropzoneProps so instead of omitting certain properties, the actual
-//# sub types don't include them in their exported type.
-
 //# Test two-way bindings.
 
 //# Create UncontroledDropzoneDemo (No RHF).
@@ -24,9 +21,7 @@ export type DropzoneAPI = {
 //# Test with file-upload-server-2026
 
 //# Bonus: Jan Marshal - https://www.youtube.com/watch?v=83bECYmPbI4
-
-//# Bonus Cand Dev - https://www.youtube.com/watch?v=ohXb62KwTak
-
+//# Bonus: Cand Dev - https://www.youtube.com/watch?v=ohXb62KwTak
 //# Bonus: Convert demos to use Tanstack Form instead of RHF.
 
 ///////////////////////////////////////////////////////////////////////////

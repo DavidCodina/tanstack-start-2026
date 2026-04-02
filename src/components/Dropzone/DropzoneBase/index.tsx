@@ -22,14 +22,20 @@ import type {
   // DropzoneProps,
   // DropzoneRef,
   DropzoneBaseProps,
+  InternalRef,
   OnDrop,
   PreviewObject
 } from '../types'
+
 import { cn, isFileArray } from '@/utils'
 
 //# Deduplicate this.
 type DropzoneAPI = {
   clear: () => void
+}
+
+type InternalDropzoneBaseProps = {
+  internalRef: InternalRef
 }
 
 // Removed: border-(--dropzone-theme-color,var(--dropzone-default-theme-color))
@@ -74,7 +80,7 @@ export const DropzoneBase = ({
   touched = false,
   value = null,
   ...otherProps
-}: DropzoneBaseProps) => {
+}: DropzoneBaseProps & InternalDropzoneBaseProps) => {
   /* ======================
           constants 
   ====================== */

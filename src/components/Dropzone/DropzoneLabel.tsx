@@ -1,6 +1,6 @@
 'use client'
 
-import type { DropzoneLabelProps } from './types'
+import type { DropzoneLabelProps, InternalRef } from './types'
 import { cn } from '@/utils'
 
 const baseClasses = `
@@ -10,6 +10,13 @@ leading-none select-none
 w-fit cursor-pointer
 mb-1 text-sm font-medium
 `
+
+type InternalDropzoneLabelProps = {
+  disabled: boolean
+  error: string
+  internalRef: InternalRef
+  touched: boolean
+}
 
 /* ========================================================================
 
@@ -25,7 +32,7 @@ export const DropzoneLabel = ({
   internalRef,
   touched = false,
   ...otherProps
-}: DropzoneLabelProps) => {
+}: DropzoneLabelProps & InternalDropzoneLabelProps) => {
   /* ======================
           constants 
   ====================== */

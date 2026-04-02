@@ -3,9 +3,16 @@
 import type { DropzoneErrorProps } from './types'
 import { cn } from '@/utils'
 
+type InternalDropzoneErrorProps = {
+  disabled: boolean
+  error: string
+  touched: boolean
+}
+
 const baseClasses = `
 block text-destructive mt-1 text-sm w-full overflow-scroll
 `
+
 /* ========================================================================
 
 ======================================================================== */
@@ -17,7 +24,7 @@ export const DropzoneError = ({
   error = '',
   touched = false,
   ...otherProps
-}: DropzoneErrorProps) => {
+}: DropzoneErrorProps & InternalDropzoneErrorProps) => {
   /* ======================
           constants 
   ====================== */
