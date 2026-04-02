@@ -108,7 +108,9 @@ export const DropzoneBase = ({
   // immediately after mount within the associated useEffect() below.
   const hasChangedRef = useRef(false)
 
-  const [files, setFiles] = useState<File[] | null>(value || null)
+  const [files, setFiles] = useState<File[] | null>(() => {
+    return value || null
+  })
   const [previews, setPreviews] = useState<PreviewObject[] | null>(null)
 
   // Derived state
@@ -429,12 +431,10 @@ export const DropzoneBase = ({
   // we definitely don't want to use that approach.
 
   useEffect(() => {
-    if (hasChangedRef.current === false) {
-      return
-    }
+    if (hasChangedRef.current === false) return
     // Don't do this: onChangeRef.current?.(files)
     onChange?.(files)
-  }, [files]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [files]) // eslint-disable-line
 
   /* ======================
         useEffect()  

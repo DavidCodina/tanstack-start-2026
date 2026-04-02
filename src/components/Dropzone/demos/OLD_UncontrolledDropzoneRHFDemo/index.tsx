@@ -49,7 +49,7 @@ export const UncontrolledDropzoneDemo = () => {
     handleSubmit,
     getValues,
     setValue,
-    setError,
+    // setError,
     // trigger,
     // watch,
     // control,
@@ -203,47 +203,53 @@ export const UncontrolledDropzoneDemo = () => {
               // console.log('\nDrop Accepted:', { files, event })
             },
 
-            // The goal with onDropRejected is to show a toast.error when something was rejected, but something
-            // was also currently or previously accepted. Conversely, if there is nothing already accepted then show the error as
-            // an actual RHF validation error.
+            ///////////////////////////////////////////////////////////////////////////
+            //
+            // TL;DR: Don't use onDropRejected() to set an error..
+            //
+            // onDropRejected() is called when react-dropzone's accept, maxFiles, maxSize, etc. are violated.
+            // If a file is rejected, it doesn't make sense set an error or touched.
+            //
+            // Why? Because it was rejected! In other words, it never even made it to the onDrop() -> files.
+            // By default, it was simply omitted. The best thing one can do in such cases is to notify the user
+            // with a toast.
+            //
+            // Another reason not to set errors here is that one can potentially run into race conditions against
+            //  ny external validation that happens within onChange(). Ultimately, onne should treat external
+            // validation (e.g., validateFiles()) as the single source of truth for validity.
+            //
+            // I would even argue that one should not use maxFiles, maxSize at all. Instead, simply allow the user
+            // to select the files, then let the validator do its job. The whole flow of files getting rejected
+            // and subsequent toast notifications is not necessary.
+            //
+            // Finally, if you wanted to hardcode this kind of behavior into the Dropzone abstraction, we
+            // could do it from within the onDrop() callback, which also receives fileRejections. Then we
+            // could have a custom prop to opt out of rejection notifications.
+            //
+            ///////////////////////////////////////////////////////////////////////////
+
             onDropRejected: (fileRejections, _event) => {
-              const message =
-                fileRejections?.[0]?.errors[0]?.message ||
-                'One or more files were rejected.'
+              const message = (
+                <div>
+                  <div className='mb-1'>
+                    One or more file rejections occurred:
+                  </div>
 
-              // In cases where one file is accepted and one rejected, values.files may not yet
-              // reflect the accepted file. In order to ensure that values.files shows the
-              // accepted file, wrap in setTimeout to push to bottom of stack.
-              setTimeout(() => {
-                const values = getValues()
+                  <ul className='list-disc space-y-1'>
+                    {fileRejections.map((item, index) => {
+                      return (
+                        <li key={index}>
+                          {item.file.name}: {item.errors[0].message}
+                        </li>
+                      )
+                    })}
+                  </ul>
+                </div>
+              )
 
-                if (
-                  !values.files ||
-                  (Array.isArray(values.files) && values.files.length === 0)
-                ) {
-                  //Again, wrap in setTimeout. Otherwise the default validation will have precedence.
-
-                  setError('files', { type: 'custom', message: message })
-                  setValue('files', values.files, {
-                    // If you validate here, it will overwrite the error we just set.
-                    shouldValidate: false,
-                    shouldDirty: true,
-                    shouldTouch: true
-                  })
-                } else {
-                  setValue('files', values.files, {
-                    shouldValidate: true,
-                    shouldDirty: true,
-                    shouldTouch: true
-                  })
-                  // Note: All files will be rejected if the number of files exceeds maxFiles,
-                  // if a file is over/under maxSize/minSize, etc.
-                  // Here I'm merely showing the first error.
-                  toast.error(message, {
-                    autoClose: 5000
-                  })
-                }
-              }, 0)
+              toast.error(message, {
+                duration: 1000 * 5
+              })
             },
 
             onFileDialogCancel: () => {

@@ -1,7 +1,7 @@
 import { createFileRoute /* , useRouter */ } from '@tanstack/react-router'
 import { Page, PageContainer } from '@/components'
-import { ControlledDropzoneDemo } from '@/components/Dropzone/demos/ControlledDropzoneDemo'
-// import { DashedBorder } from '@/experiments/DashedBorder'
+// import { ControlledDropzoneDemo } from '@/components/Dropzone/demos/ControlledDropzoneDemo'
+import { UncontrolledDropzoneDemo } from '@/components/Dropzone/demos/UncontrolledDropzoneDemo'
 
 export const Route = createFileRoute('/')({ component: PageHome })
 
@@ -39,7 +39,7 @@ function PageHome() {
           _HOME
         </h1>
 
-        <ControlledDropzoneDemo />
+        <UncontrolledDropzoneDemo />
       </PageContainer>
     </Page>
   )
