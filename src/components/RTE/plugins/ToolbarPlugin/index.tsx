@@ -222,7 +222,8 @@ const CODE_LANGUAGE_OPTIONS_PRISM: [string, string][] =
 
 //# Double-check $updateToolbar against current Github lexical-playground version.
 
-//# Begin to review and update each plugin, node, ui, etc. one by one.
+//# Begin to review and update each plugin, node, ui, etc. one by one. Not just for
+//# updates, but also to really understand what its purpose is.
 
 //# Review useAPI({ apiRef, contentEditableRef }) in the main RTE/index.tsx file?
 //# Is this a custom hook that I made?
