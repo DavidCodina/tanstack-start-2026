@@ -129,6 +129,10 @@ function $findTopLevelElement(node: LexicalNode) {
 ======================================================================== */
 //# Next Steps:
 
+//# Review useAPI({ apiRef, contentEditableRef }) in the main RTE/index.tsx file?
+//# Is this a custom hook that I made?
+//# It's not part of the official lexical-playground/src/hooks.
+
 //# Add back each feature one by one...
 
 // FontDropDown
@@ -174,7 +178,7 @@ function $findTopLevelElement(node: LexicalNode) {
 //#   - plugins
 //#   - nodes
 //#   - themes
-//#  - ui
+//#   - ui
 //#   - utils
 //#   - context
 //#   - hooks
@@ -255,7 +259,7 @@ export const ToolbarPlugin = ({
   )
 
   /* ======================
-        Omit Settings 
+      ⚠️ Omit Settings 
   ====================== */
   ///////////////////////////////////////////////////////////////////////////
   //

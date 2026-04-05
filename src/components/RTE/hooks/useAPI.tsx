@@ -1,5 +1,8 @@
-import { useEffect, MutableRefObject } from 'react'
-import { LexicalEditor, CLEAR_EDITOR_COMMAND } from 'lexical'
+import { useEffect } from 'react'
+import { CLEAR_EDITOR_COMMAND } from 'lexical'
+
+import type { MutableRefObject } from 'react'
+import type { LexicalEditor } from 'lexical'
 
 function isHTMLElement(element: Element | null): element is HTMLElement {
   return element instanceof HTMLElement

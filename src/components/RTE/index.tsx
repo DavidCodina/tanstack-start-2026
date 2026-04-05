@@ -88,7 +88,7 @@ htmlConfig, theme , ui, types, etc
 //# Consequently, we need to go in and update editor-theme-h1 through editor-theme-h6
 import { theme } from './theme'
 import { Placeholder } from './ui/Placeholder'
-//# import useAPI from './hooks/useAPI'
+import useAPI from './hooks/useAPI'
 
 import { ToolbarContext } from './context/ToolbarContext'
 
@@ -199,7 +199,7 @@ type OnChange = React.ComponentProps<typeof OnChangePlugin>['onChange']
 ///////////////////////////////////////////////////////////////////////////
 
 export const RTE = ({
-  //# apiRef,
+  apiRef,
   className = '',
   initialValue,
   onChange: onChangeExternal,
@@ -210,6 +210,7 @@ export const RTE = ({
   //# Currently this is not being used, other than being passed to the associated <div>.
   const contentEditableRef = useRef<HTMLDivElement | null>(null)
 
+  useAPI({ apiRef, contentEditableRef })
   /* ======================
         initialConfig
   ====================== */
