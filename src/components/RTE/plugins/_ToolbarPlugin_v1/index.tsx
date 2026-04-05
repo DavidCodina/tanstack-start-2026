@@ -45,12 +45,17 @@ import {
   // $isQuoteNode
 } from '@lexical/rich-text'
 
-import { $isCodeNode } from '@lexical/code-core'
+import {
+  $isCodeNode
+  //! CODE_LANGUAGE_FRIENDLY_NAME_MAP,
+  //! CODE_LANGUAGE_MAP
+  //! getLanguageFriendlyName
+} from '@lexical/code-core'
 
 import {
   $getSelectionStyleValueForProperty,
   $isParentElementRTL
-  // $patchStyleText
+  //$patchStyleText
 } from '@lexical/selection'
 
 import {
@@ -67,25 +72,23 @@ import { sanitizeUrl } from '../../utils/url'
 
 import useModal from '../../hooks/useModal'
 
-import {
-  DEFAULT_FONT_SIZE,
-  blockTypeToBlockName,
-  useToolbarState
-} from '../../context/ToolbarContext'
-
+// This is simply a custom dictionary.
+import { blockTypeToBlockName } from './blockTypeToBlockName'
 import { BlockFormatDropDown } from './BlockFormatDropDown'
 import { Divider } from './Divider'
 
 import type { Dispatch, JSX } from 'react'
-import type {
-  // ElementFormatType,
-  LexicalNode,
-  NodeKey
-} from 'lexical'
+import type { ElementFormatType, LexicalNode, NodeKey } from 'lexical'
 
 /* ======================
 
 ====================== */
+
+// eslint-disable-next-line
+const rootTypeToRootName = {
+  root: 'Root',
+  table: 'Table'
+}
 
 // The official example does this, but I did it all locally.
 // import { IS_APPLE } from 'shared/environment'
@@ -96,6 +99,8 @@ export const CAN_USE_DOM: boolean =
 
 const IS_APPLE: boolean =
   CAN_USE_DOM && /Mac|iPod|iPhone|iPad/.test(navigator.platform)
+
+const defaultFontSize = 16
 
 /* ======================
 
@@ -158,7 +163,9 @@ function $findTopLevelElement(node: LexicalNode) {
 
 //# Once everything is wired up, do an in-depth comparison of the current components vs. new components.
 
-//# Implement ShortcutsPlugin.
+//# Once everything is in working order, consider implementing: useToolbarState()
+//# const { toolbarState, updateToolbarState } = useToolbarState()
+//# Then we can also use the ShortcutsPlugin.
 
 export const ToolbarPlugin = ({
   //^ This is associated to the 4th useEffect() below.
@@ -172,20 +179,51 @@ export const ToolbarPlugin = ({
           state
   ====================== */
 
-  // In the lexical-playground example, both editor and activeEditor are passed in as props.
   const [editor] = useLexicalComposerContext()
   const [activeEditor, setActiveEditor] = useState(editor)
+
+  // setBlockType called within $updateToolbar()
+  const [blockType, setBlockType] =
+    useState<keyof typeof blockTypeToBlockName>('paragraph')
+
+  // The rootType seems to be related to the implementation of tables,
+  // but that Lexical feature may still be experimental.
+  const [rootType, setRootType] =
+    useState<keyof typeof rootTypeToRootName>('root')
 
   // Used by onCodeLanguageSelect()
   const [_selectedElementKey, setSelectedElementKey] = useState<NodeKey | null>(
     null
   )
 
+  const [_fontColor, setFontColor] = useState<string>('#000')
+  const [_bgColor, setBgColor] = useState<string>('#fff')
+  const [_fontFamily, setFontFamily] = useState<string>('Arial')
+  const [_elementFormat, setElementFormat] = useState<ElementFormatType>('left')
+  const [isLink, setIsLink] = useState(false)
+
+  const [_isBold, setIsBold] = useState(false)
+  const [_isItalic, setIsItalic] = useState(false)
+  const [_isUnderline, setIsUnderline] = useState(false)
+  const [_isStrikethrough, setIsStrikethrough] = useState(false)
+  const [_isSubscript, setIsSubscript] = useState(false)
+  const [_isSuperscript, setIsSuperscript] = useState(false)
+  const [_isHighlight, setIsHighlight] = useState(false)
+  const [_isCode, setIsCode] = useState(false)
+  const [_fontSize, setFontSize] = useState<string>(`${defaultFontSize}px`)
+  const [_isLowercase, setIsLowercase] = useState(false) //* New
+  const [_isUppercase, setIsUppercase] = useState(false) //* New
+  const [_isCapitalize, setIsCapitalize] = useState(false) //* New
+
+  const [canUndo, setCanUndo] = useState(false)
+  const [canRedo, setCanRedo] = useState(false)
   const [_modal, _showModal] = useModal()
+  const [__keyisRTL, setIsRTL] = useState(false)
 
+  // codeLanguage eventually used inside of conditional blockType === 'code' JSX
+  const [_codeLanguage, setCodeLanguage] = useState<string>('')
   const [isEditable, setIsEditable] = useState(() => editor.isEditable())
-
-  const { toolbarState, updateToolbarState } = useToolbarState()
+  //# const { toolbarState, updateToolbarState } = useToolbarState()
 
   //* Newer version adds the following here:
 
@@ -205,19 +243,17 @@ export const ToolbarPlugin = ({
         : selectedElement.getType()
 
       if (type in blockTypeToBlockName) {
-        updateToolbarState(
-          'blockType',
-          type as keyof typeof blockTypeToBlockName
-        )
+        //* updateToolbarState('blockType', type as keyof typeof blockTypeToBlockName)
+        setBlockType(type as keyof typeof blockTypeToBlockName)
       }
 
-      // ⚠️ Gotcha: This is necessary when backspacing on a 'code' blockType
-      // in order to switch the 'code' blockType back to a 'paragraph'.
+      //^ Gotcha: This is necessary when backspacing on a 'code' blockType
+      //^ in order to switch the 'code' blockType back to a 'paragraph'.
       if (type === 'custom-paragraph') {
-        updateToolbarState('blockType', 'paragraph')
+        setBlockType('paragraph')
       }
     },
-    [updateToolbarState]
+    [] //* updateToolbarState
   )
 
   /* ======================
@@ -246,10 +282,8 @@ export const ToolbarPlugin = ({
         //*     : ''
         //* )
 
-        updateToolbarState(
-          'codeLanguage',
-          language ? normalizeCodeLanguagePrism(language) : ''
-        )
+        const normalizedLanguage = normalizeCodeLanguagePrism(language)
+        setCodeLanguage(normalizedLanguage)
 
         // codeTheme is more for Shiki. For Prism, it will be undefined
         //* const theme = element.getTheme()
@@ -257,7 +291,7 @@ export const ToolbarPlugin = ({
         //* return
       }
     },
-    [updateToolbarState] //* isCodeHighlighted, isCodeShiki
+    [] //* updateToolbarState, isCodeHighlighted, isCodeShiki
   )
 
   /* ======================
@@ -299,15 +333,22 @@ export const ToolbarPlugin = ({
       const elementDOM = activeEditor.getElementByKey(elementKey)
 
       //^ RTL
+      //* updateToolbarState('isRTL', $isParentElementRTL(selection))
       // Not really sure how this works.
       // Maybe the start/end alignment options are what control this...
-      updateToolbarState('isRTL', $isParentElementRTL(selection))
+      setIsRTL($isParentElementRTL(selection))
 
       //^ LinkNodes
       const node = getSelectedNode(selection)
       const parent = node.getParent()
       const isLink = $isLinkNode(parent) || $isLinkNode(node)
-      updateToolbarState('isLink', isLink)
+      //* Newer version does this:  updateToolbarState('isLink', isLink)
+
+      if (isLink) {
+        setIsLink(true)
+      } else {
+        setIsLink(false)
+      }
 
       //* Newer version does this. However, I'm not doing the table feature currently.
       //* const tableNode = $findMatchingParent(node, $isTableNode)
@@ -317,7 +358,7 @@ export const ToolbarPlugin = ({
       //*   updateToolbarState('rootType', 'root')
       //* }
 
-      updateToolbarState('rootType', 'root')
+      setRootType('root')
 
       if (elementDOM !== null) {
         setSelectedElementKey(elementKey)
@@ -331,7 +372,8 @@ export const ToolbarPlugin = ({
             ? parentList.getListType()
             : element.getListType()
 
-          updateToolbarState('blockType', type)
+          //* Newer version does this: updateToolbarState('blockType', type)
+          setBlockType(type)
         } else {
           //^ HeadingNodes
           $handleHeadingNode(element)
@@ -342,13 +384,14 @@ export const ToolbarPlugin = ({
       }
 
       //^ Handle buttons
-      updateToolbarState(
-        'fontColor',
+
+      //* updateToolbarState('fontColor', $getSelectionStyleValueForProperty(selection, 'color', '#000'))
+      setFontColor(
         $getSelectionStyleValueForProperty(selection, 'color', '#000')
       )
 
-      updateToolbarState(
-        'bgColor',
+      //* updateToolbarState('bgColor', $getSelectionStyleValueForProperty(selection, 'background-color', '#fff'))
+      setBgColor(
         $getSelectionStyleValueForProperty(
           selection,
           'background-color',
@@ -356,8 +399,8 @@ export const ToolbarPlugin = ({
         )
       )
 
-      updateToolbarState(
-        'fontFamily',
+      //* updateToolbarState('fontFamily', $getSelectionStyleValueForProperty(selection, 'font-family', 'Arial'))
+      setFontFamily(
         $getSelectionStyleValueForProperty(selection, 'font-family', 'Arial')
       )
 
@@ -370,9 +413,9 @@ export const ToolbarPlugin = ({
         )
       }
 
+      //* updateToolbarState('elementFormat', $isElementNode(matchingParent) ? matchingParent.getFormatType() : $isElementNode(node) ? node.getFormatType() : parent?.getFormatType() || 'left')
       // If matchingParent is a valid node, pass it's format type
-      updateToolbarState(
-        'elementFormat',
+      setElementFormat(
         $isElementNode(matchingParent)
           ? matchingParent.getFormatType()
           : $isElementNode(node)
@@ -383,41 +426,50 @@ export const ToolbarPlugin = ({
 
     //^ Update text format
     if ($isRangeSelection(selection)) {
-      updateToolbarState('isBold', selection.hasFormat('bold'))
+      //* updateToolbarState('isBold', selection.hasFormat('bold'))
+      setIsBold(selection.hasFormat('bold'))
 
-      updateToolbarState('isItalic', selection.hasFormat('italic'))
+      //* updateToolbarState('isItalic', selection.hasFormat('italic'))
+      setIsItalic(selection.hasFormat('italic'))
 
-      updateToolbarState('isUnderline', selection.hasFormat('underline'))
+      //* updateToolbarState('isUnderline', selection.hasFormat('underline'))
+      setIsUnderline(selection.hasFormat('underline'))
 
-      updateToolbarState(
-        'isStrikethrough',
-        selection.hasFormat('strikethrough')
-      )
+      //* updateToolbarState('isStrikethrough', selection.hasFormat('strikethrough'))
+      setIsStrikethrough(selection.hasFormat('strikethrough'))
 
-      updateToolbarState('isSubscript', selection.hasFormat('subscript'))
+      //* updateToolbarState('isSubscript', selection.hasFormat('subscript'))
+      setIsSubscript(selection.hasFormat('subscript'))
 
-      updateToolbarState('isSuperscript', selection.hasFormat('superscript'))
+      //* updateToolbarState('isSuperscript', selection.hasFormat('superscript'))
+      setIsSuperscript(selection.hasFormat('superscript'))
 
-      updateToolbarState('isHighlight', selection.hasFormat('highlight'))
+      //* updateToolbarState('isHighlight', selection.hasFormat('highlight'))
+      setIsHighlight(selection.hasFormat('highlight'))
 
-      updateToolbarState('isCode', selection.hasFormat('code'))
+      //* updateToolbarState('isCode', selection.hasFormat('code'))
+      setIsCode(selection.hasFormat('code'))
 
-      updateToolbarState(
-        'fontSize',
+      //* updateToolbarState('fontSize', $getSelectionStyleValueForProperty(selection, 'font-size', '15px'))
+      setFontSize(
         $getSelectionStyleValueForProperty(
           selection,
           'font-size',
-          `${DEFAULT_FONT_SIZE}px`
+          `${defaultFontSize}px`
         )
       )
 
-      updateToolbarState('isLowercase', selection.hasFormat('lowercase'))
+      //* updateToolbarState('isLowercase', selection.hasFormat('lowercase'))
+      setIsLowercase(selection.hasFormat('lowercase'))
 
-      updateToolbarState('isUppercase', selection.hasFormat('uppercase'))
+      //* updateToolbarState('isUppercase', selection.hasFormat('uppercase'))
+      setIsUppercase(selection.hasFormat('uppercase'))
 
-      updateToolbarState('isCapitalize', selection.hasFormat('capitalize'))
+      //* updateToolbarState('isCapitalize', selection.hasFormat('capitalize'))
+      setIsCapitalize(selection.hasFormat('capitalize'))
     }
 
+    //* This part is ENTIRELY new
     // This block only runs when the selection is a NodeSelection
     // A NodeSelection is when one or more whole nodes are selected as discrete objects,
     // rather than a text cursor spanning characters. The classic example is clicking on
@@ -434,14 +486,16 @@ export const ToolbarPlugin = ({
         )
         if (parentList) {
           const type = parentList.getListType()
-          updateToolbarState('blockType', type)
+          //* updateToolbarState('blockType', type)
+          setBlockType(type)
         } else {
           const selectedElement = $findTopLevelElement(selectedNode)
           $handleHeadingNode(selectedElement)
           $handleCodeNode(selectedElement)
           // Update elementFormat for node selection (e.g., images)
           if ($isElementNode(selectedElement)) {
-            updateToolbarState('elementFormat', selectedElement.getFormatType())
+            //* updateToolbarState('elementFormat', selectedElement.getFormatType())
+            setElementFormat(selectedElement.getFormatType())
           }
         }
       }
@@ -449,10 +503,10 @@ export const ToolbarPlugin = ({
 
     // The lexical-playground source code adds editor to the dependency array.
     // However, that's only necessary because it's passed in as a prop rather than defined internally.
-  }, [activeEditor, updateToolbarState, $handleHeadingNode, $handleCodeNode])
+  }, [activeEditor, $handleHeadingNode, $handleCodeNode])
 
   /* ======================
-        useEffect() 1 
+        useEffect() 1 //* Looks Good
   ====================== */
   ///////////////////////////////////////////////////////////////////////////
   //
@@ -470,7 +524,7 @@ export const ToolbarPlugin = ({
     return editor.registerCommand(
       SELECTION_CHANGE_COMMAND,
       (_payload, newEditor) => {
-        // console.log('\nSelection Changed')
+        console.log('\nSelection Changed')
         setActiveEditor(newEditor)
         $updateToolbar()
         return false
@@ -482,7 +536,7 @@ export const ToolbarPlugin = ({
   }, [editor, $updateToolbar])
 
   /* ======================
-        useEffect() 2
+        useEffect() 2 //* Looks Good
   ====================== */
   ///////////////////////////////////////////////////////////////////////////
   //
@@ -522,15 +576,17 @@ export const ToolbarPlugin = ({
       //   Table cells become their own editors: https://github.com/facebook/lexical/issues/2792
       //
       ///////////////////////////////////////////////////////////////////////////
-      { editor: activeEditor }
+      { editor: activeEditor } //* New
     )
   }, [activeEditor, $updateToolbar])
 
   /* ======================
-        useEffect() 3 
+        useEffect() 3  //* Looks Good
   ====================== */
-  // It bundles four listeners together with mergeRegister (which
-  // just means they all get cleaned up together on unmount).
+  // This gets called on mount.
+  // It bundles four listeners together with mergeRegister (which just means they all get cleaned up together on unmount).
+
+  // It registers $updateToolbar() listener as well as undo/redo commands.
 
   useEffect(() => {
     return mergeRegister(
@@ -547,32 +603,32 @@ export const ToolbarPlugin = ({
           () => {
             $updateToolbar()
           },
-          { editor: activeEditor }
+          { editor: activeEditor } //* New
         )
       }),
 
       // CAN_UNDO_COMMAND / CAN_REDO_COMMAND — Lexical dispatches these automatically when the undo/redo stack changes.
       // They just flip canUndo and canRedo in toolbar state to enable/disable those buttons.
-
       activeEditor.registerCommand<boolean>(
         CAN_UNDO_COMMAND,
         (payload) => {
-          updateToolbarState('canUndo', payload)
+          // Rather than having the setCanUndo() state, the newer versions
+          // call: updateToolbarState('canUndo', payload)
+          setCanUndo(payload)
           return false
         },
         COMMAND_PRIORITY_CRITICAL
       ),
-
       activeEditor.registerCommand<boolean>(
         CAN_REDO_COMMAND,
         (payload) => {
-          updateToolbarState('canRedo', payload)
+          setCanRedo(payload)
           return false
         },
         COMMAND_PRIORITY_CRITICAL
       )
     )
-  }, [$updateToolbar, activeEditor, editor, updateToolbarState])
+  }, [$updateToolbar, activeEditor, editor])
 
   /* ======================
         useEffect() 4 
@@ -603,7 +659,6 @@ export const ToolbarPlugin = ({
   //
   ///////////////////////////////////////////////////////////////////////////
 
-  const isLink = toolbarState.isLink
   useEffect(() => {
     return activeEditor.registerCommand(
       KEY_DOWN_COMMAND, // ❌ KEY_MODIFIER_COMMAND,
@@ -614,7 +669,6 @@ export const ToolbarPlugin = ({
         if (code === 'KeyK' && (ctrlKey || metaKey)) {
           event.preventDefault()
           let url: string | null
-
           if (!isLink) {
             setIsLinkEditMode(true)
             url = sanitizeUrl('https://')
@@ -747,7 +801,7 @@ export const ToolbarPlugin = ({
       ===================== */}
 
       <button
-        disabled={!toolbarState.canUndo || !isEditable}
+        disabled={!canUndo || !isEditable}
         onClick={() => {
           activeEditor.dispatchCommand(UNDO_COMMAND, undefined)
         }}
@@ -760,7 +814,7 @@ export const ToolbarPlugin = ({
       </button>
 
       <button
-        disabled={!toolbarState.canRedo || !isEditable}
+        disabled={!canRedo || !isEditable}
         onClick={() => {
           activeEditor.dispatchCommand(REDO_COMMAND, undefined)
         }}
@@ -777,28 +831,29 @@ export const ToolbarPlugin = ({
       {/* =====================
           BlockFormatDropDown
       ===================== */}
+      {/* 
+      //* Newer versions use: toolbarState.blockType in blockTypeToBlockName
+      */}
 
-      {toolbarState.blockType in blockTypeToBlockName &&
-        activeEditor === editor && (
-          <>
-            <BlockFormatDropDown
-              disabled={!isEditable}
-              blockType={toolbarState.blockType}
-              rootType={toolbarState.rootType}
-              editor={activeEditor}
-            />
-            <Divider />
-          </>
-        )}
+      {blockType in blockTypeToBlockName && activeEditor === editor && (
+        <>
+          <BlockFormatDropDown
+            disabled={!isEditable}
+            blockType={blockType}
+            rootType={rootType}
+            editor={activeEditor}
+          />
+          <Divider />
+        </>
+      )}
 
       {/* =============================================================================== */}
 
       {/*
       //* Newer versions also use: && isCodeHighlighted
-      //* This comes from const { settings: { isCodeHighlighted, isCodeShiki } } = useSettings()
-      */}
-
-      {toolbarState.blockType === 'code' ? (
+      // This comes from const { settings: { isCodeHighlighted, isCodeShiki } } = useSettings()
+       */}
+      {blockType === 'code' ? (
         <>
           Code Stuff Here...
           {/* 

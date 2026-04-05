@@ -88,7 +88,9 @@ htmlConfig, theme , ui, types, etc
 //# Consequently, we need to go in and update editor-theme-h1 through editor-theme-h6
 import { theme } from './theme'
 import { Placeholder } from './ui/Placeholder'
-// import useAPI from './hooks/useAPI'
+//# import useAPI from './hooks/useAPI'
+
+import { ToolbarContext } from './context/ToolbarContext'
 
 /* ======================
         types
@@ -327,70 +329,72 @@ export const RTE = ({
 
   // https://github.com/facebook/lexical/blob/main/packages/lexical-playground/src/Editor.tsx
   return (
-    <LexicalComposer
-      // LexicalComposer is essentially the Context wrapper that subsequently allows other
-      // components to access the Context through using useLexicalComposerContext().
-      initialConfig={initialConfig}
-    >
-      <div
-        className={`rte-editor-shell ${className ? ` ${className}` : ''}`}
-        style={style}
+    <ToolbarContext>
+      <LexicalComposer
+        // LexicalComposer is essentially the Context wrapper that subsequently allows other
+        // components to access the Context through using useLexicalComposerContext().
+        initialConfig={initialConfig}
       >
-        <ToolbarPlugin setIsLinkEditMode={setIsLinkEditMode} />
+        <div
+          className={`rte-editor-shell ${className ? ` ${className}` : ''}`}
+          style={style}
+        >
+          <ToolbarPlugin setIsLinkEditMode={setIsLinkEditMode} />
 
-        <SquarePlugin />
+          <SquarePlugin />
 
-        <div className='rte-editor-container'>
-          <InitialValuePlugin initialValue={initialValue} />
+          <div className='rte-editor-container'>
+            <InitialValuePlugin initialValue={initialValue} />
 
-          {/* <CustomHeadingPlugin /> */}
+            {/* <CustomHeadingPlugin /> */}
 
-          <RichTextPlugin
-            contentEditable={
-              <div className='rte-editor-scroller'>
-                <div
-                  className='rte-editor'
-                  ref={onRef} //# Not really sure if we need this.
-                >
-                  <ContentEditable
-                    aria-placeholder={placeholder}
-                    // The className specified here is used in ImagesPlugin & InlineImagePlugin:
-                    // target.parentElement.closest('div.rte-content-editable-root')
-                    // At present there is no actual CSS styles associated with this className.
-                    className={'rte-content-editable-root'}
-                    ref={contentEditableRef}
-                    style={{
-                      height: '100%',
-                      // The 25px is to make space for the DraggableBlockPlugin.
-                      padding: '10px 10px 10px 25px',
-                      //# Ultimately, we probably want some sort of :focus-within on the top-level element.
-                      outline: 'none'
-                    }}
-                    // Can probably take any props that a JSX <div> can take.
-                    spellCheck={false}
-                    placeholder={
-                      <Placeholder style={{}}>{placeholder}</Placeholder>
-                    }
-                  />
+            <RichTextPlugin
+              contentEditable={
+                <div className='rte-editor-scroller'>
+                  <div
+                    className='rte-editor'
+                    ref={onRef} //# Not really sure if we need this.
+                  >
+                    <ContentEditable
+                      aria-placeholder={placeholder}
+                      // The className specified here is used in ImagesPlugin & InlineImagePlugin:
+                      // target.parentElement.closest('div.rte-content-editable-root')
+                      // At present there is no actual CSS styles associated with this className.
+                      className={'rte-content-editable-root'}
+                      ref={contentEditableRef}
+                      style={{
+                        height: '100%',
+                        // The 25px is to make space for the DraggableBlockPlugin.
+                        padding: '10px 10px 10px 25px',
+                        //# Ultimately, we probably want some sort of :focus-within on the top-level element.
+                        outline: 'none'
+                      }}
+                      // Can probably take any props that a JSX <div> can take.
+                      spellCheck={false}
+                      placeholder={
+                        <Placeholder style={{}}>{placeholder}</Placeholder>
+                      }
+                    />
+                  </div>
                 </div>
-              </div>
-            }
-            // Previously, I was putting placeholder here, but newer Lexical examples pass it
-            // into the ContentEditable component. From what I've seen, either approach works.
-            // ❌ placeholder={<Placeholder style={{}}>{placeholder}</Placeholder>}
-            ErrorBoundary={LexicalErrorBoundary}
-          />
+              }
+              // Previously, I was putting placeholder here, but newer Lexical examples pass it
+              // into the ContentEditable component. From what I've seen, either approach works.
+              // ❌ placeholder={<Placeholder style={{}}>{placeholder}</Placeholder>}
+              ErrorBoundary={LexicalErrorBoundary}
+            />
 
-          {/* Adds support for history stack management and undo / redo commands.*/}
-          <HistoryPlugin />
-          <OnChangePlugin onChange={onChange} />
+            {/* Adds support for history stack management and undo / redo commands.*/}
+            <HistoryPlugin />
+            <OnChangePlugin onChange={onChange} />
 
-          <ListPlugin />
-          <CheckListPlugin />
+            <ListPlugin />
+            <CheckListPlugin />
 
-          <CodeHighlightPrismPlugin />
+            <CodeHighlightPrismPlugin />
+          </div>
         </div>
-      </div>
-    </LexicalComposer>
+      </LexicalComposer>
+    </ToolbarContext>
   )
 }

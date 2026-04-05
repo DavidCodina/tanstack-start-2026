@@ -12,8 +12,7 @@ import { $createHeadingNode, $createQuoteNode } from '@lexical/rich-text'
 import { $setBlocksType } from '@lexical/selection'
 import { $createParagraphNode, $getSelection, $isRangeSelection } from 'lexical'
 
-import { blockTypeToBlockName } from '../../context/ToolbarContext'
-
+import { blockTypeToBlockName } from './blockTypeToBlockName'
 import DropDown, { DropDownItem } from './Dropdown'
 
 import type { JSX } from 'react'
