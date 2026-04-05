@@ -82,8 +82,12 @@ export const Demo = () => {
     <>
       <div className='mb-6 flex justify-center gap-4'>
         <Button
+          //! Doesn't seem to be working!
+          //! clear() is getting called.
+          //! The issue is likely that we still need to implemeant <ClearEditorPlugin />
           onClick={() => {
             const api = apiRef.current
+            // console.log('api:', api) // => {clear: ƒ, focus: ƒ}
             if (api === null) {
               return
             }

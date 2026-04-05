@@ -1,8 +1,10 @@
-import { $isLineBreakNode, type HTMLConfig } from 'lexical'
+// import { $isLineBreakNode } from 'lexical'
 // import { CodeNode } from '@lexical/code'
-import { LinkNode, AutoLinkNode } from '@lexical/link'
+import { AutoLinkNode, LinkNode } from '@lexical/link'
 import { HorizontalRuleNode } from '@lexical/react/LexicalHorizontalRuleNode'
 import { addClassNamesToElement } from '@lexical/utils'
+
+import type { HTMLConfig } from 'lexical'
 
 type DOMExportOutputMap = HTMLConfig['export']
 
@@ -127,8 +129,8 @@ const autoLinkNodeExport: DOMExportOutputMap = new Map([
 ///////////////////////////////////////////////////////////////////////////
 
 //# Check the importDOM method to make sure this doesn't break it.
-const LANGUAGE_DATA_ATTRIBUTE = 'data-language'
-const HIGHLIGHT_LANGUAGE_DATA_ATTRIBUTE = 'data-highlight-language'
+// const LANGUAGE_DATA_ATTRIBUTE = 'data-language'
+// const HIGHLIGHT_LANGUAGE_DATA_ATTRIBUTE = 'data-highlight-language'
 
 // const codeNodeExport: DOMExportOutputMap = new Map([
 //   [
@@ -171,6 +173,6 @@ export const htmlConfig: HTMLConfig = {
     ...hrNodeExport,
     ...linkNodeExport,
     ...autoLinkNodeExport
-    // ...codeNodeExport
+    //# ...codeNodeExport
   ])
 }

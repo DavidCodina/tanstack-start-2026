@@ -13,8 +13,9 @@ import {
 } from '@lexical/utils'
 
 import {
+  $addUpdateTag,
   // $createParagraphNode,
-  // $getNodeByKey,
+  $getNodeByKey,
   $getSelection,
   $isElementNode,
   $isNodeSelection,
@@ -25,11 +26,13 @@ import {
   CAN_UNDO_COMMAND,
   COMMAND_PRIORITY_CRITICAL,
   COMMAND_PRIORITY_NORMAL,
-
-  // FORMAT_TEXT_COMMAND,
+  FORMAT_TEXT_COMMAND,
+  HISTORIC_TAG,
   KEY_DOWN_COMMAND, // ❌ KEY_MODIFIER_COMMAND,
   REDO_COMMAND,
   SELECTION_CHANGE_COMMAND,
+  SKIP_DOM_SELECTION_TAG,
+  SKIP_SELECTION_FOCUS_TAG,
   UNDO_COMMAND
 } from 'lexical'
 
@@ -54,21 +57,27 @@ import {
 
 import { $isCodeNode } from '@lexical/code-core'
 
+// import { $isDecoratorBlockNode } from '@lexical/react/LexicalDecoratorBlockNode'
+
 import {
   $getSelectionStyleValueForProperty,
-  $isParentElementRTL
-  // $patchStyleText
+  $isParentElementRTL,
+  $patchStyleText
 } from '@lexical/selection'
 
 import {
-  //# Used later as part of CODE_LANGUAGE_OPTIONS_PRISM
-  // getCodeLanguageOptions as getCodeLanguageOptionsPrism,
+  getCodeLanguageOptions as getCodeLanguageOptionsPrism,
   normalizeCodeLanguage as normalizeCodeLanguagePrism
 } from '@lexical/code-prism'
 
+import { INSERT_EMBED_COMMAND } from '@lexical/react/LexicalAutoEmbedPlugin'
+
+import { INSERT_HORIZONTAL_RULE_COMMAND } from '@lexical/react/LexicalHorizontalRuleNode'
 import { INSERT_SQUARE_COMMAND } from '../../nodes/SquareNode'
 
 import { getSelectedNode } from '../../utils/getSelectedNode'
+
+import { EmbedConfigs } from '../AutoEmbedPlugin'
 
 import { sanitizeUrl } from '../../utils/url'
 
@@ -80,8 +89,46 @@ import {
   useToolbarState
 } from '../../context/ToolbarContext'
 
+///////////////////////////////////////////////////////////////////////////
+//
+// The logic for ImagesPlugin, ImageNode, ImageComponent and ImageResizer is
+// very complex. It was taken from the Lexical playground example, then
+// simplified by removing all code related to captions. Thus it still retains
+// resizing and centering feature. Nonetheless, it's not something that I really
+// understand, but it works.
+//
+// For a much more basic example, see here:
+//
+//   https://codesandbox.io/s/lexical-image-plugin-example-iy2bc5?file=/src/plugins/ImageToolbar.tsx:1016-1134
+//
+//
+///////////////////////////////////////////////////////////////////////////
+
+import { InsertImageDialog } from '../ImagesPlugin'
+import { InsertInlineImageDialog } from '../InlineImagePlugin'
+import { isKeyboardInput } from '../../utils/focusUtils'
+import DropDown, { DropDownItem } from './Dropdown'
 import { BlockFormatDropDown } from './BlockFormatDropDown'
+import { FontFamilyDropDown } from './FontFamilyDropDown'
 import { Divider } from './Divider'
+
+import { FontSizeDropDown } from './FontSizeDropDown'
+import FontSize from './FontSize'
+import DropdownColorPicker from './DropdownColorPicker'
+import { AdditionalFormatDropDown } from './AdditionalFormatDropDown'
+
+import { ElementFormatDropDown } from './ElementFormatDropDown'
+
+import {
+  clearFormatting
+  // formatBulletList,
+  // formatCheckList,
+  // formatCode,
+  // formatHeading,
+  // formatNumberedList,
+  // formatParagraph,
+  // formatQuote
+} from './utils'
 
 import type { Dispatch, JSX } from 'react'
 import type {
@@ -124,14 +171,66 @@ function $findTopLevelElement(node: LexicalNode) {
   return topLevelElement
 }
 
+/* ======================
+
+====================== */
+
+function dropDownActiveClass(active: boolean) {
+  if (active) {
+    return 'active dropdown-item-active'
+  } else {
+    return ''
+  }
+}
+
+/* ======================
+
+====================== */
+
+const CODE_LANGUAGE_OPTIONS_PRISM: [string, string][] =
+  getCodeLanguageOptionsPrism().filter((option) =>
+    [
+      'c',
+      'clike',
+      'cpp',
+      'css',
+      'html',
+      'java',
+      'js',
+      'javascript',
+      'markdown',
+      'objc',
+      'objective-c',
+      'plain',
+      'powershell',
+      'py',
+      'python',
+      'rust',
+      'sql',
+      'swift',
+      'typescript',
+      'xml'
+    ].includes(option[0])
+  )
+
 /* ========================================================================
                               ToolbarPlugin()            
 ======================================================================== */
 //# Next Steps:
 
+//# Review old ColorPicker and fix styles on new one.
+
+//# Double-check $updateToolbar against current Github lexical-playground version.
+
+//# Begin to review and update each plugin, node, ui, etc. one by one.
+
 //# Review useAPI({ apiRef, contentEditableRef }) in the main RTE/index.tsx file?
 //# Is this a custom hook that I made?
 //# It's not part of the official lexical-playground/src/hooks.
+
+//# Recently updated clearFormatting to:
+//# clearFormatting={(e) => { clearFormatting(activeEditor, isKeyboardInput(e)) }}
+//# Double-back over everything and add that in everywhere.
 
 //# Add back each feature one by one...
 
@@ -210,11 +309,11 @@ export const ToolbarPlugin = ({
   const [activeEditor, setActiveEditor] = useState(editor)
 
   // Used by onCodeLanguageSelect()
-  const [_selectedElementKey, setSelectedElementKey] = useState<NodeKey | null>(
+  const [selectedElementKey, setSelectedElementKey] = useState<NodeKey | null>(
     null
   )
 
-  const [_modal, _showModal] = useModal()
+  const [modal, showModal] = useModal()
 
   const [isEditable, setIsEditable] = useState(() => editor.isEditable())
 
@@ -684,50 +783,171 @@ export const ToolbarPlugin = ({
   /* ======================
       applyStyleText() 
   ====================== */
+  // Used by onFontColorSelect which is then used by DropdownColorPicker (text) onChange.
+  // Used by onBgColorSelect which is then used by DropdownColorPicker (background) onChange.
 
-  // ...
+  //! Old version
+  // const applyStyleText = useCallback(
+  //   (styles: Record<string, string>, skipHistoryStack?: boolean) => {
+  //     activeEditor.update(
+  //       () => {
+  //         const selection = $getSelection()
+  //         if (selection !== null) {
+  //           $patchStyleText(selection, styles)
+  //         }
+  //       },
+  //       skipHistoryStack ? { tag: 'historic' } : {}
+  //     )
+  //   },
+  //   [activeEditor]
+  // )
 
-  /* ======================
-      clearFormatting() 
-  ====================== */
-  // ⚠️ The new lexical-playground doesn't explicitly have this.
-  // Maybe it moved to ShortcutsPlugin (?).
-
-  // ...
+  const applyStyleText = useCallback(
+    (
+      styles: Record<string, string>,
+      skipHistoryStack?: boolean,
+      skipRefocus: boolean = false
+    ) => {
+      activeEditor.update(
+        () => {
+          if (skipRefocus) {
+            $addUpdateTag(SKIP_DOM_SELECTION_TAG)
+          }
+          const selection = $getSelection()
+          if (selection !== null) {
+            $patchStyleText(selection, styles)
+          }
+        },
+        skipHistoryStack ? { tag: HISTORIC_TAG } : {}
+      )
+    },
+    [activeEditor]
+  )
 
   /* ======================
      onFontColorSelect() 
   ====================== */
   // Used by DropdownColorPicker (text) onChange.
 
-  // ...
+  //! Old version
+  // const onFontColorSelect = useCallback(
+  //   (value: string, skipHistoryStack: boolean) => {
+  //     applyStyleText({ color: value }, skipHistoryStack)
+  //   },
+  //   [applyStyleText]
+  // )
+
+  const onFontColorSelect = useCallback(
+    (value: string, skipHistoryStack: boolean, skipRefocus: boolean) => {
+      applyStyleText({ color: value }, skipHistoryStack, skipRefocus)
+    },
+    [applyStyleText]
+  )
 
   /* ======================
       onBgColorSelect() 
   ====================== */
   // Used by DropdownColorPicker (background) onChange.
 
-  // ...
+  //! Old version
+  // const onBgColorSelect = useCallback(
+  //   (value: string, skipHistoryStack: boolean) => {
+  //     applyStyleText({ 'background-color': value }, skipHistoryStack)
+  //   },
+  //   [applyStyleText]
+  // )
+
+  const onBgColorSelect = useCallback(
+    (value: string, skipHistoryStack: boolean, skipRefocus: boolean) => {
+      applyStyleText(
+        { 'background-color': value },
+        skipHistoryStack,
+        skipRefocus
+      )
+    },
+    [applyStyleText]
+  )
 
   /* ======================
         insertLink() 
   ====================== */
   // Used by the insert link button's onClick.
 
-  // ...
+  //! Old version
+  // const insertLink = useCallback(() => {
+  //   if (!isLink) {
+  //     setIsLinkEditMode(true)
+  //     activeEditor.dispatchCommand(TOGGLE_LINK_COMMAND, sanitizeUrl('https://'))
+  //   } else {
+  //     setIsLinkEditMode(false)
+  //     activeEditor.dispatchCommand(TOGGLE_LINK_COMMAND, null)
+  //   }
+  // }, [activeEditor, isLink, setIsLinkEditMode])
+
+  const insertLink = useCallback(() => {
+    if (!toolbarState.isLink) {
+      setIsLinkEditMode(true)
+      activeEditor.dispatchCommand(TOGGLE_LINK_COMMAND, sanitizeUrl('https://'))
+    } else {
+      setIsLinkEditMode(false)
+      activeEditor.dispatchCommand(TOGGLE_LINK_COMMAND, null)
+    }
+  }, [activeEditor, setIsLinkEditMode, toolbarState.isLink])
 
   /* ======================
     onCodeLanguageSelect()
   ====================== */
   // Used by Prism and Shiki Dropdowns onClick
 
-  // ...
+  //! Old version
+  // const onCodeLanguageSelect = useCallback(
+  //   (value: string) => {
+  //     activeEditor.update(() => {
+  //       if (selectedElementKey !== null) {
+  //         const node = $getNodeByKey(selectedElementKey)
+  //         if ($isCodeNode(node)) {
+  //           node.setLanguage(value)
+  //         }
+  //       }
+  //     })
+  //   },
+  //   [activeEditor, selectedElementKey]
+  // )
+
+  const onCodeLanguageSelect = useCallback(
+    (value: string) => {
+      activeEditor.update(() => {
+        $addUpdateTag(SKIP_SELECTION_FOCUS_TAG)
+        if (selectedElementKey !== null) {
+          const node = $getNodeByKey(selectedElementKey)
+          if ($isCodeNode(node)) {
+            node.setLanguage(value)
+          }
+        }
+      })
+    },
+    [activeEditor, selectedElementKey]
+  )
 
   /* ======================
     onCodeThemeSelect()
   ====================== */
   // ⚠️ New version of lexical-playground adds this. However, we may
   // not need it because it seems to only be used by Shiki Dropdown
+
+  // const onCodeThemeSelect = useCallback(
+  //   (value: string) => {
+  //     activeEditor.update(() => {
+  //       if (selectedElementKey !== null) {
+  //         const node = $getNodeByKey(selectedElementKey)
+  //         if ($isCodeNode(node)) {
+  //           node.setTheme(value)
+  //         }
+  //       }
+  //     })
+  //   },
+  //   [activeEditor, selectedElementKey]
+  // )
 
   /* ======================
 
@@ -844,49 +1064,295 @@ export const ToolbarPlugin = ({
 
       {toolbarState.blockType === 'code' ? (
         <>
-          Code Stuff Here...
-          {/* 
-          It's unclear to me where isCodeHighlighted and isCodeShiki come from.
-
-          Prism Dropdown (conditional)
-        
-          Shiki Dropdown (conditional)
-          */}
+          <DropDown
+            disabled={!isEditable}
+            buttonClassName='rte-toolbar-item rte-code-language'
+            buttonLabel={
+              (CODE_LANGUAGE_OPTIONS_PRISM.find(
+                (opt) =>
+                  opt[0] ===
+                  normalizeCodeLanguagePrism(toolbarState.codeLanguage)
+              ) || ['', ''])[1]
+            }
+            buttonAriaLabel='Select language'
+          >
+            {/* Map out the menu items for the selected code language  */}
+            {CODE_LANGUAGE_OPTIONS_PRISM.map(([value, name]) => {
+              return (
+                <DropDownItem
+                  className={`rte-item ${dropDownActiveClass(
+                    value === toolbarState.codeLanguage
+                  )}`}
+                  onClick={() => onCodeLanguageSelect(value)}
+                  key={value}
+                >
+                  <span className='rte-text'>{name}</span>
+                </DropDownItem>
+              )
+            })}
+          </DropDown>
         </>
       ) : (
         <>
-          Non-Code Stuff Here...
+          <FontFamilyDropDown
+            disabled={!isEditable}
+            value={toolbarState.fontFamily}
+            editor={activeEditor}
+            title='Font family formatting options'
+          />
+
+          <Divider />
+
+          {/* The FontSizeDropDown is more or less redundant with the FontSize component below. 
+          I'm leaving it in for now, but in production you might want to comment out one of them.
+          Note: This component is not width restricted so as the value changes, there may be a little
+          layout shift. */}
+
+          <FontSizeDropDown
+            disabled={!isEditable}
+            value={toolbarState.fontSize}
+            editor={editor}
+            title='Font size formatting options'
+          />
+
+          <Divider />
+
+          <FontSize
+            selectionFontSize={toolbarState.fontSize.slice(0, -2)}
+            editor={activeEditor}
+            disabled={!isEditable}
+          />
+
+          <Divider />
+
+          <button
+            disabled={!isEditable}
+            onClick={() => {
+              activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, 'bold')
+            }}
+            className={
+              'rte-toolbar-item ' + (toolbarState.isBold ? 'active' : '')
+            }
+            title={IS_APPLE ? 'Bold (⌘B)' : 'Bold (Ctrl+B)'}
+            type='button'
+            aria-label={`Format text as bold. Shortcut: ${
+              IS_APPLE ? '⌘B' : 'Ctrl+B'
+            }`}
+          >
+            <i className='format rte-icon-bold' />
+          </button>
+
+          <button
+            disabled={!isEditable}
+            onClick={() => {
+              activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, 'italic')
+            }}
+            className={
+              'rte-toolbar-item ' + (toolbarState.isItalic ? 'active' : '')
+            }
+            title={IS_APPLE ? 'Italic (⌘I)' : 'Italic (Ctrl+I)'}
+            type='button'
+            aria-label={`Format text as italics. Shortcut: ${
+              IS_APPLE ? '⌘I' : 'Ctrl+I'
+            }`}
+          >
+            <i className='format rte-icon-italic' />
+          </button>
+
+          <button
+            disabled={!isEditable}
+            onClick={() => {
+              activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, 'underline')
+            }}
+            className={
+              'rte-toolbar-item ' + (toolbarState.isUnderline ? 'active' : '')
+            }
+            title={IS_APPLE ? 'Underline (⌘U)' : 'Underline (Ctrl+U)'}
+            type='button'
+            aria-label={`Format text to underlined. Shortcut: ${
+              IS_APPLE ? '⌘U' : 'Ctrl+U'
+            }`}
+          >
+            <i className='format rte-icon-underline' />
+          </button>
+
+          <button
+            disabled={!isEditable}
+            onClick={() => {
+              activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, 'code')
+            }}
+            className={
+              'rte-toolbar-item ' + (toolbarState.isCode ? 'active' : '')
+            }
+            title='Insert code block'
+            type='button'
+            aria-label='Insert code block'
+          >
+            <i className='format rte-icon-code' />
+          </button>
+
+          <button
+            disabled={!isEditable}
+            onClick={insertLink}
+            className={
+              'rte-toolbar-item ' + (toolbarState.isLink ? 'active' : '')
+            }
+            aria-label='Insert link'
+            title='Insert link'
+            type='button'
+          >
+            <i className='format rte-icon-link' />
+          </button>
+
+          <DropdownColorPicker
+            disabled={!isEditable}
+            buttonClassName='rte-toolbar-item color-picker'
+            buttonAriaLabel='Formatting text color'
+            buttonIconClassName='rte-icon-font-color'
+            color={toolbarState.fontColor}
+            onChange={onFontColorSelect}
+            title='text color'
+          />
+
+          <DropdownColorPicker
+            disabled={!isEditable}
+            buttonClassName='rte-toolbar-item color-picker'
+            buttonAriaLabel='Formatting background color'
+            buttonIconClassName='rte-icon-bg-color'
+            color={toolbarState.bgColor}
+            onChange={onBgColorSelect}
+            title='bg color'
+          />
+
+          <AdditionalFormatDropDown
+            activeEditor={activeEditor}
+            clearFormatting={(e) => {
+              clearFormatting(activeEditor, isKeyboardInput(e))
+            }}
+            isEditable={isEditable}
+            isStrikethrough={toolbarState.isStrikethrough}
+            isSubscript={toolbarState.isSubscript}
+            isSuperscript={toolbarState.isSuperscript}
+          />
+
+          <Divider />
+
+          {/* 
+          //^ Why is this not abstracted into it's own component?
+          */}
+
+          <DropDown
+            disabled={!isEditable}
+            buttonClassName='rte-toolbar-item'
+            buttonLabel='Insert'
+            buttonAriaLabel='Insert specialized editor node'
+            buttonIconClassName='rte-icon-plus'
+            title='Insert specialized editor node'
+          >
+            <DropDownItem
+              onClick={() => {
+                activeEditor.dispatchCommand(
+                  INSERT_HORIZONTAL_RULE_COMMAND,
+                  undefined
+                )
+              }}
+              className='rte-item'
+            >
+              <i className='rte-icon-horizontal-rule' />
+              <span className='rte-text'>Horizontal Rule</span>
+            </DropDownItem>
+
+            <DropDownItem
+              onClick={() => {
+                showModal('Insert Image', (onClose) => (
+                  <InsertImageDialog
+                    activeEditor={activeEditor}
+                    onClose={onClose}
+                  />
+                ))
+              }}
+              className='rte-item'
+            >
+              <i className='rte-icon-image' />
+              <span className='rte-text'>Image</span>
+            </DropDownItem>
+
+            <DropDownItem
+              onClick={() => {
+                showModal('Insert Inline Image', (onClose) => (
+                  <InsertInlineImageDialog
+                    activeEditor={activeEditor}
+                    onClose={onClose}
+                  />
+                ))
+              }}
+              className='rte-item'
+            >
+              <i className='rte-icon-image' />
+              <span className='rte-text'>Inline Image</span>
+            </DropDownItem>
+
+            {EmbedConfigs.map((embedConfig) => (
+              <DropDownItem
+                key={embedConfig.type}
+                onClick={() => {
+                  activeEditor.dispatchCommand(
+                    INSERT_EMBED_COMMAND,
+                    embedConfig.type
+                  )
+                }}
+                className='rte-item'
+              >
+                {embedConfig.icon}
+                <span className='rte-text'>{embedConfig.contentName}</span>
+              </DropDownItem>
+            ))}
+          </DropDown>
+
+          {/* The playground example includes this even when the blockType === 'code'. 
+          However, I don't see any point in having alignment options for code blocks.
+          Moreover, it looks correct within the editor, but will not currently look correct
+          in the exported DOM HTML string. */}
+          <Divider />
+
+          <ElementFormatDropDown
+            disabled={!isEditable}
+            value={toolbarState.elementFormat}
+            editor={activeEditor}
+            isRTL={toolbarState.isRTL}
+          />
+
           {/* 
 
-        FontDropDown
+        X FontDropDown
 
-        Divider
+        X Divider
 
-        FontSize
+        X FontSize
 
-        Divider
+        X Divider
 
-        Bold button
+        X Bold button
 
-        Italic button
+        X Italic button
 
-        Underline button
+        X Underline button
 
-        Code button;
-        Conditionally shown based off of: canViewerSeeInsertCodeButton
-        const canViewerSeeInsertCodeButton = !toolbarState.isImageCaption
+        X Code button;
+        X Conditionally shown based off of: canViewerSeeInsertCodeButton
+        X const canViewerSeeInsertCodeButton = !toolbarState.isImageCaption
 
-        Insert link button
+        X Insert link button
 
-        DropdownColorPicker (text)
+        X DropdownColorPicker (text)
 
-        DropdownColorPicker (background)
+        X DropdownColorPicker (background)
 
-        Dropdown (formatting)
+        X Dropdown (formatting)
 
-        Divider
+        X Divider
 
-        Dropdown (insert)
+        X Dropdown (insert)
 
         Divider
 
@@ -895,7 +1361,7 @@ export const ToolbarPlugin = ({
         </>
       )}
 
-      {/* {modal} */}
+      {modal}
     </div>
   )
 }

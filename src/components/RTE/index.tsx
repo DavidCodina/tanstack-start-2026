@@ -1,6 +1,14 @@
+/* eslint-disable import/order */
+
+'use client'
+
+//! The files in this component still has references to window and document
+//! that need to be refactored for Next.js. The 'use client' directive is
+//! insufficient because client components still run on the server!
+
 import './index.css'
 import { useRef, useState } from 'react'
-import type { MutableRefObject } from 'react' // eslint-disable-line
+import type { MutableRefObject } from 'react'
 
 import {
   // $createTextNode,
@@ -33,12 +41,22 @@ import { $generateHtmlFromNodes } from '@lexical/html'
 //
 /////////////////////////
 import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin'
-
+import { CheckListPlugin } from '@lexical/react/LexicalCheckListPlugin'
+// Provides undo/redo functionality.
 import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin'
 import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin'
 
-import { CheckListPlugin } from '@lexical/react/LexicalCheckListPlugin'
 import { ListPlugin } from '@lexical/react/LexicalListPlugin'
+
+// Just like the name implies. Drop 'https://www.google.com/' in your editor and click on it to go there.
+import { ClickableLinkPlugin } from '@lexical/react/LexicalClickableLinkPlugin'
+
+import { TabIndentationPlugin } from '@lexical/react/LexicalTabIndentationPlugin'
+import { ClearEditorPlugin } from '@lexical/react/LexicalClearEditorPlugin'
+
+// This plugin creates the draggable icon on the left side of the editor for each block.
+import DraggableBlockPlugin from './plugins/DraggableBlockPlugin'
+import { HorizontalRulePlugin } from '@lexical/react/LexicalHorizontalRulePlugin'
 
 /* ======================
       Custom Plugins
@@ -46,17 +64,65 @@ import { ListPlugin } from '@lexical/react/LexicalListPlugin'
 // See here for more ideas on custom plugins:
 // https://github.com/facebook/lexical/blob/main/packages/lexical-playground/src/Editor.tsx
 
-import { ToolbarPlugin } from './plugins/ToolbarPlugin' // eslint-disable-line
-import { InitialValuePlugin } from './plugins/InitialValuePlugin' // eslint-disable-line
-//` import CustomHeadingPlugin from './plugins/CustomHeadingPlugin' // eslint-disable-line
+import CustomParagraphPlugin from './plugins/CustomParagraphPlugin' // eslint-disable-line
+import CustomHeadingPlugin from './plugins/CustomHeadingPlugin' // eslint-disable-line
+import DragDropPaste from './plugins/DragDropPastePlugin'
+
+import { ToolbarPlugin } from './plugins/ToolbarPlugin'
+import { InitialValuePlugin } from './plugins/InitialValuePlugin'
+import ImagesPlugin from './plugins/ImagesPlugin'
+import InlineImagePlugin from './plugins/InlineImagePlugin'
 
 //# See also CodeHighlightShikiPlugin:
 //# https://github.com/facebook/lexical/blob/main/packages/lexical-playground/src/plugins/CodeHighlightShikiPlugin/index.ts
 // This plugin allows code blocks to have different syntax highlighting.
 // It works in conjunction with the code highlight theme styles and
 // the language selection feature in the toolbar.
-import CodeHighlightPrismPlugin from './plugins/CodeHighlightPrismPlugin' // eslint-disable-line
-import { SquarePlugin } from './plugins/SquarePlugin' // eslint-disable-line
+import CodeHighlightPrismPlugin from './plugins/CodeHighlightPrismPlugin'
+
+// FloatingLinkEditorPlugin is a crucial piece in getting links to work.
+// When a piece of text is selected and transformed into a linke, we need
+// this plugin in order to set the associated URL.
+import FloatingLinkEditorPlugin from './plugins/FloatingLinkEditorPlugin'
+
+// It seems like this plugin is partially responsible for allowing a user to select text,
+// then turn it into a link. Without it, the insertLink function in ToolbarPlugin  and
+// FloatingTextFormatToolbarPlugin won't work.
+import { LinkPlugin } from '@lexical/react/LexicalLinkPlugin'
+// This plugin allows us to drop a URL direclty into the editor and have it
+// immediately transform into a link with that URL: 'https://www.google.com/'
+import AutoLinkPlugin from './plugins/AutoLinkPlugin'
+
+// This plugin creates a floating menu for basic formatting features when the user
+// selects (i.e., highlights) a portion of text.
+import FloatingTextFormatToolbarPlugin from './plugins/FloatingTextFormatToolbarPlugin'
+import ActionsPlugin from './plugins/ActionsPlugin'
+
+// :smile will bring up a list of emojis that match the keyword "smile."
+// See utils/emoji-list.ts for the complete list of emojis.
+import EmojiPickerPlugin from './plugins/EmojiPickerPlugin'
+
+// The plugin allows the user to use a limited set of emoji shorthands.
+// See emojis map in EmojisPlugin.tsx for the complete list of emojis.
+import EmojisPlugin from './plugins/EmojisPlugin'
+
+import YouTubePlugin from './plugins/YouTubePlugin'
+
+// This plugin allows us to drop a Youtube URL directly into the editor.
+// A popup will then appear asking if we want to embed the video. If not
+// the URL will otherwise be transformed into a link because of the AutoLinkPlugin.
+// The playground demo also supported Figma and Twitter embeds, but I removed that
+// logic for now.
+
+// For YouTubePlugin
+import AutoEmbedPlugin from './plugins/AutoEmbedPlugin'
+
+// import { SquarePlugin } from './plugins/SquarePlugin'
+
+// Previously, there was no way to hr property for theming the lexical HorizontalRulePlugin.
+// Consequently, I previously used the custom HorizontalRulePlugin and HorizontalRuleNode.
+// However, they have since updated that plugin, so the custom one is no longer needed.
+// import { HorizontalRulePlugin } from './plugins/HorizontalRulePlugin'
 
 /* ======================
         Nodes
@@ -67,22 +133,32 @@ import {
   HeadingNode,
   QuoteNode
 } from '@lexical/rich-text'
-
 import { ListItemNode, ListNode } from '@lexical/list'
+
 import { CodeHighlightNode, CodeNode } from '@lexical/code-core'
+
+import { AutoLinkNode, LinkNode } from '@lexical/link'
+import { HorizontalRuleNode } from '@lexical/react/LexicalHorizontalRuleNode'
 
 /* ======================
       Custom Nodes
 ====================== */
 
+//` import { CustomParagraphNode } from './nodes/CustomParagraphNode'
 //` import { CustomHeadingNode } from './nodes/CustomHeadingNode'
-import { SquareNode } from './nodes/SquareNode'
+
+import { ImageNode } from './nodes/ImageNode'
+import { InlineImageNode } from './nodes/InlineImageNode'
+import { EmojiNode } from './nodes/EmojiNode'
+import { YouTubeNode } from './nodes/YouTubeNode'
+// import { SquareNode } from './nodes/SquareNode'
+// import { HorizontalRuleNode } from './nodes/HorizontalRuleNode'
 
 /* ======================
 htmlConfig, theme , ui, types, etc
 ====================== */
 
-// import { htmlConfig } from './htmlConfig'
+import { htmlConfig } from './htmlConfig'
 
 //# Todo: By default, Tailwind strips h1 - h6 of any styles.
 //# Consequently, we need to go in and update editor-theme-h1 through editor-theme-h6
@@ -127,27 +203,6 @@ type Props = {
 }
 
 type OnChange = React.ComponentProps<typeof OnChangePlugin>['onChange']
-
-// This was a preliminary demo component for showing off HeadingNode before we
-// had a Toolbar. Note: In the absence of HeadingNode, you'd get this error:
-// Error: Create node: Attempted to create node _HeadingNode that was not configured to be used on the editor.
-
-// const MyHeadingPlugin = () => {
-//   const [editor] = useLexicalComposerContext()
-//   return (
-//     <button
-//       className='mx-auto mb-4 block cursor-pointer rounded border border-blue-700 bg-blue-500 px-2 py-1 text-sm font-semibold text-white'
-//       onClick={(e) => {
-//         editor.update(() => {
-//           const root = $getRoot()
-//           root.append($createHeadingNode('h1').append($createTextNode('Hello')))
-//         })
-//       }}
-//     >
-//       Heading
-//     </button>
-//   )
-// }
 
 /* ========================================================================
                          
@@ -203,17 +258,32 @@ export const RTE = ({
   className = '',
   initialValue,
   onChange: onChangeExternal,
-  namespace = 'MyEditor',
+  namespace = 'MyEditor', // ???
   placeholder = '',
   style = {}
 }: Props) => {
-  //# Currently this is not being used, other than being passed to the associated <div>.
   const contentEditableRef = useRef<HTMLDivElement | null>(null)
-
   useAPI({ apiRef, contentEditableRef })
+
   /* ======================
         initialConfig
   ====================== */
+  ///////////////////////////////////////////////////////////////////////////
+  //
+  // initialConfig is now defined inside the component. This way we can
+  // pass namespace to it. This does not seem to need memoization.
+  //
+  //   export type InitialConfigType = Readonly<{
+  //     namespace: string;
+  //     nodes?: ReadonlyArray<Klass<LexicalNode> | LexicalNodeReplacement>;
+  //     onError: (error: Error, editor: LexicalEditor) => void;
+  //     editable?: boolean;
+  //     theme?: EditorThemeClasses;
+  //     editorState?: InitialEditorStateType;
+  //     html?: HTMLConfig;
+  //   }>;
+  //
+  ///////////////////////////////////////////////////////////////////////////
 
   const initialConfig: InitialConfigType = {
     // The namespace is used internally by Lexical to manage and isolate
@@ -232,38 +302,64 @@ export const RTE = ({
     // Register additional nodes
     // https://github.com/facebook/lexical/blob/main/packages/lexical-playground/src/nodes/PlaygroundNodes.ts
     nodes: [
+      // This kind of transform is applied when the node is created or loaded, not on every update.
+      // {
+      //   replace: TextNode,
+      //   with: (node: TextNode) => {
+      //     console.log('TextNode:', node)
+      //     // Transform logic here
+      //     // For example, converting certain text to uppercase
+      //     if (node.getTextContent().startsWith('Hello')) {
+      //       node.setTextContent(node.getTextContent().toUpperCase())
+      //     }
+      //     return node
+      //   }
+      // },
+      //` CustomParagraphNode,
       //` CustomHeadingNode,
       HeadingNode,
       ListNode,
       ListItemNode,
       QuoteNode,
+
       // Unfortunately, the CodeNode exports a <pre> tag instead of <code>.
       // Also, it does not expose data-gutter on the output HTML string.
       // These issues are now fixed by the custom htmlConfig.
       CodeNode,
+
       CodeHighlightNode,
-      SquareNode
-    ]
+      HorizontalRuleNode,
+      ImageNode,
+      InlineImageNode,
+      LinkNode,
+      AutoLinkNode,
+      EmojiNode,
+      YouTubeNode
+      // SquareNode
+    ],
     // The html property in Lexical's initial configuration is used to customize how Lexical
     // nodes are exported to HTML. This is particularly useful when you want to control the
     // HTML structure and attributes of specific node types when the editor content is converted to HTML.
-    //# html: htmlConfig
+    html: htmlConfig
   }
 
   /* ======================
         state & refs
   ====================== */
 
-  const [_isLinkEditMode, setIsLinkEditMode] = useState<boolean>(false)
+  const [isLinkEditMode, setIsLinkEditMode] = useState<boolean>(false)
+
+  const [floatingAnchorElem, setFloatingAnchorElem] =
+    useState<HTMLDivElement | null>(null)
 
   /* ======================
           onRef()
   ====================== */
 
   const onRef = (_floatingAnchorElem: HTMLDivElement) => {
-    //# if (_floatingAnchorElem !== null) {
-    //#   setFloatingAnchorElem(_floatingAnchorElem)
-    //# }
+    if (_floatingAnchorElem !== null) {
+      setFloatingAnchorElem(_floatingAnchorElem)
+    }
   }
 
   /* ======================
@@ -342,12 +438,16 @@ export const RTE = ({
         >
           <ToolbarPlugin setIsLinkEditMode={setIsLinkEditMode} />
 
-          <SquarePlugin />
+          {/* <SquarePlugin /> */}
 
           <div className='rte-editor-container'>
             <InitialValuePlugin initialValue={initialValue} />
 
+            {/* <CustomParagraphPlugin /> */}
+
             {/* <CustomHeadingPlugin /> */}
+
+            <DragDropPaste />
 
             <RichTextPlugin
               contentEditable={
@@ -392,7 +492,66 @@ export const RTE = ({
             <ListPlugin />
             <CheckListPlugin />
 
+            <ImagesPlugin />
+            <InlineImagePlugin />
+
+            <AutoEmbedPlugin />
+            <YouTubePlugin />
+
+            <HorizontalRulePlugin />
             <CodeHighlightPrismPlugin />
+
+            {/* Here it's important that AutoLinkPlugin precedes LinkPlugin. Why?
+            If LinkPlugin comes first, then if you drop 'https://www.google.com/'
+            in the editor then click the trash icon in the FloatingLinkEditorPlugin
+            then it won't work. */}
+            <AutoLinkPlugin />
+
+            <LinkPlugin />
+
+            <FloatingTextFormatToolbarPlugin
+              setIsLinkEditMode={setIsLinkEditMode}
+            />
+
+            {/* 
+            Command + A then Command + ENTER works with or without it this.
+            This plugin merely enables the CLEAR_EDITOR_COMMAND. Without out it,
+            this kind of code won't work:
+
+            import { CLEAR_EDITOR_COMMAND } from 'lexical'
+            ...
+            editor.dispatchCommand(CLEAR_EDITOR_COMMAND, undefined)
+
+            <ClearEditorPlugin /> is needed to enable the above command within
+            the ActionsPlugin.
+            */}
+            <ClearEditorPlugin />
+            <ActionsPlugin />
+
+            <ClickableLinkPlugin />
+            <TabIndentationPlugin />
+
+            {/* I don't actually think we want this: <EmojisPlugin /> */}
+
+            <EmojisPlugin />
+            <EmojiPickerPlugin />
+
+            {floatingAnchorElem ? (
+              <>
+                <DraggableBlockPlugin anchorElem={floatingAnchorElem} />
+                <FloatingLinkEditorPlugin
+                  // Type 'HTMLDivElement | null' is not assignable to type 'HTMLElement | undefined'.
+                  // The expected type comes from property 'anchorElem' which is declared here on type
+                  // 'IntrinsicAttributes & { anchorElem?: HTMLElement | undefined; isLinkEditMode: boolean;
+                  // setIsLinkEditMode: Dispatch<boolean>; }'
+                  anchorElem={floatingAnchorElem}
+                  isLinkEditMode={isLinkEditMode}
+                  setIsLinkEditMode={setIsLinkEditMode}
+                />
+              </>
+            ) : (
+              ''
+            )}
           </div>
         </div>
       </LexicalComposer>

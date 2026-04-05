@@ -1,18 +1,12 @@
 import './Dropdown.css'
 
-import * as React from 'react'
-import {
-  ReactNode,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  JSX
-} from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 
 import { DropDownContext } from './DropDownContext'
+
+import type { JSX, ReactNode } from 'react'
+
 export { DropDownItem } from './DropDownItem'
 
 type DropDownType = {
@@ -97,7 +91,7 @@ const DropDownMenu = ({ children, dropDownRef, onClose }: DropDownMenuType) => {
 
   useEffect(() => {
     if (items && !highlightedItem) {
-      setHighlightedItem(items[0])
+      setHighlightedItem(items[0]) // eslint-disable-line
     }
 
     if (highlightedItem && highlightedItem.current) {
@@ -111,11 +105,7 @@ const DropDownMenu = ({ children, dropDownRef, onClose }: DropDownMenuType) => {
 
   return (
     <DropDownContext.Provider value={contextValue}>
-      <div // eslint-disable-line
-        className='rte-dropdown'
-        ref={dropDownRef}
-        onKeyDown={handleKeyDown}
-      >
+      <div className='rte-dropdown' ref={dropDownRef} onKeyDown={handleKeyDown}>
         {children}
       </div>
     </DropDownContext.Provider>
