@@ -7,6 +7,8 @@ import {
   $findMatchingParent,
   // $getNearestBlockElementAncestorOrThrow,
   $getNearestNodeOfType,
+  $isEditorIsNestedEditor,
+  IS_APPLE,
   mergeRegister
 } from '@lexical/utils'
 
@@ -44,6 +46,11 @@ import {
   $isHeadingNode
   // $isQuoteNode
 } from '@lexical/rich-text'
+
+import {
+  $isTableNode
+  // $isTableSelection
+} from '@lexical/table'
 
 import { $isCodeNode } from '@lexical/code-core'
 
@@ -86,16 +93,17 @@ import type {
 /* ======================
 
 ====================== */
+//* We may no longer need this because IS_APPLE is imported from @lexical/utils
 
 // The official example does this, but I did it all locally.
 // import { IS_APPLE } from 'shared/environment'
-export const CAN_USE_DOM: boolean =
-  typeof window !== 'undefined' &&
-  typeof window.document !== 'undefined' &&
-  typeof window.document.createElement !== 'undefined'
 
-const IS_APPLE: boolean =
-  CAN_USE_DOM && /Mac|iPod|iPhone|iPad/.test(navigator.platform)
+// export const CAN_USE_DOM: boolean =
+//   typeof window !== 'undefined' &&
+//   typeof window.document !== 'undefined' &&
+//   typeof window.document.createElement !== 'undefined'
+
+// const IS_APPLE: boolean = CAN_USE_DOM && /Mac|iPod|iPhone|iPad/.test(navigator.platform)
 
 /* ======================
 
@@ -120,6 +128,7 @@ function $findTopLevelElement(node: LexicalNode) {
                               ToolbarPlugin()            
 ======================================================================== */
 //# Next Steps:
+
 //# Add back each feature one by one...
 
 // FontDropDown
@@ -158,12 +167,32 @@ function $findTopLevelElement(node: LexicalNode) {
 
 //# Once everything is wired up, do an in-depth comparison of the current components vs. new components.
 
+//# On top of that we need to bring in and compare/contrast each file/folder from the CURRENT/FULL github
+//# lexical-playground/src.
+//#
+//#   - Editor.tsx
+//#   - plugins
+//#   - nodes
+//#   - themes
+//#  - ui
+//#   - utils
+//#   - context
+//#   - hooks
+//#   - buildHTMLConfig.tsx
+//#   - index.css (???)
+//#   - images/icons and images/emoji
+
 //# Implement ShortcutsPlugin.
 
+//# Once everything is working, consider adding the Shiki logic back in.
+//# You don't need to add SettingsContext.tsx
+//# Just make it the default, or hardcode these values internally: isCodeHighlighted, isCodeShiki
+//# Then be sure to update all places where those values are intended to be used.
+
 export const ToolbarPlugin = ({
-  //^ This is associated to the 4th useEffect() below.
-  //^ I'm not sure if I added all this myself or if it was part of an earlier playground example.
-  //^ In any case, newer version don't have a 4th useEffect()
+  // This is associated to the 4th useEffect() below.
+  // I'm not sure if I added all this myself or if it was part of an earlier playground example.
+  // In any case, newer version don't have a 4th useEffect()
   setIsLinkEditMode
 }: {
   setIsLinkEditMode: Dispatch<boolean>
@@ -187,7 +216,12 @@ export const ToolbarPlugin = ({
 
   const { toolbarState, updateToolbarState } = useToolbarState()
 
-  //* Newer version adds the following here:
+  /* ======================
+
+  ====================== */
+
+  //* Newer version adds the following here
+  //* Review to see where/how these are actually used.
 
   //* dispatchToolbarCommand
 
@@ -221,43 +255,49 @@ export const ToolbarPlugin = ({
   )
 
   /* ======================
-
+        Omit Settings 
   ====================== */
-
-  //* Newer version adds
-  //* const { settings: { isCodeHighlighted, isCodeShiki } } = useSettings()
+  ///////////////////////////////////////////////////////////////////////////
+  //
+  // The lexical-playground version adds:
+  //
+  //   const { settings: { isCodeHighlighted, isCodeShiki } } = useSettings()
+  //
+  // The lexical-playground has a sidebar which allows one to toggle:
+  //
+  //   - Enable Code Highlighting
+  //   - Use Shiki for Code Highlighting
+  //
+  // This also corresponds to SettingsContext.tsx, and the default settings in appSettings.ts:
+  //
+  //   isCodeHighlighted: true,
+  //   isCodeShiki: false,
+  //
+  // However, in the case of this Lexical editor, we can simply omit isCodeHighlighted because
+  // we always want to have the code highlighting dropdown (i.e., the language selector).
+  // Moreover, we can omit any use of isCodeShiki, and just stick with the Prism implementation (i.e., Prism Dropdown).
+  //
+  ///////////////////////////////////////////////////////////////////////////
 
   /* ======================
-
+      $handleCodeNode()
   ====================== */
+  // ⚠️ $handleCodeNode has been modified here to only support Prism logic,
+  // rather than also having conditional logic for Shiki. In other words,
+  // it's not using isCodeHighlighted, isCodeShiki, etc.
 
   const $handleCodeNode = useCallback(
     (element: LexicalNode) => {
       if ($isCodeNode(element)) {
         const language = element.getLanguage() || ''
-        //* updateToolbarState(
-        //*   'codeLanguage',
-        //*   language
-        //*     ? (isCodeHighlighted &&
-        //*         (isCodeShiki
-        //*           ? normalizeCodeLanguageShiki(language)
-        //*           : normalizeCodeLanguagePrism(language))) ||
-        //*         language
-        //*     : ''
-        //* )
 
         updateToolbarState(
           'codeLanguage',
           language ? normalizeCodeLanguagePrism(language) : ''
         )
-
-        // codeTheme is more for Shiki. For Prism, it will be undefined
-        //* const theme = element.getTheme()
-        //* updateToolbarState('codeTheme', theme || '')
-        //* return
       }
     },
-    [updateToolbarState] //* isCodeHighlighted, isCodeShiki
+    [updateToolbarState]
   )
 
   /* ======================
@@ -278,19 +318,25 @@ export const ToolbarPlugin = ({
     const selection = $getSelection()
 
     if ($isRangeSelection(selection)) {
-      //* This is in the newer version not sure what it's for.
-      // if (activeEditor !== editor && $isEditorIsNestedEditor(activeEditor)) {
-      //   const rootElement = activeEditor.getRootElement()
-      //   updateToolbarState('isImageCaption', !!rootElement?.parentElement?.classList.contains('image-caption-container'))
-      // } else {
-      //   updateToolbarState('isImageCaption', false)
-      // }
+      // ⚠️ Not sure if I'm currently using 'image-caption-container'
+      if (activeEditor !== editor && $isEditorIsNestedEditor(activeEditor)) {
+        const rootElement = activeEditor.getRootElement()
+        updateToolbarState(
+          'isImageCaption',
+          !!rootElement?.parentElement?.classList.contains(
+            'image-caption-container'
+          )
+        )
+      } else {
+        updateToolbarState('isImageCaption', false)
+      }
 
       const anchorNode = selection.anchor.getNode()
 
       let element = $findTopLevelElement(anchorNode)
 
-      //* Newer version doesn't do this.
+      // ⚠️ Newer version doesn't do this.
+      // Why am I doing this? Is it necessary or useful?
       if (element === null) {
         element = anchorNode.getTopLevelElementOrThrow()
       }
@@ -309,15 +355,13 @@ export const ToolbarPlugin = ({
       const isLink = $isLinkNode(parent) || $isLinkNode(node)
       updateToolbarState('isLink', isLink)
 
-      //* Newer version does this. However, I'm not doing the table feature currently.
-      //* const tableNode = $findMatchingParent(node, $isTableNode)
-      //* if ($isTableNode(tableNode)) {
-      //*   updateToolbarState('rootType', 'table')
-      //* } else {
-      //*   updateToolbarState('rootType', 'root')
-      //* }
-
-      updateToolbarState('rootType', 'root')
+      //^ Set rootType based on if tableNode or not.
+      const tableNode = $findMatchingParent(node, $isTableNode)
+      if ($isTableNode(tableNode)) {
+        updateToolbarState('rootType', 'table')
+      } else {
+        updateToolbarState('rootType', 'root')
+      }
 
       if (elementDOM !== null) {
         setSelectedElementKey(elementKey)
@@ -446,10 +490,13 @@ export const ToolbarPlugin = ({
         }
       }
     }
-
-    // The lexical-playground source code adds editor to the dependency array.
-    // However, that's only necessary because it's passed in as a prop rather than defined internally.
-  }, [activeEditor, updateToolbarState, $handleHeadingNode, $handleCodeNode])
+  }, [
+    activeEditor,
+    editor,
+    updateToolbarState,
+    $handleHeadingNode,
+    $handleCodeNode
+  ])
 
   /* ======================
         useEffect() 1 
@@ -639,7 +686,8 @@ export const ToolbarPlugin = ({
   /* ======================
       clearFormatting() 
   ====================== */
-  //* The newer version doesn't explicitly have this (???).
+  // ⚠️ The new lexical-playground doesn't explicitly have this.
+  // Maybe it moved to ShortcutsPlugin (?).
 
   // ...
 
@@ -674,21 +722,18 @@ export const ToolbarPlugin = ({
   /* ======================
     onCodeThemeSelect()
   ====================== */
-  // Used by second Shiki Dropdown
-
-  //* Newer version adds this.
-  //* However, we may not need it because it seems to be a Shiki thing.
-
-  // ...
+  // ⚠️ New version of lexical-playground adds this. However, we may
+  // not need it because it seems to only be used by Shiki Dropdown
 
   /* ======================
 
   ====================== */
-  // Used by Dropdown (insert) -> DropDownItem -> GIF
+  // ⚠️ Only needed if you plan on implementing:
+  // Dropdown (insert) -> DropDownItem -> GIF
 
-  //* const insertGifOnClick = (payload: InsertImagePayload) => {
-  //*   activeEditor.dispatchCommand(INSERT_IMAGE_COMMAND, payload)
-  //* }
+  // const insertGifOnClick = (payload: InsertImagePayload) => {
+  //   activeEditor.dispatchCommand(INSERT_IMAGE_COMMAND, payload)
+  // }
 
   /* ======================
 
@@ -792,11 +837,6 @@ export const ToolbarPlugin = ({
         )}
 
       {/* =============================================================================== */}
-
-      {/*
-      //* Newer versions also use: && isCodeHighlighted
-      //* This comes from const { settings: { isCodeHighlighted, isCodeShiki } } = useSettings()
-      */}
 
       {toolbarState.blockType === 'code' ? (
         <>
