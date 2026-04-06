@@ -56,8 +56,6 @@ export const Demo = () => {
   // 2026: But actually this will cause an error in Tanstack Start on browser refresh:
   // ❌ react-dom_client.js?v=c42d322c:7708 Uncaught Error: Switched to client rendering because the server rendering errored:
   // __vite_ssr_import_2__.default.sanitize is not a function
-  //
-  // Note that DOMPurify.sanitize() also exists within the InitialValuePlugin.
   const sanitizedValue = DOMPurify.sanitize(value, {
     USE_PROFILES: { html: true },
     ADD_TAGS: ['iframe', 'a'],
