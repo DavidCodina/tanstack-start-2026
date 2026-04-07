@@ -62,13 +62,17 @@ export const theme: EditorThemeClasses & { indentValue: number } = {
   paragraph: 'editor-theme-paragraph',
   text: {
     bold: 'editor-theme-textBold',
+    capitalize: 'editor-theme-textCapitalize', //* New...
     code: 'editor-theme-textCode',
+    //# highlight: 'PlaygroundEditorTheme__textHighlight',
     italic: 'editor-theme-textItalic',
+    lowercase: 'editor-theme-textLowercase', //* New...
     strikethrough: 'editor-theme-textStrikethrough',
     subscript: 'editor-theme-textSubscript',
     superscript: 'editor-theme-textSuperscript',
     underline: 'editor-theme-textUnderline',
-    underlineStrikethrough: 'editor-theme-textUnderlineStrikethrough'
+    underlineStrikethrough: 'editor-theme-textUnderlineStrikethrough',
+    uppercase: 'editor-theme-textUppercase' //* New...
   },
 
   list: {

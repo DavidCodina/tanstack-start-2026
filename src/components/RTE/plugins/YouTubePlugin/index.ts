@@ -1,17 +1,25 @@
-import { JSX } from 'react'
+/* Changes made relative to lexical-playground version:
+
+...
+
+*/
+
+import { useEffect } from 'react'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import { $insertNodeToNearestRoot } from '@lexical/utils'
-import { COMMAND_PRIORITY_EDITOR, createCommand, LexicalCommand } from 'lexical'
-import { useEffect } from 'react'
+import { COMMAND_PRIORITY_EDITOR, createCommand } from 'lexical'
+
 import { $createYouTubeNode, YouTubeNode } from '../../nodes/YouTubeNode'
+import type { JSX } from 'react'
+import type { LexicalCommand } from 'lexical'
 
-type YouTubePayload = {
-  id: string
-  width: number | undefined
-}
+export const INSERT_YOUTUBE_COMMAND: LexicalCommand<string> = createCommand(
+  'INSERT_YOUTUBE_COMMAND'
+)
 
-export const INSERT_YOUTUBE_COMMAND: LexicalCommand<YouTubePayload> =
-  createCommand('INSERT_YOUTUBE_COMMAND')
+/* ========================================================================
+                         
+======================================================================== */
 
 export default function YouTubePlugin(): JSX.Element | null {
   const [editor] = useLexicalComposerContext()
@@ -21,7 +29,7 @@ export default function YouTubePlugin(): JSX.Element | null {
       throw new Error('YouTubePlugin: YouTubeNode not registered on editor')
     }
 
-    return editor.registerCommand<YouTubePayload>(
+    return editor.registerCommand<string>(
       INSERT_YOUTUBE_COMMAND,
       (payload) => {
         const youTubeNode = $createYouTubeNode(payload)

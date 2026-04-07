@@ -1,5 +1,11 @@
-import './index.css'
+/* 
+Changes made relative to lexical-playground version:
 
+1. Commented out all logic associated to the CommentPlugin implementation.
+2. Modified index.css and classes used here.
+*/
+
+import './index.css'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import {
@@ -9,20 +15,27 @@ import {
   $isTextNode,
   COMMAND_PRIORITY_LOW,
   FORMAT_TEXT_COMMAND,
-  SELECTION_CHANGE_COMMAND
+  SELECTION_CHANGE_COMMAND,
+  getDOMSelection
 } from 'lexical'
-import { $isCodeHighlightNode } from '@lexical/code-core'
-import { $isLinkNode, TOGGLE_LINK_COMMAND } from '@lexical/link'
 
+import { $isCodeHighlightNode } from '@lexical/code-core'
+
+import { $isLinkNode, TOGGLE_LINK_COMMAND } from '@lexical/link'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import { mergeRegister } from '@lexical/utils'
 
 import { getDOMRangeRect } from '../../utils/getDOMRangeRect'
 import { getSelectedNode } from '../../utils/getSelectedNode'
 import { setFloatingElemPosition } from '../../utils/setFloatingElemPosition'
+// import { INSERT_INLINE_COMMAND } from '../CommentPlugin'
 
 import type { Dispatch, JSX } from 'react'
 import type { LexicalEditor } from 'lexical'
+
+/* ========================================================================
+   
+======================================================================== */
 
 function TextFormatFloatingToolbar({
   editor,
@@ -31,6 +44,9 @@ function TextFormatFloatingToolbar({
   isBold,
   isItalic,
   isUnderline,
+  isUppercase,
+  isLowercase,
+  isCapitalize,
   isCode,
   isStrikethrough,
   isSubscript,
@@ -43,6 +59,9 @@ function TextFormatFloatingToolbar({
   isCode: boolean
   isItalic: boolean
   isLink: boolean
+  isUppercase: boolean
+  isLowercase: boolean
+  isCapitalize: boolean
   isStrikethrough: boolean
   isSubscript: boolean
   isSuperscript: boolean
@@ -64,6 +83,14 @@ function TextFormatFloatingToolbar({
       editor.dispatchCommand(TOGGLE_LINK_COMMAND, null)
     }
   }, [editor, isLink, setIsLinkEditMode])
+
+  /* ======================
+
+  ====================== */
+
+  // const insertComment = () => {
+  //   editor.dispatchCommand(INSERT_INLINE_COMMAND, undefined)
+  // }
 
   /* ======================
 
@@ -123,7 +150,7 @@ function TextFormatFloatingToolbar({
     const selection = $getSelection()
 
     const popupCharStylesEditorElem = popupCharStylesEditorRef.current
-    const nativeSelection = window.getSelection()
+    const nativeSelection = getDOMSelection(editor._window)
 
     if (popupCharStylesEditorElem === null) {
       return
@@ -211,16 +238,21 @@ function TextFormatFloatingToolbar({
     >
       {editor.isEditable() && (
         <>
+          {/* ================= */}
+
           <button
             aria-label='Format text as bold'
             className={'rte-popup-item ' + (isBold ? 'active' : '')}
             onClick={() => {
               editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'bold')
             }}
+            title='Bold'
             type='button'
           >
             <i className='format rte-icon-bold' />
           </button>
+
+          {/* ================= */}
 
           <button
             aria-label='Format text as italics'
@@ -228,10 +260,13 @@ function TextFormatFloatingToolbar({
             onClick={() => {
               editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'italic')
             }}
+            title='Italic'
             type='button'
           >
             <i className='format rte-icon-italic' />
           </button>
+
+          {/* ================= */}
 
           <button
             aria-label='Format text to underlined'
@@ -239,10 +274,13 @@ function TextFormatFloatingToolbar({
             onClick={() => {
               editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'underline')
             }}
+            title='Underline'
             type='button'
           >
             <i className='format rte-icon-underline' />
           </button>
+
+          {/* ================= */}
 
           <button
             aria-label='Format text with a strikethrough'
@@ -250,10 +288,13 @@ function TextFormatFloatingToolbar({
             onClick={() => {
               editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'strikethrough')
             }}
+            title='Strikethrough'
             type='button'
           >
             <i className='format rte-icon-strikethrough' />
           </button>
+
+          {/* ================= */}
 
           <button
             aria-label='Format Subscript'
@@ -267,6 +308,8 @@ function TextFormatFloatingToolbar({
             <i className='format rte-icon-subscript' />
           </button>
 
+          {/* ================= */}
+
           <button
             aria-label='Format Superscript'
             className={'rte-popup-item ' + (isSuperscript ? 'active' : '')}
@@ -279,33 +322,91 @@ function TextFormatFloatingToolbar({
             <i className='format rte-icon-superscript' />
           </button>
 
+          {/* ================= */}
+
+          <button
+            aria-label='Format text to uppercase'
+            className={'rte-popup-item ' + (isUppercase ? 'active' : '')}
+            onClick={() => {
+              editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'uppercase')
+            }}
+            title='Uppercase'
+            type='button'
+          >
+            <i className='format rte-icon-uppercase' />
+          </button>
+
+          {/* ================= */}
+
+          <button
+            aria-label='Format text to lowercase'
+            className={'rte-popup-item ' + (isLowercase ? 'active' : '')}
+            onClick={() => {
+              editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'lowercase')
+            }}
+            title='Lowercase'
+            type='button'
+          >
+            <i className='format rte-icon-lowercase' />
+          </button>
+
+          {/* ================= */}
+
+          <button
+            aria-label='Format text to capitalize'
+            className={'rte-popup-item ' + (isCapitalize ? 'active' : '')}
+            onClick={() => {
+              editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'capitalize')
+            }}
+            title='Capitalize'
+            type='button'
+          >
+            <i className='format rte-icon-capitalize' />
+          </button>
+
+          {/* ================= */}
+
           <button
             aria-label='Insert code block'
+            className={'rte-popup-item ' + (isCode ? 'active' : '')}
             onClick={() => {
               editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'code')
             }}
-            className={'rte-popup-item ' + (isCode ? 'active' : '')}
+            title='Insert code block'
             type='button'
           >
             <i className='format rte-icon-code' />
           </button>
 
+          {/* ================= */}
+
           <button
             aria-label='Insert link'
             className={'rte-popup-item ' + (isLink ? 'active' : '')}
             onClick={insertLink}
+            title='Insert link'
             type='button'
           >
             <i className='format rte-icon-link' />
           </button>
         </>
       )}
+
+      {/* <button
+        type='button'
+        onClick={insertComment}
+        className={'popup-item spaced insert-comment'}
+        title='Insert comment'
+        aria-label='Insert comment'
+      >
+        <i className='format add-comment' />
+      </button> */}
     </div>
   )
 }
 
 /* ========================================================================
-                          useFloatingTextFormatToolbar
+   
 ======================================================================== */
 
 function useFloatingTextFormatToolbar(
@@ -313,23 +414,18 @@ function useFloatingTextFormatToolbar(
   anchorElem: HTMLElement,
   setIsLinkEditMode: Dispatch<boolean>
 ): JSX.Element | null {
-  /* ======================
-      state & refs
-  ====================== */
-
   const [isText, setIsText] = useState(false)
   const [isLink, setIsLink] = useState(false)
   const [isBold, setIsBold] = useState(false)
   const [isItalic, setIsItalic] = useState(false)
   const [isUnderline, setIsUnderline] = useState(false)
+  const [isUppercase, setIsUppercase] = useState(false)
+  const [isLowercase, setIsLowercase] = useState(false)
+  const [isCapitalize, setIsCapitalize] = useState(false)
   const [isStrikethrough, setIsStrikethrough] = useState(false)
   const [isSubscript, setIsSubscript] = useState(false)
   const [isSuperscript, setIsSuperscript] = useState(false)
   const [isCode, setIsCode] = useState(false)
-
-  /* ======================
-        updatePopup()
-  ====================== */
 
   const updatePopup = useCallback(() => {
     editor.getEditorState().read(() => {
@@ -338,7 +434,7 @@ function useFloatingTextFormatToolbar(
         return
       }
       const selection = $getSelection()
-      const nativeSelection = window.getSelection()
+      const nativeSelection = getDOMSelection(editor._window)
       const rootElement = editor.getRootElement()
 
       if (
@@ -359,12 +455,15 @@ function useFloatingTextFormatToolbar(
 
       // Update text format
       setIsBold(selection.hasFormat('bold'))
-      setIsCode(selection.hasFormat('code'))
       setIsItalic(selection.hasFormat('italic'))
       setIsUnderline(selection.hasFormat('underline'))
+      setIsUppercase(selection.hasFormat('uppercase'))
+      setIsLowercase(selection.hasFormat('lowercase'))
+      setIsCapitalize(selection.hasFormat('capitalize'))
       setIsStrikethrough(selection.hasFormat('strikethrough'))
       setIsSubscript(selection.hasFormat('subscript'))
       setIsSuperscript(selection.hasFormat('superscript'))
+      setIsCode(selection.hasFormat('code'))
 
       // Update links
       const parent = node.getParent()
@@ -391,20 +490,12 @@ function useFloatingTextFormatToolbar(
     })
   }, [editor])
 
-  /* ======================
-        useEffect()
-  ====================== */
-
   useEffect(() => {
     document.addEventListener('selectionchange', updatePopup)
     return () => {
       document.removeEventListener('selectionchange', updatePopup)
     }
   }, [updatePopup])
-
-  /* ======================
-        useEffect()
-  ====================== */
 
   useEffect(() => {
     return mergeRegister(
@@ -419,26 +510,25 @@ function useFloatingTextFormatToolbar(
     )
   }, [editor, updatePopup])
 
-  /* ======================
-          return
-  ====================== */
-
   if (!isText) {
     return null
   }
 
   return createPortal(
     <TextFormatFloatingToolbar
-      anchorElem={anchorElem}
       editor={editor}
-      isBold={isBold}
-      isCode={isCode}
-      isItalic={isItalic}
+      anchorElem={anchorElem}
       isLink={isLink}
+      isBold={isBold}
+      isItalic={isItalic}
+      isUppercase={isUppercase}
+      isLowercase={isLowercase}
+      isCapitalize={isCapitalize}
       isStrikethrough={isStrikethrough}
       isSubscript={isSubscript}
       isSuperscript={isSuperscript}
       isUnderline={isUnderline}
+      isCode={isCode}
       setIsLinkEditMode={setIsLinkEditMode}
     />,
     anchorElem
@@ -446,10 +536,8 @@ function useFloatingTextFormatToolbar(
 }
 
 /* ========================================================================
-                              FloatingTextFormatToolbarPlugin
+   
 ======================================================================== */
-// This plugin creates a floating menu for basic formatting features when the user
-// selects (i.e., highlights) a portion of text.
 
 export default function FloatingTextFormatToolbarPlugin({
   anchorElem = document.body,

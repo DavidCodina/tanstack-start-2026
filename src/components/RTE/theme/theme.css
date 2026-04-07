@@ -154,6 +154,22 @@ when the elements are rendered outside of the editor. */
   text-decoration: underline line-through;
 }
 
+/** New... */
+
+.editor-theme-textLowercase {
+  text-transform: lowercase;
+}
+
+/** New... */
+.editor-theme-textUppercase {
+  text-transform: uppercase;
+}
+
+/** New... */
+.editor-theme-textCapitalize {
+  text-transform: capitalize;
+}
+
 /* ======================
 
 ====================== */

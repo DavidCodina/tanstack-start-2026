@@ -1,204 +1,55 @@
-///////////////////////////////////////////////////////////////////////////
-//
-//^ Important Note:
-//
-// There is a newer version of this plugin found here:
-// https://github.com/facebook/lexical/blob/main/packages/lexical-playground/src/plugins/DraggableBlockPlugin/index.tsx
-// It implements:
-//
-// import {DraggableBlockPlugin_EXPERIMENTAL} from '@lexical/react/LexicalDraggableBlockPlugin';
-//
-// It does not implement guard, point, rect utilities.
-// For now, I'm happy with this version, but you may want to update this file at some point.
-//
-///////////////////////////////////////////////////////////////////////////
+/* 
+Changes made relative to lexical-playground version:
+
+1. Commented out all logic associated to the ComponentPickerPlugin implementation.
+   This feature can be seen in the lexical-playground demo whereby there is a plus
+   icon to the left of the grab icon that allows the user to add a block from the
+   dragger. This is reminiscent of Notion, but it's also a lot of extra logic.
+   For the moment, I've comment it all out.
+
+2. Modified the associated index.css
+*/
 
 import './index.css'
-import { useEffect, useRef, useState } from 'react'
-import { createPortal } from 'react-dom'
-
-import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
-import { eventFiles } from '@lexical/rich-text'
-import { mergeRegister } from '@lexical/utils'
 import {
-  $getNearestNodeFromDOMNode,
-  $getNodeByKey,
-  $getRoot,
-  COMMAND_PRIORITY_HIGH,
-  COMMAND_PRIORITY_LOW,
-  DRAGOVER_COMMAND,
-  DROP_COMMAND
-} from 'lexical'
+  // useCallback,
+  // useEffect,
+  // useMemo,
+  useRef
+  // useState
+} from 'react'
+// import * as ReactDOM from 'react-dom'
 
-import { isHTMLElement } from '../../utils/guard'
-import { Point } from '../../utils/point'
-import { Rect } from '../../utils/rect'
+// import {
+//   $createParagraphNode,
+//   $createTextNode,
+//   $getNearestNodeFromDOMNode,
+//   $getNodeByKey,
+//   $isParagraphNode,
+//   $isTextNode
+// } from 'lexical'
 
-import type { DragEvent as ReactDragEvent } from 'react'
-import type { LexicalEditor } from 'lexical'
+// import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
+import { DraggableBlockPlugin_EXPERIMENTAL } from '@lexical/react/LexicalDraggableBlockPlugin'
 
-const SPACE = 4
-const TARGET_LINE_HALF_HEIGHT = 2
-const DRAGGABLE_BLOCK_MENU_CLASSNAME = 'rte-draggable-block-menu'
-const DRAG_DATA_FORMAT = 'application/x-lexical-drag-block'
-const TEXT_BOX_HORIZONTAL_PADDING = 28
+// import useModal from '../../hooks/useModal'
 
-const Downward = 1
-const Upward = -1
-const Indeterminate = 0
+// import {
+//   ComponentPickerMenuItem,
+//   ComponentPickerOption,
+//   getBaseOptions,
+//   getDynamicOptions
+// } from '../ComponentPickerPlugin'
 
-let prevIndex = Infinity
+import type { JSX } from 'react'
+// import type { NodeKey } from 'lexical'
 
-/* ========================================================================
+const DRAGGABLE_BLOCK_MENU_CLASSNAME = 'draggable-block-menu'
 
-======================================================================== */
-
-function getCurrentIndex(keysLength: number): number {
-  if (keysLength === 0) {
-    return Infinity
-  }
-  if (prevIndex >= 0 && prevIndex < keysLength) {
-    return prevIndex
-  }
-
-  return Math.floor(keysLength / 2)
-}
-
-/* ========================================================================
-
-======================================================================== */
-
-function getTopLevelNodeKeys(editor: LexicalEditor): string[] {
-  return editor.getEditorState().read(() => $getRoot().getChildrenKeys())
-}
-
-/* ========================================================================
-
-======================================================================== */
-
-function getCollapsedMargins(elem: HTMLElement): {
-  marginTop: number
-  marginBottom: number
-} {
-  const getMargin = (
-    element: Element | null,
-    margin: 'marginTop' | 'marginBottom'
-  ): number =>
-    element ? parseFloat(window.getComputedStyle(element)[margin]) : 0
-
-  const { marginTop, marginBottom } = window.getComputedStyle(elem)
-  const prevElemSiblingMarginBottom = getMargin(
-    elem.previousElementSibling,
-    'marginBottom'
-  )
-  const nextElemSiblingMarginTop = getMargin(
-    elem.nextElementSibling,
-    'marginTop'
-  )
-  const collapsedTopMargin = Math.max(
-    parseFloat(marginTop),
-    prevElemSiblingMarginBottom
-  )
-  const collapsedBottomMargin = Math.max(
-    parseFloat(marginBottom),
-    nextElemSiblingMarginTop
-  )
-
-  return { marginBottom: collapsedBottomMargin, marginTop: collapsedTopMargin }
-}
-
-/* ========================================================================
-
-======================================================================== */
-
-function getBlockElement(
-  anchorElem: HTMLElement,
-  editor: LexicalEditor,
-  event: MouseEvent,
-  useEdgeAsDefault = false
-): HTMLElement | null {
-  const anchorElementRect = anchorElem.getBoundingClientRect()
-  const topLevelNodeKeys = getTopLevelNodeKeys(editor)
-
-  let blockElem: HTMLElement | null = null
-
-  editor.getEditorState().read(() => {
-    if (useEdgeAsDefault) {
-      const [firstNode, lastNode] = [
-        editor.getElementByKey(topLevelNodeKeys[0]),
-        editor.getElementByKey(topLevelNodeKeys[topLevelNodeKeys.length - 1])
-      ]
-
-      const [firstNodeRect, lastNodeRect] = [
-        firstNode?.getBoundingClientRect(),
-        lastNode?.getBoundingClientRect()
-      ]
-
-      if (firstNodeRect && lastNodeRect) {
-        if (event.y < firstNodeRect.top) {
-          blockElem = firstNode
-        } else if (event.y > lastNodeRect.bottom) {
-          blockElem = lastNode
-        }
-
-        if (blockElem) {
-          return
-        }
-      }
-    }
-
-    let index = getCurrentIndex(topLevelNodeKeys.length)
-    let direction = Indeterminate
-
-    while (index >= 0 && index < topLevelNodeKeys.length) {
-      const key = topLevelNodeKeys[index]
-      const elem = editor.getElementByKey(key)
-      if (elem === null) {
-        break
-      }
-      const point = new Point(event.x, event.y)
-      const domRect = Rect.fromDOM(elem)
-      const { marginTop, marginBottom } = getCollapsedMargins(elem)
-
-      const rect = domRect.generateNewRect({
-        bottom: domRect.bottom + marginBottom,
-        left: anchorElementRect.left,
-        right: anchorElementRect.right,
-        top: domRect.top - marginTop
-      })
-
-      const {
-        result,
-        reason: { isOnTopSide, isOnBottomSide }
-      } = rect.contains(point)
-
-      if (result) {
-        blockElem = elem
-        prevIndex = index
-        break
-      }
-
-      if (direction === Indeterminate) {
-        if (isOnTopSide) {
-          direction = Upward
-        } else if (isOnBottomSide) {
-          direction = Downward
-        } else {
-          // stop search block element
-          direction = Infinity
-        }
-      }
-
-      index += direction
-    }
-  })
-
-  return blockElem
-}
-
-/* ========================================================================
-
-======================================================================== */
+// type PickerState = {
+//   insertBefore: boolean
+//   targetNodeKey: NodeKey
+// }
 
 function isOnMenu(element: HTMLElement): boolean {
   return !!element.closest(`.${DRAGGABLE_BLOCK_MENU_CLASSNAME}`)
@@ -208,285 +59,302 @@ function isOnMenu(element: HTMLElement): boolean {
 
 ======================================================================== */
 
-function setMenuPosition(
-  targetElem: HTMLElement | null,
-  floatingElem: HTMLElement,
-  anchorElem: HTMLElement
-) {
-  if (!targetElem) {
-    floatingElem.style.opacity = '0'
-    floatingElem.style.transform = 'translate(-10000px, -10000px)'
-    return
-  }
-
-  const targetRect = targetElem.getBoundingClientRect()
-  const targetStyle = window.getComputedStyle(targetElem)
-  const floatingElemRect = floatingElem.getBoundingClientRect()
-  const anchorElementRect = anchorElem.getBoundingClientRect()
-
-  const top =
-    targetRect.top +
-    (parseInt(targetStyle.lineHeight, 10) - floatingElemRect.height) / 2 -
-    anchorElementRect.top
-
-  const left = SPACE
-
-  floatingElem.style.opacity = '1'
-  floatingElem.style.transform = `translate(${left}px, ${top}px)`
-}
-
-/* ========================================================================
-
-======================================================================== */
-
-function setDragImage(
-  dataTransfer: DataTransfer,
-  draggableBlockElem: HTMLElement
-) {
-  const { transform } = draggableBlockElem.style
-
-  // Remove dragImage borders
-  draggableBlockElem.style.transform = 'translateZ(0)'
-  dataTransfer.setDragImage(draggableBlockElem, 0, 0)
-
-  setTimeout(() => {
-    draggableBlockElem.style.transform = transform
-  })
-}
-
-/* ========================================================================
-
-======================================================================== */
-
-function setTargetLine(
-  targetLineElem: HTMLElement,
-  targetBlockElem: HTMLElement,
-  mouseY: number,
-  anchorElem: HTMLElement
-) {
-  const { top: targetBlockElemTop, height: targetBlockElemHeight } =
-    targetBlockElem.getBoundingClientRect()
-  const { top: anchorTop, width: anchorWidth } =
-    anchorElem.getBoundingClientRect()
-
-  const { marginTop, marginBottom } = getCollapsedMargins(targetBlockElem)
-  let lineTop = targetBlockElemTop
-  if (mouseY >= targetBlockElemTop) {
-    lineTop += targetBlockElemHeight + marginBottom / 2
-  } else {
-    lineTop -= marginTop / 2
-  }
-
-  const top = lineTop - anchorTop - TARGET_LINE_HALF_HEIGHT
-  const left = TEXT_BOX_HORIZONTAL_PADDING - SPACE
-
-  targetLineElem.style.transform = `translate(${left}px, ${top}px)`
-  targetLineElem.style.width = `${
-    anchorWidth - (TEXT_BOX_HORIZONTAL_PADDING - SPACE) * 2
-  }px`
-  targetLineElem.style.opacity = '0.65'
-}
-
-/* ========================================================================
-
-======================================================================== */
-
-function hideTargetLine(targetLineElem: HTMLElement | null) {
-  if (targetLineElem) {
-    targetLineElem.style.opacity = '0'
-    targetLineElem.style.transform = 'translate(-10000px, -10000px)'
-  }
-}
-
-/* ========================================================================
-
-======================================================================== */
-
-function useDraggableBlockMenu(
-  editor: LexicalEditor,
-  anchorElem: HTMLElement,
-  isEditable: boolean
-): React.JSX.Element {
-  const scrollerElem = anchorElem.parentElement
-
-  const menuRef = useRef<HTMLDivElement>(null)
-  const targetLineRef = useRef<HTMLDivElement>(null)
-  const isDraggingBlockRef = useRef<boolean>(false)
-  const [draggableBlockElem, setDraggableBlockElem] =
-    useState<HTMLElement | null>(null)
-
-  useEffect(() => {
-    function onMouseMove(event: MouseEvent) {
-      const target = event.target
-      if (!isHTMLElement(target)) {
-        setDraggableBlockElem(null)
-        return
-      }
-
-      if (isOnMenu(target)) {
-        return
-      }
-
-      const _draggableBlockElem = getBlockElement(anchorElem, editor, event)
-
-      setDraggableBlockElem(_draggableBlockElem)
-    }
-
-    function onMouseLeave() {
-      setDraggableBlockElem(null)
-    }
-
-    scrollerElem?.addEventListener('mousemove', onMouseMove)
-    scrollerElem?.addEventListener('mouseleave', onMouseLeave)
-
-    return () => {
-      scrollerElem?.removeEventListener('mousemove', onMouseMove)
-      scrollerElem?.removeEventListener('mouseleave', onMouseLeave)
-    }
-  }, [scrollerElem, anchorElem, editor])
-
-  useEffect(() => {
-    if (menuRef.current) {
-      setMenuPosition(draggableBlockElem, menuRef.current, anchorElem)
-    }
-  }, [anchorElem, draggableBlockElem])
-
-  useEffect(() => {
-    function onDragover(event: DragEvent): boolean {
-      if (!isDraggingBlockRef.current) {
-        return false
-      }
-      const [isFileTransfer] = eventFiles(event)
-      if (isFileTransfer) {
-        return false
-      }
-      const { pageY, target } = event
-      if (!isHTMLElement(target)) {
-        return false
-      }
-      const targetBlockElem = getBlockElement(anchorElem, editor, event, true)
-      const targetLineElem = targetLineRef.current
-      if (targetBlockElem === null || targetLineElem === null) {
-        return false
-      }
-      setTargetLine(targetLineElem, targetBlockElem, pageY, anchorElem)
-      // Prevent default event to be able to trigger $onDrop events
-      event.preventDefault()
-      return true
-    }
-
-    function $onDrop(event: DragEvent): boolean {
-      if (!isDraggingBlockRef.current) {
-        return false
-      }
-      const [isFileTransfer] = eventFiles(event)
-      if (isFileTransfer) {
-        return false
-      }
-      const { target, dataTransfer, pageY } = event
-      const dragData = dataTransfer?.getData(DRAG_DATA_FORMAT) || ''
-      const draggedNode = $getNodeByKey(dragData)
-      if (!draggedNode) {
-        return false
-      }
-      if (!isHTMLElement(target)) {
-        return false
-      }
-      const targetBlockElem = getBlockElement(anchorElem, editor, event, true)
-      if (!targetBlockElem) {
-        return false
-      }
-      const targetNode = $getNearestNodeFromDOMNode(targetBlockElem)
-      if (!targetNode) {
-        return false
-      }
-      if (targetNode === draggedNode) {
-        return true
-      }
-      const targetBlockElemTop = targetBlockElem.getBoundingClientRect().top
-      if (pageY >= targetBlockElemTop) {
-        targetNode.insertAfter(draggedNode)
-      } else {
-        targetNode.insertBefore(draggedNode)
-      }
-      setDraggableBlockElem(null)
-
-      return true
-    }
-
-    return mergeRegister(
-      editor.registerCommand(
-        DRAGOVER_COMMAND,
-        (event) => {
-          return onDragover(event)
-        },
-        COMMAND_PRIORITY_LOW
-      ),
-      editor.registerCommand(
-        DROP_COMMAND,
-        (event) => {
-          return $onDrop(event)
-        },
-        COMMAND_PRIORITY_HIGH
-      )
-    )
-  }, [anchorElem, editor])
-
-  function onDragStart(event: ReactDragEvent<HTMLDivElement>): void {
-    const dataTransfer = event.dataTransfer
-    if (!dataTransfer || !draggableBlockElem) {
-      return
-    }
-    setDragImage(dataTransfer, draggableBlockElem)
-    let nodeKey = ''
-    editor.update(() => {
-      const node = $getNearestNodeFromDOMNode(draggableBlockElem)
-      if (node) {
-        nodeKey = node.getKey()
-      }
-    })
-    isDraggingBlockRef.current = true
-    dataTransfer.setData(DRAG_DATA_FORMAT, nodeKey)
-  }
-
-  function onDragEnd(): void {
-    isDraggingBlockRef.current = false
-    hideTargetLine(targetLineRef.current)
-  }
-
-  return createPortal(
-    <>
-      <div
-        className='rte-draggable-block-menu'
-        ref={menuRef}
-        draggable={true}
-        onDragStart={onDragStart}
-        onDragEnd={onDragEnd}
-      >
-        <div
-          className={isEditable ? 'rte-icon-draggable-block-menu' : ''}
-          style={
-            isEditable
-              ? {
-                  height: 16,
-                  width: 16,
-                  opacity: 0.4
-                }
-              : {}
-          }
-        />
-      </div>
-      <div className='rte-draggable-block-target-line' ref={targetLineRef} />
-    </>,
-    anchorElem
-  )
-}
-
 export default function DraggableBlockPlugin({
   anchorElem = document.body
 }: {
   anchorElem?: HTMLElement
-}): React.JSX.Element {
-  const [editor] = useLexicalComposerContext()
-  return useDraggableBlockMenu(editor, anchorElem, editor._editable)
+}): JSX.Element {
+  // const [editor] = useLexicalComposerContext()
+  // const [modal, showModal] = useModal()
+  const menuRef = useRef<HTMLDivElement>(null)
+  // const pickerRef = useRef<HTMLDivElement>(null)
+  // const searchInputRef = useRef<HTMLInputElement>(null)
+  const targetLineRef = useRef<HTMLDivElement>(null)
+  // const [draggableElement, setDraggableElement] = useState<HTMLElement | null>(
+  //   null
+  // )
+  // const [pickerState, setPickerState] = useState<PickerState | null>(null)
+  // const [isPickerOpen, setIsPickerOpen] = useState(false)
+  // const [queryString, setQueryString] = useState('')
+  // const [highlightedIndex, setHighlightedIndex] = useState(0)
+  // const [pickerPosition, setPickerPosition] = useState<{
+  //   left: number
+  //   top: number
+  // } | null>(null)
+
+  /* ======================
+         options
+  ====================== */
+
+  // const options = useMemo(() => {
+  //   const baseOptions = getBaseOptions(editor, showModal)
+
+  //   if (!queryString) {
+  //     return baseOptions
+  //   }
+
+  //   const regex = new RegExp(queryString, 'i')
+  //   return [
+  //     ...getDynamicOptions(editor, queryString),
+  //     ...baseOptions.filter(
+  //       (option) =>
+  //         regex.test(option.title) ||
+  //         option.keywords.some((keyword) => regex.test(keyword))
+  //     )
+  //   ]
+  // }, [editor, queryString, showModal])
+
+  /* ======================
+
+  ====================== */
+
+  // useEffect(() => {
+  //   if (isPickerOpen && searchInputRef.current) {
+  //     searchInputRef.current.focus()
+  //   }
+  // }, [isPickerOpen])
+
+  /* ======================
+
+  ====================== */
+
+  // useEffect(() => {
+  //   if (!isPickerOpen || !options.length) {
+  //     return
+  //   }
+  //   setHighlightedIndex((current) =>
+  //     Math.min(current, Math.max(options.length - 1, 0))
+  //   )
+  // }, [isPickerOpen, options.length])
+
+  /* ======================
+
+  ====================== */
+
+  // useEffect(() => {
+  //   if (!isPickerOpen) {
+  //     return
+  //   }
+  //   const handleClickOutside = (event: MouseEvent) => {
+  //     const target = event.target as Node | null
+  //     if (
+  //       (pickerRef.current && pickerRef.current.contains(target)) ||
+  //       (menuRef.current && menuRef.current.contains(target))
+  //     ) {
+  //       return
+  //     }
+  //     setIsPickerOpen(false)
+  //     setPickerState(null)
+  //   }
+  //   document.addEventListener('mousedown', handleClickOutside)
+  //   return () => {
+  //     document.removeEventListener('mousedown', handleClickOutside)
+  //   }
+  // }, [isPickerOpen])
+
+  /* ======================
+
+  ====================== */
+
+  // const selectOption = useCallback(
+  //   (option: ComponentPickerOption) => {
+  //     if (!pickerState) {
+  //       setIsPickerOpen(false)
+  //       return
+  //     }
+  //     setIsPickerOpen(false)
+  //     editor.update(() => {
+  //       const node = $getNodeByKey(pickerState.targetNodeKey)
+  //       if (!node) {
+  //         return
+  //       }
+  //       const placeholder = $createParagraphNode()
+  //       const textNode = $createTextNode('')
+  //       placeholder.append(textNode)
+  //       if (pickerState.insertBefore) {
+  //         node.insertBefore(placeholder)
+  //       } else {
+  //         node.insertAfter(placeholder)
+  //       }
+  //       textNode.select()
+  //       option.onSelect(queryString)
+  //       const latestPlaceholder = placeholder.getLatest()
+  //       if ($isParagraphNode(latestPlaceholder)) {
+  //         const onlyChild = latestPlaceholder.getFirstChild()
+  //         if (
+  //           $isTextNode(onlyChild) &&
+  //           onlyChild.getTextContent().length === 0 &&
+  //           latestPlaceholder.getChildrenSize() === 1
+  //         ) {
+  //           latestPlaceholder.remove()
+  //         }
+  //       }
+  //     })
+  //   },
+  //   [editor, pickerState, queryString]
+  // )
+
+  /* ======================
+
+  ====================== */
+
+  // useEffect(() => {
+  //   if (!isPickerOpen) {
+  //     return
+  //   }
+  //   const handleKeyDown = (event: KeyboardEvent) => {
+  //     if (!isPickerOpen || !options.length) {
+  //       return
+  //     }
+  //     if (event.key === 'ArrowDown') {
+  //       event.preventDefault()
+  //       setHighlightedIndex((index) =>
+  //         index + 1 >= options.length ? 0 : index + 1
+  //       )
+  //     } else if (event.key === 'ArrowUp') {
+  //       event.preventDefault()
+  //       setHighlightedIndex((index) =>
+  //         index - 1 < 0 ? options.length - 1 : index - 1
+  //       )
+  //     } else if (event.key === 'Enter') {
+  //       event.preventDefault()
+  //       const option = options[highlightedIndex]
+  //       if (option) {
+  //         selectOption(option)
+  //       }
+  //     } else if (event.key === 'Escape') {
+  //       event.preventDefault()
+  //       setIsPickerOpen(false)
+  //       setPickerState(null)
+  //     }
+  //   }
+  //   window.addEventListener('keydown', handleKeyDown)
+  //   return () => {
+  //     window.removeEventListener('keydown', handleKeyDown)
+  //   }
+  // }, [highlightedIndex, isPickerOpen, options, selectOption])
+
+  /* ======================
+
+  ====================== */
+
+  // function openComponentPicker(e: React.MouseEvent) {
+  //   if (!draggableElement || !editor) {
+  //     return
+  //   }
+
+  //   let targetNodeKey: NodeKey | null = null
+  //   editor.read(() => {
+  //     const resolvedNode = $getNearestNodeFromDOMNode(draggableElement)
+  //     if (resolvedNode) {
+  //       targetNodeKey = resolvedNode.getKey()
+  //     }
+  //   })
+
+  //   if (!targetNodeKey) {
+  //     return
+  //   }
+
+  //   const insertBefore = e.altKey || e.ctrlKey
+  //   const rect = menuRef.current?.getBoundingClientRect()
+  //   setPickerPosition(
+  //     rect
+  //       ? {
+  //           left: rect.left + rect.width + window.scrollX + 8,
+  //           top: rect.top + window.scrollY
+  //         }
+  //       : null
+  //   )
+  //   setPickerState({ insertBefore, targetNodeKey })
+  //   setQueryString('')
+  //   setHighlightedIndex(0)
+  //   setIsPickerOpen(true)
+  // }
+
+  /* ======================
+          return
+  ====================== */
+
+  return (
+    <>
+      {/* {modal} */}
+
+      {/* {isPickerOpen && pickerPosition
+        ? ReactDOM.createPortal(
+            <div
+              className='typeahead-popover component-picker-menu draggable-block-component-picker'
+              ref={pickerRef}
+              style={{
+                left: pickerPosition.left,
+                position: 'absolute',
+                top: pickerPosition.top,
+                zIndex: 10
+              }}
+            >
+              <input
+                className='component-picker-search'
+                placeholder='Filter blocks...'
+                value={queryString}
+                ref={searchInputRef}
+                onChange={(event) => setQueryString(event.target.value)}
+              />
+              <ul>
+                {options.map((option, i: number) => (
+                  <ComponentPickerMenuItem
+                    index={i}
+                    isSelected={highlightedIndex === i}
+                    onClick={() => {
+                      setHighlightedIndex(i)
+                      selectOption(option)
+                    }}
+                    onMouseEnter={() => setHighlightedIndex(i)}
+                    key={option.key}
+                    option={option}
+                  />
+                ))}
+              </ul>
+            </div>,
+            document.body
+          )
+        : null} */}
+
+      <DraggableBlockPlugin_EXPERIMENTAL
+        anchorElem={anchorElem}
+        menuRef={menuRef}
+        targetLineRef={targetLineRef}
+        menuComponent={
+          <div
+            ref={menuRef}
+            // Removed `icon` from className
+            className='draggable-block-menu'
+          >
+            {/* <button
+              title='Click to add below'
+              className='icon icon-plus'
+              onClick={openComponentPicker}
+            /> 
+            */}
+
+            {/* This is the JSX for the actual icon. rte-icon-draggable-block-menu only provides
+            the background-image, so sizing still needs to be set here. */}
+            <div
+              // className='icon'
+              className='rte-icon-draggable-block-menu'
+              style={{
+                height: 22,
+                width: 22,
+                opacity: 0.4
+              }}
+            />
+          </div>
+        }
+        // Shows when you grab and drag the block.
+        targetLineComponent={
+          <div ref={targetLineRef} className='draggable-block-target-line' />
+        }
+        isOnMenu={isOnMenu}
+        // onElementChanged={setDraggableElement}
+      />
+    </>
+  )
 }

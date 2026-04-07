@@ -73,7 +73,7 @@ import {
 import { INSERT_EMBED_COMMAND } from '@lexical/react/LexicalAutoEmbedPlugin'
 
 import { INSERT_HORIZONTAL_RULE_COMMAND } from '@lexical/react/LexicalHorizontalRuleNode'
-import { INSERT_SQUARE_COMMAND } from '../../nodes/SquareNode'
+// import { INSERT_SQUARE_COMMAND } from '../../nodes/SquareNode'
 
 import { getSelectedNode } from '../../utils/getSelectedNode'
 
@@ -245,6 +245,26 @@ const CODE_LANGUAGE_OPTIONS_PRISM: [string, string][] =
 
 //# Add back each feature one by one...
 
+//# When Updating AutoEmbedPlugin, I had to update YoutubePlugin and YoutubeNode.
+//# The YoutubeNode previously had custom logic in it for sizing and centering.
+//# That no longer exists in the current version.
+//# Similarly, in te old AutoEmbedPlugin -> PlaygroundEmbedConfig, there was both
+//# width and insertNode props, so overall the AutoEmbedPlugin/YoutubePlugin/YoutubeNode
+//# Still needs updating to get back to the previous abilities.
+
+//# Link styles are broken for the associated popup.
+
+//# The numbering isn't showing up in the dangerouslySetInnerHTML for CodeHighlightPrismPlugin
+
+//# Consider changing the DraggableBlockPlugin/index.css to use the rte-* prefix as before.
+
+//# The current GitHub PlaygrounEditorTheme has text.highlight.
+//# This is implemented within the formatting dropdown.
+//# Presumably, I don't currently have this logic.
+
+//# Once everything is sufficiently wired up, do a deep dive on all CSS files, compared to
+//# current ones on GitHub.
+
 // FontDropDown
 
 // Divider
@@ -283,6 +303,12 @@ const CODE_LANGUAGE_OPTIONS_PRISM: [string, string][] =
 
 //# On top of that we need to bring in and compare/contrast each file/folder from the CURRENT/FULL github
 //# lexical-playground/src.
+//
+// ⚠️ Note: Newer versions of the lexical-playground have a DragDropPasteExtension, rather than
+// a DragDropPastePlugin. However, it's still located in the plugins folder. That said, the logic
+// is essentially the same. You may run into similar issues with ImagesExtension, AutoLinkExtension, etc.
+// In theory, you should be able to still convert them to plugins.
+
 //#
 //#   - Editor.tsx
 //#   - plugins
@@ -1002,7 +1028,7 @@ export const ToolbarPlugin = ({
     >
       {/* Demo implementation of SquarePlugin  */}
 
-      <button
+      {/* <button
         disabled={!isEditable}
         onClick={() => {
           activeEditor.dispatchCommand(INSERT_SQUARE_COMMAND, undefined)
@@ -1025,7 +1051,7 @@ export const ToolbarPlugin = ({
         aria-label='Insert Square'
       >
         Square
-      </button>
+      </button> */}
 
       {/* =====================
               undo/redo 

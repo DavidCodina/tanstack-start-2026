@@ -18,6 +18,11 @@ const ACCEPTABLE_IMAGE_TYPES = [
 /* ========================================================================
                               DragDropPaste         
 ======================================================================== */
+///////////////////////////////////////////////////////////////////////////
+//
+// ⚠️ Note: Newer versions of the lexical-playground have a DragDropPasteExtension, rather than
+// a DragDropPastePlugin. However, it's still located in the plugins folder.
+//
 // The DragDropPaste plugin is specifically designed to handle the dragging and dropping of images
 // into the Lexical editor. It checks for acceptable image MIME types and processes them accordingly.
 // If you want to enable dragging and dropping of other types of content, you would need to modify the plugin
@@ -27,6 +32,8 @@ const ACCEPTABLE_IMAGE_TYPES = [
 // this feature. That said, it's important to note that any non-URL images (i.e., all file input uploads) are
 // also converted to base64 strings. For this reason, you may not want the file upload option in any of the
 // image plugins because it can potentially add a bunch of kb to your database.
+//
+///////////////////////////////////////////////////////////////////////////
 
 export default function DragDropPaste(): null {
   const [editor] = useLexicalComposerContext()

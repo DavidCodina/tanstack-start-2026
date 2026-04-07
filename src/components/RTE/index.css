@@ -54,13 +54,13 @@
 ====================== */
 /* This is used within AutoEmbedPlugin.tsx & EmojiPickerPlugin.tsx.
 In the playground demo they are also utilized by the MentionsPlugin, but
-that's not implemented here.*/
+that's not implemented here. */
 
 .rte-typeahead-popover {
   background: #fff;
-  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.3);
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
   border-radius: 8px;
-  margin-top: 25px;
+  /* margin-top: 25px; */
 }
 
 .rte-typeahead-popover ul {
@@ -153,6 +153,122 @@ that's not implemented here.*/
 /* When typing ':smile' the emoji popup menu will appear.
 This sets the min height on it. */
 .rte-emoji-menu {
+  width: 200px;
+}
+
+/* ======================
+  .typeahead-popover 
+====================== */
+/* 
+This is used within AutoEmbedPlugin.tsx & EmojiPickerPlugin.tsx.
+In the playground demo they are also utilized by the MentionsPlugin, 
+but that's not implemented here.
+
+Previously, AutoEmbedPlugin.tsx also contained AutoEmbedMenu and AutoEmbedMenuItem.
+AutoEmbedMenu then was used within a menuRenderFn prop. When it was done like that,
+I was using custom class names: .rte-*. However, now the AutoEmbedMenu logic all seems
+to be internal to the LexicalAutoEmbedPlugin, and the class names are also hardcoded 
+internally. Consequently, in this case I'm not prepending with .rte- anymore.
+*/
+
+.typeahead-popover {
+  background: #fff;
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  /* margin-top: 25px; */
+  /* width: fit-content; */
+}
+
+.typeahead-popover ul {
+  padding: 0;
+  list-style: none;
+  margin: 0;
+  border-radius: 8px;
+  max-height: 200px;
+  overflow-y: scroll;
+}
+
+.typeahead-popover ul::-webkit-scrollbar {
+  display: none;
+}
+
+.typeahead-popover ul {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.typeahead-popover ul li {
+  margin: 0;
+  min-width: 180px;
+  font-size: 14px;
+  outline: none;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.typeahead-popover ul li.selected {
+  background: #eee;
+}
+
+.typeahead-popover li {
+  margin: 0 8px 0 8px;
+  padding: 8px;
+  color: #050505;
+  cursor: pointer;
+  line-height: 16px;
+  font-size: 15px;
+  display: flex;
+  align-content: center;
+  flex-direction: row;
+  flex-shrink: 0;
+  background-color: #fff;
+  border-radius: 8px;
+  border: 0;
+}
+
+.typeahead-popover li.active {
+  display: flex;
+  width: 20px;
+  height: 20px;
+  background-size: contain;
+}
+
+.typeahead-popover li:first-child {
+  border-radius: 8px 8px 0px 0px;
+}
+
+.typeahead-popover li:last-child {
+  border-radius: 0px 0px 8px 8px;
+}
+
+.typeahead-popover li:hover {
+  background-color: #eee;
+}
+
+.typeahead-popover li .rte-text {
+  display: flex;
+  flex-grow: 1;
+  line-height: 20px;
+  min-width: 150px;
+}
+
+/* This would only be for a MentionsPlugin, which we don't currently have.
+.typeahead-popover li [class^='rte-icon-'] {
+  display: flex;
+  width: 20px;
+  height: 20px;
+  user-select: none;
+  margin-right: 8px;
+  line-height: 16px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+*/
+
+/* When typing ':smile' the emoji popup menu will appear.
+This sets the min height on it. */
+.emoji-menu {
   width: 200px;
 }
 
@@ -265,6 +381,21 @@ that the name match the blockType because blockType is used to dynamically gener
 
 .rte-icon-superscript {
   background-image: url(./icons/type-superscript.svg);
+}
+
+/** New... */
+.rte-icon-uppercase {
+  background-image: url(./icons/type-uppercase.svg);
+}
+
+/** New... */
+.rte-icon-lowercase {
+  background-image: url(./icons/type-lowercase.svg);
+}
+
+/** New... */
+.rte-icon-capitalize {
+  background-image: url(./icons/type-capitalize.svg);
 }
 
 .rte-icon-font-color {

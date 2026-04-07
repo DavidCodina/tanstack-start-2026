@@ -1,6 +1,6 @@
-import { registerCodeHighlighting } from '@lexical/code-prism'
-import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import { useEffect } from 'react'
+import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
+import { registerCodeHighlighting } from '@lexical/code-prism'
 
 import type { JSX } from 'react'
 
