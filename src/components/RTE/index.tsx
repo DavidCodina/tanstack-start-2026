@@ -85,10 +85,10 @@ import CodeHighlightPrismPlugin from './plugins/CodeHighlightPrismPlugin'
 // this plugin in order to set the associated URL.
 import FloatingLinkEditorPlugin from './plugins/FloatingLinkEditorPlugin'
 
-// It seems like this plugin is partially responsible for allowing a user to select text,
-// then turn it into a link. Without it, the insertLink function in ToolbarPlugin  and
-// FloatingTextFormatToolbarPlugin won't work.
-import { LinkPlugin } from '@lexical/react/LexicalLinkPlugin'
+// Before I was using the one directly from Lexical, but now I use the custom one, which is a very thin wrapper.
+// import { LinkPlugin } from '@lexical/react/LexicalLinkPlugin'
+import { LinkPlugin } from './plugins/LinkPlugin'
+
 // This plugin allows us to drop a URL direclty into the editor and have it
 // immediately transform into a link with that URL: 'https://www.google.com/'
 import AutoLinkPlugin from './plugins/AutoLinkPlugin'
@@ -229,6 +229,7 @@ type OnChange = React.ComponentProps<typeof OnChangePlugin>['onChange']
 //                              This one is okay, but he uses different abstractions than the ones in the playground example.
 //
 //  ✅ Usman Abdur Rehman:      https://www.youtube.com/watch?v=z8AJAXOUTzc
+//                              https://www.youtube.com/watch?v=KdSjj0c0xfs
 //
 //  ✅ Easy Devv:               https://www.youtube.com/watch?v=TzkIiVv6Gh4&list=PL1kmGxeJ7el20LOlIgGoboRmlj3oBKlyN&index=1
 //                             I watched some of this, but it wasn't very helpful..
@@ -507,7 +508,7 @@ export const RTE = ({
             then it won't work. */}
             <AutoLinkPlugin />
 
-            <LinkPlugin />
+            <LinkPlugin hasLinkAttributes={true} />
 
             <FloatingTextFormatToolbarPlugin
               setIsLinkEditMode={setIsLinkEditMode}

@@ -57,6 +57,8 @@ const hrNodeExport: DOMExportOutputMap = new Map([
                               linkNodeExport                 
 ======================================================================== */
 
+//# This may not be necessary anymore since we're using <LinkPlugin hasLinkAttributes={true} />
+
 const linkNodeExport: DOMExportOutputMap = new Map([
   [
     LinkNode,

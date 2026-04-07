@@ -243,8 +243,6 @@ const CODE_LANGUAGE_OPTIONS_PRISM: [string, string][] =
 //# Is this a custom hook that I made?
 //# It's not part of the official lexical-playground/src/hooks.
 
-//# Add back each feature one by one...
-
 //# When Updating AutoEmbedPlugin, I had to update YoutubePlugin and YoutubeNode.
 //# The YoutubeNode previously had custom logic in it for sizing and centering.
 //# That no longer exists in the current version.
@@ -264,6 +262,9 @@ const CODE_LANGUAGE_OPTIONS_PRISM: [string, string][] =
 
 //# Once everything is sufficiently wired up, do a deep dive on all CSS files, compared to
 //# current ones on GitHub.
+
+//# There are several spots in this RTE that make use of window. This can potentially be
+//# problematic for server-side rendering.
 
 // FontDropDown
 

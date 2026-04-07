@@ -1,16 +1,27 @@
+/* 
+Changes made relative to lexical-playground version:
+1. Changed JSX class names.
+2. Mofified the associated index.css
+3. Added Macrotask / setTimeout around useEffect 4.
+*/
+
 import './index.css'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import {
+  // $addUpdateTag,
   $getSelection,
   $isLineBreakNode,
+  $isNodeSelection,
   $isRangeSelection,
   CLICK_COMMAND,
   COMMAND_PRIORITY_CRITICAL,
   COMMAND_PRIORITY_HIGH,
   COMMAND_PRIORITY_LOW,
   KEY_ESCAPE_COMMAND,
-  SELECTION_CHANGE_COMMAND
+  SELECTION_CHANGE_COMMAND,
+  // SKIP_DOM_SELECTION_TAG,
+  getDOMSelection
 } from 'lexical'
 import {
   $createLinkNode,
@@ -25,8 +36,15 @@ import { getSelectedNode } from '../../utils/getSelectedNode'
 import { setFloatingElemPositionForLinkEditor } from '../../utils/setFloatingElemPositionForLinkEditor'
 import { sanitizeUrl } from '../../utils/url'
 
-import type { Dispatch } from 'react'
+import type { Dispatch, JSX } from 'react'
 import type { BaseSelection, LexicalEditor } from 'lexical'
+
+function preventDefault(
+  event: React.KeyboardEvent<HTMLInputElement> | React.MouseEvent<HTMLElement>
+): void {
+  event.preventDefault()
+  event.stopPropagation() //* New for testing...
+}
 
 /* ========================================================================
 
@@ -70,13 +88,29 @@ function FloatingLinkEditor({
       } else {
         setLinkUrl('')
       }
-
       if (isLinkEditMode) {
         setEditedLinkUrl(linkUrl)
       }
+    } else if ($isNodeSelection(selection)) {
+      const nodes = selection.getNodes()
+      if (nodes.length > 0) {
+        const node = nodes[0]
+        const parent = node.getParent()
+        if ($isLinkNode(parent)) {
+          setLinkUrl(parent.getURL())
+        } else if ($isLinkNode(node)) {
+          setLinkUrl(node.getURL())
+        } else {
+          setLinkUrl('')
+        }
+        if (isLinkEditMode) {
+          setEditedLinkUrl(linkUrl)
+        }
+      }
     }
+
     const editorElem = editorRef.current
-    const nativeSelection = window.getSelection()
+    const nativeSelection = getDOMSelection(editor._window)
     const activeElement = document.activeElement
 
     if (editorElem === null) {
@@ -85,23 +119,34 @@ function FloatingLinkEditor({
 
     const rootElement = editor.getRootElement()
 
-    if (
-      selection !== null &&
-      nativeSelection !== null &&
-      rootElement !== null &&
-      rootElement.contains(nativeSelection.anchorNode) &&
-      editor.isEditable()
-    ) {
-      const domRect: DOMRect | undefined =
-        nativeSelection.focusNode?.parentElement?.getBoundingClientRect()
+    if (selection !== null && rootElement !== null && editor.isEditable()) {
+      let domRect: DOMRect | undefined
+
+      if ($isNodeSelection(selection)) {
+        const nodes = selection.getNodes()
+        if (nodes.length > 0) {
+          const element = editor.getElementByKey(nodes[0].getKey())
+          if (element) {
+            domRect = element.getBoundingClientRect()
+          }
+        }
+      } else if (
+        nativeSelection !== null &&
+        rootElement.contains(nativeSelection.anchorNode)
+      ) {
+        domRect =
+          nativeSelection.focusNode?.parentElement?.getBoundingClientRect()
+      }
+
       if (domRect) {
         domRect.y += 40
         setFloatingElemPositionForLinkEditor(domRect, editorElem, anchorElem)
       }
       setLastSelection(selection)
+    }
 
-      //^ We're looking for the specifc class specified below.
-    } else if (
+    //^ We're looking for the specifc class specified below. See below
+    else if (
       !activeElement ||
       activeElement.className !==
         'rte-form-control rte-form-control-sm rte-link-input'
@@ -118,7 +163,7 @@ function FloatingLinkEditor({
   }, [anchorElem, editor, setIsLinkEditMode, isLinkEditMode, linkUrl])
 
   /* ======================
-        useEffect()
+         useEffect() 1
   ====================== */
 
   useEffect(() => {
@@ -146,7 +191,7 @@ function FloatingLinkEditor({
   }, [anchorElem.parentElement, editor, $updateLinkEditor])
 
   /* ======================
-        useEffect()
+         useEffect() 2
   ====================== */
 
   useEffect(() => {
@@ -180,7 +225,7 @@ function FloatingLinkEditor({
   }, [editor, $updateLinkEditor, setIsLink, isLink])
 
   /* ======================
-        useEffect()
+         useEffect() 3
   ====================== */
 
   useEffect(() => {
@@ -190,14 +235,70 @@ function FloatingLinkEditor({
   }, [editor, $updateLinkEditor])
 
   /* ======================
-        useEffect()
+        useEffect() 4
   ====================== */
 
   useEffect(() => {
+    ///////////////////////////////////////////////////////////////////////////
+    //
+    // ⚠️ Gotcha: I don't know why this doesn't happen in lexical-playground, but in this version, if we don't
+    // wrap it in setTimeout to create a macro task, then clicking the edit button will cause focus
+    // to go to the <input> too soon, but then the input loses focus and it goes to
+    //  <div.rte-content-editable-root>, which ultimately causes useEffect 5 to run and immediately
+    // call setIsLinkEditMode(false)!
+    //
+    // Suppose we comment out useEffect 5, the real question is why does the input lose focus?
+    // Under normal circumstances, the conditional logic should successfully render the input
+    // and focus on it without issue - all in the same tick. Presumably, the lexical editor is
+    // aggressively stealing focus based on some internal logic:
+    //
+    //   https://lexical.dev/docs/concepts/selection#focus
+    //
+    // For this case, the suggested solution didn't work.
+    //
+    //   editor.update(() => {
+    //     $addUpdateTag(SKIP_DOM_SELECTION_TAG);
+    //     // ...
+    //   })
+    //
+    // What does work is brute-forcing by wrapping the logic in a setTimeout to create a macro task,
+    // or the more idiomatic approach of using editor.setEditable(false) temporarily. The fact that
+    // the latter approach works proves that this is a lexical editor issue.
+    //
+    ///////////////////////////////////////////////////////////////////////////
+
+    // setTimeout(() => {
     if (isLinkEditMode && inputRef.current) {
+      editor.setEditable(false)
       inputRef.current.focus()
     }
-  }, [isLinkEditMode, isLink])
+    // }, 0)
+
+    // However, even when using editor.setEditable(), we still need setTimeout.
+    setTimeout(() => {
+      editor.setEditable(true)
+    }, 0)
+  }, [editor, isLinkEditMode, isLink])
+
+  /* ======================
+        useEffect() 5
+  ====================== */
+
+  useEffect(() => {
+    const editorElement = editorRef.current // <div ref={editorRef} className='rte-link-editor'>
+    if (editorElement === null) return
+
+    const handleBlur = (event: FocusEvent) => {
+      if (!editorElement.contains(event.relatedTarget as Element) && isLink) {
+        setIsLink(false)
+        setIsLinkEditMode(false)
+      }
+    }
+    editorElement.addEventListener('focusout', handleBlur)
+    return () => {
+      editorElement.removeEventListener('focusout', handleBlur)
+    }
+  }, [editorRef, setIsLink, setIsLinkEditMode, isLink])
 
   /* ======================
   monitorInputInteraction()
@@ -207,8 +308,7 @@ function FloatingLinkEditor({
     event: React.KeyboardEvent<HTMLInputElement>
   ) => {
     if (event.key === 'Enter') {
-      event.preventDefault()
-      handleLinkSubmission()
+      handleLinkSubmission(event)
     } else if (event.key === 'Escape') {
       event.preventDefault()
       setIsLinkEditMode(false)
@@ -219,12 +319,17 @@ function FloatingLinkEditor({
   handleLinkSubmission()
   ====================== */
 
-  const handleLinkSubmission = () => {
+  const handleLinkSubmission = (
+    event: React.KeyboardEvent<HTMLInputElement> | React.MouseEvent<HTMLElement>
+  ) => {
+    event.preventDefault()
     if (lastSelection !== null) {
       if (linkUrl !== '') {
-        editor.dispatchCommand(TOGGLE_LINK_COMMAND, sanitizeUrl(editedLinkUrl))
-
         editor.update(() => {
+          editor.dispatchCommand(
+            TOGGLE_LINK_COMMAND,
+            sanitizeUrl(editedLinkUrl)
+          )
           const selection = $getSelection()
           if ($isRangeSelection(selection)) {
             const parent = getSelectedNode(selection).getParent()
@@ -240,6 +345,7 @@ function FloatingLinkEditor({
         })
       }
       setEditedLinkUrl('https://')
+
       setIsLinkEditMode(false)
     }
   }
@@ -274,7 +380,7 @@ function FloatingLinkEditor({
               onClick={() => {
                 setIsLinkEditMode(false)
               }}
-              onMouseDown={(event) => event.preventDefault()}
+              onMouseDown={preventDefault}
               role='button'
               tabIndex={0}
             />
@@ -282,7 +388,7 @@ function FloatingLinkEditor({
             <div
               className='rte-link-confirm rte-icon-success-alt'
               onClick={handleLinkSubmission}
-              onMouseDown={(event) => event.preventDefault()}
+              onMouseDown={preventDefault}
               role='button'
               tabIndex={0}
             />
@@ -299,11 +405,12 @@ function FloatingLinkEditor({
           </a>
           <div
             className='rte-link-edit rte-icon-pencil-fill'
-            onClick={() => {
+            onMouseDown={preventDefault}
+            onClick={(event) => {
+              event.preventDefault()
               setEditedLinkUrl(linkUrl)
               setIsLinkEditMode(true)
             }}
-            onMouseDown={(event) => event.preventDefault()}
             role='button'
             tabIndex={0}
           />
@@ -325,7 +432,7 @@ function FloatingLinkEditor({
               ///////////////////////////////////////////////////////////////////////////
               editor.dispatchCommand(TOGGLE_LINK_COMMAND, null)
             }}
-            onMouseDown={(event) => event.preventDefault()}
+            onMouseDown={preventDefault}
             role='button'
             tabIndex={0}
           />
@@ -344,33 +451,24 @@ function useFloatingLinkEditorToolbar(
   anchorElem: HTMLElement,
   isLinkEditMode: boolean,
   setIsLinkEditMode: Dispatch<boolean>
-): React.JSX.Element | null {
+): JSX.Element | null {
   const [activeEditor, setActiveEditor] = useState(editor)
   const [isLink, setIsLink] = useState(false)
-
-  /* ======================
-        useEffect()
-  ====================== */
 
   useEffect(() => {
     function $updateToolbar() {
       const selection = $getSelection()
-
       if ($isRangeSelection(selection)) {
         const focusNode = getSelectedNode(selection)
-
         const focusLinkNode = $findMatchingParent(focusNode, $isLinkNode)
-
         const focusAutoLinkNode = $findMatchingParent(
           focusNode,
           $isAutoLinkNode
         )
-
         if (!(focusLinkNode || focusAutoLinkNode)) {
           setIsLink(false)
           return
         }
-
         const badNode = selection
           .getNodes()
           .filter((node) => !$isLineBreakNode(node))
@@ -391,9 +489,21 @@ function useFloatingLinkEditorToolbar(
         } else {
           setIsLink(false)
         }
+      } else if ($isNodeSelection(selection)) {
+        const nodes = selection.getNodes()
+        if (nodes.length === 0) {
+          setIsLink(false)
+          return
+        }
+        const node = nodes[0]
+        const parent = node.getParent()
+        if ($isLinkNode(parent) || $isLinkNode(node)) {
+          setIsLink(true)
+        } else {
+          setIsLink(false)
+        }
       }
     }
-
     return mergeRegister(
       editor.registerUpdateListener(({ editorState }) => {
         editorState.read(() => {
@@ -457,7 +567,7 @@ export default function FloatingLinkEditorPlugin({
   anchorElem?: HTMLElement
   isLinkEditMode: boolean
   setIsLinkEditMode: Dispatch<boolean>
-}): React.JSX.Element | null {
+}): JSX.Element | null {
   const [editor] = useLexicalComposerContext()
   return useFloatingLinkEditorToolbar(
     editor,
