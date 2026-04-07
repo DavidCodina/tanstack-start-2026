@@ -101,7 +101,6 @@ import {
 //
 //   https://codesandbox.io/s/lexical-image-plugin-example-iy2bc5?file=/src/plugins/ImageToolbar.tsx:1016-1134
 //
-//
 ///////////////////////////////////////////////////////////////////////////
 
 //* The new version does this. Note that InsertImageDialog
@@ -140,9 +139,12 @@ import {
 
 import type { Dispatch, JSX } from 'react'
 import type {
+  CommandPayloadType,
   // ElementFormatType,
+  LexicalCommand,
   LexicalNode,
-  NodeKey
+  NodeKey,
+  TextFormatType
 } from 'lexical'
 
 /* ======================
@@ -266,39 +268,7 @@ const CODE_LANGUAGE_OPTIONS_PRISM: [string, string][] =
 //# There are several spots in this RTE that make use of window. This can potentially be
 //# problematic for server-side rendering.
 
-// FontDropDown
-
-// Divider
-
-// FontSize
-
-// Divider
-
-// Bold button
-
-// Italic button
-
-// Underline button
-
-// Code button;
-// Conditionally shown based off of: canViewerSeeInsertCodeButton
-// const canViewerSeeInsertCodeButton = !toolbarState.isImageCaption
-
-// Insert link button
-
-// DropdownColorPicker (text)
-
-// DropdownColorPicker (background)
-
-// Dropdown (formatting)
-
-// Divider
-
-// Dropdown (insert)
-
-// Divider
-
-// ElementFormatDropdown (i.e., alignment)
+//# Add focus styles
 
 //# Once everything is wired up, do an in-depth comparison of the current components vs. new components.
 
@@ -310,7 +280,6 @@ const CODE_LANGUAGE_OPTIONS_PRISM: [string, string][] =
 // is essentially the same. You may run into similar issues with ImagesExtension, AutoLinkExtension, etc.
 // In theory, you should be able to still convert them to plugins.
 
-//#
 //#   - Editor.tsx
 //#   - plugins
 //#   - nodes
@@ -345,36 +314,45 @@ export const ToolbarPlugin = ({
   // In the lexical-playground example, both editor and activeEditor are passed in as props.
   const [editor] = useLexicalComposerContext()
   const [activeEditor, setActiveEditor] = useState(editor)
-
-  // Used by onCodeLanguageSelect()
   const [selectedElementKey, setSelectedElementKey] = useState<NodeKey | null>(
     null
   )
-
   const [modal, showModal] = useModal()
-
   const [isEditable, setIsEditable] = useState(() => editor.isEditable())
-
   const { toolbarState, updateToolbarState } = useToolbarState()
 
   /* ======================
 
   ====================== */
-  // Newer version adds the following here
-  // Review to see where/how these are actually used.
 
-  //* dispatchToolbarCommand
+  const dispatchToolbarCommand = <T extends LexicalCommand<unknown>>(
+    command: T,
+    payload: CommandPayloadType<T> | undefined = undefined,
+    skipRefocus: boolean = false
+  ) => {
+    activeEditor.update(() => {
+      if (skipRefocus) {
+        $addUpdateTag(SKIP_DOM_SELECTION_TAG)
+      }
+
+      // Re-assert on Type so that payload can have a default param
+      activeEditor.dispatchCommand(command, payload as CommandPayloadType<T>)
+    })
+  }
 
   /* ======================
-
+  dispatchFormatTextCommand()
   ====================== */
-  // Newer version adds the following here
-  // Review to see where/how these are actually used.
+  //* Newer version adds the following here
+  //* Review to see where/how these are actually used.
 
-  //* dispatchFormatTextCommand
+  const _dispatchFormatTextCommand = (
+    payload: TextFormatType,
+    skipRefocus: boolean = false
+  ) => dispatchToolbarCommand(FORMAT_TEXT_COMMAND, payload, skipRefocus)
 
   /* ======================
-
+    $handleHeadingNode()
   ====================== */
 
   const $handleHeadingNode = useCallback(
@@ -829,22 +807,6 @@ export const ToolbarPlugin = ({
   // Used by onFontColorSelect which is then used by DropdownColorPicker (text) onChange.
   // Used by onBgColorSelect which is then used by DropdownColorPicker (background) onChange.
 
-  //! Old version
-  // const applyStyleText = useCallback(
-  //   (styles: Record<string, string>, skipHistoryStack?: boolean) => {
-  //     activeEditor.update(
-  //       () => {
-  //         const selection = $getSelection()
-  //         if (selection !== null) {
-  //           $patchStyleText(selection, styles)
-  //         }
-  //       },
-  //       skipHistoryStack ? { tag: 'historic' } : {}
-  //     )
-  //   },
-  //   [activeEditor]
-  // )
-
   const applyStyleText = useCallback(
     (
       styles: Record<string, string>,
@@ -872,14 +834,6 @@ export const ToolbarPlugin = ({
   ====================== */
   // Used by DropdownColorPicker (text) onChange.
 
-  //! Old version
-  // const onFontColorSelect = useCallback(
-  //   (value: string, skipHistoryStack: boolean) => {
-  //     applyStyleText({ color: value }, skipHistoryStack)
-  //   },
-  //   [applyStyleText]
-  // )
-
   const onFontColorSelect = useCallback(
     (value: string, skipHistoryStack: boolean, skipRefocus: boolean) => {
       applyStyleText({ color: value }, skipHistoryStack, skipRefocus)
@@ -891,14 +845,6 @@ export const ToolbarPlugin = ({
       onBgColorSelect() 
   ====================== */
   // Used by DropdownColorPicker (background) onChange.
-
-  //! Old version
-  // const onBgColorSelect = useCallback(
-  //   (value: string, skipHistoryStack: boolean) => {
-  //     applyStyleText({ 'background-color': value }, skipHistoryStack)
-  //   },
-  //   [applyStyleText]
-  // )
 
   const onBgColorSelect = useCallback(
     (value: string, skipHistoryStack: boolean, skipRefocus: boolean) => {
@@ -916,17 +862,6 @@ export const ToolbarPlugin = ({
   ====================== */
   // Used by the insert link button's onClick.
 
-  //! Old version
-  // const insertLink = useCallback(() => {
-  //   if (!isLink) {
-  //     setIsLinkEditMode(true)
-  //     activeEditor.dispatchCommand(TOGGLE_LINK_COMMAND, sanitizeUrl('https://'))
-  //   } else {
-  //     setIsLinkEditMode(false)
-  //     activeEditor.dispatchCommand(TOGGLE_LINK_COMMAND, null)
-  //   }
-  // }, [activeEditor, isLink, setIsLinkEditMode])
-
   const insertLink = useCallback(() => {
     if (!toolbarState.isLink) {
       setIsLinkEditMode(true)
@@ -941,21 +876,6 @@ export const ToolbarPlugin = ({
     onCodeLanguageSelect()
   ====================== */
   // Used by Prism and Shiki Dropdowns onClick
-
-  //! Old version
-  // const onCodeLanguageSelect = useCallback(
-  //   (value: string) => {
-  //     activeEditor.update(() => {
-  //       if (selectedElementKey !== null) {
-  //         const node = $getNodeByKey(selectedElementKey)
-  //         if ($isCodeNode(node)) {
-  //           node.setLanguage(value)
-  //         }
-  //       }
-  //     })
-  //   },
-  //   [activeEditor, selectedElementKey]
-  // )
 
   const onCodeLanguageSelect = useCallback(
     (value: string) => {
@@ -1060,9 +980,13 @@ export const ToolbarPlugin = ({
 
       <button
         disabled={!toolbarState.canUndo || !isEditable}
-        onClick={() => {
-          activeEditor.dispatchCommand(UNDO_COMMAND, undefined)
-        }}
+        //! onClick={() => {
+        //!   activeEditor.dispatchCommand(UNDO_COMMAND, undefined)
+        //! }}
+
+        onClick={(e) =>
+          dispatchToolbarCommand(UNDO_COMMAND, undefined, isKeyboardInput(e))
+        }
         title={IS_APPLE ? 'Undo (⌘Z)' : 'Undo (Ctrl+Z)'}
         type='button'
         className='rte-toolbar-item'
@@ -1073,9 +997,12 @@ export const ToolbarPlugin = ({
 
       <button
         disabled={!toolbarState.canRedo || !isEditable}
-        onClick={() => {
-          activeEditor.dispatchCommand(REDO_COMMAND, undefined)
-        }}
+        //! onClick={() => {
+        //!   activeEditor.dispatchCommand(REDO_COMMAND, undefined)
+        //! }}
+        onClick={(e) =>
+          dispatchToolbarCommand(REDO_COMMAND, undefined, isKeyboardInput(e))
+        }
         title={IS_APPLE ? 'Redo (⇧⌘Z)' : 'Redo (Ctrl+Y)'}
         type='button'
         className='rte-toolbar-item'
@@ -1293,12 +1220,15 @@ export const ToolbarPlugin = ({
             title='Insert specialized editor node'
           >
             <DropDownItem
-              onClick={() => {
-                activeEditor.dispatchCommand(
-                  INSERT_HORIZONTAL_RULE_COMMAND,
-                  undefined
-                )
-              }}
+              //! onClick={() => {
+              //!   activeEditor.dispatchCommand(
+              //!     INSERT_HORIZONTAL_RULE_COMMAND,
+              //!     undefined
+              //!   )
+              //! }}
+              onClick={() =>
+                dispatchToolbarCommand(INSERT_HORIZONTAL_RULE_COMMAND)
+              }
               className='rte-item'
             >
               <i className='rte-icon-horizontal-rule' />
@@ -1338,16 +1268,21 @@ export const ToolbarPlugin = ({
             {EmbedConfigs.map((embedConfig) => (
               <DropDownItem
                 key={embedConfig.type}
-                onClick={() => {
-                  activeEditor.dispatchCommand(
-                    INSERT_EMBED_COMMAND,
-                    embedConfig.type
-                  )
-                }}
+                //! onClick={() => {
+                //!   activeEditor.dispatchCommand(
+                //!     INSERT_EMBED_COMMAND,
+                //!     embedConfig.type
+                //!   )
+                //! }}
+                onClick={() =>
+                  dispatchToolbarCommand(INSERT_EMBED_COMMAND, embedConfig.type)
+                }
                 className='rte-item'
               >
                 {embedConfig.icon}
-                <span className='rte-text'>{embedConfig.contentName}</span>
+                <span className='rte-text text-red-500'>
+                  {embedConfig.contentName}
+                </span>
               </DropDownItem>
             ))}
           </DropDown>
@@ -1364,43 +1299,6 @@ export const ToolbarPlugin = ({
             editor={activeEditor}
             isRTL={toolbarState.isRTL}
           />
-
-          {/* 
-
-        X FontDropDown
-
-        X Divider
-
-        X FontSize
-
-        X Divider
-
-        X Bold button
-
-        X Italic button
-
-        X Underline button
-
-        X Code button;
-        X Conditionally shown based off of: canViewerSeeInsertCodeButton
-        X const canViewerSeeInsertCodeButton = !toolbarState.isImageCaption
-
-        X Insert link button
-
-        X DropdownColorPicker (text)
-
-        X DropdownColorPicker (background)
-
-        X Dropdown (formatting)
-
-        X Divider
-
-        X Dropdown (insert)
-
-        Divider
-
-        ElementFormatDropdown (i.e., alignment)
-        */}
         </>
       )}
 

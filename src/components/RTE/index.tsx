@@ -225,18 +225,20 @@ type OnChange = React.ComponentProps<typeof OnChangePlugin>['onChange']
 //   Releases:                  https://github.com/facebook/lexical/releases
 //   Changellog:                https://github.com/facebook/lexical/blob/main/CHANGELOG.md
 //
-//   ✅ Usman Abdur Rehman:     https://www.youtube.com/watch?v=XI6nufqMSek&t=76s
+//   ✅ Usman Abdur Rehman:     Crash Course - https://www.youtube.com/watch?v=XI6nufqMSek
 //                              This one is okay, but he uses different abstractions than the ones in the playground example.
 //
-//  ✅ Usman Abdur Rehman:      https://www.youtube.com/watch?v=z8AJAXOUTzc
-//                              https://www.youtube.com/watch?v=KdSjj0c0xfs
+//   Usman Abdur Rehman:        Lexical Advanced Tutorial - https://www.youtube.com/watch?v=z8AJAXOUTzc
+//                              Lexical Custom Nodes Course -  https://www.youtube.com/watch?v=KdSjj0c0xfs
 //
-//  ✅ Easy Devv:               https://www.youtube.com/watch?v=TzkIiVv6Gh4&list=PL1kmGxeJ7el20LOlIgGoboRmlj3oBKlyN&index=1
-//                             I watched some of this, but it wasn't very helpful..
-
-// ✅  Daily Web Coding (Meh...): https://www.youtube.com/watch?v=aXAQ_ZVFI5Q
+//   Usman Abdur Rehman:        Override/Replace Nodes - https://www.youtube.com/watch?v=LnEmBb6ABl8
 //
-// ✅ theterminalguy (Meh...): https://www.youtube.com/watch?v=hJrnIrsZcEs&t=2s
+//   Easy Devv:                 https://www.youtube.com/watch?v=TzkIiVv6Gh4&list=PL1kmGxeJ7el20LOlIgGoboRmlj3oBKlyN&index=1
+//                              I watched some of this, but it wasn't very helpful..
+//
+//   Daily Web Coding (Meh...): https://www.youtube.com/watch?v=aXAQ_ZVFI5Q
+//
+//  theterminalguy (Meh...):    https://www.youtube.com/watch?v=hJrnIrsZcEs&t=2s
 //
 // ❓ https://javascript.plainenglish.io/getting-started-with-lexical-2c8b94c9bdd9
 // ❓ https://blog.logrocket.com/build-rich-text-editor-lexical-react/
@@ -290,10 +292,10 @@ export const RTE = ({
     // The namespace is used internally by Lexical to manage and isolate
     // the state of different editor instances. This ensures that actions
     // and updates in one editor don't interfere with others.
-    namespace: namespace,
+    namespace: namespace, // ⚠️ Required
     theme: theme,
 
-    // Registering an error handler is required.
+    // ⚠️ Required
     // Catch any errors that occur during Lexical updates and log them
     // or throw them as needed. If you don't throw them, Lexical will
     // try to recover gracefully without losing user data.
