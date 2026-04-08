@@ -278,6 +278,13 @@ export function AutoEmbedDialog({
 /* ========================================================================
                          
 ======================================================================== */
+///////////////////////////////////////////////////////////////////////////
+//
+// By default, Lexical abstracts away the EmojiMenuItem and overall list implementation.
+// That means that there will be HTML in the DOM with very generic CSS classes.
+// Those classes are way too generic, so here we implement our own custom logic.
+//
+///////////////////////////////////////////////////////////////////////////
 
 // function AutoEmbedMenuItem({
 //   index,
@@ -294,7 +301,7 @@ export function AutoEmbedDialog({
 // }) {
 //   let className = 'rte-item'
 //   if (isSelected) {
-//     className += ' selected'
+//     className += ' selected' //^ Not loving 'selected'.
 //   }
 
 //   /* ======================

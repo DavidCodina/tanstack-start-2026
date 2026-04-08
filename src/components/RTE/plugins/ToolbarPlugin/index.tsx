@@ -229,6 +229,10 @@ const CODE_LANGUAGE_OPTIONS_PRISM: [string, string][] =
 ======================================================================== */
 //# Next Steps:
 
+//# Previously, AutoEmbedPlugin.tsx also contained AutoEmbedMenu and AutoEmbedMenuItem.
+//# Go back to that and add it in again using the older RTE. Then remove the extra code from
+//# index.css.
+
 //` Recently updated clearFormatting to:
 //` clearFormatting={(e) => { clearFormatting(activeEditor, isKeyboardInput(e)) }}
 //` Double-back over everything and add that in everywhere.
@@ -1275,9 +1279,7 @@ export const ToolbarPlugin = ({
                 className='rte-item'
               >
                 {embedConfig.icon}
-                <span className='rte-text text-red-500'>
-                  {embedConfig.contentName}
-                </span>
+                <span className='rte-text'>{embedConfig.contentName}</span>
               </DropDownItem>
             ))}
           </DropDown>

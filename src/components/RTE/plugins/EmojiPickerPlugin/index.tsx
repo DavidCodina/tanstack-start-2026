@@ -1,12 +1,20 @@
+/* 
+Changes made relative to lexical-playground version:
+
+1. Added in menuRenderFn + EmojiMenuItem. This CSS class names used here are
+   defined within RTE/index.css.
+
+*/
+
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import * as ReactDOM from 'react-dom'
+import { $createTextNode, $getSelection, $isRangeSelection } from 'lexical'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import {
   LexicalTypeaheadMenuPlugin,
   MenuOption,
   useBasicTypeaheadTriggerMatch
 } from '@lexical/react/LexicalTypeaheadMenuPlugin'
-import { $createTextNode, $getSelection, $isRangeSelection } from 'lexical'
 
 import type { TextNode } from 'lexical'
 
@@ -36,6 +44,22 @@ class EmojiOption extends MenuOption {
 /* ========================================================================
                          
 ======================================================================== */
+///////////////////////////////////////////////////////////////////////////
+//
+// By default, Lexical abstracts away the EmojiMenuItem and overall list implementation.
+// That means that there will be HTML in the DOM with the following CSS classes:
+//
+//   <div class='rte-typeahead-popover mentions-menu'>
+//     <ul>
+//       <li class='item'>
+//         <span className='text'> ... </span>
+//       </li>
+//     </ul>
+//   </div>
+//
+// Those classes are way too generic, so here we implement our own custom logic.
+//
+///////////////////////////////////////////////////////////////////////////
 
 function EmojiMenuItem({
   index,
@@ -52,23 +76,23 @@ function EmojiMenuItem({
 }) {
   let className = 'rte-item'
   if (isSelected) {
-    className += ' selected' //! Not loving 'selected'.
+    className += ' selected' //^ Not loving 'selected'.
   }
   return (
     <li
       key={option.key}
       tabIndex={-1}
       className={className}
-      ref={option.setRefElement}
+      ref={(node) => {
+        option.setRefElement(node)
+      }}
       role='option'
       aria-selected={isSelected}
       id={'rte-typeahead-item-' + index}
       onMouseEnter={onMouseEnter}
       onClick={onClick}
     >
-      <span className='rte-text'>
-        {option.emoji} {option.title}
-      </span>
+      <span className='rte-text'>{option.title}</span>
     </li>
   )
 }
@@ -95,6 +119,10 @@ export default function EmojiPickerPlugin() {
   const [queryString, setQueryString] = useState<string | null>(null)
   const [emojis, setEmojis] = useState<Array<Emoji>>([])
 
+  /* ======================
+
+  ====================== */
+
   useEffect(() => {
     // @ts-ignore
     //^ This is where the emojis are defined.
@@ -103,12 +131,16 @@ export default function EmojiPickerPlugin() {
       .catch((err) => err)
   }, [])
 
+  /* ======================
+
+  ====================== */
+
   const emojiOptions = useMemo(
     () =>
       emojis !== null
         ? emojis.map(
             ({ emoji, aliases, tags }) =>
-              new EmojiOption(aliases[0], emoji, {
+              new EmojiOption(`${emoji} ${aliases[0]}`, emoji, {
                 keywords: [...aliases, ...tags]
               })
           )
@@ -116,9 +148,18 @@ export default function EmojiPickerPlugin() {
     [emojis]
   )
 
+  /* ======================
+
+  ====================== */
+
   const checkForTriggerMatch = useBasicTypeaheadTriggerMatch(':', {
-    minLength: 0
+    minLength: 0,
+    punctuation: '\\.,\\+\\*\\?\\$\\@\\|#{}\\(\\)\\^\\[\\]\\\\/!%\'"~=<>:;' // allow _ and -
   })
+
+  /* ======================
+
+  ====================== */
 
   const options: Array<EmojiOption> = useMemo(() => {
     return emojiOptions
@@ -134,6 +175,10 @@ export default function EmojiPickerPlugin() {
       })
       .slice(0, MAX_EMOJI_SUGGESTION_COUNT)
   }, [emojiOptions, queryString])
+
+  /* ======================
+
+  ====================== */
 
   const onSelectOption = useCallback(
     (
@@ -159,6 +204,10 @@ export default function EmojiPickerPlugin() {
     },
     [editor]
   )
+
+  /* ======================
+          return
+  ====================== */
 
   return (
     <LexicalTypeaheadMenuPlugin

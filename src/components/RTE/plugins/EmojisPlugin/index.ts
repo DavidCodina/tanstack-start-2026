@@ -1,11 +1,28 @@
+///////////////////////////////////////////////////////////////////////////
+//
+// ⚠️ Note: Newer versions of the lexical-playground have an EmojisExtension,
+// rather than an EmojisPlugin. Lexical now has a new framework-agnostic
+// convention that is often used instead of plugins.
+//
+//   https://lexical.dev/docs/extensions/intro
+//   https://github.com/facebook/lexical/tree/main/packages/lexical-extension
+//
+// However, it's still located in the plugins folder.
+// Here, I've simply kept the EmojisPlugin implementation, which still works fine.
+//
+///////////////////////////////////////////////////////////////////////////
+
 import { useEffect } from 'react'
-import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import { TextNode } from 'lexical'
+import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import { $createEmojiNode, EmojiNode } from '../../nodes/EmojiNode'
 
 import type { JSX } from 'react'
 import type { LexicalEditor } from 'lexical'
 
+/* ========================================================================
+                         
+======================================================================== */
 ///////////////////////////////////////////////////////////////////////////
 //
 // In the following list, 'emoji happysmile' is a CSS class name.
@@ -110,15 +127,17 @@ function $findAndTransformEmoji(node: TextNode): null | TextNode {
       }
 
       const emojiNode = $createEmojiNode(emojiStyle, emojiText)
-
       targetNode?.replace(emojiNode)
-
       return emojiNode
     }
   }
 
   return null
 }
+
+/* ========================================================================
+                         
+======================================================================== */
 
 function $textNodeTransform(node: TextNode): void {
   let targetNode: TextNode | null = node
@@ -132,6 +151,10 @@ function $textNodeTransform(node: TextNode): void {
   }
 }
 
+/* ========================================================================
+                         
+======================================================================== */
+
 function useEmojis(editor: LexicalEditor): void {
   useEffect(() => {
     if (!editor.hasNodes([EmojiNode])) {
@@ -141,6 +164,10 @@ function useEmojis(editor: LexicalEditor): void {
     return editor.registerNodeTransform(TextNode, $textNodeTransform)
   }, [editor])
 }
+
+/* ========================================================================
+                         
+======================================================================== */
 
 export default function EmojisPlugin(): JSX.Element | null {
   const [editor] = useLexicalComposerContext()
