@@ -13,6 +13,10 @@ export const theme: EditorThemeClasses & { indentValue: number } = {
   indentValue: 40,
   indent: 'editor-theme-indent',
   hr: 'editor-theme-hr',
+  // Note that HorizontalRuleNode.tsx's HorizontalRuleComponent also supports a
+  // fallback class name of 'selected' when theme.hrSelected is not explicitly defined.
+  // const isSelectedClassName = editor._config.theme.hrSelected ?? 'selected'
+  hrSelected: 'editor-theme-hrSelected',
   // The associated image and inlineImage classes are important because they
   // are used for javascript checks in ImagesPlugin.tsx & InlineImagePlugin.tsx.
   // They also are set through the theme within their associaed nodes.

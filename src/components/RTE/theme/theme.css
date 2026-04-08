@@ -7,6 +7,7 @@
 ====================== */
 
 .editor-theme-hr {
+  background-color: #ccc; /*! Temporary */
   padding: 0.5px 0px;
   border: none;
   margin: 25px auto;
@@ -16,8 +17,13 @@
   cursor: pointer;
 }
 
-.editor-theme-hr.selected {
-  outline: 2px solid rgb(60, 132, 244); /* ??? */
+/* Note that HorizontalRuleNode.tsx's HorizontalRuleComponent also supports a 
+fallback class name of 'selected' when theme.hrSelected is not explicitly defined.
+const isSelectedClassName = editor._config.theme.hrSelected ?? 'selected' */
+
+.editor-theme-hrSelected {
+  outline-offset: 1px;
+  outline: 2px dashed rgb(60, 132, 244); /* ??? */
   user-select: none;
 }
 

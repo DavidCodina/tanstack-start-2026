@@ -11,9 +11,10 @@ import { useRef, useState } from 'react'
 import type { MutableRefObject } from 'react'
 
 import {
-  // $createTextNode,
-  // $getSelection
   $getRoot
+  // $getSelection
+  // $createTextNode,
+  // defineExtension
 } from 'lexical'
 
 import { LexicalComposer } from '@lexical/react/LexicalComposer'
@@ -56,7 +57,6 @@ import { ClearEditorPlugin } from '@lexical/react/LexicalClearEditorPlugin'
 
 // This plugin creates the draggable icon on the left side of the editor for each block.
 import DraggableBlockPlugin from './plugins/DraggableBlockPlugin'
-import { HorizontalRulePlugin } from '@lexical/react/LexicalHorizontalRulePlugin'
 
 /* ======================
       Custom Plugins
@@ -119,10 +119,7 @@ import AutoEmbedPlugin from './plugins/AutoEmbedPlugin'
 
 // import { SquarePlugin } from './plugins/SquarePlugin'
 
-// Previously, there was no way to hr property for theming the lexical HorizontalRulePlugin.
-// Consequently, I previously used the custom HorizontalRulePlugin and HorizontalRuleNode.
-// However, they have since updated that plugin, so the custom one is no longer needed.
-// import { HorizontalRulePlugin } from './plugins/HorizontalRulePlugin'
+import { HorizontalRulePlugin } from './plugins/HorizontalRulePlugin' // ❌ '@lexical/react/LexicalHorizontalRulePlugin'
 
 /* ======================
         Nodes
@@ -138,7 +135,6 @@ import { ListItemNode, ListNode } from '@lexical/list'
 import { CodeHighlightNode, CodeNode } from '@lexical/code-core'
 
 import { AutoLinkNode, LinkNode } from '@lexical/link'
-import { HorizontalRuleNode } from '@lexical/react/LexicalHorizontalRuleNode'
 
 /* ======================
       Custom Nodes
@@ -153,6 +149,24 @@ import { EmojiNode } from './nodes/EmojiNode'
 import { YouTubeNode } from './nodes/YouTubeNode'
 // import { SquareNode } from './nodes/SquareNode'
 // import { HorizontalRuleNode } from './nodes/HorizontalRuleNode'
+
+import { HorizontalRuleNode } from './nodes/HorizontalRuleNode' // ❌  '@lexical/react/LexicalHorizontalRuleNode'
+
+/* ======================
+     Extensions
+====================== */
+///////////////////////////////////////////////////////////////////////////
+//
+// Lexical now has a new framework-agnostic convention that is often
+// used instead of plugins.
+//
+//   https://lexical.dev/docs/extensions/intro
+//   https://github.com/facebook/lexical/tree/main/packages/lexical-extension
+//
+// This seems to be the direction they're going in, but here we're still using
+// plugins for everything.
+//
+///////////////////////////////////////////////////////////////////////////
 
 /* ======================
 htmlConfig, theme , ui, types, etc

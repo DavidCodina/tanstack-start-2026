@@ -72,7 +72,8 @@ import {
 
 import { INSERT_EMBED_COMMAND } from '@lexical/react/LexicalAutoEmbedPlugin'
 
-import { INSERT_HORIZONTAL_RULE_COMMAND } from '@lexical/react/LexicalHorizontalRuleNode'
+import { INSERT_HORIZONTAL_RULE_COMMAND } from '../../nodes/HorizontalRuleNode'
+
 // import { INSERT_SQUARE_COMMAND } from '../../nodes/SquareNode'
 
 import { getSelectedNode } from '../../utils/getSelectedNode'
@@ -1220,12 +1221,6 @@ export const ToolbarPlugin = ({
             title='Insert specialized editor node'
           >
             <DropDownItem
-              //! onClick={() => {
-              //!   activeEditor.dispatchCommand(
-              //!     INSERT_HORIZONTAL_RULE_COMMAND,
-              //!     undefined
-              //!   )
-              //! }}
               onClick={() =>
                 dispatchToolbarCommand(INSERT_HORIZONTAL_RULE_COMMAND)
               }
