@@ -229,9 +229,7 @@ const CODE_LANGUAGE_OPTIONS_PRISM: [string, string][] =
 ======================================================================== */
 //# Next Steps:
 
-//# Previously, AutoEmbedPlugin.tsx also contained AutoEmbedMenu and AutoEmbedMenuItem.
-//# Go back to that and add it in again using the older RTE. Then remove the extra code from
-//# index.css.
+//# Review and update all folders in ToolbarPlugin
 
 //` Recently updated clearFormatting to:
 //` clearFormatting={(e) => { clearFormatting(activeEditor, isKeyboardInput(e)) }}
