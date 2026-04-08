@@ -223,9 +223,6 @@ type OnChange = React.ComponentProps<typeof OnChangePlugin>['onChange']
 ======================================================================== */
 ///////////////////////////////////////////////////////////////////////////
 //
-// Lexical and Slate seem very similar. That said, Slate seems to expose more
-// control over the logic and put that responsibility onto the developer.
-//
 // Resources:
 //
 //   Docs:                      https://lexical.dev/
@@ -267,6 +264,18 @@ type OnChange = React.ComponentProps<typeof OnChangePlugin>['onChange']
 // attribute for an given svg in public/images/icons, you'll see that it's the
 // same naming convention as bootstrap icons. That said, some of the icons  (e.g., h4)
 // look different. This may be because Bootstrap has since updated their designs.
+// In any case, if you plan to go to production with this, I would switch to using
+// lucide-react
+//
+// ⚠️ Lexical vs Tiptap:
+//
+//   Note: Because lexical is so low-level, it's pretty difficult to maintain. There's
+//   a lot of moving parts, and a lot of opportunity to break something. When Meta
+//   updates Lexical, one often has to go back over dozens of files to see if anything
+//   significant has changed. As of version 0.42.0 in April 2026, lexical gets about three
+//   million weekly downloads. In comparison, @tiptap/react, gets 6.2 million weekly downloads,
+//   and is not as low-level. Consequently, for new projects it's strongly recommended to go
+//   with Tiptap. It's the clear winner for most use cases.
 //
 ///////////////////////////////////////////////////////////////////////////
 

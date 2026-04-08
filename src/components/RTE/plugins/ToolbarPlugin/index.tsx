@@ -346,8 +346,7 @@ export const ToolbarPlugin = ({
   /* ======================
   dispatchFormatTextCommand()
   ====================== */
-  //* Newer version adds the following here
-  //* Review to see where/how these are actually used.
+  //# Review to see where/how this is used in the newer versions.
 
   const _dispatchFormatTextCommand = (
     payload: TextFormatType,
@@ -768,8 +767,6 @@ export const ToolbarPlugin = ({
   // has a dedicated ShortcutsPlugin that owns all keyboard shortcuts (Ctrl+K for links, plus others),
   // keeping ToolbarPlugin focused purely on reflecting and controlling toolbar state.
   //
-  //
-  //
   // The CHANGELOG gives us the answer directly. KEY_MODIFIER_COMMAND was deprecated,
   // and the playground shortcuts were migrated to use KEY_DOWN_COMMAND instead (#7472).
   // The logic moved out of ToolbarPlugin entirely and into the dedicated.
@@ -777,7 +774,7 @@ export const ToolbarPlugin = ({
   //
   ///////////////////////////////////////////////////////////////////////////
 
-  const isLink = toolbarState.isLink
+  const toolbarStateIsLink = toolbarState.isLink
   useEffect(() => {
     return activeEditor.registerCommand(
       KEY_DOWN_COMMAND, // ❌ KEY_MODIFIER_COMMAND,
@@ -789,7 +786,7 @@ export const ToolbarPlugin = ({
           event.preventDefault()
           let url: string | null
 
-          if (!isLink) {
+          if (!toolbarStateIsLink) {
             setIsLinkEditMode(true)
             url = sanitizeUrl('https://')
           } else {
@@ -802,7 +799,7 @@ export const ToolbarPlugin = ({
       },
       COMMAND_PRIORITY_NORMAL
     )
-  }, [activeEditor, isLink, setIsLinkEditMode])
+  }, [activeEditor, toolbarStateIsLink, setIsLinkEditMode])
 
   /* ======================
       applyStyleText() 
@@ -983,10 +980,6 @@ export const ToolbarPlugin = ({
 
       <button
         disabled={!toolbarState.canUndo || !isEditable}
-        //! onClick={() => {
-        //!   activeEditor.dispatchCommand(UNDO_COMMAND, undefined)
-        //! }}
-
         onClick={(e) =>
           dispatchToolbarCommand(UNDO_COMMAND, undefined, isKeyboardInput(e))
         }
@@ -1000,9 +993,6 @@ export const ToolbarPlugin = ({
 
       <button
         disabled={!toolbarState.canRedo || !isEditable}
-        //! onClick={() => {
-        //!   activeEditor.dispatchCommand(REDO_COMMAND, undefined)
-        //! }}
         onClick={(e) =>
           dispatchToolbarCommand(REDO_COMMAND, undefined, isKeyboardInput(e))
         }
@@ -1265,12 +1255,6 @@ export const ToolbarPlugin = ({
             {EmbedConfigs.map((embedConfig) => (
               <DropDownItem
                 key={embedConfig.type}
-                //! onClick={() => {
-                //!   activeEditor.dispatchCommand(
-                //!     INSERT_EMBED_COMMAND,
-                //!     embedConfig.type
-                //!   )
-                //! }}
                 onClick={() =>
                   dispatchToolbarCommand(INSERT_EMBED_COMMAND, embedConfig.type)
                 }
