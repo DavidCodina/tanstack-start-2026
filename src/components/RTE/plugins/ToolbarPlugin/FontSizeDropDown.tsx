@@ -1,10 +1,13 @@
 // https://github.com/facebook/lexical/blob/main/packages/lexical-playground/src/plugins/ToolbarPlugin/index.tsx
+// This is an alternative to the current FontSize component. This was part of lexical-playground before
+// the FontSize component became a number increment/decrement. I've kept it here as an alternative,
+// but for production one should choose one or the other.
 
 import { useCallback } from 'react'
 import { $getSelection } from 'lexical'
 import { $patchStyleText } from '@lexical/selection'
 
-import DropDown, { DropDownItem } from './Dropdown'
+import DropDown, { DropDownItem } from '../../ui/Dropdown'
 
 import type { JSX } from 'react'
 import type { LexicalEditor } from 'lexical'

@@ -282,6 +282,11 @@ that the name match the blockType because blockType is used to dynamically gener
   background-image: url(./icons/type-capitalize.svg);
 }
 
+/** New... */
+.rte-icon-highlight {
+  background-image: url(./icons/highlighter.svg);
+}
+
 .rte-icon-font-color {
   background-image: url(./icons/font-color.svg);
 }

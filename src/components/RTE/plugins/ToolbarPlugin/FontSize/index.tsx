@@ -1,24 +1,73 @@
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ */
+
 import './fontSize.css'
 
 import * as React from 'react'
-import { $getSelection } from 'lexical'
-import { $patchStyleText } from '@lexical/selection'
+import { IS_APPLE } from '@lexical/utils'
+import {
+  MAX_ALLOWED_FONT_SIZE,
+  MIN_ALLOWED_FONT_SIZE
+} from '../../../context/ToolbarContext'
+import { isKeyboardInput } from '../../../utils/focusUtils'
+//# import { SHORTCUTS } from '../ShortcutsPlugin/shortcuts'
+
+import {
+  UpdateFontSizeType,
+  updateFontSize,
+  updateFontSizeInSelection
+} from '../utils'
+
 import type { LexicalEditor } from 'lexical'
 
-const MIN_ALLOWED_FONT_SIZE = 8
-const MAX_ALLOWED_FONT_SIZE = 72
-
-// Changed from 15. However, the ToolbarPlugin will also set the font size within
-// $updateToolbar(), which has precedence over this.
-const DEFAULT_FONT_SIZE = 16
-
-enum updateFontSizeType {
-  increment = 1,
-  decrement
+function parseFontSize(input: string): [number, string] | null {
+  const match = input.match(/^(\d+(?:\.\d+)?)(px|pt)$/)
+  return match ? [Number(match[1]), match[2]] : null
 }
 
+function normalizeToPx(fontSize: number, unit: string): number {
+  return unit === 'pt' ? Math.round((fontSize * 4) / 3) : fontSize
+}
+
+function isValidFontSize(fontSizePx: number): boolean {
+  return (
+    fontSizePx >= MIN_ALLOWED_FONT_SIZE && fontSizePx <= MAX_ALLOWED_FONT_SIZE
+  )
+}
+
+export function parseFontSizeForToolbar(input: string): string {
+  const parsed = parseFontSize(input)
+  if (!parsed) {
+    return ''
+  }
+
+  const [fontSize, unit] = parsed
+  const fontSizePx = normalizeToPx(fontSize, unit)
+  return `${fontSizePx}px`
+}
+
+export function parseAllowedFontSize(input: string): string {
+  const parsed = parseFontSize(input)
+  if (!parsed) {
+    return ''
+  }
+
+  const [fontSize, unit] = parsed
+  const fontSizePx = normalizeToPx(fontSize, unit)
+  return isValidFontSize(fontSizePx) ? input : ''
+}
+
+// (Ctrl|⌘) + Shift + <key> shortcuts
+const INCREASE_FONT_SIZE = IS_APPLE ? '⌘+Shift+.' : 'Ctrl+Shift+.'
+const DECREASE_FONT_SIZE = IS_APPLE ? '⌘+Shift+,' : 'Ctrl+Shift+,'
+
 /* ========================================================================
-                            FontSize()                
+          
 ======================================================================== */
 
 export default function FontSize({
@@ -32,166 +81,38 @@ export default function FontSize({
 }) {
   const [inputValue, setInputValue] = React.useState<string>(selectionFontSize)
   const [inputChangeFlag, setInputChangeFlag] = React.useState<boolean>(false)
+  const [isMouseMode, setIsMouseMode] = React.useState(false)
 
   /* ======================
-   calculateNextFontSize()
-  ====================== */
-  /**
-   * Calculates the new font size based on the update type.
-   * @param currentFontSize - The current font size
-   * @param updateType - The type of change, either increment or decrement
-   * @returns the next font size
-   */
 
-  const calculateNextFontSize = (
-    currentFontSize: number,
-    updateType: updateFontSizeType | null
-  ) => {
-    if (!updateType) {
-      return currentFontSize
-    }
-
-    let updatedFontSize: number = currentFontSize
-    switch (updateType) {
-      case updateFontSizeType.decrement:
-        switch (true) {
-          case currentFontSize > MAX_ALLOWED_FONT_SIZE:
-            updatedFontSize = MAX_ALLOWED_FONT_SIZE
-            break
-
-          ///////////////////////////////////////////////////////////////////////////
-          //
-          // This part was in the playground version. It's unusual to have a bunch of weird
-          // rules like this for incrementing.
-          //
-          // case currentFontSize >= 48:
-          //   updatedFontSize -= 12
-          //   break
-          // case currentFontSize >= 24:
-          //   updatedFontSize -= 4
-          //   break
-          // case currentFontSize >= 14:
-          //   updatedFontSize -= 2
-          //   break
-          // case currentFontSize >= 9:
-          //   updatedFontSize -= 1
-          //   break
-          //
-          // I replaced it with the case that immediately follows.
-          //
-          ///////////////////////////////////////////////////////////////////////////
-
-          case currentFontSize > MIN_ALLOWED_FONT_SIZE - 1:
-            updatedFontSize -= 1
-            break
-
-          default:
-            updatedFontSize = MIN_ALLOWED_FONT_SIZE
-            break
-        }
-        break
-
-      case updateFontSizeType.increment:
-        switch (true) {
-          case currentFontSize < MIN_ALLOWED_FONT_SIZE:
-            updatedFontSize = MIN_ALLOWED_FONT_SIZE
-            break
-
-          ///////////////////////////////////////////////////////////////////////////
-          //
-          // This part was in the playground version. It's unusual to have a bunch of weird
-          // rules like this for incrementing.
-          //
-          // case currentFontSize < 12:
-          //   updatedFontSize += 1
-          //   break
-          // case currentFontSize < 20:
-          //   updatedFontSize += 2
-          //   break
-          // case currentFontSize < 36:
-          //   updatedFontSize += 4
-          //   break
-          // case currentFontSize <= 60:
-          //   updatedFontSize += 12
-          //   break
-          //
-          // I replaced it with the case that immediately follows.
-          //
-          ///////////////////////////////////////////////////////////////////////////
-          case currentFontSize < MAX_ALLOWED_FONT_SIZE + 1:
-            updatedFontSize += 1
-            break
-
-          default:
-            updatedFontSize = MAX_ALLOWED_FONT_SIZE
-            break
-        }
-        break
-
-      default:
-        break
-    }
-    return updatedFontSize
-  }
-  /** Patches the selection with the updated font size. */
-
-  /* ======================
-  updateFontSizeInSelection()
-  ====================== */
-
-  const updateFontSizeInSelection = React.useCallback(
-    (newFontSize: string | null, updateType: updateFontSizeType | null) => {
-      const getNextFontSize = (prevFontSize: string | null): string => {
-        if (!prevFontSize) {
-          prevFontSize = `${DEFAULT_FONT_SIZE}px`
-        }
-        prevFontSize = prevFontSize.slice(0, -2)
-        const nextFontSize = calculateNextFontSize(
-          Number(prevFontSize),
-          updateType
-        )
-        return `${nextFontSize}px`
-      }
-
-      editor.update(() => {
-        if (editor.isEditable()) {
-          const selection = $getSelection()
-          if (selection !== null) {
-            $patchStyleText(selection, {
-              'font-size': newFontSize || getNextFontSize
-            })
-          }
-        }
-      })
-    },
-    [editor]
-  )
-
-  /* ======================
-      handleKeyPress()
   ====================== */
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const inputValueNumber = Number(inputValue)
 
+    if (e.key === 'Tab') {
+      return
+    }
     if (['e', 'E', '+', '-'].includes(e.key) || isNaN(inputValueNumber)) {
       e.preventDefault()
       setInputValue('')
       return
     }
-
     setInputChangeFlag(true)
-    if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
+    if (e.key === 'Enter' || e.key === 'Escape') {
       e.preventDefault()
-      updateFontSizeByInputValue(inputValueNumber)
+
+      updateFontSizeByInputValue(inputValueNumber, !isMouseMode)
     }
   }
 
   /* ======================
-      handleInputBlur()
+
   ====================== */
 
   const handleInputBlur = () => {
+    setIsMouseMode(false)
+
     if (inputValue !== '' && inputChangeFlag) {
       const inputValueNumber = Number(inputValue)
       updateFontSizeByInputValue(inputValueNumber)
@@ -199,23 +120,21 @@ export default function FontSize({
   }
 
   /* ======================
-      handleButtonClick()
+
   ====================== */
 
-  const handleButtonClick = (updateType: updateFontSizeType) => {
-    if (inputValue !== '') {
-      const nextFontSize = calculateNextFontSize(Number(inputValue), updateType)
-      updateFontSizeInSelection(String(nextFontSize) + 'px', null)
-    } else {
-      updateFontSizeInSelection(null, updateType)
-    }
+  const handleClick = (_e: React.MouseEvent) => {
+    setIsMouseMode(true)
   }
 
   /* ======================
-  updateFontSizeByInputValue()
+
   ====================== */
 
-  const updateFontSizeByInputValue = (inputValueNumber: number) => {
+  const updateFontSizeByInputValue = (
+    inputValueNumber: number,
+    skipRefocus: boolean = false
+  ) => {
     let updatedFontSize = inputValueNumber
     if (inputValueNumber > MAX_ALLOWED_FONT_SIZE) {
       updatedFontSize = MAX_ALLOWED_FONT_SIZE
@@ -224,12 +143,17 @@ export default function FontSize({
     }
 
     setInputValue(String(updatedFontSize))
-    updateFontSizeInSelection(String(updatedFontSize) + 'px', null)
+    updateFontSizeInSelection(
+      editor,
+      String(updatedFontSize) + 'px',
+      null,
+      skipRefocus
+    )
     setInputChangeFlag(false)
   }
 
   /* ======================
-        useEffect()
+
   ====================== */
 
   React.useEffect(() => {
@@ -237,7 +161,7 @@ export default function FontSize({
   }, [selectionFontSize])
 
   /* ======================
-          return
+
   ====================== */
 
   return (
@@ -248,14 +172,23 @@ export default function FontSize({
       }}
     >
       <button
+        aria-label='Decrease font size'
         className='rte-toolbar-item rte-font-decrement'
         disabled={
           disabled ||
           (selectionFontSize !== '' &&
             Number(inputValue) <= MIN_ALLOWED_FONT_SIZE)
         }
-        onClick={() => handleButtonClick(updateFontSizeType.decrement)}
-        title='Decrease font size'
+        onClick={(e) => {
+          updateFontSize(
+            editor,
+            UpdateFontSizeType.decrement,
+            inputValue,
+            isKeyboardInput(e)
+          )
+        }}
+        //# title={`Decrease font size (${SHORTCUTS.DECREASE_FONT_SIZE})`}
+        title={`Decrease font size (${DECREASE_FONT_SIZE})`}
         type='button'
       >
         <i className='format rte-icon-minus' />
@@ -264,24 +197,35 @@ export default function FontSize({
       <input
         className='rte-font-size-input'
         disabled={disabled}
-        max={MAX_ALLOWED_FONT_SIZE}
         min={MIN_ALLOWED_FONT_SIZE}
+        max={MAX_ALLOWED_FONT_SIZE}
         onBlur={handleInputBlur}
         onChange={(e) => setInputValue(e.target.value)}
+        onClick={handleClick}
         onKeyDown={handleKeyPress}
+        title='Font size'
         type='number'
         value={inputValue}
       />
 
       <button
+        aria-label='Increase font size'
         className='rte-toolbar-item rte-font-increment'
         disabled={
           disabled ||
           (selectionFontSize !== '' &&
             Number(inputValue) >= MAX_ALLOWED_FONT_SIZE)
         }
-        onClick={() => handleButtonClick(updateFontSizeType.increment)}
-        title='Increase font size'
+        onClick={(e) => {
+          updateFontSize(
+            editor,
+            UpdateFontSizeType.increment,
+            inputValue,
+            isKeyboardInput(e)
+          )
+        }}
+        //# title={`Increase font size (${SHORTCUTS.INCREASE_FONT_SIZE})`}
+        title={`Increase font size (${INCREASE_FONT_SIZE})`}
         type='button'
       >
         <i className='format rte-icon-add' />

@@ -1,29 +1,13 @@
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-//! import { $createCodeNode } from '@lexical/code'
-import { $createCodeNode } from '@lexical/code-core'
-import {
-  INSERT_CHECK_LIST_COMMAND,
-  INSERT_ORDERED_LIST_COMMAND,
-  INSERT_UNORDERED_LIST_COMMAND
-} from '@lexical/list'
-import { $isDecoratorBlockNode } from '@lexical/react/LexicalDecoratorBlockNode'
+/* 
+Changes made relative to lexical-playground version:
 
-import {
-  $createHeadingNode,
-  $createQuoteNode,
-  $isHeadingNode,
-  $isQuoteNode
-} from '@lexical/rich-text'
+1. Changed: import { $createCodeNode } from '@lexical/code'
+   To:      import { $createCodeNode } from '@lexical/code-core
+   https://lexical.dev/docs/api/modules/lexical_code-core
 
-import { $patchStyleText, $setBlocksType } from '@lexical/selection'
-import { $isTableSelection } from '@lexical/table'
-import { $getNearestBlockElementAncestorOrThrow } from '@lexical/utils'
+2. Changed the logic for calculateNextFontSize() increment/decrement.
+*/
+
 import {
   $addUpdateTag,
   $createParagraphNode,
@@ -40,6 +24,23 @@ import {
   SKIP_SELECTION_FOCUS_TAG
 } from 'lexical'
 
+import { $createCodeNode } from '@lexical/code-core'
+import {
+  INSERT_CHECK_LIST_COMMAND,
+  INSERT_ORDERED_LIST_COMMAND,
+  INSERT_UNORDERED_LIST_COMMAND
+} from '@lexical/list'
+import { $isDecoratorBlockNode } from '@lexical/react/LexicalDecoratorBlockNode'
+import {
+  $createHeadingNode,
+  $createQuoteNode,
+  $isHeadingNode,
+  $isQuoteNode
+} from '@lexical/rich-text'
+import { $patchStyleText, $setBlocksType } from '@lexical/selection'
+import { $isTableSelection } from '@lexical/table'
+import { $getNearestBlockElementAncestorOrThrow } from '@lexical/utils'
+
 import {
   DEFAULT_FONT_SIZE,
   MAX_ALLOWED_FONT_SIZE,
@@ -52,6 +53,7 @@ import type {
   LexicalNode,
   RangeSelection
 } from 'lexical'
+
 import type { HeadingTagType } from '@lexical/rich-text'
 
 export enum UpdateFontSizeType {
@@ -60,7 +62,7 @@ export enum UpdateFontSizeType {
 }
 
 /* ========================================================================
-  
+                         
 ======================================================================== */
 /**
  * Calculates the new font size based on the update type.
@@ -83,16 +85,30 @@ export const calculateNextFontSize = (
         case currentFontSize > MAX_ALLOWED_FONT_SIZE:
           updatedFontSize = MAX_ALLOWED_FONT_SIZE
           break
-        case currentFontSize >= 48:
-          updatedFontSize -= 12
-          break
-        case currentFontSize >= 24:
-          updatedFontSize -= 4
-          break
-        case currentFontSize >= 14:
-          updatedFontSize -= 2
-          break
-        case currentFontSize >= 9:
+
+        ///////////////////////////////////////////////////////////////////////////
+        //
+        // This part was in the playground version. It's unusual to have a bunch of weird
+        // rules like this for incrementing.
+        //
+        // case currentFontSize >= 48:
+        //   updatedFontSize -= 12
+        //   break
+        // case currentFontSize >= 24:
+        //   updatedFontSize -= 4
+        //   break
+        // case currentFontSize >= 14:
+        //   updatedFontSize -= 2
+        //   break
+        // case currentFontSize >= 9:
+        //   updatedFontSize -= 1
+        //   break
+        //
+        // I replaced it with the case that immediately follows.
+        //
+        ///////////////////////////////////////////////////////////////////////////
+
+        case currentFontSize > MIN_ALLOWED_FONT_SIZE - 1:
           updatedFontSize -= 1
           break
         default:
@@ -106,18 +122,34 @@ export const calculateNextFontSize = (
         case currentFontSize < MIN_ALLOWED_FONT_SIZE:
           updatedFontSize = MIN_ALLOWED_FONT_SIZE
           break
-        case currentFontSize < 12:
+
+        ///////////////////////////////////////////////////////////////////////////
+        //
+        // This part was in the playground version. It's unusual to have a bunch of weird
+        // rules like this for incrementing.
+        //
+        //
+        // case currentFontSize < 12:
+        //   updatedFontSize += 1
+        //   break
+        // case currentFontSize < 20:
+        //   updatedFontSize += 2
+        //   break
+        // case currentFontSize < 36:
+        //   updatedFontSize += 4
+        //   break
+        // case currentFontSize <= 60:
+        //   updatedFontSize += 12
+        //   break
+        //
+        // I replaced it with the case that immediately follows.
+        //
+        ///////////////////////////////////////////////////////////////////////////
+
+        case currentFontSize < MAX_ALLOWED_FONT_SIZE + 1:
           updatedFontSize += 1
           break
-        case currentFontSize < 20:
-          updatedFontSize += 2
-          break
-        case currentFontSize < 36:
-          updatedFontSize += 4
-          break
-        case currentFontSize <= 60:
-          updatedFontSize += 12
-          break
+
         default:
           updatedFontSize = MAX_ALLOWED_FONT_SIZE
           break
@@ -131,7 +163,7 @@ export const calculateNextFontSize = (
 }
 
 /* ========================================================================
-  
+                         
 ======================================================================== */
 /**
  * Patches the selection with the updated font size.
@@ -167,7 +199,7 @@ export const updateFontSizeInSelection = (
 }
 
 /* ========================================================================
-  
+                         
 ======================================================================== */
 
 export const updateFontSize = (
@@ -190,7 +222,7 @@ export const updateFontSize = (
 }
 
 /* ========================================================================
-  
+                         
 ======================================================================== */
 
 export const formatParagraph = (editor: LexicalEditor) => {
@@ -202,7 +234,7 @@ export const formatParagraph = (editor: LexicalEditor) => {
 }
 
 /* ========================================================================
-  
+                         
 ======================================================================== */
 
 export const formatHeading = (
@@ -220,7 +252,7 @@ export const formatHeading = (
 }
 
 /* ========================================================================
-  
+                         
 ======================================================================== */
 
 export const formatBulletList = (editor: LexicalEditor, blockType: string) => {
@@ -235,7 +267,7 @@ export const formatBulletList = (editor: LexicalEditor, blockType: string) => {
 }
 
 /* ========================================================================
-  
+                         
 ======================================================================== */
 
 export const formatCheckList = (editor: LexicalEditor, blockType: string) => {
@@ -250,7 +282,7 @@ export const formatCheckList = (editor: LexicalEditor, blockType: string) => {
 }
 
 /* ========================================================================
-  
+                         
 ======================================================================== */
 
 export const formatNumberedList = (
@@ -268,8 +300,9 @@ export const formatNumberedList = (
 }
 
 /* ========================================================================
-  
+                         
 ======================================================================== */
+//# Here we may want to add back logic for toggling back to formatParagraph()
 
 export const formatQuote = (editor: LexicalEditor, blockType: string) => {
   if (blockType !== 'quote') {
@@ -282,7 +315,7 @@ export const formatQuote = (editor: LexicalEditor, blockType: string) => {
 }
 
 /* ========================================================================
-  
+                         
 ======================================================================== */
 
 function $splitParagraphsByLineBreaks(selection: RangeSelection): void {
@@ -334,7 +367,7 @@ function $splitParagraphsByLineBreaks(selection: RangeSelection): void {
 }
 
 /* ========================================================================
-  
+                         
 ======================================================================== */
 
 function $findParagraphParent(node: LexicalNode): ElementNode | null {
@@ -346,7 +379,7 @@ function $findParagraphParent(node: LexicalNode): ElementNode | null {
 }
 
 /* ========================================================================
-  
+                         
 ======================================================================== */
 
 export const formatCode = (editor: LexicalEditor, blockType: string) => {
@@ -378,7 +411,7 @@ export const formatCode = (editor: LexicalEditor, blockType: string) => {
 }
 
 /* ========================================================================
-  
+                         
 ======================================================================== */
 
 export const clearFormatting = (

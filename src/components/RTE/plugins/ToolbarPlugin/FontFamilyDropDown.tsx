@@ -1,11 +1,19 @@
 // https://github.com/facebook/lexical/blob/main/packages/lexical-playground/src/plugins/ToolbarPlugin/index.tsx
 
+/* 
+Changes made relative to lexical-playground version:
+
+1. Removed style prop. The ToolbarPlugin in lexical-playground merely hardcoded the value:
+    
+     style={'font-family'}
+*/
+
 import * as React from 'react'
 import { useCallback } from 'react'
-import { $getSelection } from 'lexical'
+import { $addUpdateTag, $getSelection, SKIP_SELECTION_FOCUS_TAG } from 'lexical'
 import { $patchStyleText } from '@lexical/selection'
 
-import DropDown, { DropDownItem } from './Dropdown'
+import DropDown, { DropDownItem } from '../../ui/Dropdown'
 import type { LexicalEditor } from 'lexical'
 
 const FONT_FAMILY_OPTIONS: [string, string][] = [
@@ -40,9 +48,14 @@ export const FontFamilyDropDown = ({
   title?: string
   value: string
 }): React.JSX.Element => {
+  /* ======================
+        handleClick()
+  ====================== */
+
   const handleClick = useCallback(
     (option: string) => {
       editor.update(() => {
+        $addUpdateTag(SKIP_SELECTION_FOCUS_TAG)
         const selection = $getSelection()
         if (selection !== null) {
           ///////////////////////////////////////////////////////////////////////////
@@ -57,6 +70,9 @@ export const FontFamilyDropDown = ({
           //
           ///////////////////////////////////////////////////////////////////////////
           $patchStyleText(selection, {
+            // No need to pass a style prop and do this
+            // ❌ [style]: option
+            // Instead, just hardcode 'font-family'
             'font-family': option
           })
         }
@@ -65,13 +81,17 @@ export const FontFamilyDropDown = ({
     [editor]
   )
 
+  /* ======================
+          return
+  ====================== */
+
   return (
     <DropDown
       disabled={disabled}
       buttonClassName={'rte-toolbar-item'}
       buttonLabel={value}
       buttonIconClassName={'rte-icon-font-family'}
-      buttonAriaLabel={'Font family formatting options'}
+      buttonAriaLabel={'Formatting options for font family'}
       title={title}
     >
       {FONT_FAMILY_OPTIONS.map(([option, text]) => (

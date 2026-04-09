@@ -1,4 +1,4 @@
-import ColorPicker from '../../ui/ColorPicker'
+import ColorPicker from './ColorPicker'
 import DropDown from './Dropdown'
 
 //  (value: string, skipHistoryStack: boolean, skipRefocus: boolean) => void

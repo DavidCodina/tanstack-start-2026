@@ -147,10 +147,8 @@ import { ImageNode } from './nodes/ImageNode'
 import { InlineImageNode } from './nodes/InlineImageNode'
 import { EmojiNode } from './nodes/EmojiNode'
 import { YouTubeNode } from './nodes/YouTubeNode'
-// import { SquareNode } from './nodes/SquareNode'
-// import { HorizontalRuleNode } from './nodes/HorizontalRuleNode'
-
 import { HorizontalRuleNode } from './nodes/HorizontalRuleNode' // ❌  '@lexical/react/LexicalHorizontalRuleNode'
+// import { SquareNode } from './nodes/SquareNode'
 
 /* ======================
      Extensions

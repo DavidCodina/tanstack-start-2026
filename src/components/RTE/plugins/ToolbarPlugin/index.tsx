@@ -25,10 +25,10 @@ import {
   CAN_REDO_COMMAND,
   CAN_UNDO_COMMAND,
   COMMAND_PRIORITY_CRITICAL,
-  COMMAND_PRIORITY_NORMAL,
+  // OMMAND_PRIORITY_NORMAL,
   FORMAT_TEXT_COMMAND,
   HISTORIC_TAG,
-  KEY_DOWN_COMMAND, // ❌ KEY_MODIFIER_COMMAND,
+  // KEY_DOWN_COMMAND, // ❌ KEY_MODIFIER_COMMAND,
   REDO_COMMAND,
   SELECTION_CHANGE_COMMAND,
   SKIP_DOM_SELECTION_TAG,
@@ -115,28 +115,20 @@ import {
 import { InsertImageDialog } from '../ImagesPlugin'
 import { InsertInlineImageDialog } from '../InlineImagePlugin'
 import { isKeyboardInput } from '../../utils/focusUtils'
-import DropDown, { DropDownItem } from './Dropdown'
+import DropDown, { DropDownItem } from '../../ui/Dropdown'
+import DropdownColorPicker from '../../ui/DropdownColorPicker'
+
+import ShortcutsPlugin from '../ShortcutsPlugin'
 import { BlockFormatDropDown } from './BlockFormatDropDown'
 import { FontFamilyDropDown } from './FontFamilyDropDown'
 import { Divider } from './Divider'
 
 import { FontSizeDropDown } from './FontSizeDropDown'
-import FontSize from './FontSize'
-import DropdownColorPicker from './DropdownColorPicker'
+import FontSize, { parseFontSizeForToolbar } from './FontSize'
+
 import { AdditionalFormatDropDown } from './AdditionalFormatDropDown'
 
 import { ElementFormatDropDown } from './ElementFormatDropDown'
-
-import {
-  clearFormatting
-  // formatBulletList,
-  // formatCheckList,
-  // formatCode,
-  // formatHeading,
-  // formatNumberedList,
-  // formatParagraph,
-  // formatQuote
-} from './utils'
 
 import type { Dispatch, JSX } from 'react'
 import type {
@@ -188,7 +180,7 @@ function $findTopLevelElement(node: LexicalNode) {
 
 function dropDownActiveClass(active: boolean) {
   if (active) {
-    return 'active dropdown-item-active'
+    return 'active rte-dropdown-item-active'
   } else {
     return ''
   }
@@ -229,20 +221,11 @@ const CODE_LANGUAGE_OPTIONS_PRISM: [string, string][] =
 ======================================================================== */
 //# Next Steps:
 
-//# Review and update all folders in ToolbarPlugin
-
-//` Recently updated clearFormatting to:
-//` clearFormatting={(e) => { clearFormatting(activeEditor, isKeyboardInput(e)) }}
-//` Double-back over everything and add that in everywhere.
-
-//# Add back other lexical dependencies, but ask AI if they're actually needed.
+//# Add focus styles
 
 //# Review old ColorPicker and fix styles on new one.
 
-//# Double-check $updateToolbar against current Github lexical-playground version.
-
-//# Begin to review and update each plugin, node, ui, etc. one by one. Not just for
-//# updates, but also to really understand what its purpose is.
+//# Consider changing the DraggableBlockPlugin/index.css to use the rte-* prefix as before.
 
 //# Review useAPI({ apiRef, contentEditableRef }) in the main RTE/index.tsx file?
 //# Is this a custom hook that I made?
@@ -255,15 +238,7 @@ const CODE_LANGUAGE_OPTIONS_PRISM: [string, string][] =
 //# width and insertNode props, so overall the AutoEmbedPlugin/YoutubePlugin/YoutubeNode
 //# Still needs updating to get back to the previous abilities.
 
-//# Link styles are broken for the associated popup.
-
 //# The numbering isn't showing up in the dangerouslySetInnerHTML for CodeHighlightPrismPlugin
-
-//# Consider changing the DraggableBlockPlugin/index.css to use the rte-* prefix as before.
-
-//# The current GitHub PlaygrounEditorTheme has text.highlight.
-//# This is implemented within the formatting dropdown.
-//# Presumably, I don't currently have this logic.
 
 //# Once everything is sufficiently wired up, do a deep dive on all CSS files, compared to
 //# current ones on GitHub.
@@ -271,32 +246,13 @@ const CODE_LANGUAGE_OPTIONS_PRISM: [string, string][] =
 //# There are several spots in this RTE that make use of window. This can potentially be
 //# problematic for server-side rendering.
 
-//# Add focus styles
+//# Once ShortcutsPlugin is implemented, update:
+//# - BlockFormatDropDown.tsx.
+//# - FontSize.tsx
+//# - AdditionalFormatDropDown.ts.
+//# - ElementFormatDropDown.tsx
 
-//# Once everything is wired up, do an in-depth comparison of the current components vs. new components.
-
-//# On top of that we need to bring in and compare/contrast each file/folder from the CURRENT/FULL github
-//# lexical-playground/src.
-//
-// ⚠️ Note: Newer versions of the lexical-playground have a DragDropPasteExtension, rather than
-// a DragDropPastePlugin. However, it's still located in the plugins folder. That said, the logic
-// is essentially the same. You may run into similar issues with ImagesExtension, AutoLinkExtension, etc.
-// In theory, you should be able to still convert them to plugins.
-
-//#   - Editor.tsx
-//#   - plugins
-//#   - nodes
-//#   - themes
-//#   - ui
-//#   - utils
-//#   - context
-//#   - hooks
-//#   - buildHTMLConfig.tsx
-//#   - index.css (???)
-//#   - images/icons and images/emoji
-
-//# Implement ShortcutsPlugin.
-
+//# Bonus:
 //# Once everything is working, consider adding the Shiki logic back in.
 //# You don't need to add SettingsContext.tsx
 //# Just make it the default, or hardcode these values internally: isCodeHighlighted, isCodeShiki
@@ -315,6 +271,7 @@ export const ToolbarPlugin = ({
   ====================== */
 
   // In the lexical-playground example, both editor and activeEditor are passed in as props.
+  // For the most part, this works fine
   const [editor] = useLexicalComposerContext()
   const [activeEditor, setActiveEditor] = useState(editor)
   const [selectedElementKey, setSelectedElementKey] = useState<NodeKey | null>(
@@ -346,7 +303,6 @@ export const ToolbarPlugin = ({
   /* ======================
   dispatchFormatTextCommand()
   ====================== */
-  //# Review to see where/how this is used in the newer versions.
 
   const _dispatchFormatTextCommand = (
     payload: TextFormatType,
@@ -774,32 +730,32 @@ export const ToolbarPlugin = ({
   //
   ///////////////////////////////////////////////////////////////////////////
 
-  const toolbarStateIsLink = toolbarState.isLink
-  useEffect(() => {
-    return activeEditor.registerCommand(
-      KEY_DOWN_COMMAND, // ❌ KEY_MODIFIER_COMMAND,
-      (payload) => {
-        const event: KeyboardEvent = payload
-        const { code, ctrlKey, metaKey } = event
+  // const toolbarStateIsLink = toolbarState.isLink
+  // useEffect(() => {
+  //   return activeEditor.registerCommand(
+  //     KEY_DOWN_COMMAND, // ❌ KEY_MODIFIER_COMMAND,
+  //     (payload) => {
+  //       const event: KeyboardEvent = payload
+  //       const { code, ctrlKey, metaKey } = event
 
-        if (code === 'KeyK' && (ctrlKey || metaKey)) {
-          event.preventDefault()
-          let url: string | null
+  //       if (code === 'KeyK' && (ctrlKey || metaKey)) {
+  //         event.preventDefault()
+  //         let url: string | null
 
-          if (!toolbarStateIsLink) {
-            setIsLinkEditMode(true)
-            url = sanitizeUrl('https://')
-          } else {
-            setIsLinkEditMode(false)
-            url = null
-          }
-          return activeEditor.dispatchCommand(TOGGLE_LINK_COMMAND, url)
-        }
-        return false
-      },
-      COMMAND_PRIORITY_NORMAL
-    )
-  }, [activeEditor, toolbarStateIsLink, setIsLinkEditMode])
+  //         if (!toolbarStateIsLink) {
+  //           setIsLinkEditMode(true)
+  //           url = sanitizeUrl('https://')
+  //         } else {
+  //           setIsLinkEditMode(false)
+  //           url = null
+  //         }
+  //         return activeEditor.dispatchCommand(TOGGLE_LINK_COMMAND, url)
+  //       }
+  //       return false
+  //     },
+  //     COMMAND_PRIORITY_NORMAL
+  //   )
+  // }, [activeEditor, toolbarStateIsLink, setIsLinkEditMode])
 
   /* ======================
       applyStyleText() 
@@ -1081,7 +1037,9 @@ export const ToolbarPlugin = ({
           <Divider />
 
           <FontSize
-            selectionFontSize={toolbarState.fontSize.slice(0, -2)}
+            selectionFontSize={parseFontSizeForToolbar(
+              toolbarState.fontSize
+            ).slice(0, -2)}
             editor={activeEditor}
             disabled={!isEditable}
           />
@@ -1189,19 +1147,13 @@ export const ToolbarPlugin = ({
 
           <AdditionalFormatDropDown
             activeEditor={activeEditor}
-            clearFormatting={(e) => {
-              clearFormatting(activeEditor, isKeyboardInput(e))
-            }}
             isEditable={isEditable}
-            isStrikethrough={toolbarState.isStrikethrough}
-            isSubscript={toolbarState.isSubscript}
-            isSuperscript={toolbarState.isSuperscript}
           />
 
           <Divider />
 
           {/* 
-          //^ Why is this not abstracted into it's own component?
+          // Todo: Abstract into it's own component.
           */}
 
           <DropDown
@@ -1223,24 +1175,31 @@ export const ToolbarPlugin = ({
             </DropDownItem>
 
             <DropDownItem
+              className='rte-item'
               onClick={() => {
                 showModal('Insert Image', (onClose) => (
                   <InsertImageDialog
+                    //# Review InsertImageDialog
                     activeEditor={activeEditor}
                     onClose={onClose}
                   />
                 ))
               }}
-              className='rte-item'
             >
               <i className='rte-icon-image' />
               <span className='rte-text'>Image</span>
             </DropDownItem>
 
+            {/* 
+            //* In newer version of leixical-playground, this seems to no longer
+            //* be a part of the Insert dropdown.
+            */}
+
             <DropDownItem
               onClick={() => {
                 showModal('Insert Inline Image', (onClose) => (
                   <InsertInlineImageDialog
+                    //# Review InsertInlineImageDialog
                     activeEditor={activeEditor}
                     onClose={onClose}
                   />
@@ -1277,6 +1236,14 @@ export const ToolbarPlugin = ({
             value={toolbarState.elementFormat}
             editor={activeEditor}
             isRTL={toolbarState.isRTL}
+          />
+
+          {/* This was added in ToolbarPlugin since this is where activeEditor is defined.
+          This works fine for now, but conceptually, it's more appropriate for it to be in RTE. */}
+
+          <ShortcutsPlugin
+            editor={activeEditor}
+            setIsLinkEditMode={setIsLinkEditMode}
           />
         </>
       )}

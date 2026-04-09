@@ -176,6 +176,12 @@ when the elements are rendered outside of the editor. */
   text-transform: capitalize;
 }
 
+/** New... */
+.editor-theme-textHighlight {
+  background: rgba(255, 212, 0, 0.14);
+  border-bottom: 2px solid rgba(255, 212, 0, 0.3);
+}
+
 /* ======================
 
 ====================== */

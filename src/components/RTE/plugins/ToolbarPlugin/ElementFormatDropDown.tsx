@@ -1,15 +1,25 @@
 // https://github.com/facebook/lexical/blob/main/packages/lexical-playground/src/plugins/ToolbarPlugin/index.tsx
 
+/* 
+Changes made relative to lexical-playground version:
+
+1. Abstracted into separate file. This component was originally directly within the ToolbarPlugin.
+*/
+
 import {
   FORMAT_ELEMENT_COMMAND,
   INDENT_CONTENT_COMMAND,
   OUTDENT_CONTENT_COMMAND
 } from 'lexical'
 
-import DropDown, { DropDownItem } from './Dropdown'
+import DropDown, { DropDownItem } from '../../ui/Dropdown'
 import { Divider } from './Divider'
 
 import type { ElementFormatType, LexicalEditor } from 'lexical'
+
+/* ========================================================================
+  
+======================================================================== */
 
 const ELEMENT_FORMAT_OPTIONS: {
   [key in Exclude<ElementFormatType, ''>]: {
@@ -91,7 +101,9 @@ export const ElementFormatDropDown = ({
       >
         <i className='rte-icon-left-align' />
         <span className='rte-text'>Left Align</span>
+        {/* <span className="shortcut">{SHORTCUTS.LEFT_ALIGN}</span> */}
       </DropDownItem>
+
       <DropDownItem
         onClick={() => {
           editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, 'center')
@@ -100,7 +112,9 @@ export const ElementFormatDropDown = ({
       >
         <i className='rte-icon-center-align' />
         <span className='rte-text'>Center Align</span>
+        {/* <span className="shortcut">{SHORTCUTS.CENTER_ALIGN}</span> */}
       </DropDownItem>
+
       <DropDownItem
         onClick={() => {
           editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, 'right')
@@ -109,7 +123,9 @@ export const ElementFormatDropDown = ({
       >
         <i className='rte-icon-right-align' />
         <span className='rte-text'>Right Align</span>
+        {/* <span className="shortcut">{SHORTCUTS.RIGHT_ALIGN}</span> */}
       </DropDownItem>
+
       <DropDownItem
         onClick={() => {
           editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, 'justify')
@@ -118,9 +134,11 @@ export const ElementFormatDropDown = ({
       >
         <i className='rte-icon-justify-align' />
         <span className='rte-text'>Justify Align</span>
+        {/* <span className="shortcut">{SHORTCUTS.JUSTIFY_ALIGN}</span> */}
       </DropDownItem>
 
-      {/* <DropDownItem
+      {/* 
+      <DropDownItem
         onClick={() => {
           editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, 'start')
         }}
@@ -134,9 +152,11 @@ export const ElementFormatDropDown = ({
           }`}
         />
         <span className='rte-text'>Start Align</span>
-      </DropDownItem> */}
+      </DropDownItem> 
+      */}
 
-      {/* <DropDownItem
+      {/* 
+      <DropDownItem
         onClick={() => {
           editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, 'end')
         }}
@@ -150,7 +170,8 @@ export const ElementFormatDropDown = ({
           }`}
         />
         <span className='rte-text'>End Align</span>
-      </DropDownItem> */}
+      </DropDownItem> 
+      */}
 
       <Divider />
 
@@ -162,6 +183,7 @@ export const ElementFormatDropDown = ({
       >
         <i className={isRTL ? 'rte-icon-indent' : 'rte-icon-outdent'} />
         <span className='rte-text'>Outdent</span>
+        {/* <span className="shortcut">{SHORTCUTS.OUTDENT}</span> */}
       </DropDownItem>
 
       <DropDownItem
@@ -172,6 +194,7 @@ export const ElementFormatDropDown = ({
       >
         <i className={isRTL ? 'rte-icon-outdent' : 'rte-icon-indent'} />
         <span className='rte-text'>Indent</span>
+        {/* <span className="shortcut">{SHORTCUTS.INDENT}</span> */}
       </DropDownItem>
     </DropDown>
   )
