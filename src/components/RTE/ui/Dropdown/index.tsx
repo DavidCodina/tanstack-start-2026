@@ -1,7 +1,7 @@
 import './Dropdown.css'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { createPortal } from 'react-dom'
+// import { createPortal } from 'react-dom'
 
 import { DropDownContext } from './DropDownContext'
 
@@ -228,7 +228,26 @@ export default function DropDown({
         <i className='rte-icon-chevron-down' />
       </button>
 
-      {showDropDown &&
+      {showDropDown && (
+        <DropDownMenu
+          dropDownRef={dropDownRef}
+          onClose={() => {
+            setShowDropDown(false)
+            if (buttonRef && buttonRef.current) {
+              buttonRef.current.focus()
+            }
+          }}
+        >
+          {children}
+        </DropDownMenu>
+      )}
+
+      {/* 
+      //^ As an alternative, you could use createPortal(). However, this will break 
+      //^ the focus-within styles that are currently on div.rte-editor-shell.
+      */}
+
+      {/* {showDropDown &&
         createPortal(
           <DropDownMenu
             dropDownRef={dropDownRef}
@@ -242,7 +261,7 @@ export default function DropDown({
             {children}
           </DropDownMenu>,
           document.body
-        )}
+        )} */}
     </>
   )
 }

@@ -2,7 +2,7 @@
 
 'use client'
 
-//! The files in this component still has references to window and document
+//! The files in this component still have references to window and document
 //! that need to be refactored for Next.js. The 'use client' directive is
 //! insufficient because client components still run on the server!
 
@@ -73,8 +73,9 @@ import { InitialValuePlugin } from './plugins/InitialValuePlugin'
 import ImagesPlugin from './plugins/ImagesPlugin'
 import InlineImagePlugin from './plugins/InlineImagePlugin'
 
-//# See also CodeHighlightShikiPlugin:
-//# https://github.com/facebook/lexical/blob/main/packages/lexical-playground/src/plugins/CodeHighlightShikiPlugin/index.ts
+// See also CodeHighlightShikiPlugin:
+// https://github.com/facebook/lexical/blob/main/packages/lexical-playground/src/plugins/CodeHighlightShikiPlugin/index.ts
+//
 // This plugin allows code blocks to have different syntax highlighting.
 // It works in conjunction with the code highlight theme styles and
 // the language selection feature in the toolbar.
@@ -172,8 +173,6 @@ htmlConfig, theme , ui, types, etc
 
 import { htmlConfig } from './htmlConfig'
 
-//# Todo: By default, Tailwind strips h1 - h6 of any styles.
-//# Consequently, we need to go in and update editor-theme-h1 through editor-theme-h6
 import { theme } from './theme'
 import { Placeholder } from './ui/Placeholder'
 import useAPI from './hooks/useAPI'
@@ -193,6 +192,8 @@ import type {
 } from 'lexical'
 
 import type { InitialConfigType } from '@lexical/react/LexicalComposer'
+
+import { cn } from '@/utils'
 
 type Values = {
   html: string
@@ -457,7 +458,13 @@ export const RTE = ({
         initialConfig={initialConfig}
       >
         <div
-          className={`rte-editor-shell ${className ? ` ${className}` : ''}`}
+          // focus:border-2 focus:border-dashed focus:border-blue-500
+          // className={`rte-editor-shell
+
+          className={cn(
+            'rte-editor-shell focus-within:ring-primary/50 focus-within:ring-[3px]',
+            className
+          )}
           style={style}
         >
           <ToolbarPlugin setIsLinkEditMode={setIsLinkEditMode} />
@@ -485,13 +492,14 @@ export const RTE = ({
                       // The className specified here is used in ImagesPlugin & InlineImagePlugin:
                       // target.parentElement.closest('div.rte-content-editable-root')
                       // At present there is no actual CSS styles associated with this className.
+
+                      //! focus:border-2 focus:border-dashed focus:border-blue-500
                       className={'rte-content-editable-root'}
                       ref={contentEditableRef}
                       style={{
                         height: '100%',
                         // The 25px is to make space for the DraggableBlockPlugin.
                         padding: '10px 10px 10px 25px',
-                        //# Ultimately, we probably want some sort of :focus-within on the top-level element.
                         outline: 'none'
                       }}
                       // Can probably take any props that a JSX <div> can take.

@@ -221,9 +221,18 @@ const CODE_LANGUAGE_OPTIONS_PRISM: [string, string][] =
 ======================================================================== */
 //# Next Steps:
 
-//# Add focus styles
-
 //# Review old ColorPicker and fix styles on new one.
+
+//# Todo: By default, Tailwind strips h1 - h6 of any styles.
+//# Consequently, we need to go in and update editor-theme-h1 through editor-theme-h6
+
+//# Once ShortcutsPlugin is implemented, update:
+//# - BlockFormatDropDown.tsx.
+//# - FontSize.tsx
+//# - AdditionalFormatDropDown.ts.
+//# - ElementFormatDropDown.tsx
+
+//# Integrate with dark mode logic.
 
 //# Consider changing the DraggableBlockPlugin/index.css to use the rte-* prefix as before.
 
@@ -245,12 +254,6 @@ const CODE_LANGUAGE_OPTIONS_PRISM: [string, string][] =
 
 //# There are several spots in this RTE that make use of window. This can potentially be
 //# problematic for server-side rendering.
-
-//# Once ShortcutsPlugin is implemented, update:
-//# - BlockFormatDropDown.tsx.
-//# - FontSize.tsx
-//# - AdditionalFormatDropDown.ts.
-//# - ElementFormatDropDown.tsx
 
 //# Bonus:
 //# Once everything is working, consider adding the Shiki logic back in.
