@@ -34,7 +34,7 @@ export type SerializedCustomParagraphNode = Spread<
 ======================================================================== */
 ///////////////////////////////////////////////////////////////////////////
 //
-// The entire point of CustomParagraphNode is to override the textIndent,
+// ⚠️ The entire point of CustomParagraphNode is to override the textIndent,
 // and replace it with paddingInlineStart for consistency.
 // https://github.com/facebook/lexical/issues/6342
 //
@@ -45,6 +45,36 @@ export type SerializedCustomParagraphNode = Spread<
 //
 // However, I prefer consistency and currently don't care about emails.
 //
+/////////////////////////
+//
+// Lexical may have fixed this issue. This CustomParagraphNode is almost certainly redundant now.
+// The fix landed in LexicalElementNode.ts (the base class for ParagraphNode), and the exportDOM
+// method now uses padding-inline-start directly, with a comment acknowledging the email
+// compatibility trade-off and recommending overriding the serialization if you need email support.
+//
+// https://github.com/facebook/lexical/blob/main/packages/lexical/src/nodes/LexicalElementNode.ts
+// exportDOM(editor: LexicalEditor): DOMExportOutput {
+//   const {element} = super.exportDOM(editor);
+//   if (isHTMLElement(element)) {
+//     const indent = this.getIndent();
+//     if (indent > 0) {
+//       // padding-inline-start is not widely supported in email HTML
+//       // (see https://www.caniemail.com/features/css-padding-inline-start-end/),
+//       // If you want to use HTML output for email, consider overriding the serialization
+//       // to use `padding-right` in RTL languages, `padding-left` in `LTR` languages, or
+//       // `text-indent` if you are ok with first-line indents.
+//       // We recommend keeping multiples of 40px to maintain consistency with list-items
+//       // (see https://github.com/facebook/lexical/pull/4025)
+//       element.style.paddingInlineStart = `${indent * 40}px`;
+//     }
+//     const direction = this.getDirection();
+//     if (direction) {
+//       element.dir = direction;
+//     }
+//   }
+
+//   return {element};
+// }
 ///////////////////////////////////////////////////////////////////////////
 
 export class CustomParagraphNode extends ParagraphNode {

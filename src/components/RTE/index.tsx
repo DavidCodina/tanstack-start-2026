@@ -67,8 +67,6 @@ import DraggableBlockPlugin from './plugins/DraggableBlockPlugin'
 // See here for more ideas on custom plugins:
 // https://github.com/facebook/lexical/blob/main/packages/lexical-playground/src/Editor.tsx
 
-import CustomParagraphPlugin from './plugins/CustomParagraphPlugin' // eslint-disable-line
-import CustomHeadingPlugin from './plugins/CustomHeadingPlugin' // eslint-disable-line
 import DragDropPaste from './plugins/DragDropPastePlugin'
 
 import { ToolbarPlugin } from './plugins/ToolbarPlugin'
@@ -121,9 +119,13 @@ import YouTubePlugin from './plugins/YouTubePlugin'
 // For YouTubePlugin
 import AutoEmbedPlugin from './plugins/AutoEmbedPlugin'
 
+import { HorizontalRulePlugin } from './plugins/HorizontalRulePlugin' // ❌ '@lexical/react/LexicalHorizontalRulePlugin'
+
 // import { SquarePlugin } from './plugins/SquarePlugin'
 
-import { HorizontalRulePlugin } from './plugins/HorizontalRulePlugin' // ❌ '@lexical/react/LexicalHorizontalRulePlugin'
+// No longer needed.
+// ❌ import CustomParagraphPlugin from './plugins/CustomParagraphPlugin'
+// ❌ import CustomHeadingPlugin from './plugins/CustomHeadingPlugin'
 
 /* ======================
         Nodes
@@ -144,15 +146,16 @@ import { AutoLinkNode, LinkNode } from '@lexical/link'
       Custom Nodes
 ====================== */
 
-//` import { CustomParagraphNode } from './nodes/CustomParagraphNode'
-//` import { CustomHeadingNode } from './nodes/CustomHeadingNode'
-
 import { ImageNode } from './nodes/ImageNode'
 import { InlineImageNode } from './nodes/InlineImageNode'
 import { EmojiNode } from './nodes/EmojiNode'
 import { YouTubeNode } from './nodes/YouTubeNode'
 import { HorizontalRuleNode } from './nodes/HorizontalRuleNode' // ❌  '@lexical/react/LexicalHorizontalRuleNode'
 // import { SquareNode } from './nodes/SquareNode'
+
+// No longer needed.
+// ❌ import { CustomParagraphNode } from './nodes/CustomParagraphNode'
+// ❌ import { CustomHeadingNode } from './nodes/CustomHeadingNode'
 
 /* ======================
      Extensions
@@ -279,6 +282,10 @@ type OnChange = React.ComponentProps<typeof OnChangePlugin>['onChange']
 //   and is not as low-level. Consequently, for new projects it's strongly recommended to go
 //   with Tiptap. It's the clear winner for most use cases.
 //
+//   Overall, most of the files can be understood. However, the image plugins/nodes/components
+//   are where it starts to get really confusing! This is ultimately what made me decide I never
+//   want to deal with this for a production-grade project. It's just too much hassle.
+//
 ///////////////////////////////////////////////////////////////////////////
 
 export const RTE = ({
@@ -330,21 +337,6 @@ export const RTE = ({
     // Register additional nodes
     // https://github.com/facebook/lexical/blob/main/packages/lexical-playground/src/nodes/PlaygroundNodes.ts
     nodes: [
-      // This kind of transform is applied when the node is created or loaded, not on every update.
-      // {
-      //   replace: TextNode,
-      //   with: (node: TextNode) => {
-      //     console.log('TextNode:', node)
-      //     // Transform logic here
-      //     // For example, converting certain text to uppercase
-      //     if (node.getTextContent().startsWith('Hello')) {
-      //       node.setTextContent(node.getTextContent().toUpperCase())
-      //     }
-      //     return node
-      //   }
-      // },
-      //` CustomParagraphNode,
-      //` CustomHeadingNode,
       HeadingNode,
       ListNode,
       ListItemNode,
@@ -476,10 +468,6 @@ export const RTE = ({
 
           <div className='rte-editor-container'>
             <InitialValuePlugin initialValue={initialValue} />
-
-            {/* <CustomParagraphPlugin /> */}
-
-            {/* <CustomHeadingPlugin /> */}
 
             <DragDropPaste />
 
