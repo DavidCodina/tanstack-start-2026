@@ -91,12 +91,9 @@ export const Demo = () => {
   // }, [])
 
   return (
-    <>
+    <section className='mx-auto mb-12 max-w-[800px]'>
       <div className='mb-6 flex justify-center gap-4'>
         <Button
-          //! Doesn't seem to be working!
-          //! clear() is getting called.
-          //! The issue is likely that we still need to implemeant <ClearEditorPlugin />
           onClick={() => {
             const api = apiRef.current
             // console.log('api:', api) // => {clear: ƒ, focus: ƒ}
@@ -204,10 +201,10 @@ export const Demo = () => {
         {JSON.stringify(value, null, 2)}
       </pre>
 
-      <p className='mb-12'>
+      <p className='mb-4'>
         Ultimately, this will necessitate a lot more horizontal scrolling to see
         the value, but at least it's the <em>real</em> value.
       </p>
-    </>
+    </section>
   )
 }
