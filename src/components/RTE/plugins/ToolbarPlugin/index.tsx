@@ -206,10 +206,7 @@ const CODE_LANGUAGE_OPTIONS_PRISM: [string, string][] =
 ======================================================================== */
 //# Next Steps:
 
-//# Review old ColorPicker and fix styles on new one.
-
-//# Todo: By default, Tailwind strips h1 - h6 of any styles.
-//# Consequently, we need to go in and update editor-theme-h1 through editor-theme-h6
+//` Review old ColorPicker and fix styles on new one.
 
 //# Once ShortcutsPlugin is implemented, update:
 //# - BlockFormatDropDown.tsx.
@@ -235,16 +232,14 @@ const CODE_LANGUAGE_OPTIONS_PRISM: [string, string][] =
 //# width and insertNode props, so overall the AutoEmbedPlugin/YoutubePlugin/YoutubeNode
 //# Still needs updating to get back to the previous abilities.
 
-//# The numbering isn't showing up in the dangerouslySetInnerHTML for CodeHighlightPrismPlugin
-
 //# There are several spots in this RTE that make use of window. This can potentially be
 //# problematic for server-side rendering.
 
-//# Bonus:
-//# Once everything is working, consider adding the Shiki logic back in.
-//# You don't need to add SettingsContext.tsx
-//# Just make it the default, or hardcode these values internally: isCodeHighlighted, isCodeShiki
-//# Then be sure to update all places where those values are intended to be used.
+// Bonus Todo:
+// Consider adding the Shiki logic back in.
+// You don't need to add SettingsContext.tsx
+// Just make it the default, or hardcode these values internally: isCodeHighlighted, isCodeShiki
+// Then be sure to update all places where those values are intended to be used.
 
 export const ToolbarPlugin = ({
   // This is associated to the 4th useEffect() below.

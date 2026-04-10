@@ -52,6 +52,40 @@ const isSelectedClassName = editor._config.theme.hrSelected ?? 'selected' */
 }
 
 /* ======================
+
+====================== */
+
+.editor-theme-h1 {
+  font-size: 40px;
+  font-weight: bold;
+}
+
+.editor-theme-h2 {
+  font-size: 32px;
+  font-weight: bold;
+}
+
+.editor-theme-h3 {
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.editor-theme-h4 {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.editor-theme-h5 {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.editor-theme-h6 {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+/* ======================
   Clearfix for p, h1-h6
 ====================== */
 /* This allows floated images to clear their parent containers.
