@@ -206,7 +206,7 @@ const CODE_LANGUAGE_OPTIONS_PRISM: [string, string][] =
 ======================================================================== */
 //# Next Steps:
 
-//` Review old ColorPicker and fix styles on new one.
+//# Consider changing the DraggableBlockPlugin/index.css to use the rte-* prefix as before.
 
 //# Once ShortcutsPlugin is implemented, update:
 //# - BlockFormatDropDown.tsx.
@@ -215,8 +215,6 @@ const CODE_LANGUAGE_OPTIONS_PRISM: [string, string][] =
 //# - ElementFormatDropDown.tsx
 
 //# Integrate with dark mode logic.
-
-//# Consider changing the DraggableBlockPlugin/index.css to use the rte-* prefix as before.
 
 //# When Updating AutoEmbedPlugin, I had to update YoutubePlugin and YoutubeNode.
 //# The YoutubeNode previously had custom logic in it for sizing and centering.

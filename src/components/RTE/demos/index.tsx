@@ -163,6 +163,11 @@ export const Demo = () => {
       />
 
       <h3 className='text-primary text-lg font-bold'>values.html:</h3>
+
+      <pre className='mb-8 overflow-auto rounded-lg border border-neutral-400 bg-white p-4'>
+        {JSON.stringify(value, null, 2)}
+      </pre>
+
       <p className='mb-4'>
         ⚠️ Gotcha: previously, I was outputting{' '}
         <code className='text-pink-500'>value</code> by doing this:
@@ -195,10 +200,6 @@ export const Demo = () => {
   {JSON.stringify(value, null, 2)}
 </pre>`}
         </code>
-      </pre>
-
-      <pre className='mb-8 overflow-auto rounded-lg border border-neutral-400 bg-white p-4'>
-        {JSON.stringify(value, null, 2)}
       </pre>
 
       <p className='mb-4'>
