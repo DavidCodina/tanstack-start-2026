@@ -1,5 +1,4 @@
-import { JSX } from 'react'
-import type { Position } from '../../nodes/InlineImageNode'
+import { useEffect, useRef, useState } from 'react'
 
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import { $wrapNodeInElement, mergeRegister } from '@lexical/utils'
@@ -14,22 +13,21 @@ import {
   COMMAND_PRIORITY_EDITOR,
   COMMAND_PRIORITY_HIGH,
   COMMAND_PRIORITY_LOW,
-  createCommand,
   DRAGOVER_COMMAND,
   DRAGSTART_COMMAND,
   DROP_COMMAND,
-  LexicalCommand,
-  LexicalEditor
+  createCommand
 } from 'lexical'
-import * as React from 'react'
-import { useEffect, useRef, useState } from 'react'
 
 import {
   $createInlineImageNode,
   $isInlineImageNode,
-  InlineImageNode,
-  InlineImagePayload
+  InlineImageNode
 } from '../../nodes/InlineImageNode'
+
+import type { JSX } from 'react'
+import type { LexicalCommand, LexicalEditor } from 'lexical'
+import type { InlineImagePayload, Position } from '../../nodes/InlineImageNode'
 
 export type InsertInlineImagePayload = Readonly<InlineImagePayload>
 
@@ -77,11 +75,7 @@ export function InsertImageUriDialogBody({
   return (
     <>
       <div className='rte-form-group'>
-        <label // eslint-disable-line
-          className='rte-form-label'
-        >
-          Image URL
-        </label>
+        <label className='rte-form-label'>Image URL</label>
 
         <input
           autoComplete='off'
@@ -97,11 +91,7 @@ export function InsertImageUriDialogBody({
       </div>
 
       <div className='rte-form-group'>
-        <label // eslint-disable-line
-          className='rte-form-label'
-        >
-          Alt Text
-        </label>
+        <label className='rte-form-label'>Alt Text</label>
 
         <input
           autoComplete='off'
@@ -117,11 +107,7 @@ export function InsertImageUriDialogBody({
       </div>
 
       <div className='rte-form-group'>
-        <label // eslint-disable-line
-          className='rte-form-label'
-        >
-          Width
-        </label>
+        <label className='rte-form-label'>Width</label>
 
         <input
           autoComplete='off'
@@ -143,15 +129,11 @@ export function InsertImageUriDialogBody({
       </div>
 
       <div className='rte-form-group'>
-        <label // eslint-disable-line
-          className='rte-form-label'
-        >
-          Position
-        </label>
+        <label className='rte-form-label'>Position</label>
 
         <select
           className={'rte-form-select rte-form-select-sm'}
-          id='position-select' //! Not loving this...
+          id='position-select' //^ Not loving this...
           name='position'
           onChange={(e) => {
             setPosition(e.target.value as Position)
@@ -256,11 +238,7 @@ export const InsertImageUploadedDialogBody = ({
   return (
     <>
       <div className='rte-form-group'>
-        <label // eslint-disable-line
-          className='rte-form-label'
-        >
-          Image Upload
-        </label>
+        <label className='rte-form-label'>Image Upload</label>
         <input
           accept='image/*' // ???
           autoComplete='off'
@@ -274,11 +252,7 @@ export const InsertImageUploadedDialogBody = ({
       </div>
 
       <div className='rte-form-group'>
-        <label // eslint-disable-line
-          className='rte-form-label'
-        >
-          Alt Text
-        </label>
+        <label className='rte-form-label'>Alt Text</label>
 
         <input
           autoComplete='off'
@@ -294,11 +268,7 @@ export const InsertImageUploadedDialogBody = ({
       </div>
 
       <div className='rte-form-group'>
-        <label // eslint-disable-line
-          className='rte-form-label'
-        >
-          Width
-        </label>
+        <label className='rte-form-label'>Width</label>
 
         <input
           autoComplete='off'
@@ -320,11 +290,7 @@ export const InsertImageUploadedDialogBody = ({
       </div>
 
       <div className='rte-form-group'>
-        <label // eslint-disable-line
-          className='rte-form-label'
-        >
-          Position
-        </label>
+        <label className='rte-form-label'>Position</label>
 
         <select
           className={'rte-form-select rte-form-select-sm'}

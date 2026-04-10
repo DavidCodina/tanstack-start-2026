@@ -143,21 +143,6 @@ import type {
 /* ======================
 
 ====================== */
-//* We may no longer need this because IS_APPLE is imported from @lexical/utils
-
-// The official example does this, but I did it all locally.
-// import { IS_APPLE } from 'shared/environment'
-
-// export const CAN_USE_DOM: boolean =
-//   typeof window !== 'undefined' &&
-//   typeof window.document !== 'undefined' &&
-//   typeof window.document.createElement !== 'undefined'
-
-// const IS_APPLE: boolean = CAN_USE_DOM && /Mac|iPod|iPhone|iPad/.test(navigator.platform)
-
-/* ======================
-
-====================== */
 
 function $findTopLevelElement(node: LexicalNode) {
   let topLevelElement =
@@ -232,6 +217,9 @@ const CODE_LANGUAGE_OPTIONS_PRISM: [string, string][] =
 //# - AdditionalFormatDropDown.ts.
 //# - ElementFormatDropDown.tsx
 
+//# Once everything is sufficiently wired up, do a deep dive on all CSS files, compared to
+//# current ones on GitHub.
+
 //# Integrate with dark mode logic.
 
 //# Consider changing the DraggableBlockPlugin/index.css to use the rte-* prefix as before.
@@ -248,9 +236,6 @@ const CODE_LANGUAGE_OPTIONS_PRISM: [string, string][] =
 //# Still needs updating to get back to the previous abilities.
 
 //# The numbering isn't showing up in the dangerouslySetInnerHTML for CodeHighlightPrismPlugin
-
-//# Once everything is sufficiently wired up, do a deep dive on all CSS files, compared to
-//# current ones on GitHub.
 
 //# There are several spots in this RTE that make use of window. This can potentially be
 //# problematic for server-side rendering.
@@ -705,60 +690,6 @@ export const ToolbarPlugin = ({
       )
     )
   }, [$updateToolbar, activeEditor, editor, updateToolbarState])
-
-  /* ======================
-        useEffect() 4 
-  ====================== */
-  ///////////////////////////////////////////////////////////////////////////
-  //
-  // This useEffect() was previously part of the lexical-playground example.
-  // It handled Ctrl/Cmd+K as a keyboard shortcut to toggle a link on the current selection:
-  //
-  //   - If the cursor was not in a link → set link edit mode to true, dispatch TOGGLE_LINK_COMMAND
-  //     with a starter URL (https://), which would open the floating link editor
-  //
-  //   - If the cursor was already in a link → set link edit mode to false, dispatch TOGGLE_LINK_COMMAND
-  //     with null, which removes the link
-  //
-  // However, they removed it. Why?
-  // It didn't belong in ToolbarPlugin conceptually. A keyboard shortcut isn't toolbar logic — it's editor
-  // input handling. Putting it in ToolbarPlugin was a separation-of-concerns issue. The playground now
-  // has a dedicated ShortcutsPlugin that owns all keyboard shortcuts (Ctrl+K for links, plus others),
-  // keeping ToolbarPlugin focused purely on reflecting and controlling toolbar state.
-  //
-  // The CHANGELOG gives us the answer directly. KEY_MODIFIER_COMMAND was deprecated,
-  // and the playground shortcuts were migrated to use KEY_DOWN_COMMAND instead (#7472).
-  // The logic moved out of ToolbarPlugin entirely and into the dedicated.
-  // The logic moved out of ToolbarPlugin entirely and into the dedicated ShortcutsPlugin you can see imported in Editor.tsx.
-  //
-  ///////////////////////////////////////////////////////////////////////////
-
-  // const toolbarStateIsLink = toolbarState.isLink
-  // useEffect(() => {
-  //   return activeEditor.registerCommand(
-  //     KEY_DOWN_COMMAND, // ❌ KEY_MODIFIER_COMMAND,
-  //     (payload) => {
-  //       const event: KeyboardEvent = payload
-  //       const { code, ctrlKey, metaKey } = event
-
-  //       if (code === 'KeyK' && (ctrlKey || metaKey)) {
-  //         event.preventDefault()
-  //         let url: string | null
-
-  //         if (!toolbarStateIsLink) {
-  //           setIsLinkEditMode(true)
-  //           url = sanitizeUrl('https://')
-  //         } else {
-  //           setIsLinkEditMode(false)
-  //           url = null
-  //         }
-  //         return activeEditor.dispatchCommand(TOGGLE_LINK_COMMAND, url)
-  //       }
-  //       return false
-  //     },
-  //     COMMAND_PRIORITY_NORMAL
-  //   )
-  // }, [activeEditor, toolbarStateIsLink, setIsLinkEditMode])
 
   /* ======================
       applyStyleText() 

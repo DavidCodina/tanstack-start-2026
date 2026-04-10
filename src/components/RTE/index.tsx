@@ -6,6 +6,9 @@
 //! that need to be refactored for Next.js. The 'use client' directive is
 //! insufficient because client components still run on the server!
 
+// ⚠️ Gotcha: The CSS here MUST be part of the global CSS. Otherwise, if the
+// RTE is not present when you show the dangerouslySetInnerHTML, then there won't
+// be fidelity betwee the rich text in the editor and the dangerouslySetInnerHTML.
 import './index.css'
 import { useRef, useState } from 'react'
 import type { MutableRefObject } from 'react'
@@ -492,8 +495,6 @@ export const RTE = ({
                       // The className specified here is used in ImagesPlugin & InlineImagePlugin:
                       // target.parentElement.closest('div.rte-content-editable-root')
                       // At present there is no actual CSS styles associated with this className.
-
-                      //! focus:border-2 focus:border-dashed focus:border-blue-500
                       className={'rte-content-editable-root'}
                       ref={contentEditableRef}
                       style={{

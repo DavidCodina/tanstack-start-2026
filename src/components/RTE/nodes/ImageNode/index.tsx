@@ -1,7 +1,10 @@
 // The code in this file was originally taken from the playground example:
 // https://github.com/facebook/lexical/blob/main/packages/lexical-playground/src/nodes/ImageNode.tsx
 // However, I've removed caption-related logic.
-import React, { Suspense } from 'react'
+
+import * as React from 'react'
+import { Suspense } from 'react'
+
 import { $applyNodeReplacement, DecoratorNode } from 'lexical'
 
 import type { JSX } from 'react'
@@ -33,7 +36,7 @@ export interface ImagePayload {
 
 function isGoogleDocCheckboxImg(img: HTMLImageElement): boolean {
   return (
-    img.parentElement !== null && // Changed from != to !==
+    img.parentElement !== null &&
     img.parentElement.tagName === 'LI' &&
     img.previousSibling === null &&
     img.getAttribute('aria-roledescription') === 'checkbox'
@@ -46,12 +49,11 @@ function isGoogleDocCheckboxImg(img: HTMLImageElement): boolean {
 
 function $convertImageElement(domNode: Node): null | DOMConversionOutput {
   const img = domNode as HTMLImageElement
-
-  // Previously, the conditiona was: if (domNode instanceof HTMLImageElement) { ... }
-  if (img.src.startsWith('file:///') || isGoogleDocCheckboxImg(img)) {
+  const src = img.getAttribute('src')
+  if (!src || src.startsWith('file:///') || isGoogleDocCheckboxImg(img)) {
     return null
   }
-  const { alt: altText, src, width, height } = img
+  const { alt: altText, width, height } = img
   const node = $createImageNode({ altText, height, src, width })
   return { node }
 }
@@ -105,6 +107,17 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
 
     return node
   }
+
+  // updateFromJSON(serializedNode: LexicalUpdateJSON<SerializedImageNode>): this {
+  //   const node = super.updateFromJSON(serializedNode)
+  //   const { caption } = serializedNode
+  //   const nestedEditor = node.__caption
+  //   const editorState = nestedEditor.parseEditorState(caption.editorState)
+  //   if (!editorState.isEmpty()) {
+  //     nestedEditor.setEditorState(editorState)
+  //   }
+  //   return node
+  // }
 
   exportDOM(): DOMExportOutput {
     const element = document.createElement('img')
@@ -191,6 +204,8 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
   }
 
   decorate(): JSX.Element {
+    // Newer versions of lexical seem to get away without using Suspsense.
+    // I'm not quite sure how that is.
     return (
       <Suspense fallback={null}>
         <ImageComponent

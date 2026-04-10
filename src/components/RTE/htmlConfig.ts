@@ -1,8 +1,8 @@
-// import { $isLineBreakNode } from 'lexical'
-// import { CodeNode } from '@lexical/code'
-import { AutoLinkNode, LinkNode } from '@lexical/link'
-import { HorizontalRuleNode } from '@lexical/react/LexicalHorizontalRuleNode'
+import { $isLineBreakNode } from 'lexical'
+import { CodeNode } from '@lexical/code-core'
+// import { AutoLinkNode, LinkNode } from '@lexical/link'
 import { addClassNamesToElement } from '@lexical/utils'
+//import { HorizontalRuleNode } from './nodes/HorizontalRuleNode'
 
 import type { HTMLConfig } from 'lexical'
 
@@ -39,68 +39,69 @@ and rewrite the entire node. Here's a brief explanation of its purpose and usage
 /* ========================================================================
                               hrNodeExport                 
 ======================================================================== */
+// ⚠️ This no longer seems necessary.
 
-const hrNodeExport: DOMExportOutputMap = new Map([
-  [
-    HorizontalRuleNode,
-    (editor, node) => {
-      const { element } = node.exportDOM(editor)
-      // Or create element from scratch:
-      // const element = document.createElement('hr')
-      addClassNamesToElement(element as HTMLElement, editor._config.theme.hr)
-      return { element }
-    }
-  ]
-])
+// const hrNodeExport: DOMExportOutputMap = new Map([
+//   [
+//     HorizontalRuleNode,
+//     (editor, node) => {
+//       const { element } = node.exportDOM(editor)
+//       // Or create element from scratch:
+//       // const element = document.createElement('hr')
+//       addClassNamesToElement(element as HTMLElement, editor._config.theme.hr)
+//       return { element }
+//     }
+//   ]
+// ])
 
 /* ========================================================================
                               linkNodeExport                 
 ======================================================================== */
+// ⚠️  This no longer seems necessary since we're using <LinkPlugin hasLinkAttributes={true} />
 
-//# This may not be necessary anymore since we're using <LinkPlugin hasLinkAttributes={true} />
+// const linkNodeExport: DOMExportOutputMap = new Map([
+//   [
+//     LinkNode,
+//     (editor, node) => {
+//       const linkNode = node as LinkNode
 
-const linkNodeExport: DOMExportOutputMap = new Map([
-  [
-    LinkNode,
-    (editor, node) => {
-      const linkNode = node as LinkNode
+//       const element = document.createElement('a')
+//       addClassNamesToElement(element, editor._config.theme.link)
+//       element.setAttribute('href', linkNode.__url)
 
-      const element = document.createElement('a')
-      addClassNamesToElement(element, editor._config.theme.link)
-      element.setAttribute('href', linkNode.__url)
+//       if (!linkNode.__target) {
+//         element.setAttribute('target', '_blank')
+//         element.setAttribute('rel', 'noopener noreferrer')
+//       }
 
-      if (!linkNode.__target) {
-        element.setAttribute('target', '_blank')
-        element.setAttribute('rel', 'noopener noreferrer')
-      }
-
-      return { element }
-    }
-  ]
-])
+//       return { element }
+//     }
+//   ]
+// ])
 
 /* ========================================================================
                             autoLinkNodeExport        
 ======================================================================== */
+// ⚠️ This no longer seems necessary.
 
-const autoLinkNodeExport: DOMExportOutputMap = new Map([
-  [
-    AutoLinkNode,
-    (editor, node) => {
-      const linkNode = node as AutoLinkNode
-      const element = document.createElement('a')
-      addClassNamesToElement(element, editor._config.theme.link)
-      element.setAttribute('href', linkNode.__url)
+// const autoLinkNodeExport: DOMExportOutputMap = new Map([
+//   [
+//     AutoLinkNode,
+//     (editor, node) => {
+//       const linkNode = node as AutoLinkNode
+//       const element = document.createElement('a')
+//       addClassNamesToElement(element, editor._config.theme.link)
+//       element.setAttribute('href', linkNode.__url)
 
-      if (!linkNode.__target) {
-        element.setAttribute('target', '_blank')
-        element.setAttribute('rel', 'noopener noreferrer')
-      }
+//       if (!linkNode.__target) {
+//         element.setAttribute('target', '_blank')
+//         element.setAttribute('rel', 'noopener noreferrer')
+//       }
 
-      return { element }
-    }
-  ]
-])
+//       return { element }
+//     }
+//   ]
+// ])
 
 /* ========================================================================
                                 codeNodeExport           
@@ -130,51 +131,51 @@ const autoLinkNodeExport: DOMExportOutputMap = new Map([
 //
 ///////////////////////////////////////////////////////////////////////////
 
-//# Check the importDOM method to make sure this doesn't break it.
-// const LANGUAGE_DATA_ATTRIBUTE = 'data-language'
-// const HIGHLIGHT_LANGUAGE_DATA_ATTRIBUTE = 'data-highlight-language'
+const LANGUAGE_DATA_ATTRIBUTE = 'data-language'
+const HIGHLIGHT_LANGUAGE_DATA_ATTRIBUTE = 'data-highlight-language'
 
-// const codeNodeExport: DOMExportOutputMap = new Map([
-//   [
-//     CodeNode,
-//     (editor, node) => {
-//       const codeNode = node as CodeNode
+const codeNodeExport: DOMExportOutputMap = new Map([
+  [
+    CodeNode,
+    (editor, node) => {
+      const codeNode = node as CodeNode
 
-//       // This was 'pre', but it seems more consistent to use 'code'.
-//       const element = document.createElement('code')
-//       addClassNamesToElement(element, editor._config.theme.code)
-//       element.setAttribute('spellcheck', 'false')
-//       const language = codeNode.getLanguage()
+      // This was 'pre', but it seems more consistent to use 'code'.
+      const element = document.createElement('code')
+      addClassNamesToElement(element, editor._config.theme.code)
+      element.setAttribute('spellcheck', 'false')
+      const language = codeNode.getLanguage()
 
-//       if (language) {
-//         element.setAttribute(LANGUAGE_DATA_ATTRIBUTE, language)
-//         if (codeNode.getIsSyntaxHighlightSupported()) {
-//           element.setAttribute(HIGHLIGHT_LANGUAGE_DATA_ATTRIBUTE, language)
-//         }
-//       }
+      if (language) {
+        element.setAttribute(LANGUAGE_DATA_ATTRIBUTE, language)
+        if (codeNode.getIsSyntaxHighlightSupported()) {
+          element.setAttribute(HIGHLIGHT_LANGUAGE_DATA_ATTRIBUTE, language)
+        }
+      }
 
-//       const children = codeNode.getChildren()
-//       const childrenLength = children.length
+      const children = codeNode.getChildren()
+      const childrenLength = children.length
 
-//       let gutter = '1'
-//       let count = 1
-//       for (let i = 0; i < childrenLength; i++) {
-//         if ($isLineBreakNode(children[i])) {
-//           gutter += '\n' + ++count
-//         }
-//       }
+      let gutter = '1'
+      let count = 1
 
-//       element.setAttribute('data-gutter', gutter)
-//       return { element }
-//     }
-//   ]
-// ])
+      for (let i = 0; i < childrenLength; i++) {
+        if ($isLineBreakNode(children[i])) {
+          gutter += '\n' + ++count
+        }
+      }
+
+      element.setAttribute('data-gutter', gutter)
+      return { element }
+    }
+  ]
+])
 
 export const htmlConfig: HTMLConfig = {
   export: new Map([
-    ...hrNodeExport,
-    ...linkNodeExport,
-    ...autoLinkNodeExport
-    //# ...codeNodeExport
+    // ...hrNodeExport,
+    // ...linkNodeExport,
+    // ...autoLinkNodeExport,
+    ...codeNodeExport
   ])
 }

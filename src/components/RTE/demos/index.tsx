@@ -1,3 +1,10 @@
+// ⚠️ Gotcha: The CSS here MUST be part of the global CSS. Otherwise, if the
+// RTE is not present when you show the dangerouslySetInnerHTML, then there won't
+// be fidelity betwee the rich text in the editor and the dangerouslySetInnerHTML.
+// This may also be the case for other localized CSS files in the RTE directory.
+import '../index.css'
+import '../theme/theme.css'
+
 import { /* useEffect, */ useRef, useState } from 'react'
 import DOMPurify from 'dompurify'
 import { RTE } from '../'
@@ -35,6 +42,9 @@ const _defaultYoutube = `
 </div>
 <p class="editor-theme-paragraph"><br></p>
 `
+
+const _defaultCode =
+  '<code class="editor-theme-code" spellcheck="false" data-language="javascript" data-highlight-language="javascript" data-gutter="1\n2\n3"><span class="editor-theme-tokenAttr" style="white-space: pre-wrap;">const</span><span style="white-space: pre-wrap;"> </span><span style="white-space: pre-wrap;">add</span><span style="white-space: pre-wrap;"> </span><span class="editor-theme-tokenOperator" style="white-space: pre-wrap;">=</span><span style="white-space: pre-wrap;"> </span><span class="editor-theme-tokenPunctuation" style="white-space: pre-wrap;">(</span><span style="white-space: pre-wrap;">n1</span><span class="editor-theme-tokenPunctuation" style="white-space: pre-wrap;">,</span><span style="white-space: pre-wrap;"> n2</span><span class="editor-theme-tokenPunctuation" style="white-space: pre-wrap;">)</span><span style="white-space: pre-wrap;"> </span><span class="editor-theme-tokenOperator" style="white-space: pre-wrap;">=&gt;</span><span style="white-space: pre-wrap;"> </span><span class="editor-theme-tokenPunctuation" style="white-space: pre-wrap;">{</span><br><span style="white-space: pre-wrap;">  </span><span class="editor-theme-tokenAttr" style="white-space: pre-wrap;">return</span><span style="white-space: pre-wrap;"> n1 </span><span class="editor-theme-tokenOperator" style="white-space: pre-wrap;">+</span><span style="white-space: pre-wrap;"> n2</span><span class="editor-theme-tokenPunctuation" style="white-space: pre-wrap;">;</span><br><span class="editor-theme-tokenPunctuation" style="white-space: pre-wrap;">}</span></code>'
 
 const _defaultH4Indent = `<h4 class="editor-theme-h4" dir="ltr" style="padding-inline-start: 120px;"><span style="white-space: pre-wrap;">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation</span></h4>`
 
@@ -135,7 +145,7 @@ export const Demo = () => {
         initialValue={initialValue}
         namespace='TestEditor'
         onChange={(values) => {
-          // console.log('\n\n', values)
+          // console.log('\n\nRTE onchange:', values)
           setValue(values.html)
         }}
         placeholder='Say something genius!'
@@ -144,7 +154,7 @@ export const Demo = () => {
       <br />
       <br />
 
-      <h3 className='text-xl leading-none text-blue-500'>
+      <h3 className='text-primary text-lg font-bold'>
         dangerouslySetInnerHTML:
       </h3>
 
@@ -155,11 +165,49 @@ export const Demo = () => {
         }}
       />
 
-      <h3 className='text-xl leading-none text-blue-500'>values.html:</h3>
+      <h3 className='text-primary text-lg font-bold'>values.html:</h3>
+      <p className='mb-4'>
+        ⚠️ Gotcha: previously, I was outputting{' '}
+        <code className='text-pink-500'>value</code> by doing this:
+      </p>
 
-      <div className='mb-8 rounded-lg border border-neutral-400 bg-white p-4'>
-        {value}
-      </div>
+      <pre className='mb-4 px-4'>
+        <code className='text-sm text-pink-500'>
+          {`<div className='mb-8 rounded-lg border border-neutral-400 bg-white p-4'>
+  {value}
+</div>`}
+        </code>
+      </pre>
+
+      <p className='mb-4'>
+        The big problem there occurs when you treat that as the <em>actual</em>{' '}
+        value, and try to then test it as a default/initial value in this demo.
+        In practice, <code className='text-pink-500'>value</code> might contain
+        something like{' '}
+        <code className='text-pink-500'>data-gutter="1\n2\n3"</code>, but if you
+        output to the UI as shown above, you'll simply get{' '}
+        <code className='text-pink-500'>data-gutter="1 2 3"</code>, which is
+        obviously <em>not the same</em>. It ends up stripping out the{' '}
+        <code className='text-pink-500'>\n</code> parts, which are crucial!
+        Solution: do this instea.
+      </p>
+
+      <pre className='mb-4 px-4'>
+        <code className='text-sm text-pink-500'>
+          {`<pre className='mb-8 overflow-auto rounded-lg border border-neutral-400 bg-white p-4'>
+  {JSON.stringify(value, null, 2)}
+</pre>`}
+        </code>
+      </pre>
+
+      <pre className='mb-8 overflow-auto rounded-lg border border-neutral-400 bg-white p-4'>
+        {JSON.stringify(value, null, 2)}
+      </pre>
+
+      <p className='mb-12'>
+        Ultimately, this will necessitate a lot more horizontal scrolling to see
+        the value, but at least it's the <em>real</em> value.
+      </p>
     </>
   )
 }
