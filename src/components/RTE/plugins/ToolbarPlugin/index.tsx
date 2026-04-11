@@ -206,22 +206,13 @@ const CODE_LANGUAGE_OPTIONS_PRISM: [string, string][] =
 ======================================================================== */
 //# Next Steps:
 
-//# Consider changing the DraggableBlockPlugin/index.css to use the rte-* prefix as before.
-
 //# Once ShortcutsPlugin is implemented, update:
-//# - BlockFormatDropDown.tsx.
+//# ✅ BlockFormatDropDown.tsx.
 //# - FontSize.tsx
 //# - AdditionalFormatDropDown.ts.
 //# - ElementFormatDropDown.tsx
 
 //# Integrate with dark mode logic.
-
-//# When Updating AutoEmbedPlugin, I had to update YoutubePlugin and YoutubeNode.
-//# The YoutubeNode previously had custom logic in it for sizing and centering.
-//# That no longer exists in the current version.
-//# Similarly, in te old AutoEmbedPlugin -> PlaygroundEmbedConfig, there was both
-//# width and insertNode props, so overall the AutoEmbedPlugin/YoutubePlugin/YoutubeNode
-//# Still needs updating to get back to the previous abilities.
 
 //# There are several spots in this RTE that make use of window, which might be problematic for server-side rendering.
 

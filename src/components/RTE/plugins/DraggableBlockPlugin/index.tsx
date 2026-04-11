@@ -326,9 +326,10 @@ export default function DraggableBlockPlugin({
           <div
             ref={menuRef}
             // Removed `icon` from className
-            className='draggable-block-menu'
+            className='rte-draggable-block-menu'
           >
-            {/* <button
+            {/* 
+            <button
               title='Click to add below'
               className='icon icon-plus'
               onClick={openComponentPicker}
@@ -338,8 +339,7 @@ export default function DraggableBlockPlugin({
             {/* This is the JSX for the actual icon. rte-icon-draggable-block-menu only provides
             the background-image, so sizing still needs to be set here. */}
             <div
-              // className='icon'
-              className='rte-icon-draggable-block-menu'
+              className='rte-icon-draggable-block-menu' // ❌ 'icon'
               style={{
                 height: 22,
                 width: 22,
@@ -350,7 +350,10 @@ export default function DraggableBlockPlugin({
         }
         // Shows when you grab and drag the block.
         targetLineComponent={
-          <div ref={targetLineRef} className='draggable-block-target-line' />
+          <div
+            ref={targetLineRef}
+            className='rte-draggable-block-target-line'
+          />
         }
         isOnMenu={isOnMenu}
         // onElementChanged={setDraggableElement}

@@ -49,6 +49,17 @@ interface PlaygroundEmbedConfig extends EmbedConfig {
 
   // Embed a Figma Project.
   description?: string
+
+  //* New...
+  width: number
+
+  //* New...
+  // Overwrite the default insertNode from EmbedConfig.
+  insertNode: (
+    editor: LexicalEditor,
+    result: EmbedMatchResult,
+    width?: number
+  ) => void
 }
 
 /* ========================================================================
@@ -56,15 +67,29 @@ interface PlaygroundEmbedConfig extends EmbedConfig {
 ======================================================================== */
 
 export const YoutubeEmbedConfig: PlaygroundEmbedConfig = {
+  // insertNode: (editor: LexicalEditor, result: EmbedMatchResult) => {
+  //   editor.dispatchCommand(INSERT_YOUTUBE_COMMAND, result.id)
+  // },
+
+  //* New...
+  insertNode: (
+    editor: LexicalEditor,
+    result: EmbedMatchResult,
+    width?: number
+  ) => {
+    const payload = {
+      videoID: result.id,
+      width: width || YoutubeEmbedConfig.width
+    }
+
+    editor.dispatchCommand(INSERT_YOUTUBE_COMMAND, payload)
+  },
+
   contentName: 'Youtube Video',
   exampleUrl: 'https://www.youtube.com/watch?v=abc123',
 
   // Icon for display.
   icon: <i className='rte-icon-youtube' />,
-
-  insertNode: (editor: LexicalEditor, result: EmbedMatchResult) => {
-    editor.dispatchCommand(INSERT_YOUTUBE_COMMAND, result.id)
-  },
 
   keywords: ['youtube', 'video'],
 
@@ -85,7 +110,9 @@ export const YoutubeEmbedConfig: PlaygroundEmbedConfig = {
     return null
   },
 
-  type: 'youtube-video'
+  type: 'youtube-video',
+  //* New...
+  width: 500 // Default
 }
 
 /* ========================================================================
@@ -191,6 +218,8 @@ const debounce = (callback: (text: string) => void, delay: number) => {
 /* ========================================================================
                          
 ======================================================================== */
+// This is somewhat of a misnomer. The AutoEmbedDialog actually only is used
+// through manual insertion of the URL, not when we drop a URL into the editor.
 
 export function AutoEmbedDialog({
   embedConfig,
@@ -201,6 +230,15 @@ export function AutoEmbedDialog({
 }): JSX.Element {
   const [text, setText] = useState('')
   const [editor] = useLexicalComposerContext()
+
+  //* New...
+  const [width, setWidth] = useState(() => {
+    if (typeof embedConfig.width === 'number') {
+      return embedConfig.width.toString()
+    }
+    return '500'
+  })
+
   const [embedResult, setEmbedResult] = useState<EmbedMatchResult | null>(null)
 
   /* ======================
@@ -229,12 +267,12 @@ export function AutoEmbedDialog({
         onClick()
   ====================== */
 
-  const onClick = () => {
-    if (embedResult !== null) {
-      embedConfig.insertNode(editor, embedResult)
-      onClose()
-    }
-  }
+  // const onClick = () => {
+  //   if (embedResult !== null) {
+  //     embedConfig.insertNode(editor, embedResult)
+  //     onClose()
+  //   }
+  // }
 
   /* ======================
           return
@@ -259,17 +297,65 @@ export function AutoEmbedDialog({
         />
       </div>
 
-      {/* <DialogActions> */}
-      <Button
-        data-test-id={`${embedConfig.type}-embed-modal-submit-btn`}
-        disabled={!embedResult}
-        onClick={onClick}
-        size='sm'
-        variant='success'
+      {/*
+      //*  New...
+      */}
+
+      <div className='rte-form-group'>
+        <label className='rte-form-label'>Width</label>
+
+        <input
+          autoComplete='off'
+          className='rte-form-control rte-form-control-sm'
+          onKeyDown={(e) => {
+            if (['e', 'E', '-', '+', '.'].includes(e.key)) {
+              e.preventDefault()
+              e.stopPropagation()
+              return
+            }
+          }}
+          onChange={(e) => {
+            setWidth(e.target.value)
+          }}
+          placeholder='The initial width of the image...'
+          type='number'
+          value={width}
+        />
+      </div>
+
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'right',
+          marginTop: 20
+        }}
       >
-        Embed
-      </Button>
-      {/* </DialogActions> */}
+        <Button
+          data-test-id={`${embedConfig.type}-embed-modal-submit-btn`}
+          disabled={!embedResult}
+          //* New... (changed onClick logic)
+          onClick={() => {
+            let widthAsNumber =
+              width.trim() !== '' ? parseInt(width) : undefined
+
+            widthAsNumber =
+              typeof widthAsNumber === 'number' && !isNaN(widthAsNumber)
+                ? widthAsNumber
+                : undefined
+
+            if (embedResult !== null) {
+              embedConfig.insertNode(editor, embedResult, widthAsNumber)
+              onClose()
+            }
+          }}
+          size='sm'
+          style={{ minWidth: 150 }}
+          type='button'
+          variant='success'
+        >
+          Embed
+        </Button>
+      </div>
     </>
   )
 }

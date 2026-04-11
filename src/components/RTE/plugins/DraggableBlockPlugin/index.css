@@ -1,4 +1,4 @@
-.draggable-block-menu {
+.rte-draggable-block-menu {
   border-radius: 4px;
   cursor: grab;
   display: flex;
@@ -14,38 +14,17 @@
   will-change: transform, opacity;
 }
 
-/* Rather than using this, the icon implementation now uses: rte-icon-draggable-block-menu,
-which is defined in RTE/index.css. 
-.draggable-block-menu .icon {
-  width: 16px;
-  height: 16px;
-  opacity: 0.3;
-  background-image: url(../../icons/draggable-block-menu.svg);
-} 
-*/
-
-/* 
-.draggable-block-menu .icon-plus {
-  display: inline-block;
-  border: none;
-  cursor: pointer;
-  background-color: transparent;
-  background-image: url(../../images/icons/plus.svg);
-  background-image: url(../../icons/plus.svg);
-} 
-*/
-
-.draggable-block-menu:active {
+.rte-draggable-block-menu:active {
   cursor: grabbing;
 }
 
 /* Probably want to change this to a muted color. */
-.draggable-block-menu .icon:hover {
+.rte-draggable-block-menu:hover {
   background-color: #efefef;
 }
 
 /* Shows when you grab and drag the block. */
-.draggable-block-target-line {
+.rte-draggable-block-target-line {
   background: var(--color-sky-500, #0ea5e9);
   height: 1.5px;
   left: 0;
@@ -55,19 +34,3 @@ which is defined in RTE/index.css.
   top: 0;
   will-change: transform;
 }
-
-/* 
-.draggable-block-component-picker {
-  max-width: 260px;
-}
-
-.draggable-block-component-picker .component-picker-search {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 8px 10px;
-  border: 0;
-  outline: none;
-  font-size: 14px;
-  border-radius: 8px 8px 0 0;
-} 
-*/
