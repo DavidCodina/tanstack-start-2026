@@ -1,7 +1,7 @@
 // https://github.com/facebook/lexical/blob/main/packages/lexical-playground/src/plugins/ToolbarPlugin/index.tsx
 
 import { blockTypeToBlockName } from '../../context/ToolbarContext'
-
+import { SHORTCUTS } from '../ShortcutsPlugin/shortcuts'
 import DropDown, { DropDownItem } from '../../ui/Dropdown'
 
 import {
@@ -69,6 +69,7 @@ export const BlockFormatDropDown = ({
         <i className='rte-icon-paragraph' />
 
         <span className='rte-text'>Normal</span>
+        <span className='rte-shortcut'>{SHORTCUTS.NORMAL}</span>
       </DropDownItem>
       <DropDownItem
         className={'rte-item ' + dropDownActiveClass(blockType === 'h1')}
@@ -76,6 +77,7 @@ export const BlockFormatDropDown = ({
       >
         <i className='rte-icon-h1' />
         <span className='rte-text'>Heading 1</span>
+        <span className='rte-shortcut'>{SHORTCUTS.HEADING1}</span>
       </DropDownItem>
       <DropDownItem
         className={'rte-item ' + dropDownActiveClass(blockType === 'h2')}
@@ -83,6 +85,7 @@ export const BlockFormatDropDown = ({
       >
         <i className='rte-icon-h2' />
         <span className='rte-text'>Heading 2</span>
+        <span className='rte-shortcut'>{SHORTCUTS.HEADING2}</span>
       </DropDownItem>
 
       <DropDownItem
@@ -91,6 +94,7 @@ export const BlockFormatDropDown = ({
       >
         <i className='rte-icon-h3' />
         <span className='rte-text'>Heading 3</span>
+        <span className='rte-shortcut'>{SHORTCUTS.HEADING3}</span>
       </DropDownItem>
 
       <DropDownItem
@@ -123,6 +127,7 @@ export const BlockFormatDropDown = ({
       >
         <i className='rte-icon-bullet' />
         <span className='rte-text'>Bullet List</span>
+        <span className='rte-shortcut'>{SHORTCUTS.BULLET_LIST}</span>
       </DropDownItem>
       <DropDownItem
         className={'rte-item ' + dropDownActiveClass(blockType === 'number')}
@@ -130,6 +135,7 @@ export const BlockFormatDropDown = ({
       >
         <i className='rte-icon-number' />
         <span className='rte-text'>Numbered List</span>
+        <span className='rte-shortcut'>{SHORTCUTS.NUMBERED_LIST}</span>
       </DropDownItem>
       <DropDownItem
         className={'rte-item ' + dropDownActiveClass(blockType === 'check')}
@@ -137,6 +143,7 @@ export const BlockFormatDropDown = ({
       >
         <i className='rte-icon-check' />
         <span className='rte-text'>Check List</span>
+        <span className='rte-shortcut'>{SHORTCUTS.CHECK_LIST}</span>
       </DropDownItem>
       <DropDownItem
         className={'rte-item ' + dropDownActiveClass(blockType === 'quote')}
@@ -144,6 +151,7 @@ export const BlockFormatDropDown = ({
       >
         <i className='rte-icon-quote' />
         <span className='rte-text'>Quote</span>
+        <span className='rte-shortcut'>{SHORTCUTS.QUOTE}</span>
       </DropDownItem>
       <DropDownItem
         className={'rte-item ' + dropDownActiveClass(blockType === 'code')}
@@ -151,6 +159,7 @@ export const BlockFormatDropDown = ({
       >
         <i className='rte-icon-code' />
         <span className='rte-text'>Code Block</span>
+        <span className='rte-shortcut'>{SHORTCUTS.CODE_BLOCK}</span>
       </DropDownItem>
     </DropDown>
   )

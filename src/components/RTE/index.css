@@ -156,6 +156,12 @@ This sets the min height on it. */
   width: 200px;
 }
 
+.rte-shortcut {
+  /* color: #939393; */
+  color: var(--color-muted-foreground, oklch(0.556 0 0));
+  align-self: flex-end;
+}
+
 /* ======================
 
 ====================== */

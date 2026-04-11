@@ -9,13 +9,14 @@
 import './fontSize.css'
 
 import * as React from 'react'
-import { IS_APPLE } from '@lexical/utils'
+// import { IS_APPLE } from '@lexical/utils'
 import {
   MAX_ALLOWED_FONT_SIZE,
   MIN_ALLOWED_FONT_SIZE
 } from '../../../context/ToolbarContext'
 import { isKeyboardInput } from '../../../utils/focusUtils'
-//# import { SHORTCUTS } from '../ShortcutsPlugin/shortcuts'
+
+import { SHORTCUTS } from '../../ShortcutsPlugin/shortcuts'
 
 import {
   UpdateFontSizeType,
@@ -61,10 +62,6 @@ export function parseAllowedFontSize(input: string): string {
   const fontSizePx = normalizeToPx(fontSize, unit)
   return isValidFontSize(fontSizePx) ? input : ''
 }
-
-// (Ctrl|⌘) + Shift + <key> shortcuts
-const INCREASE_FONT_SIZE = IS_APPLE ? '⌘+Shift+.' : 'Ctrl+Shift+.'
-const DECREASE_FONT_SIZE = IS_APPLE ? '⌘+Shift+,' : 'Ctrl+Shift+,'
 
 /* ========================================================================
           
@@ -187,8 +184,7 @@ export default function FontSize({
             isKeyboardInput(e)
           )
         }}
-        //# title={`Decrease font size (${SHORTCUTS.DECREASE_FONT_SIZE})`}
-        title={`Decrease font size (${DECREASE_FONT_SIZE})`}
+        title={`Decrease font size (${SHORTCUTS.DECREASE_FONT_SIZE})`}
         type='button'
       >
         <i className='format rte-icon-minus' />
@@ -224,8 +220,7 @@ export default function FontSize({
             isKeyboardInput(e)
           )
         }}
-        //# title={`Increase font size (${SHORTCUTS.INCREASE_FONT_SIZE})`}
-        title={`Increase font size (${INCREASE_FONT_SIZE})`}
+        title={`Increase font size (${SHORTCUTS.INCREASE_FONT_SIZE})`}
         type='button'
       >
         <i className='format rte-icon-add' />

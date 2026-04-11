@@ -13,6 +13,7 @@ import {
 } from 'lexical'
 
 import DropDown, { DropDownItem } from '../../ui/Dropdown'
+import { SHORTCUTS } from '../ShortcutsPlugin/shortcuts'
 import { Divider } from './Divider'
 
 import type { ElementFormatType, LexicalEditor } from 'lexical'
@@ -101,7 +102,7 @@ export const ElementFormatDropDown = ({
       >
         <i className='rte-icon-left-align' />
         <span className='rte-text'>Left Align</span>
-        {/* <span className="shortcut">{SHORTCUTS.LEFT_ALIGN}</span> */}
+        <span className='rte-shortcut'>{SHORTCUTS.LEFT_ALIGN}</span>
       </DropDownItem>
 
       <DropDownItem
@@ -112,7 +113,7 @@ export const ElementFormatDropDown = ({
       >
         <i className='rte-icon-center-align' />
         <span className='rte-text'>Center Align</span>
-        {/* <span className="shortcut">{SHORTCUTS.CENTER_ALIGN}</span> */}
+        <span className='rte-shortcut'>{SHORTCUTS.CENTER_ALIGN}</span>
       </DropDownItem>
 
       <DropDownItem
@@ -123,7 +124,7 @@ export const ElementFormatDropDown = ({
       >
         <i className='rte-icon-right-align' />
         <span className='rte-text'>Right Align</span>
-        {/* <span className="shortcut">{SHORTCUTS.RIGHT_ALIGN}</span> */}
+        <span className='rte-shortcut'>{SHORTCUTS.RIGHT_ALIGN}</span>
       </DropDownItem>
 
       <DropDownItem
@@ -134,7 +135,7 @@ export const ElementFormatDropDown = ({
       >
         <i className='rte-icon-justify-align' />
         <span className='rte-text'>Justify Align</span>
-        {/* <span className="shortcut">{SHORTCUTS.JUSTIFY_ALIGN}</span> */}
+        <span className='rte-shortcut'>{SHORTCUTS.JUSTIFY_ALIGN}</span>
       </DropDownItem>
 
       {/* 
@@ -183,7 +184,7 @@ export const ElementFormatDropDown = ({
       >
         <i className={isRTL ? 'rte-icon-indent' : 'rte-icon-outdent'} />
         <span className='rte-text'>Outdent</span>
-        {/* <span className="shortcut">{SHORTCUTS.OUTDENT}</span> */}
+        <span className='rte-shortcut'>{SHORTCUTS.OUTDENT}</span>
       </DropDownItem>
 
       <DropDownItem
@@ -194,7 +195,7 @@ export const ElementFormatDropDown = ({
       >
         <i className={isRTL ? 'rte-icon-outdent' : 'rte-icon-indent'} />
         <span className='rte-text'>Indent</span>
-        {/* <span className="shortcut">{SHORTCUTS.INDENT}</span> */}
+        <span className='rte-shortcut'>{SHORTCUTS.INDENT}</span>
       </DropDownItem>
     </DropDown>
   )

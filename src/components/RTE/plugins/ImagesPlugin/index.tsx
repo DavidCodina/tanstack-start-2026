@@ -1,9 +1,8 @@
-//  All of the logic for captions has been removed from ImagesPlugin, ImageNode,
+// All of the logic for captions has been removed from ImagesPlugin, ImageNode,
 // ImageComponent, and ImageResizer. This drastically simplifies the implementation,
 // making it more understandable while still keeping the resizing and centering features.
 
-import { JSX } from 'react'
-
+import { useEffect, useRef, useState } from 'react'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import { $wrapNodeInElement, mergeRegister } from '@lexical/utils'
 import {
@@ -17,22 +16,21 @@ import {
   COMMAND_PRIORITY_EDITOR,
   COMMAND_PRIORITY_HIGH,
   COMMAND_PRIORITY_LOW,
-  createCommand,
   DRAGOVER_COMMAND,
   DRAGSTART_COMMAND,
   DROP_COMMAND,
-  LexicalCommand,
-  LexicalEditor
+  createCommand
 } from 'lexical'
-import * as React from 'react' //* Just added.
-import { useEffect, useRef, useState } from 'react'
 
 import {
   $createImageNode,
   $isImageNode,
-  ImageNode,
-  ImagePayload
+  ImageNode
 } from '../../nodes/ImageNode'
+
+import type { JSX } from 'react'
+import type { LexicalCommand, LexicalEditor } from 'lexical'
+import type { ImagePayload } from '../../nodes/ImageNode'
 
 export type InsertImagePayload = Readonly<ImagePayload>
 
@@ -75,11 +73,7 @@ export function InsertImageUriDialogBody({
   return (
     <>
       <div className='rte-form-group'>
-        <label // eslint-disable-line
-          className='rte-form-label'
-        >
-          Image URL
-        </label>
+        <label className='rte-form-label'>Image URL</label>
 
         <input
           autoComplete='off'
@@ -95,11 +89,7 @@ export function InsertImageUriDialogBody({
       </div>
 
       <div className='rte-form-group'>
-        <label // eslint-disable-line
-          className='rte-form-label'
-        >
-          Alt Text
-        </label>
+        <label className='rte-form-label'>Alt Text</label>
 
         <input
           autoComplete='off'
@@ -115,11 +105,7 @@ export function InsertImageUriDialogBody({
       </div>
 
       <div className='rte-form-group'>
-        <label // eslint-disable-line
-          className='rte-form-label'
-        >
-          Width
-        </label>
+        <label className='rte-form-label'>Width</label>
 
         <input
           autoComplete='off'
@@ -205,11 +191,7 @@ export function InsertImageUploadedDialogBody({
   return (
     <>
       <div className='rte-form-group'>
-        <label // eslint-disable-line
-          className='rte-form-label'
-        >
-          Image Upload
-        </label>
+        <label className='rte-form-label'>Image Upload</label>
         <input
           accept='image/*' // ???
           autoComplete='off'
@@ -223,11 +205,7 @@ export function InsertImageUploadedDialogBody({
       </div>
 
       <div className='rte-form-group'>
-        <label // eslint-disable-line
-          className='rte-form-label'
-        >
-          Alt Text
-        </label>
+        <label className='rte-form-label'>Alt Text</label>
 
         <input
           autoComplete='off'
@@ -243,11 +221,7 @@ export function InsertImageUploadedDialogBody({
       </div>
 
       <div className='rte-form-group'>
-        <label // eslint-disable-line
-          className='rte-form-label'
-        >
-          Width
-        </label>
+        <label className='rte-form-label'>Width</label>
 
         <input
           autoComplete='off'

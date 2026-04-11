@@ -14,6 +14,7 @@ import {
 import DropDown, { DropDownItem } from '../../ui/Dropdown'
 import { isKeyboardInput } from '../../utils/focusUtils'
 import { useToolbarState } from '../../context/ToolbarContext'
+import { SHORTCUTS } from '../ShortcutsPlugin/shortcuts'
 import { clearFormatting } from './utils'
 
 import type { JSX } from 'react'
@@ -101,7 +102,7 @@ export const AdditionalFormatDropDown = ({
       >
         <i className='rte-icon-lowercase' />
         <span className='rte-text'>Lowercase</span>
-        {/* <span className='shortcut'>{SHORTCUTS.LOWERCASE}</span> */}
+        <span className='rte-shortcut'>{SHORTCUTS.LOWERCASE}</span>
       </DropDownItem>
 
       {/* ================= */}
@@ -116,7 +117,7 @@ export const AdditionalFormatDropDown = ({
       >
         <i className='rte-icon-uppercase' />
         <span className='rte-text'>Uppercase</span>
-        {/* <span className='shortcut'>{SHORTCUTS.UPPERCASE}</span> */}
+        <span className='rte-shortcut'>{SHORTCUTS.UPPERCASE}</span>
       </DropDownItem>
 
       {/* ================= */}
@@ -131,7 +132,7 @@ export const AdditionalFormatDropDown = ({
       >
         <i className='rte-icon-capitalize' />
         <span className='rte-text'>Capitalize</span>
-        {/* <span className='shortcut'>{SHORTCUTS.CAPITALIZE}</span> */}
+        <span className='rte-shortcut'>{SHORTCUTS.CAPITALIZE}</span>
       </DropDownItem>
 
       {/* ================= */}
@@ -148,7 +149,7 @@ export const AdditionalFormatDropDown = ({
       >
         <i className='rte-icon-strikethrough' />
         <span className='rte-text'>Strikethrough</span>
-        {/* <span className="shortcut">{SHORTCUTS.STRIKETHROUGH}</span> */}
+        <span className='rte-shortcut'>{SHORTCUTS.STRIKETHROUGH}</span>
       </DropDownItem>
 
       {/* ================= */}
@@ -163,8 +164,7 @@ export const AdditionalFormatDropDown = ({
       >
         <i className='rte-icon-subscript' />
         <span className='rte-text'>Subscript</span>
-
-        {/* <span className="shortcut">{SHORTCUTS.SUBSCRIPT}</span> */}
+        <span className='rte-shortcut'>{SHORTCUTS.SUBSCRIPT}</span>
       </DropDownItem>
 
       {/* ================= */}
@@ -181,7 +181,7 @@ export const AdditionalFormatDropDown = ({
       >
         <i className='rte-icon-superscript' />
         <span className='rte-text'>Superscript</span>
-        {/* <span className="shortcut">{SHORTCUTS.SUPERSCRIPT}</span> */}
+        <span className='rte-shortcut'>{SHORTCUTS.SUPERSCRIPT}</span>
       </DropDownItem>
 
       {/* ================= */}
@@ -218,7 +218,7 @@ export const AdditionalFormatDropDown = ({
       >
         <i className='rte-icon-clear' />
         <span className='rte-text'>Clear Formatting</span>
-        {/* <span className="shortcut">{SHORTCUTS.CLEAR_FORMATTING}</span> */}
+        <span className='rte-shortcut'>{SHORTCUTS.CLEAR_FORMATTING}</span>
       </DropDownItem>
     </DropDown>
   )

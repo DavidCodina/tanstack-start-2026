@@ -204,17 +204,9 @@ const CODE_LANGUAGE_OPTIONS_PRISM: [string, string][] =
 /* ========================================================================
                               ToolbarPlugin()            
 ======================================================================== */
-//# Next Steps:
+// Todo 1: Integrate with dark mode logic.
 
-//# Once ShortcutsPlugin is implemented, update:
-//# ✅ BlockFormatDropDown.tsx.
-//# - FontSize.tsx
-//# - AdditionalFormatDropDown.ts.
-//# - ElementFormatDropDown.tsx
-
-//# Integrate with dark mode logic.
-
-//# There are several spots in this RTE that make use of window, which might be problematic for server-side rendering.
+// Todo 2: There are several spots in this RTE that make use of window, which might be problematic for server-side rendering.
 
 // Deep dive on all CSS files, compared to current ones on GitHub.
 
@@ -1091,7 +1083,6 @@ export const ToolbarPlugin = ({
               onClick={() => {
                 showModal('Insert Image', (onClose) => (
                   <InsertImageDialog
-                    //# Review InsertImageDialog
                     activeEditor={activeEditor}
                     onClose={onClose}
                   />
