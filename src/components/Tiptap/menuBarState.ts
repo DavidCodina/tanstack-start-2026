@@ -18,51 +18,16 @@ export function menuBarStateSelector(ctx: EditorStateSnapshot<Editor | null>) {
   return {
     blockType: getBlockType(ctx.editor),
 
-    // Text formatting
-    isBold: ctx.editor.isActive('bold') ? true : false,
-    canBold: ctx.editor.can().chain().toggleBold().run() ? true : false,
-    isItalic: ctx.editor.isActive('italic') ? true : false,
-    canItalic: ctx.editor.can().chain().toggleItalic().run() ? true : false,
+    /* =====================
+          History
+    ====================== */
 
-    isUnderline: ctx.editor.isActive('underline') ? true : false,
-    canUnderline: ctx.editor.can().chain().toggleUnderline().run()
-      ? true
-      : false,
+    canUndo: ctx.editor.can().chain().undo().run() ? true : false,
+    canRedo: ctx.editor.can().chain().redo().run() ? true : false,
 
-    isStrike: ctx.editor.isActive('strike') ? true : false,
-    canStrike: ctx.editor.can().chain().toggleStrike().run() ? true : false,
-    isCode: ctx.editor.isActive('code') ? true : false,
-    canCode: ctx.editor.can().chain().toggleCode().run() ? true : false,
-
-    isSuperscript: ctx.editor.isActive('superscript') ? true : false,
-    //# Ask AI when this would ever not be true, or if it's redundant.
-    canSuperscript: ctx.editor.can().chain().toggleSuperscript().run(),
-
-    isSubscript: ctx.editor.isActive('subscript') ? true : false,
-    //# Ask AI when this would ever not be true, or if it's redundant.
-    canSubscript: ctx.editor.can().chain().toggleSubscript().run(),
-
-    isHighlight: ctx.editor.isActive('highlight') ? true : false,
-    //# Ask AI when this would ever not be true, or if it's redundant.
-    canHighlight: ctx.editor.can().chain().toggleHighlight().run()
-      ? true
-      : false,
-
-    isLink: ctx.editor.isActive('link') ? true : false,
-    canSetLink: ctx.editor.can().chain().setLink({ href: '' }).run()
-      ? true
-      : false,
-    canUnsetLink: ctx.editor.can().chain().unsetLink().run() ? true : false,
-    currentLinkHref: ctx.editor.isActive('link') // => 'https://www.google.com'
-      ? ((ctx.editor.getAttributes('link').href as string) ?? null)
-      : null,
-
-    canClearMarks: ctx.editor.can().chain().unsetAllMarks().run()
-      ? true
-      : false,
-
-    // Block types
-
+    /* =====================
+          Block types
+    ====================== */
     ///////////////////////////////////////////////////////////////////////////
     //
     // ⚠️ Gotcha:
@@ -92,17 +57,62 @@ export function menuBarStateSelector(ctx: EditorStateSnapshot<Editor | null>) {
     isHeading5: ctx.editor.isActive('heading', { level: 5 }) ? true : false,
     isHeading6: ctx.editor.isActive('heading', { level: 6 }) ? true : false,
 
-    // Lists and blocks
     isBulletList: ctx.editor.isActive('bulletList') ? true : false,
     isOrderedList: ctx.editor.isActive('orderedList') ? true : false,
     isCodeBlock: ctx.editor.isActive('codeBlock') ? true : false,
     isBlockquote: ctx.editor.isActive('blockquote') ? true : false,
 
-    // History
-    canUndo: ctx.editor.can().chain().undo().run() ? true : false,
-    canRedo: ctx.editor.can().chain().redo().run() ? true : false,
+    /* =====================
+        Text Formatting
+    ====================== */
 
-    // Alignment
+    isBold: ctx.editor.isActive('bold') ? true : false,
+    canBold: ctx.editor.can().chain().toggleBold().run() ? true : false,
+    isItalic: ctx.editor.isActive('italic') ? true : false,
+    canItalic: ctx.editor.can().chain().toggleItalic().run() ? true : false,
+
+    isUnderline: ctx.editor.isActive('underline') ? true : false,
+    canUnderline: ctx.editor.can().chain().toggleUnderline().run()
+      ? true
+      : false,
+
+    isStrike: ctx.editor.isActive('strike') ? true : false,
+    canStrike: ctx.editor.can().chain().toggleStrike().run() ? true : false,
+
+    isLink: ctx.editor.isActive('link') ? true : false,
+    canSetLink: ctx.editor.can().chain().setLink({ href: '' }).run()
+      ? true
+      : false,
+    canUnsetLink: ctx.editor.can().chain().unsetLink().run() ? true : false,
+    currentLinkHref: ctx.editor.isActive('link') // => 'https://www.google.com'
+      ? ((ctx.editor.getAttributes('link').href as string) ?? null)
+      : null,
+
+    isHighlight: ctx.editor.isActive('highlight') ? true : false,
+    //# Ask AI when this would ever not be true, or if it's redundant.
+    canHighlight: ctx.editor.can().chain().toggleHighlight().run()
+      ? true
+      : false,
+
+    isCode: ctx.editor.isActive('code') ? true : false,
+    canCode: ctx.editor.can().chain().toggleCode().run() ? true : false,
+
+    isSuperscript: ctx.editor.isActive('superscript') ? true : false,
+    //# Ask AI when this would ever not be true, or if it's redundant.
+    canSuperscript: ctx.editor.can().chain().toggleSuperscript().run(),
+
+    isSubscript: ctx.editor.isActive('subscript') ? true : false,
+    //# Ask AI when this would ever not be true, or if it's redundant.
+    canSubscript: ctx.editor.can().chain().toggleSubscript().run(),
+
+    canClearMarks: ctx.editor.can().chain().unsetAllMarks().run()
+      ? true
+      : false,
+
+    /* =====================
+          Alignment
+    ====================== */
+
     isAlignLeft: ctx.editor.isActive({ textAlign: 'left' }) ? true : false,
     canAlignLeft: ctx.editor.can().chain().toggleTextAlign('left').run(),
     isAlignCenter: ctx.editor.isActive({ textAlign: 'center' }) ? true : false,
