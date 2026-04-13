@@ -61,7 +61,6 @@ ${FOCUS_MIXIN}
 /* ========================================================================
 
 ======================================================================== */
-//# Switch to icons with title attributes, etc.
 
 export const MenuBar = ({ editor }: MenuBarProps) => {
   const editorState = useEditorState({
@@ -283,37 +282,6 @@ export const MenuBar = ({ editor }: MenuBarProps) => {
       <Divider />
 
       {renderClearActions()}
-
-      {/* <button
-        className={cn(buttonClasses, editorState?.isLink && SELECTED_MIXIN)}
-        disabled={!editorState?.canSetLink && !editorState?.canUnsetLink}
-        onClick={() => {
-          if (editorState?.isLink) {
-            // Already on a link — edit or remove it
-            const currentLinkHref = editorState.currentLinkHref ?? '' // => 'https://www.google.com'
-
-            const url = window.prompt('Edit URL', currentLinkHref)
-            if (url === null) return // The user cancelled.
-
-            if (url === '') {
-              editor.chain().focus().unsetLink().run()
-              return
-            }
-
-            editor.chain().focus().setLink({ href: url }).run()
-            return
-          }
-
-          // Otherwise, there's no link yet, so let's set one.
-          const url = window.prompt('Enter URL')
-          if (!url) return
-          editor.chain().focus().setLink({ href: url }).run()
-        }}
-        title='link'
-        type='button'
-      >
-        Link
-      </button> */}
     </div>
   )
 }

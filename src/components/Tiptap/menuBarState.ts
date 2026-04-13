@@ -6,7 +6,6 @@ import type { EditorStateSnapshot } from '@tiptap/react'
 /* ========================================================================
 
 ======================================================================== */
-// Prefer ternary operator over nullish coalescing operator for all properties.
 
 export function menuBarStateSelector(ctx: EditorStateSnapshot<Editor | null>) {
   if (!ctx.editor) return null // Added this and null to EditorStateSnapshot<Editor | null>

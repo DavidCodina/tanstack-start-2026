@@ -128,18 +128,23 @@ export const TextFormatDropdown = ({
           //# Add link validation here, or see how it's done with isAllowedUri.
           editor.chain().focus().setLink({ href: url }).run()
         }}
+        ///////////////////////////////////////////////////////////////////////////
+        //
         // This is a simpler version of the above.
-        // onClick={() => {
-        //   const isLink = editorState?.isLink
-        //   if (isLink) {
-        //     editor.chain().focus().unsetLink().run()
-        //     return
-        //   }
-        //   const url = window.prompt('Enter URL')
-        //   if (!url) return
-        //   // Add link validation here.
-        //   editor.chain().focus().setLink({ href: url }).run()
-        // }}
+        //
+        //   onClick={() => {
+        //     const isLink = editorState?.isLink
+        //     if (isLink) {
+        //       editor.chain().focus().unsetLink().run()
+        //       return
+        //     }
+        //     const url = window.prompt('Enter URL')
+        //     if (!url) return
+        //     // Add link validation here.
+        //     editor.chain().focus().setLink({ href: url }).run()
+        //   }}
+        //
+        ///////////////////////////////////////////////////////////////////////////
         title='link'
       >
         <Link /> Link

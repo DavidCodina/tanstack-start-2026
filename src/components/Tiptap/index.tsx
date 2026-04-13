@@ -167,6 +167,8 @@ const defaultValue = `
 
 //# Create an alignment Dropdown/Combobox.
 
+//# Add fallbacks to CSS custom properties in Tiptap.css
+
 //# Add lowercase, uppercase, capitalize
 
 //# Create an Insert Dropdown.

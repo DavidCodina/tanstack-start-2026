@@ -76,14 +76,15 @@ export const BlockTypeDropdown = ({
     <Dropdown
       disabled={disabled}
       // stopCloseOnMenuClick
-      triggerAriaLabel='Block type options'
+      triggerAriaLabel='block type options'
       triggerIcon={dropdownIcon}
       triggerText={blockTypeToBlockName[blockType]}
-      triggerTitle='Block type options'
+      triggerTitle='block type options'
     >
       <DropdownItem
         className={editorState?.isParagraph ? SELECTED_MIXIN : ''}
         onClick={() => editor.chain().focus().setParagraph().run()}
+        title='paragraph'
       >
         <Pilcrow /> Paragraph
       </DropdownItem>
@@ -91,7 +92,7 @@ export const BlockTypeDropdown = ({
       <DropdownItem
         className={editorState?.isHeading1 ? SELECTED_MIXIN : ''}
         onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-        title='Heading 1'
+        title='heading 1'
       >
         <Heading1 /> Heading 1
       </DropdownItem>
@@ -99,7 +100,7 @@ export const BlockTypeDropdown = ({
       <DropdownItem
         className={editorState?.isHeading2 ? SELECTED_MIXIN : ''}
         onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-        title='Heading 2'
+        title='heading 2'
       >
         <Heading2 /> Heading 2
       </DropdownItem>
@@ -107,7 +108,7 @@ export const BlockTypeDropdown = ({
       <DropdownItem
         className={editorState?.isHeading3 ? SELECTED_MIXIN : ''}
         onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-        title='Heading 3'
+        title='heading 3'
       >
         <Heading3 /> Heading 3
       </DropdownItem>
@@ -115,7 +116,7 @@ export const BlockTypeDropdown = ({
       <DropdownItem
         className={editorState?.isHeading4 ? SELECTED_MIXIN : ''}
         onClick={() => editor.chain().focus().toggleHeading({ level: 4 }).run()}
-        title='Heading 4'
+        title='heading 4'
       >
         <Heading4 /> Heading 4
       </DropdownItem>
@@ -123,7 +124,7 @@ export const BlockTypeDropdown = ({
       <DropdownItem
         className={editorState?.isHeading5 ? SELECTED_MIXIN : ''}
         onClick={() => editor.chain().focus().toggleHeading({ level: 5 }).run()}
-        title='Heading 5'
+        title='heading 5'
       >
         <Heading5 /> Heading 5
       </DropdownItem>
@@ -131,7 +132,7 @@ export const BlockTypeDropdown = ({
       <DropdownItem
         className={editorState?.isHeading6 ? SELECTED_MIXIN : ''}
         onClick={() => editor.chain().focus().toggleHeading({ level: 6 }).run()}
-        title='Heading 6'
+        title='heading 6'
       >
         <Heading6 /> Heading 6
       </DropdownItem>
@@ -139,7 +140,7 @@ export const BlockTypeDropdown = ({
       <DropdownItem
         className={editorState?.isBulletList ? SELECTED_MIXIN : ''}
         onClick={() => editor.chain().focus().toggleBulletList().run()}
-        title='Bullet List'
+        title='bullet list'
       >
         <List /> Bullet List
       </DropdownItem>
@@ -147,7 +148,7 @@ export const BlockTypeDropdown = ({
       <DropdownItem
         className={editorState?.isHeading5 ? SELECTED_MIXIN : ''}
         onClick={() => editor.chain().focus().toggleOrderedList().run()}
-        title='Ordered List'
+        title='ordered list'
       >
         <ListOrdered /> Ordered List
       </DropdownItem>
@@ -167,7 +168,7 @@ export const BlockTypeDropdown = ({
       <DropdownItem
         className={editorState?.isCodeBlock ? SELECTED_MIXIN : ''}
         onClick={() => editor.chain().focus().toggleCodeBlock().run()}
-        title='Code Block'
+        title='code block'
       >
         <Code /> Code Block
       </DropdownItem>

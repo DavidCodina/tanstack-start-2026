@@ -131,15 +131,10 @@ https://tiptap.dev/docs/editor/extensions/functionality/placeholder#additional-s
 /* ??? */
 .tiptap ul,
 .tiptap ol {
-  padding: 0 1rem;
-  margin: 1.25rem 1rem 1.25rem 0.4rem;
+  padding: 0 1rem; /* ??? */
+  margin: 1.25rem 1rem 1.25rem 0.4rem; /* ??? */
 }
 
-/*
-^ Tiptap place <p> tags inside of the <li> tags.
-^ This also causes the "Paragraph" button to be active when on a list item.
-^ I don't love that. See if we can prevent that.
- */
 .tiptap ul li p,
 .tiptap ol li p {
   margin-top: 0.25em;
