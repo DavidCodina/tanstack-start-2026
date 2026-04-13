@@ -2,7 +2,6 @@ import { useEditorState } from '@tiptap/react'
 import {
   CornerDownLeft,
   Eraser,
-  RemoveFormatting,
   RotateCcw,
   RotateCw,
   Ruler,
@@ -220,31 +219,13 @@ export const MenuBar = ({ editor }: MenuBarProps) => {
   const renderClearActions = () => {
     return (
       <>
-        {/*What does this do?
-      Clear Marks (unsetAllMarks) — strips inline formatting (bold, italic, etc.) 
-      from the selection but leaves the text and block structure intact. */}
-        <button
-          className={cn(
-            buttonClasses,
-            'hover:border-yellow-600 hover:bg-yellow-400 hover:text-white'
-          )}
-          onClick={() => editor.chain().focus().unsetAllMarks().run()}
-          title='Clear Marks'
-          type='button'
-        >
-          <RemoveFormatting />
-        </button>
-
-        {/* What does this do?
-      Clear Nodes (clearNodes) — converts block nodes (headings, lists, etc.) 
-      back to plain paragraphs but keeps the text. */}
         <button
           className={cn(
             buttonClasses,
             'hover:border-yellow-600 hover:bg-yellow-400 hover:text-white'
           )}
           onClick={() => editor.chain().focus().clearNodes().run()}
-          title='Clear Nodes'
+          title='remove nodes'
           type='button'
         >
           <Eraser />
@@ -258,7 +239,7 @@ export const MenuBar = ({ editor }: MenuBarProps) => {
             'hover:border-rose-700 hover:bg-rose-500 hover:text-white'
           )}
           onClick={() => editor.chain().focus().clearContent(true).run()}
-          title='Clear'
+          title='delete content'
           type='button'
         >
           <Trash2 />
@@ -302,6 +283,37 @@ export const MenuBar = ({ editor }: MenuBarProps) => {
       <Divider />
 
       {renderClearActions()}
+
+      {/* <button
+        className={cn(buttonClasses, editorState?.isLink && SELECTED_MIXIN)}
+        disabled={!editorState?.canSetLink && !editorState?.canUnsetLink}
+        onClick={() => {
+          if (editorState?.isLink) {
+            // Already on a link — edit or remove it
+            const currentLinkHref = editorState.currentLinkHref ?? '' // => 'https://www.google.com'
+
+            const url = window.prompt('Edit URL', currentLinkHref)
+            if (url === null) return // The user cancelled.
+
+            if (url === '') {
+              editor.chain().focus().unsetLink().run()
+              return
+            }
+
+            editor.chain().focus().setLink({ href: url }).run()
+            return
+          }
+
+          // Otherwise, there's no link yet, so let's set one.
+          const url = window.prompt('Enter URL')
+          if (!url) return
+          editor.chain().focus().setLink({ href: url }).run()
+        }}
+        title='link'
+        type='button'
+      >
+        Link
+      </button> */}
     </div>
   )
 }

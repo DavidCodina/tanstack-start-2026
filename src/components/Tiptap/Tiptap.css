@@ -191,7 +191,7 @@ https://tiptap.dev/docs/editor/extensions/functionality/placeholder#additional-s
 
 .tiptap :not(pre) > code {
   background-color: var(--color-muted);
-  border-radius: 0.5em;
+  border-radius: 0.25em;
   color: var(--color-pink-500);
   font-size: 0.85rem;
   padding: 0.25em 0.5em;
@@ -243,10 +243,24 @@ https://tiptap.dev/docs/editor/extensions/functionality/placeholder#additional-s
       Highlight
 ====================== */
 
-mark {
+.tiptap mark {
   background-color: oklch(from var(--color-yellow-300) l c h / 0.5);
   box-decoration-break: clone;
   padding: 0em 0em;
   box-shadow: inset 0px -2px 0px 0px
     oklch(from var(--color-yellow-500) l c h / 0.75);
+}
+
+/* =====================
+
+====================== */
+
+.tiptap a {
+  color: var(--color-blue-500);
+  cursor: pointer;
+  text-decoration: underline;
+  font-weight: 500;
+}
+
+.tiptap a:hover {
 }

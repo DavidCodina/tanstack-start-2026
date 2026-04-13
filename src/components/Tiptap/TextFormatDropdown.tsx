@@ -4,7 +4,11 @@ import {
   Code,
   Highlighter,
   Italic,
+  Link,
+  RemoveFormatting,
   Strikethrough,
+  Subscript,
+  Superscript,
   Underline
 } from 'lucide-react'
 
@@ -34,16 +38,6 @@ shadow-xs
 ======================================================================== */
 // This is for rendering inline text formatting.
 // However, using the Tiptap/ProseMirror jargon, we would call these "marks" / MarksDropdown.
-
-//# Add Link
-
-//# Add Underline
-
-//# Add Subscript
-
-//# Add Superscript.
-
-//# Add superscript / subscript here...
 
 //# Add lowercase, uppercase, capitalize here...
 
@@ -103,12 +97,52 @@ export const TextFormatDropdown = ({
       </DropdownItem>
 
       <DropdownItem
-        className={editorState?.isCode ? SELECTED_MIXIN : ''}
-        //# disabled={!editorState?.canCode}
-        onClick={() => editor.chain().focus().toggleCode().run()}
-        title='code'
+        className={editorState?.isLink ? SELECTED_MIXIN : ''}
+        //# disabled={!editorState?.canSetLink && !editorState?.canUnsetLink}
+        onClick={() => {
+          if (editorState?.isLink) {
+            // Already on a link — edit or remove it
+            const currentLinkHref = editorState.currentLinkHref ?? '' // => 'https://www.google.com'
+
+            const url = window.prompt(
+              'Edit URL (delete value to remove link)',
+              currentLinkHref
+            )
+            if (url === null) return // The user cancelled.
+
+            if (url === '') {
+              editor.chain().focus().unsetLink().run()
+              return
+            }
+
+            //# Add link validation here, or see how it's done with isAllowedUri.
+
+            editor.chain().focus().setLink({ href: url }).run()
+            return
+          }
+
+          // Otherwise, there's no link yet, so let's set one.
+          const url = window.prompt('Enter URL')
+          if (!url) return
+
+          //# Add link validation here, or see how it's done with isAllowedUri.
+          editor.chain().focus().setLink({ href: url }).run()
+        }}
+        // This is a simpler version of the above.
+        // onClick={() => {
+        //   const isLink = editorState?.isLink
+        //   if (isLink) {
+        //     editor.chain().focus().unsetLink().run()
+        //     return
+        //   }
+        //   const url = window.prompt('Enter URL')
+        //   if (!url) return
+        //   // Add link validation here.
+        //   editor.chain().focus().setLink({ href: url }).run()
+        // }}
+        title='link'
       >
-        <Code /> Code
+        <Link /> Link
       </DropdownItem>
 
       <DropdownItem
@@ -119,64 +153,47 @@ export const TextFormatDropdown = ({
       >
         <Highlighter /> Highlight
       </DropdownItem>
+
+      <DropdownItem
+        className={editorState?.isCode ? SELECTED_MIXIN : ''}
+        //# disabled={!editorState?.canCode}
+        onClick={() => editor.chain().focus().toggleCode().run()}
+        title='code'
+      >
+        <Code /> Code
+      </DropdownItem>
+
+      <DropdownItem
+        className={editorState?.isSubscript ? SELECTED_MIXIN : ''}
+        //# Check if superscript and remove.
+        //# disabled={!editorState?.canSubscript}
+        onClick={() => editor.chain().focus().toggleSubscript().run()}
+        title='subscript'
+      >
+        <Subscript /> Subscript
+      </DropdownItem>
+
+      <DropdownItem
+        className={editorState?.isSuperscript ? SELECTED_MIXIN : ''}
+        //# disabled={!editorState?.canSuperscript}
+        //# Check if subscript and remove.
+        onClick={() => editor.chain().focus().toggleSuperscript().run()}
+        title='superscript'
+      >
+        <Superscript /> Superscript
+      </DropdownItem>
+
+      {/* What does this do?
+      Clear Marks (unsetAllMarks) — strips inline formatting (bold, italic, etc.)
+      from the selection but leaves the text and block structure intact. */}
+
+      <DropdownItem
+        className={''}
+        onClick={() => editor.chain().focus().unsetAllMarks().run()}
+        title='clear formatting' // clear marks
+      >
+        <RemoveFormatting /> Clear Formatting
+      </DropdownItem>
     </Dropdown>
   )
 }
-
-// const renderMarks = () => {
-//   return (
-//     <>
-//       <button
-//         className={cn(buttonClasses, editorState?.isBold && SELECTED_MIXIN)}
-//         disabled={!editorState?.canBold}
-//         onClick={() => editor.chain().focus().toggleBold().run()}
-//         title='bold'
-//         type='button'
-//       >
-//         <Bold />
-//       </button>
-
-//       <button
-//         className={cn(buttonClasses, editorState?.isItalic && SELECTED_MIXIN)}
-//         disabled={!editorState?.canItalic}
-//         onClick={() => editor.chain().focus().toggleItalic().run()}
-//         title='italic'
-//         type='button'
-//       >
-//         <Italic />
-//       </button>
-
-//       <button
-//         className={cn(buttonClasses, editorState?.isStrike && SELECTED_MIXIN)}
-//         disabled={!editorState?.canStrike}
-//         onClick={() => editor.chain().focus().toggleStrike().run()}
-//         title='strikethrough'
-//         type='button'
-//       >
-//         <Strikethrough />
-//       </button>
-
-//       <button
-//         className={cn(buttonClasses, editorState?.isCode && SELECTED_MIXIN)}
-//         disabled={!editorState?.canCode}
-//         onClick={() => editor.chain().focus().toggleCode().run()}
-//         title='code'
-//         type='button'
-//       >
-//         <Code />
-//       </button>
-
-//       <button
-//         onClick={() => editor.chain().focus().toggleHighlight().run()}
-//         className={cn(
-//           buttonClasses,
-//           editorState?.isHighlight && SELECTED_MIXIN
-//         )}
-//         title='highlight'
-//         type='button'
-//       >
-//         <Highlighter />
-//       </button>
-//     </>
-//   )
-// }

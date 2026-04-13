@@ -29,6 +29,12 @@ import StarterKit from '@tiptap/starter-kit'
 // https://tiptap.dev/docs/editor/extensions/marks/highlight
 import Highlight from '@tiptap/extension-highlight'
 
+// https://tiptap.dev/docs/editor/extensions/marks/superscript
+import Superscript from '@tiptap/extension-superscript'
+
+// https://tiptap.dev/docs/editor/extensions/marks/subscript
+import Subscript from '@tiptap/extension-subscript'
+
 // https://tiptap.dev/docs/editor/extensions/functionality/textalign
 import TextAlign from '@tiptap/extension-text-align'
 
@@ -161,13 +167,15 @@ const defaultValue = `
 
 //# Create an alignment Dropdown/Combobox.
 
-//# Add a Link - already part of StarterKit v3.
-
-//# Add: https://tiptap.dev/docs/editor/extensions/marks/superscript
-
-//# Add: https://tiptap.dev/docs/editor/extensions/marks/subscript
+//# Add lowercase, uppercase, capitalize
 
 //# Create an Insert Dropdown.
+
+//# Research how to add text colors and background colors.
+
+//# Research how to add font types.
+
+//# Research how to add font sizes.
 
 //# Add Checkboxes:
 //# https://tiptap.dev/docs/editor/extensions/nodes/task-list
@@ -215,7 +223,75 @@ export const Tiptap = () => {
       //   italic: false,  // Disable an included extension.
       //   heading: { levels: [1, 2] } // Configure an included extension.
       // })
-      StarterKit,
+      StarterKit.configure({
+        link: {
+          // By default, clicking a link in the editor navigates to it. Since this is a rich text editor,
+          // you almost certainly want this off — otherwise you can't click a link to edit it without
+          // using keyboard navigation.
+          //# But how does it disable the link in practice and will it work outside of the editor?
+          openOnClick: false,
+
+          // ⚠️ autolink: false only disables the as-you-type detection.
+          // However, one needs press ENTER or Space immediately after the link.
+          autolink: true, // 'google.com' => <a href="https://google.com">google.com</a>
+
+          // ⚠️ https://github.com/ueberdosis/tiptap/issues/4414
+          // Setting it to false doesn't really work.
+          linkOnPaste: true, // Default: true
+
+          // If enabled, clicking on a link will select the link.
+          enableClickSelection: false, // Default: false
+
+          // ⚠️ defaultProtocol not being respected is a known bug.
+          defaultProtocol: 'https', // Default: 'http'
+          protocols: ['http', 'https'],
+
+          HTMLAttributes: {
+            // class: 'my-custom-class',
+          }
+
+          //# Review
+          // isAllowedUri: (url, ctx) => {
+          //   try {
+          //     const parsedUrl = url.includes(':')
+          //       ? new URL(url)
+          //       : new URL(`${ctx.defaultProtocol}://${url}`)
+
+          //     // Run built-in validation first
+          //     if (!ctx.defaultValidate(parsedUrl.href)) return false
+
+          //     // Block unwanted protocols
+          //     const disallowedProtocols = ['ftp', 'file', 'mailto']
+          //     const protocol = parsedUrl.protocol.replace(':', '')
+          //     if (disallowedProtocols.includes(protocol)) return false
+
+          //     // Only allow protocols in ctx.protocols
+          //     const allowedProtocols = ctx.protocols.map((p) =>
+          //       typeof p === 'string' ? p : p.scheme
+          //     )
+          //     if (!allowedProtocols.includes(protocol)) return false
+
+          //     return true
+          //   } catch {
+          //     return false
+          //   }
+          // },
+
+          //# Review
+          // shouldAutoLink: (url) => {
+          //   try {
+          //     const parsedUrl = url.includes(':')
+          //       ? new URL(url)
+          //       : new URL(`https://${url}`)
+
+          //     const disallowedDomains = ['example-no-autolink.com']
+          //     return !disallowedDomains.includes(parsedUrl.hostname)
+          //   } catch {
+          //     return false
+          //   }
+          // }
+        }
+      }),
 
       Placeholder.configure({
         placeholder: 'Write something...'
@@ -233,6 +309,9 @@ export const Tiptap = () => {
         //   return 'Can you add some further context?'
         // },
       }),
+
+      Superscript, //# Expand on configuration.
+      Subscript, //# Expand on configuration.
       TextAlign.configure({
         types: ['heading', 'paragraph']
       }),
@@ -292,3 +371,65 @@ export const Tiptap = () => {
 // //
 //   {/* <FloatingMenu editor={editor}>This is the floating menu</FloatingMenu> */}
 //   {/* <BubbleMenu editor={editor}>This is the bubble menu</BubbleMenu>  */}
+
+/* 
+Link.configure({
+        openOnClick: false,
+        autolink: true,
+        defaultProtocol: 'https',
+        protocols: ['http', 'https'],
+        isAllowedUri: (url, ctx) => {
+          try {
+            // construct URL
+            const parsedUrl = url.includes(':') ? new URL(url) : new URL(`${ctx.defaultProtocol}://${url}`)
+
+            // use default validation
+            if (!ctx.defaultValidate(parsedUrl.href)) {
+              return false
+            }
+
+            // disallowed protocols
+            const disallowedProtocols = ['ftp', 'file', 'mailto']
+            const protocol = parsedUrl.protocol.replace(':', '')
+
+            if (disallowedProtocols.includes(protocol)) {
+              return false
+            }
+
+            // only allow protocols specified in ctx.protocols
+            const allowedProtocols = ctx.protocols.map(p => (typeof p === 'string' ? p : p.scheme))
+
+            if (!allowedProtocols.includes(protocol)) {
+              return false
+            }
+
+            // disallowed domains
+            const disallowedDomains = ['example-phishing.com', 'malicious-site.net']
+            const domain = parsedUrl.hostname
+
+            if (disallowedDomains.includes(domain)) {
+              return false
+            }
+
+            // all checks have passed
+            return true
+          } catch {
+            return false
+          }
+        },
+        shouldAutoLink: url => {
+          try {
+            // construct URL
+            const parsedUrl = url.includes(':') ? new URL(url) : new URL(`https://${url}`)
+
+            // only auto-link if the domain is not in the disallowed list
+            const disallowedDomains = ['example-no-autolink.com', 'another-no-autolink.com']
+            const domain = parsedUrl.hostname
+
+            return !disallowedDomains.includes(domain)
+          } catch {
+            return false
+          }
+        },
+      }),
+*/

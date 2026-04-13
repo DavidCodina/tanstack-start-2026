@@ -24,7 +24,6 @@ export function menuBarStateSelector(ctx: EditorStateSnapshot<Editor | null>) {
     isItalic: ctx.editor.isActive('italic') ? true : false,
     canItalic: ctx.editor.can().chain().toggleItalic().run() ? true : false,
 
-    //# Test this...
     isUnderline: ctx.editor.isActive('underline') ? true : false,
     canUnderline: ctx.editor.can().chain().toggleUnderline().run()
       ? true
@@ -34,6 +33,30 @@ export function menuBarStateSelector(ctx: EditorStateSnapshot<Editor | null>) {
     canStrike: ctx.editor.can().chain().toggleStrike().run() ? true : false,
     isCode: ctx.editor.isActive('code') ? true : false,
     canCode: ctx.editor.can().chain().toggleCode().run() ? true : false,
+
+    isSuperscript: ctx.editor.isActive('superscript') ? true : false,
+    //# Ask AI when this would ever not be true, or if it's redundant.
+    canSuperscript: ctx.editor.can().chain().toggleSuperscript().run(),
+
+    isSubscript: ctx.editor.isActive('subscript') ? true : false,
+    //# Ask AI when this would ever not be true, or if it's redundant.
+    canSubscript: ctx.editor.can().chain().toggleSubscript().run(),
+
+    isHighlight: ctx.editor.isActive('highlight') ? true : false,
+    //# Ask AI when this would ever not be true, or if it's redundant.
+    canHighlight: ctx.editor.can().chain().toggleHighlight().run()
+      ? true
+      : false,
+
+    isLink: ctx.editor.isActive('link') ? true : false,
+    canSetLink: ctx.editor.can().chain().setLink({ href: '' }).run()
+      ? true
+      : false,
+    canUnsetLink: ctx.editor.can().chain().unsetLink().run() ? true : false,
+    currentLinkHref: ctx.editor.isActive('link') // => 'https://www.google.com'
+      ? ((ctx.editor.getAttributes('link').href as string) ?? null)
+      : null,
+
     canClearMarks: ctx.editor.can().chain().unsetAllMarks().run()
       ? true
       : false,
@@ -78,13 +101,6 @@ export function menuBarStateSelector(ctx: EditorStateSnapshot<Editor | null>) {
     // History
     canUndo: ctx.editor.can().chain().undo().run() ? true : false,
     canRedo: ctx.editor.can().chain().redo().run() ? true : false,
-
-    // Highlight
-    isHighlight: ctx.editor.isActive('highlight') ? true : false,
-    //# Ask AI when this would ever not be true, or if it's redundant.
-    canHighlight: ctx.editor.can().chain().toggleHighlight().run()
-      ? true
-      : false,
 
     // Alignment
     isAlignLeft: ctx.editor.isActive({ textAlign: 'left' }) ? true : false,
