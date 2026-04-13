@@ -1,3 +1,5 @@
+import * as React from 'react'
+
 import {
   ALargeSmall,
   Bold,
@@ -25,11 +27,11 @@ type BlockTypeDropdownProps = {
 
 const SELECTED_MIXIN = `
 text-white hover:text-white focus-visible:text-white 
-bg-green-500 hover:bg-green-500 focus-visible:bg-green-500
-border-green-700 dark:border-green-300
-hover:border-green-700 dark:hover:border-green-300
-focus-visible:border-green-700 dark:focus-visible:border-green-300
-focus-visible:ring-green-500/50 dark:focus-visible:ring-green-500/50
+bg-blue-500 hover:bg-blue-500 focus-visible:bg-blue-500
+border-blue-700 dark:border-blue-300
+hover:border-blue-700 dark:hover:border-blue-300
+focus-visible:border-blue-700 dark:focus-visible:border-blue-300
+focus-visible:ring-blue-500/50 dark:focus-visible:ring-blue-500/50
 shadow-xs
 `
 
@@ -46,6 +48,10 @@ export const TextFormatDropdown = ({
   editorState,
   disabled = false
 }: BlockTypeDropdownProps): JSX.Element => {
+  const [stopCloseOnMenuClick, setStopCloseOnMenuClick] = React.useState(false)
+
+  const textColorInputRef = React.useRef<HTMLInputElement | null>(null)
+
   /* ======================
           return
   ====================== */
@@ -53,12 +59,17 @@ export const TextFormatDropdown = ({
   return (
     <Dropdown
       disabled={disabled}
-      // stopCloseOnMenuClick
+      stopCloseOnMenuClick={stopCloseOnMenuClick}
       triggerAriaLabel='Text format options'
       triggerClassName=''
       triggerIcon={<ALargeSmall />}
       triggerText={''}
       triggerTitle='Text format options'
+      triggerProps={{
+        onClick: () => {
+          setStopCloseOnMenuClick(false)
+        }
+      }}
     >
       <DropdownItem
         className={editorState?.isBold ? SELECTED_MIXIN : ''}
@@ -166,6 +177,47 @@ export const TextFormatDropdown = ({
         title='code'
       >
         <Code /> Code
+      </DropdownItem>
+
+      {/* Note: <input type="color"> does not support the alpha channel (at least in Chrome).
+      For maximum control and consistency, implement a custom ColorPicker component.   */}
+
+      <DropdownItem
+        onClick={() => {
+          const textColorInput = textColorInputRef.current
+          if (!textColorInput) return
+          textColorInput.click()
+        }}
+        onMouseDown={() => {
+          // If the Dropdown menu closes/unmounts, the color picker will mount
+          // but it will be orphaned, the actual input is gone so it can't
+          // communicate with it, and can't set the color.
+          //^ In general, I don't really like how the Dropdown is implemented.
+          //^ I would prefer that that each item instead exposed its own
+          //^ handler for closing or not closing the menu. Presumably, that
+          //^ state would be part of the DropdownContext.
+          setStopCloseOnMenuClick(true)
+        }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            setStopCloseOnMenuClick(true)
+          }
+        }}
+        title='text color'
+      >
+        <input
+          className='h-[24px] w-[24px] cursor-pointer rounded p-0'
+          // defaultValue='#15c213'
+          value={editorState?.color ? editorState?.color : '#000000'}
+          ref={textColorInputRef}
+          style={{ colorScheme: 'normal' }}
+          type='color'
+          onInput={(event) => {
+            editor.chain().focus().setColor(event.currentTarget.value).run()
+          }}
+          // value={editorState?.color}
+        />{' '}
+        Text Color
       </DropdownItem>
 
       <DropdownItem

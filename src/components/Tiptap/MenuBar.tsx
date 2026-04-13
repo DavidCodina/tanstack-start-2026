@@ -1,23 +1,15 @@
-import { useEditorState } from '@tiptap/react'
-import {
-  CornerDownLeft,
-  Eraser,
-  RotateCcw,
-  RotateCw,
-  Ruler,
-  TextAlignCenter,
-  TextAlignEnd,
-  TextAlignJustify,
-  TextAlignStart,
-  Trash2
-} from 'lucide-react'
+import { Copy, Eraser, RotateCcw, RotateCw, Trash2 } from 'lucide-react'
+import { DOMSerializer } from '@tiptap/pm/model'
+import { useTiptapContext } from './TipTapContext'
 
-import { menuBarStateSelector } from './menuBarState'
 import { Divider } from './Divider'
 import { BlockTypeDropdown } from './BlockTypeDropdown'
 import { TextFormatDropdown } from './TextFormatDropdown'
+import { AlignmentTypeDropdown } from './AlignmenTypeDropdown'
+import { InsertDropdown } from './InsertDropdown'
 
 import type { Editor } from '@tiptap/core'
+
 import { cn } from '@/utils'
 
 type MenuBarProps = {
@@ -27,24 +19,16 @@ type MenuBarProps = {
 const SOLID_BUTTON_BORDER_MIXIN = `border border-[rgba(0,0,0,0.3)] dark:border-[rgba(255,255,255,0.35)]`
 
 const HOVER_MIXIN = `
-hover:bg-[oklch(from_var(--color-accent)_calc(l_-_0.2)_c_h))]
+hover:bg-blue-500
 hover:text-white
-dark:hover:bg-[oklch(from_var(--color-accent)_calc(l_+_0.15)_c_h))]
+hover:border-blue-700
+dark:hover:border-blue-300
 `
 
 const FOCUS_MIXIN = `
 focus-visible:ring-[3px]
 focus-visible:ring-black/10
 dark:focus-visible:ring-white/20
-`
-
-const SELECTED_MIXIN = `
-text-white hover:text-white focus-visible:text-white 
-bg-green-500 hover:bg-green-500 focus-visible:bg-green-500
-border-green-700 dark:border-green-300
-hover:border-green-700 dark:hover:border-green-300
-focus-visible:border-green-700 dark:focus-visible:border-green-300
-focus-visible:ring-green-500/50 dark:focus-visible:ring-green-500/50
 `
 
 const buttonClasses = `
@@ -63,21 +47,7 @@ ${FOCUS_MIXIN}
 ======================================================================== */
 
 export const MenuBar = ({ editor }: MenuBarProps) => {
-  const editorState = useEditorState({
-    // Technically if there's no editor, useEditorState will be fine.
-    // However, ctx.editor in menuBarState will end up being undefined.
-    // Consequently, one must ensure that all values in menuBarState use
-    // optional chaining: ctx.editor?. ...
-    editor: editor, // as Editor
-    // But actually, there's another way. We can instead return null from selector.
-    // If you go this route, make sure to then use optional chaining in the after
-    // editorState in this file.
-    selector: (ctx) => {
-      if (!editor || !ctx.editor) return null
-      return menuBarStateSelector(ctx)
-    }
-    // selector: menuBarStateSelector
-  })
+  const { editorState } = useTiptapContext()
 
   if (!editor /* || !editorState */) {
     return null
@@ -124,92 +94,32 @@ export const MenuBar = ({ editor }: MenuBarProps) => {
       renderInsert()
   ====================== */
 
-  const renderInsert = () => {
-    return (
-      <>
-        <button
-          className={cn(buttonClasses)}
-          onClick={() => editor.chain().focus().setHorizontalRule().run()}
-          title='horizontal rule'
-          type='button'
-        >
-          <Ruler />
-        </button>
+  // const renderInsert = () => {
+  //   return (
+  //     <>
+  //       <button
+  //         className={cn(buttonClasses)}
+  //         onClick={() => editor.chain().focus().setHorizontalRule().run()}
+  //         title='horizontal rule'
+  //         type='button'
+  //       >
+  //         <Ruler />
+  //       </button>
 
-        {/*
-       //# What does this do?
-      */}
-        <button
-          className={cn(buttonClasses)}
-          onClick={() => editor.chain().focus().setHardBreak().run()}
-          type='button'
-          title='hard break'
-        >
-          <CornerDownLeft />
-        </button>
-      </>
-    )
-  }
-
-  /* =====================
-      renderAlignment()
-  ====================== */
-
-  const renderAlignment = () => {
-    return (
-      <>
-        <button
-          className={cn(
-            buttonClasses,
-            editorState?.isAlignLeft && SELECTED_MIXIN
-          )}
-          onClick={() => editor.chain().focus().toggleTextAlign('left').run()}
-          title='align left'
-          type='button'
-        >
-          <TextAlignStart />
-        </button>
-
-        <button
-          className={cn(
-            buttonClasses,
-            editorState?.isAlignCenter && SELECTED_MIXIN
-          )}
-          onClick={() => editor.chain().focus().toggleTextAlign('center').run()}
-          title='align center'
-          type='button'
-        >
-          <TextAlignCenter />
-        </button>
-
-        <button
-          className={cn(
-            buttonClasses,
-            editorState?.isAlignRight && SELECTED_MIXIN
-          )}
-          onClick={() => editor.chain().focus().toggleTextAlign('right').run()}
-          title='align right'
-          type='button'
-        >
-          <TextAlignEnd />
-        </button>
-
-        <button
-          className={cn(
-            buttonClasses,
-            editorState?.isAlignJustify && SELECTED_MIXIN
-          )}
-          onClick={() =>
-            editor.chain().focus().toggleTextAlign('justify').run()
-          }
-          title='align justify'
-          type='button'
-        >
-          <TextAlignJustify />
-        </button>
-      </>
-    )
-  }
+  //       {/*
+  //      //# What does this do?
+  //     */}
+  //       <button
+  //         className={cn(buttonClasses)}
+  //         onClick={() => editor.chain().focus().setHardBreak().run()}
+  //         type='button'
+  //         title='hard break'
+  //       >
+  //         <CornerDownLeft />
+  //       </button>
+  //     </>
+  //   )
+  // }
 
   /* =====================
   renderClearActions()
@@ -237,7 +147,14 @@ export const MenuBar = ({ editor }: MenuBarProps) => {
             buttonClasses,
             'hover:border-rose-700 hover:bg-rose-500 hover:text-white'
           )}
-          onClick={() => editor.chain().focus().clearContent(true).run()}
+          onClick={() => {
+            const { empty } = editor.state.selection
+            if (empty) {
+              editor.chain().focus().clearContent(true).run()
+            } else {
+              editor.chain().focus().deleteSelection().run()
+            }
+          }}
           title='delete content'
           type='button'
         >
@@ -252,36 +169,102 @@ export const MenuBar = ({ editor }: MenuBarProps) => {
   ====================== */
 
   return (
-    <div className='flex flex-wrap gap-2 border-b p-2'>
-      {renderUndoRedo()}
+    <div data-slot='tiptap-menu-bar' className='border-b'>
+      <div className='mx-auto flex w-fit flex-wrap gap-2 p-2'>
+        {renderUndoRedo()}
 
-      <Divider />
+        <Divider />
 
-      <BlockTypeDropdown
-        disabled={false} //# Don't hardcode this
-        editor={editor}
-        editorState={editorState}
-      />
+        <BlockTypeDropdown
+          disabled={false} //# Don't hardcode this
+          editor={editor}
+          editorState={editorState}
+        />
 
-      <Divider />
+        <Divider />
 
-      <TextFormatDropdown
-        disabled={false} //# Don't hardcode this
-        editor={editor}
-        editorState={editorState}
-      />
+        <TextFormatDropdown
+          disabled={false} //# Don't hardcode this
+          editor={editor}
+          editorState={editorState}
+        />
 
-      <Divider />
+        <Divider />
 
-      {renderInsert()}
+        {/* {renderInsert()} */}
 
-      <Divider />
+        <InsertDropdown
+          disabled={false} //# Don't hardcode this
+          editor={editor}
+          editorState={editorState}
+        />
 
-      {renderAlignment()}
+        <Divider />
 
-      <Divider />
+        <AlignmentTypeDropdown
+          disabled={false} //# Don't hardcode this
+          editor={editor}
+          editorState={editorState}
+        />
 
-      {renderClearActions()}
+        <Divider />
+
+        <button
+          className={cn(buttonClasses)}
+          onClick={() => {
+            const { empty } = editor.state.selection
+            if (empty) {
+              navigator.clipboard.writeText(editor.getText())
+            } else {
+              const { from, to } = editor.state.selection
+              const text = editor.state.doc.textBetween(from, to, ' ')
+              navigator.clipboard.writeText(text)
+            }
+          }}
+          title='copy text'
+          type='button'
+        >
+          <Copy />
+        </button>
+
+        <button
+          className={cn(buttonClasses)}
+          onClick={() => {
+            // If you ever wanted *strictly* the selected content (not the full block),
+            // you'd swap those for plain `from`/`to`.
+            const { empty, $from, $to /*, from, to */ } = editor.state.selection
+            if (empty) {
+              navigator.clipboard.writeText(editor.getHTML())
+            } else {
+              // Even if you select part of a block, this will give you back the entire block.
+
+              const slice = editor.state.doc.slice($from.before(), $to.after())
+              const serializer = DOMSerializer.fromSchema(editor.schema)
+              const div = document.createElement('div')
+              div.appendChild(serializer.serializeFragment(slice.content))
+              navigator.clipboard.writeText(div.innerHTML)
+            }
+          }}
+          title='copy html'
+          type='button'
+        >
+          <svg
+            xmlns='http://www.w3.org/2000/svg'
+            width='24'
+            height='24'
+            fill='currentColor'
+            // className='bi bi-filetype-html'
+            viewBox='0 0 16 16'
+          >
+            <path
+              fillRule='evenodd'
+              d='M14 4.5V11h-1V4.5h-2A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v9H2V2a2 2 0 0 1 2-2h5.5zm-9.736 7.35v3.999h-.791v-1.714H1.79v1.714H1V11.85h.791v1.626h1.682V11.85h.79Zm2.251.662v3.337h-.794v-3.337H4.588v-.662h3.064v.662zm2.176 3.337v-2.66h.038l.952 2.159h.516l.946-2.16h.038v2.661h.715V11.85h-.8l-1.14 2.596H9.93L8.79 11.85h-.805v3.999zm4.71-.674h1.696v.674H12.61V11.85h.79v3.325Z'
+            />
+          </svg>
+        </button>
+
+        {renderClearActions()}
+      </div>
     </div>
   )
 }

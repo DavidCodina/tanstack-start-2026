@@ -46,11 +46,11 @@ const blockTypeToIcon = {
 
 const SELECTED_MIXIN = `
 text-white hover:text-white focus-visible:text-white 
-bg-green-500 hover:bg-green-500 focus-visible:bg-green-500
-border-green-700 dark:border-green-300
-hover:border-green-700 dark:hover:border-green-300
-focus-visible:border-green-700 dark:focus-visible:border-green-300
-focus-visible:ring-green-500/50 dark:focus-visible:ring-green-500/50
+bg-blue-500 hover:bg-blue-500 focus-visible:bg-blue-500
+border-blue-700 dark:border-blue-300
+hover:border-blue-700 dark:hover:border-blue-300
+focus-visible:border-blue-700 dark:focus-visible:border-blue-300
+focus-visible:ring-blue-500/50 dark:focus-visible:ring-blue-500/50
 shadow-xs
 `
 
@@ -86,7 +86,7 @@ export const BlockTypeDropdown = ({
         onClick={() => editor.chain().focus().setParagraph().run()}
         title='paragraph'
       >
-        <Pilcrow /> Paragraph
+        <Pilcrow /> {blockTypeToBlockName.paragraph}
       </DropdownItem>
 
       <DropdownItem
@@ -94,7 +94,7 @@ export const BlockTypeDropdown = ({
         onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
         title='heading 1'
       >
-        <Heading1 /> Heading 1
+        <Heading1 /> {blockTypeToBlockName.h1}
       </DropdownItem>
 
       <DropdownItem
@@ -102,7 +102,7 @@ export const BlockTypeDropdown = ({
         onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
         title='heading 2'
       >
-        <Heading2 /> Heading 2
+        <Heading2 /> {blockTypeToBlockName.h2}
       </DropdownItem>
 
       <DropdownItem
@@ -110,7 +110,7 @@ export const BlockTypeDropdown = ({
         onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
         title='heading 3'
       >
-        <Heading3 /> Heading 3
+        <Heading3 /> {blockTypeToBlockName.h3}
       </DropdownItem>
 
       <DropdownItem
@@ -118,7 +118,7 @@ export const BlockTypeDropdown = ({
         onClick={() => editor.chain().focus().toggleHeading({ level: 4 }).run()}
         title='heading 4'
       >
-        <Heading4 /> Heading 4
+        <Heading4 /> {blockTypeToBlockName.h4}
       </DropdownItem>
 
       <DropdownItem
@@ -126,7 +126,7 @@ export const BlockTypeDropdown = ({
         onClick={() => editor.chain().focus().toggleHeading({ level: 5 }).run()}
         title='heading 5'
       >
-        <Heading5 /> Heading 5
+        <Heading5 /> {blockTypeToBlockName.h5}
       </DropdownItem>
 
       <DropdownItem
@@ -134,7 +134,7 @@ export const BlockTypeDropdown = ({
         onClick={() => editor.chain().focus().toggleHeading({ level: 6 }).run()}
         title='heading 6'
       >
-        <Heading6 /> Heading 6
+        <Heading6 /> {blockTypeToBlockName.h6}
       </DropdownItem>
 
       <DropdownItem
@@ -142,15 +142,15 @@ export const BlockTypeDropdown = ({
         onClick={() => editor.chain().focus().toggleBulletList().run()}
         title='bullet list'
       >
-        <List /> Bullet List
+        <List /> {blockTypeToBlockName.bullet}
       </DropdownItem>
 
       <DropdownItem
-        className={editorState?.isHeading5 ? SELECTED_MIXIN : ''}
+        className={editorState?.isOrderedList ? SELECTED_MIXIN : ''}
         onClick={() => editor.chain().focus().toggleOrderedList().run()}
-        title='ordered list'
+        title='numbered list'
       >
-        <ListOrdered /> Ordered List
+        <ListOrdered /> {blockTypeToBlockName.number}
       </DropdownItem>
 
       {/* 
@@ -162,7 +162,7 @@ export const BlockTypeDropdown = ({
         onClick={() => editor.chain().focus().toggleBlockquote().run()}
         title='quote'
       >
-        <MessageSquareQuote /> Quote
+        <MessageSquareQuote /> {blockTypeToBlockName.quote}
       </DropdownItem>
 
       <DropdownItem
@@ -170,7 +170,7 @@ export const BlockTypeDropdown = ({
         onClick={() => editor.chain().focus().toggleCodeBlock().run()}
         title='code block'
       >
-        <Code /> Code Block
+        <Code /> {blockTypeToBlockName.code}
       </DropdownItem>
     </Dropdown>
   )

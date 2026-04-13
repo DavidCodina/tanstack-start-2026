@@ -1,4 +1,4 @@
-import { getBlockType } from './utils'
+import { getAlignmentType, getBlockType } from './utils'
 
 import type { Editor } from '@tiptap/core'
 import type { EditorStateSnapshot } from '@tiptap/react'
@@ -16,6 +16,7 @@ export function menuBarStateSelector(ctx: EditorStateSnapshot<Editor | null>) {
 
   return {
     blockType: getBlockType(ctx.editor),
+    alignmentType: getAlignmentType(ctx.editor),
 
     /* =====================
           History
@@ -109,7 +110,7 @@ export function menuBarStateSelector(ctx: EditorStateSnapshot<Editor | null>) {
       : false,
 
     /* =====================
-          Alignment
+            Alignment
     ====================== */
 
     isAlignLeft: ctx.editor.isActive({ textAlign: 'left' }) ? true : false,
@@ -122,7 +123,22 @@ export function menuBarStateSelector(ctx: EditorStateSnapshot<Editor | null>) {
     isAlignJustify: ctx.editor.isActive({ textAlign: 'justify' })
       ? true
       : false,
-    canAlignJustify: ctx.editor.can().chain().toggleTextAlign('justify').run()
+    canAlignJustify: ctx.editor.can().chain().toggleTextAlign('justify').run(),
+
+    isIndent: ctx.editor.isActive('indent') ? true : false,
+    //# Ask AI when this would ever not be true, or if it's redundant.
+    canIndent: ctx.editor.can().chain().indent().run(),
+
+    isOutdent: ctx.editor.isActive('outdent') ? true : false,
+    //# Ask AI when this would ever not be true, or if it's redundant.
+    canOutdent: ctx.editor.can().chain().outdent().run(),
+
+    /* =====================
+            Color
+    ====================== */
+    // https://tiptap.dev/docs/editor/extensions/functionality/color
+
+    color: ctx.editor.getAttributes('textStyle').color
   }
 }
 

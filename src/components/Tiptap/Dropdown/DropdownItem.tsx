@@ -1,15 +1,9 @@
 import { useContext, useEffect, useRef } from 'react'
 import { DropdownContext } from './DropdownContext'
-import type { MouseEvent, ReactNode } from 'react'
 
 import { cn } from '@/utils'
 
-type DropdownItemProps = {
-  children: ReactNode
-  className?: string
-  onClick: (event: MouseEvent<HTMLButtonElement>) => void
-  title?: string
-}
+type DropdownItemProps = React.ComponentProps<'button'>
 
 const HOVER_MIXIN = `
 hover:bg-accent
@@ -46,7 +40,8 @@ export const DropdownItem = ({
   children,
   className = '',
   onClick,
-  title
+  title,
+  ...otherProps
 }: DropdownItemProps) => {
   const ref = useRef<HTMLButtonElement>(null)
 
@@ -72,6 +67,7 @@ export const DropdownItem = ({
 
   return (
     <button
+      {...otherProps}
       className={cn(baseClasses, className)}
       onClick={onClick}
       ref={ref}

@@ -89,12 +89,31 @@ creates a <div> that wraps the actual contenteditable <div> such that the DOM lo
   </div>
 */
 
+[data-slot='tiptap-menu-bar']
+  input[type='color']::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+[data-slot='tiptap-menu-bar'] input[type='color']::-webkit-color-swatch {
+  border: none;
+  border-radius: 4px; /* optional, match your design */
+}
+
+[data-slot='tiptap-menu-bar'] input[type='color']::-moz-color-swatch {
+  border: none;
+  border-radius: 4px;
+}
+
 .tiptap :first-child {
   margin-top: 0;
 }
 
 .tiptap > *:not(:last-child) {
   margin-bottom: 16px; /* ??? */
+}
+
+.tiptap::selection {
+  background: oklch(from var(--color-sky-500) l c h / 0.25);
 }
 
 /* =====================
@@ -258,4 +277,43 @@ https://tiptap.dev/docs/editor/extensions/functionality/placeholder#additional-s
 }
 
 .tiptap a:hover {
+}
+
+/* =====================
+       Indentation
+====================== */
+/* Note: using margin-left over padding-left seems to make
+more sense because it allows the whole block to be moved,
+not just the content within it. */
+
+.tiptap [data-indent='1'] {
+  margin-left: 3rem;
+}
+
+.tiptap [data-indent='2'] {
+  margin-left: 6rem;
+}
+
+.tiptap [data-indent='3'] {
+  margin-left: 9rem;
+}
+
+.tiptap [data-indent='4'] {
+  margin-left: 12rem;
+}
+
+.tiptap [data-indent='5'] {
+  margin-left: 15rem;
+}
+
+.tiptap [data-indent='6'] {
+  margin-left: 18rem;
+}
+
+.tiptap [data-indent='7'] {
+  margin-left: 21rem;
+}
+
+.tiptap [data-indent='8'] {
+  margin-left: 24rem;
 }

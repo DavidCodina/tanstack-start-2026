@@ -24,7 +24,7 @@ export const getBlockType = (editor: Editor) => {
 /* ======================
 
 ====================== */
-// The block type keys must correspont to what is returned from getBlockType().
+// The keys must correspond to what is returned from getBlockType().
 
 export const blockTypeToBlockName = {
   h1: 'Heading 1',
@@ -39,4 +39,29 @@ export const blockTypeToBlockName = {
   quote: 'Quote',
   code: 'Code Block',
   paragraph: 'Paragraph'
+}
+
+/* ======================
+
+====================== */
+
+export const getAlignmentType = (editor: Editor) => {
+  if (editor.isActive({ textAlign: 'left' })) return 'left'
+  if (editor.isActive({ textAlign: 'center' })) return 'center'
+  if (editor.isActive({ textAlign: 'right' })) return 'right'
+  if (editor.isActive({ textAlign: 'justify' })) return 'justify'
+
+  return 'left' // safe default — avoids the isActive('paragraph') gotcha
+}
+
+/* ======================
+
+====================== */
+// The keys must correspond to what is returned from getAlignmentType().
+
+export const alignmentTypeToAlignmentName = {
+  left: 'Left Align',
+  center: 'Center Align',
+  right: 'Right Align',
+  justify: 'Justify Align'
 }

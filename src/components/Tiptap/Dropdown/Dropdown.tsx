@@ -1,7 +1,10 @@
 import * as React from 'react'
 import { ChevronDown } from 'lucide-react'
+
 import { DropdownMenu } from './DropdownMenu'
 import { cn } from '@/utils'
+
+type triggerProps = React.ComponentProps<'button'>
 
 type DropdownProps = {
   children: React.ReactNode
@@ -12,14 +15,16 @@ type DropdownProps = {
   triggerIcon?: React.ReactNode
   triggerText?: string
   triggerTitle?: string
+  triggerProps?: triggerProps
 }
 
 const SOLID_BUTTON_BORDER_MIXIN = `border border-[rgba(0,0,0,0.3)] dark:border-[rgba(255,255,255,0.35)]`
 
 const HOVER_MIXIN = `
-hover:bg-[oklch(from_var(--color-accent)_calc(l_-_0.2)_c_h))]
+hover:bg-blue-500
 hover:text-white
-dark:hover:bg-[oklch(from_var(--color-accent)_calc(l_+_0.15)_c_h))]
+hover:border-blue-700
+dark:hover:border-blue-300
 `
 
 const FOCUS_MIXIN = `focus-visible:ring-[3px] focus-visible:ring-border/50`
@@ -35,7 +40,7 @@ ${HOVER_MIXIN}
 ${FOCUS_MIXIN}
 `
 
-const menuPadding = 10
+const menuPadding = 8
 
 /* ========================================================================
 
@@ -49,7 +54,8 @@ export const Dropdown = ({
   triggerClassName,
   triggerIcon,
   triggerText,
-  triggerTitle
+  triggerTitle,
+  triggerProps
 }: DropdownProps) => {
   /* ======================
         state & refs
@@ -144,10 +150,14 @@ export const Dropdown = ({
   const renderTrigger = () => {
     return (
       <button
+        {...triggerProps}
         aria-label={triggerAriaLabel || triggerText}
         className={cn(triggerClasses, triggerClassName)}
         disabled={disabled}
-        onClick={() => setShowDropDown(!showDropDown)}
+        onClick={(e) => {
+          triggerProps?.onClick?.(e)
+          setShowDropDown((prev) => !prev)
+        }}
         ref={triggerRef}
         title={triggerTitle}
         type='button'
