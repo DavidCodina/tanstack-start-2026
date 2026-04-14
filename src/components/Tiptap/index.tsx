@@ -2,13 +2,12 @@ import './Tiptap.css'
 import { EditorContent } from '@tiptap/react'
 import { TiptapProvider, useTiptapContext } from './TipTapContext'
 import { MenuBar } from './MenuBar'
+import { FormatBubbleMenu } from './FormatBubbleMenu'
 
-import type { EditorProps } from './TipTapContext'
+import type { TiptapProviderProps } from './TipTapContext'
 import { cn } from '@/utils'
 
-type TiptapProps = Omit<React.ComponentProps<'div'>, 'children'> & {
-  editorProps?: EditorProps
-}
+type TiptapProps = Omit<React.ComponentProps<'div'>, 'children' | 'onChange'>
 
 const baseClasses = `
 [--tiptap-min-content-height:250px]
@@ -24,12 +23,11 @@ focus-within:ring-[3px] focus-within:ring-primary/50
 // Tiptap Youtube:         https://www.youtube.com/@tiptap-editor/videos
 // ✅ Cand Dev:            https://www.youtube.com/watch?v=QVffer2fRfg //# Start at 13:15
 //    Cand Dev:            https://www.youtube.com/watch?v=M3BdmN4etYg
-//    StackWild:           https://www.youtube.com/watch?v=s1lpwpeSGW4
+// ✅ StackWild:           https://www.youtube.com/watch?v=s1lpwpeSGW4
 //    Age Concepts:        https://www.youtube.com/watch?v=zIm1FYi8A7c
-//    Code DPS:            https://www.youtube.com/watch?v=hpQmgLPaCcE&list=PL6yN8EtcWUmYfgln8Vxm5sEde8FroZYt0
-//    De Mawo:             https://www.youtube.com/watch?v=MEhVUDP3a_k
-//    Solve It Out:        https://www.youtube.com/watch?v=LiELuVk12ig
-//    Age Concepts         https://www.youtube.com/watch?v=zIm1FYi8A7c
+// ❌ Code DPS:            https://www.youtube.com/watch?v=hpQmgLPaCcE&list=PL6yN8EtcWUmYfgln8Vxm5sEde8FroZYt0
+// ❌ De Mawo:             https://www.youtube.com/watch?v=MEhVUDP3a_k
+// ❌ Solve It Out:        https://www.youtube.com/watch?v=LiELuVk12ig
 //
 // Examples:               https://tiptap.dev/docs/examples
 // Roadmap:                https://tiptap.dev/roadmap
@@ -75,10 +73,13 @@ const Tiptap = ({ className, ...otherProps }: TiptapProps) => {
         data-slot='tiptap-editor-content'
         // Using resize-y works well for now, but if you run into actual
         // isues where content is hidden by overflow-auto, then you many want
-        // to go to a programmatic solution.
+        // to go to a programmatic solution. Fortunately, this is not an issue
+        // for the BubbleMenu.
         className='min-h-(--tiptap-min-content-height) resize-y overflow-auto'
         editor={editor}
       />
+
+      <FormatBubbleMenu />
     </div>
   )
 }
@@ -87,9 +88,13 @@ const Tiptap = ({ className, ...otherProps }: TiptapProps) => {
 
 ======================================================================== */
 
-const TiptapWithProvider = ({ editorProps, ...otherProps }: TiptapProps) => {
+const TiptapWithProvider = ({
+  editorProps,
+  onChange,
+  ...otherProps
+}: TiptapProviderProps & TiptapProps) => {
   return (
-    <TiptapProvider editorProps={editorProps}>
+    <TiptapProvider editorProps={editorProps} onChange={onChange}>
       <Tiptap {...otherProps} />
     </TiptapProvider>
   )

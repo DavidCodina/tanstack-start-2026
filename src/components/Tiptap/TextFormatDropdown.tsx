@@ -255,7 +255,6 @@ export const TextFormatDropdown = ({
       <DropdownItem
         className={editorState?.isSubscript ? SELECTED_MIXIN : ''}
         //# Check if superscript and remove.
-        //# disabled={!editorState?.canSubscript}
         onClick={() => editor.chain().focus().toggleSubscript().run()}
         title='subscript'
       >
@@ -264,7 +263,6 @@ export const TextFormatDropdown = ({
 
       <DropdownItem
         className={editorState?.isSuperscript ? SELECTED_MIXIN : ''}
-        //# disabled={!editorState?.canSuperscript}
         //# Check if subscript and remove.
         onClick={() => editor.chain().focus().toggleSuperscript().run()}
         title='superscript'

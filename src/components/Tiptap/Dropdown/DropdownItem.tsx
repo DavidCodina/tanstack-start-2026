@@ -22,11 +22,9 @@ dark:focus-visible:ring-white/20
 const baseClasses = `
 flex items-center gap-2
 px-1 py-1
-bg-transparent font-medium
-leading-none
+bg-transparent font-medium leading-none
 border border-transparent rounded-lg
-outline-none
-cursor-pointer
+outline-none cursor-pointer
 ${HOVER_MIXIN}
 ${FOCUS_MIXIN}
 `

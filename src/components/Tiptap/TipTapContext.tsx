@@ -60,7 +60,14 @@ import {
 import { menuBarSelector } from './menuBarState'
 import { Indent } from './extensions/Indent'
 
-import type { Editor } from '@tiptap/core'
+import type {
+  DocumentType,
+  Editor,
+  MarkType,
+  NodeType,
+  TextType
+} from '@tiptap/core'
+// import type { DocumentType, MarkType, NodeType, TextType } from '@tiptap/react'
 // import type { UseEditorOptions } from '@tiptap/react'
 
 import type { MenuBarState } from './menuBarState'
@@ -70,18 +77,33 @@ type TiptapContextValue = {
   editorState: MenuBarState
 }
 
-/** A limited number of options to be passed to the useEditor configuration. */
-export type EditorProps = {
+/** A limited number of options passed into the useEditor configuration. */
+type EditorProps = {
   content?: string
   placeholder?: string
 }
 
+type Value = {
+  html: string
+  json: DocumentType<
+    Record<string, any> | undefined,
+    NodeType<
+      string,
+      Record<string, any> | undefined,
+      any,
+      (NodeType<any, any, any, any> | TextType<MarkType<any, any>>)[]
+    >[]
+  >
+  text: string
+}
+type OnChange = (value: Value) => void
+
 export type TiptapProviderProps = {
-  children: React.ReactNode
   editorProps?: EditorProps
+  onChange?: OnChange
 }
 
-const TiptapContext = createContext<TiptapContextValue | undefined>(undefined)
+const TiptapContext = createContext<TiptapContextValue | null>(null)
 
 /* ========================================================================
              
@@ -89,9 +111,15 @@ const TiptapContext = createContext<TiptapContextValue | undefined>(undefined)
 
 export function TiptapProvider({
   children,
-  editorProps = {}
-}: TiptapProviderProps) {
+  editorProps = {},
+  onChange
+}: TiptapProviderProps & { children: React.ReactNode }) {
   const editor = useEditor({
+    // Avoid Error: Tiptap Error: SSR has been detected, please set `immediatelyRender`
+    // explicitly to `false` to avoid hydration mismatches.
+    // Note: This will cause the value of editor to now be Editor | null.
+    immediatelyRender: false,
+    // shouldRerenderOnTransaction: false,
     content: editorProps?.content,
     editable: true, // ⚠️ false doesn't seem to make a difference.
     ///////////////////////////////////////////////////////////////////////////
@@ -106,10 +134,6 @@ export function TiptapProvider({
     ///////////////////////////////////////////////////////////////////////////
     // injectCSS: false,
 
-    // Avoid Error: Tiptap Error: SSR has been detected, please set `immediatelyRender`
-    // explicitly to `false` to avoid hydration mismatches.
-    // Note: This will cause the value of editor to now be Editor | null.
-    immediatelyRender: false,
     extensions: [
       //# What is the Document extension? It's already part of StarterKit, but what does it do?
       TextStyleKit, // This already includes Color, BackgroundColor, etc.
@@ -233,32 +257,35 @@ export function TiptapProvider({
 
     onUpdate: ({ editor }) => {
       const html = editor.getHTML()
-      const _json = editor.getJSON()
-      const _text = editor.getText()
+      const json = editor.getJSON()
+      const text = editor.getText()
+      const value = { html, json, text }
 
       // AI : getJSON() + setContent(json) is the recommended round-trip for persistence (?).
-      console.log(html)
       // Or lift these into state, a form library, etc.
+      onChange?.(value)
     },
 
     // Fires once after the editor is initialized. Useful if you need a reference to the editor instance for something outside React.
     onCreate: (_props) => {},
     onDestroy: (_props) => {},
-    onMount: (_props) => {
-      // const { editor } = props
-    },
+    onMount: (_props) => {},
     onBlur: (_props) => {},
     onFocus: (_props) => {},
 
     editorProps: {
       attributes: {
+        ///////////////////////////////////////////////////////////////////////////
+        //
         // This styles the inner <div contenteditable="true"> :
         //
-        //   <div data-slot="editor-content">
+        //   <div data-slot="tiptap-editor-content">
         //     <div contenteditable="true" translate="no" class="tiptap ProseMirror" tabindex="0"></div>
         //   </div>
         //
         // Setting outline-none will effectively disable the built-in .ProseMirror-focused class.
+        //
+        ///////////////////////////////////////////////////////////////////////////
         class: 'outline-none p-2 h-full',
         style: ''
       }
