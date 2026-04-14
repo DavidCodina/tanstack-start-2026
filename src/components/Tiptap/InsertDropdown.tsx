@@ -38,11 +38,13 @@ export const InsertDropdown = ({
     <Dropdown
       disabled={disabled}
       // stopCloseOnMenuClick
-      triggerAriaLabel='insert options'
-      triggerClassName=''
-      triggerIcon={<Plus />}
-      triggerText={'Insert'}
-      triggerTitle='insert options'
+      triggerProps={{
+        'aria-label': 'insert options',
+        children: 'Insert',
+        className: '',
+        icon: <Plus />,
+        title: 'insert options'
+      }}
     >
       <DropdownItem
         className=''
@@ -51,10 +53,6 @@ export const InsertDropdown = ({
       >
         <Ruler /> Horizontal Rule
       </DropdownItem>
-
-      {/*
-      //# What does this do?
-      */}
 
       <DropdownItem
         className=''

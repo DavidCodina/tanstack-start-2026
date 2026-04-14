@@ -6,8 +6,19 @@ import type { EditorStateSnapshot } from '@tiptap/react'
 /* ========================================================================
 
 ======================================================================== */
+///////////////////////////////////////////////////////////////////////////
+//
+// ⚠️ Gotcha: can* checks
+//
+//  Each .can().chain().<command>().run() call is not free.
+//  — Tiptap has to simulate the command to determine feasibility. You have roughly 15+ of those in here.
+// If you ever notice performance issues during rapid typing, these are the first suspects.
+// The mitigation would be to either memoize them or, more practically, just drop the ones that are almost
+// always true (which your "Ask AI" comments are already flagging — good instinct, and I'll answer those below).
+//
+///////////////////////////////////////////////////////////////////////////
 
-export function menuBarStateSelector(ctx: EditorStateSnapshot<Editor | null>) {
+export function menuBarSelector(ctx: EditorStateSnapshot<Editor | null>) {
   if (!ctx.editor) return null // Added this and null to EditorStateSnapshot<Editor | null>
 
   /* ======================
@@ -67,17 +78,16 @@ export function menuBarStateSelector(ctx: EditorStateSnapshot<Editor | null>) {
     ====================== */
 
     isBold: ctx.editor.isActive('bold') ? true : false,
-    canBold: ctx.editor.can().chain().toggleBold().run() ? true : false,
+    // ❌ canBold: ctx.editor.can().chain().toggleBold().run() ? true : false,
+
     isItalic: ctx.editor.isActive('italic') ? true : false,
-    canItalic: ctx.editor.can().chain().toggleItalic().run() ? true : false,
+    // ❌ canItalic: ctx.editor.can().chain().toggleItalic().run() ? true : false,
 
     isUnderline: ctx.editor.isActive('underline') ? true : false,
-    canUnderline: ctx.editor.can().chain().toggleUnderline().run()
-      ? true
-      : false,
+    // ❌ canUnderline: ctx.editor.can().chain().toggleUnderline().run() ? true : false,
 
     isStrike: ctx.editor.isActive('strike') ? true : false,
-    canStrike: ctx.editor.can().chain().toggleStrike().run() ? true : false,
+    // ❌ canStrike: ctx.editor.can().chain().toggleStrike().run() ? true : false,
 
     isLink: ctx.editor.isActive('link') ? true : false,
     canSetLink: ctx.editor.can().chain().setLink({ href: '' }).run()
@@ -89,57 +99,52 @@ export function menuBarStateSelector(ctx: EditorStateSnapshot<Editor | null>) {
       : null,
 
     isHighlight: ctx.editor.isActive('highlight') ? true : false,
-    //# Ask AI when this would ever not be true, or if it's redundant.
-    canHighlight: ctx.editor.can().chain().toggleHighlight().run()
-      ? true
-      : false,
+    // ❌ canHighlight: ctx.editor.can().chain().toggleHighlight().run() ? true : false,
 
     isCode: ctx.editor.isActive('code') ? true : false,
-    canCode: ctx.editor.can().chain().toggleCode().run() ? true : false,
+    // ❌ canCode: ctx.editor.can().chain().toggleCode().run() ? true : false,
 
     isSuperscript: ctx.editor.isActive('superscript') ? true : false,
-    //# Ask AI when this would ever not be true, or if it's redundant.
-    canSuperscript: ctx.editor.can().chain().toggleSuperscript().run(),
+    // ❌ canSuperscript: ctx.editor.can().chain().toggleSuperscript().run(),
 
     isSubscript: ctx.editor.isActive('subscript') ? true : false,
-    //# Ask AI when this would ever not be true, or if it's redundant.
-    canSubscript: ctx.editor.can().chain().toggleSubscript().run(),
+    // ❌ canSubscript: ctx.editor.can().chain().toggleSubscript().run(),
 
-    canClearMarks: ctx.editor.can().chain().unsetAllMarks().run()
-      ? true
-      : false,
+    // ❌ canClearMarks: ctx.editor.can().chain().unsetAllMarks().run() ? true : false,
 
     /* =====================
             Alignment
     ====================== */
 
     isAlignLeft: ctx.editor.isActive({ textAlign: 'left' }) ? true : false,
-    canAlignLeft: ctx.editor.can().chain().toggleTextAlign('left').run(),
+    // ❌ canAlignLeft: ctx.editor.can().chain().toggleTextAlign('left').run(),
+
     isAlignCenter: ctx.editor.isActive({ textAlign: 'center' }) ? true : false,
-    canAlignCenter: ctx.editor.can().chain().toggleTextAlign('center').run(),
-    //# Ask AI when this would ever not be true, or if it's redundant.
+    // ❌ canAlignCenter: ctx.editor.can().chain().toggleTextAlign('center').run(),
+
     isAlignRight: ctx.editor.isActive({ textAlign: 'right' }) ? true : false,
-    canAlignRight: ctx.editor.can().chain().toggleTextAlign('right').run(),
+    // ❌ canAlignRight: ctx.editor.can().chain().toggleTextAlign('right').run(),
+
     isAlignJustify: ctx.editor.isActive({ textAlign: 'justify' })
       ? true
       : false,
-    canAlignJustify: ctx.editor.can().chain().toggleTextAlign('justify').run(),
+    // ❌ canAlignJustify: ctx.editor.can().chain().toggleTextAlign('justify').run(),
 
     isIndent: ctx.editor.isActive('indent') ? true : false,
-    //# Ask AI when this would ever not be true, or if it's redundant.
-    canIndent: ctx.editor.can().chain().indent().run(),
+    // ❌ canIndent: ctx.editor.can().chain().indent().run(),
 
     isOutdent: ctx.editor.isActive('outdent') ? true : false,
-    //# Ask AI when this would ever not be true, or if it's redundant.
-    canOutdent: ctx.editor.can().chain().outdent().run(),
+    // ❌ canOutdent: ctx.editor.can().chain().outdent().run(),
 
     /* =====================
             Color
     ====================== */
     // https://tiptap.dev/docs/editor/extensions/functionality/color
+    // https://tiptap.dev/docs/editor/extensions/functionality/background-color
 
-    color: ctx.editor.getAttributes('textStyle').color
+    color: ctx.editor.getAttributes('textStyle').color,
+    backgroundColor: ctx.editor.getAttributes('textStyle').backgroundColor
   }
 }
 
-export type MenuBarState = ReturnType<typeof menuBarStateSelector>
+export type MenuBarState = ReturnType<typeof menuBarSelector>

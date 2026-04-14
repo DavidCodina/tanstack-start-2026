@@ -18,6 +18,7 @@ import { MenuBar } from './MenuBar'
 //    Solve It Out:        https://www.youtube.com/watch?v=LiELuVk12ig
 //
 // Examples:               https://tiptap.dev/docs/examples
+// Roadmap:                https://tiptap.dev/roadmap
 // Tiptap Editor Overview: https://tiptap.dev/docs/editor/getting-started/overview
 // Extenstions Overview:   https://tiptap.dev/docs/editor/extensions/overview
 // StarterKit:             https://tiptap.dev/docs/editor/extensions/functionality/starterkit
@@ -74,7 +75,3 @@ const TiptapWithProvider = (props: any) => {
 }
 
 export { TiptapWithProvider as Tiptap }
-
-// //
-//   {/* <FloatingMenu editor={editor}>This is the floating menu</FloatingMenu> */}
-//   {/* <BubbleMenu editor={editor}>This is the bubble menu</BubbleMenu>  */}

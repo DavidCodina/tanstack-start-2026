@@ -41,9 +41,14 @@ import TextAlign from '@tiptap/extension-text-align'
 // https://tiptap.dev/docs/editor/extensions/functionality/placeholder
 import { Placeholder } from '@tiptap/extensions'
 
-// import Link from '@tiptap/extension-link'
-// import Image from '@tiptap/extension-image'
+// https://tiptap.dev/docs/editor/extensions/marks/text-style
+import {
+  //# FontFamily,
+  //# FontSize,
+  TextStyleKit
+} from '@tiptap/extension-text-style'
 
+// import Image from '@tiptap/extension-image'
 // import CharacterCount from '@tiptap/extension-character-count'
 // import Table from '@tiptap/extension-table'
 // import TableRow from '@tiptap/extension-table-row'
@@ -52,39 +57,7 @@ import { Placeholder } from '@tiptap/extensions'
 // import TaskList from '@tiptap/extension-task-list'
 // import TaskItem from '@tiptap/extension-task-item'
 
-///////////////////////////////////////////////////////////////////////////
-//
-// https://tiptap.dev/docs/editor/extensions/marks/text-style
-// TextStyleKit is essentially a convenience bundle — a "kit" in the same spirit as StarterKit
-// — that groups together all the common text styling extensions in one import. Here's what it
-// includes on top of what StarterKit already gives you:
-//
-//   - The TextStyle mark — this is the foundational piece. It renders a <span> tag on selected
-//     text and acts as the carrier for all the inline CSS properties below. Without it, none of
-//     the following would work:
-//
-//       Color: sets the text foreground color (e.g. editor.chain().setColor('#ff0000').run()).
-//       BackgroundColor: sets the text highlight/background color via the same <span> mechanism.
-//       FontFamily: allows changing the typeface of selected text (e.g. setFontFamily('Georgia')).
-//       FontSize: allows setting an explicit font size on selected text (e.g. setFontSize('18px')).
-//       LineHeight: allows controlling line height / leading on text blocks.
-//
-// The key conceptual point:
-//
-//   StarterKit gives you structural formatting
-//   — bold, italic, strike, headings, lists, blockquotes, code blocks, etc.
-//   TextStyleKit gives you presentational/CSS formatting
-//   — the kind of inline styling you'd associate with a "rich text" word processor experience.
-//   They complement each other and don't overlap.
-//
-// One thing worth knowing: none of the TextStyleKit extensions add UI controls automatically.
-// They just wire up the underlying commands and schema. You still need to build your MenuBar
-// buttons/dropdowns that call things like editor.chain().focus().setColor('#hexcode').run().
-//
-///////////////////////////////////////////////////////////////////////////
-import { Color, TextStyleKit } from '@tiptap/extension-text-style'
-
-import { menuBarStateSelector } from './menuBarState'
+import { menuBarSelector } from './menuBarState'
 import { Indent } from './extensions/Indent'
 
 import type { Editor } from '@tiptap/core'
@@ -104,7 +77,7 @@ const TiptapContext = createContext<TiptapContextValue | undefined>(undefined)
 
 const defaultValue = `
 <h2>
-  Hi there,
+  Whuddup!
 </h2>
 <p>
   this is a <em>basic</em> example of <strong>Tiptap</strong>. Sure, there are all kind of basic text styles you'd probably expect from a text editor. But wait until you see the lists:
@@ -123,9 +96,6 @@ const defaultValue = `
 <pre><code class="language-css">body {
   display: none;
 }</code></pre>
-<p>
-  I know, I know, this is impressive. It's only the tip of the iceberg though. Give it a try and click a little bit around. Don't forget to check the other examples too.
-</p>
 
 <blockquote>
   <h5>My Code Quote</h5>
@@ -133,35 +103,30 @@ const defaultValue = `
   <pre><code>const x = 2;</code></pre>
   <p>Bla, bla, bla...</p>
 </blockquote>
-
-<p>
-  <span style="color: #FF0000;">
-    <span style="font-family: serif;">
-      This is red serif. This would not work without the TextStyleKit extension.
-    </span>
-  </span>
-</p> 
 `
 /* ========================================================================
              
 ======================================================================== */
 
-//! installHook.js:1 [tiptap warn]: Duplicate extension names found: ['color']. This can lead to issues.
-
-//# Fix the Dropdown to use triggerProps exclusively.
-
 //# Separate the editor from the example.
+
+//# Add Lowercase, Uppercase, Capitalize
+//# This may be a situation for a custom extension.
+
+//# Research how to add font family (part of TextStyleKit)
+
+//# Sdd emoji support: https://tiptap.dev/docs/editor/extensions/nodes/emoji
+
+//# Add image support: https://tiptap.dev/docs/editor/extensions/nodes/image
+
+//# Add Youtube embed support: https://tiptap.dev/docs/editor/extensions/nodes/youtube
+
+//# Research how to add font sizes (part of TextStyleKit)
 
 //# Add fallbacks to CSS custom properties in Tiptap.css
 
-//# Add lowercase, uppercase, capitalize
-//# This may be a situation for a custom extension.
-
-//# Research how to add text colors and background colors.
-
-//# Research how to add font types.
-
-//# Research how to add font sizes.
+//# Add a DragHandle
+//# https://tiptap.dev/docs/editor/extensions/functionality/drag-handle-react
 
 //# Tiptap actually has a whole bunch of UI comonents
 //# https://tiptap.dev/docs/ui-components/components/overview
@@ -170,9 +135,20 @@ const defaultValue = `
 //# Add Checkboxes:
 //# https://tiptap.dev/docs/editor/extensions/nodes/task-list
 
+//# Review Flowbite: https://flowbite.com/docs/plugins/wysiwyg/
+
+//# Reive: https://github.com/ueberdosis/awesome-tiptap/
+
+//# When are these useful?
+// <FloatingMenu editor={editor}>This is the floating menu</FloatingMenu>
+// <BubbleMenu editor={editor}>This is the bubble menu</BubbleMenu>
+
 //# Does Tiptap have any kind of built-in sanitization?
 
 //# Fix RTE import issue.
+
+//# See here for CustomCodeBlock. This is also a great example to pick apart.
+//# https://github.com/phyohtetarkar/tiptap-block-editor/blob/main/src/components/editor/default-extensions.ts
 
 //# Other things:
 //# - Tiptap has a CharacterCount extension that gives you live stats:
@@ -206,15 +182,25 @@ export function TiptapProvider({ children }: TiptapProviderProps) {
     immediatelyRender: false,
     extensions: [
       //# What is the Document extension? It's already part of StarterKit, but what does it do?
-      TextStyleKit, // ???
-      Color,
+      TextStyleKit, // This already includes Color, BackgroundColor, etc.
+      //
 
       // ⚠️ Note you can also do this kind of thing.
       // StarterKit.configure({
       //   italic: false,  // Disable an included extension.
       //   heading: { levels: [1, 2] } // Configure an included extension.
       // })
+
+      // See here for an example of configuring StarterKit:
+      // https://github.com/phyohtetarkar/tiptap-block-editor/blob/main/src/components/editor/default-extensions.ts
       StarterKit.configure({
+        // ⚠️ Rather than using Tiptap.css to style the elements, one cal also hardcode them directy into the HTML.
+
+        // paragraph: {
+        //   HTMLAttributes: {
+        //     class: 'outline-2 outline-dashed outline-pink-500'
+        //   }
+        // },
         link: {
           // By default, clicking a link in the editor navigates to it. Since this is a rich text editor,
           // you almost certainly want this off — otherwise you can't click a link to edit it without
@@ -319,11 +305,11 @@ export function TiptapProvider({ children }: TiptapProviderProps) {
     content: defaultValue,
     onUpdate: ({ editor }) => {
       const html = editor.getHTML()
-      const json = editor.getJSON()
-      const text = editor.getText()
+      const _json = editor.getJSON()
+      const _text = editor.getText()
 
       // AI : getJSON() + setContent(json) is the recommended round-trip for persistence (?).
-      console.log({ html, json, text })
+      console.log(html)
       // Or lift these into state, a form library, etc.
     },
 
@@ -354,6 +340,9 @@ export function TiptapProvider({ children }: TiptapProviderProps) {
   /* ======================
           editorState
   ====================== */
+  //# Currently, I prefer having editorState in the TiptapContext.
+  //# However, this may be shooting myself in the foot in regards to optimization.
+  //# It may actually be more appropriate to localize it within MenuBar.tsx.
 
   const editorState = useEditorState({
     // Technically if there's no editor, useEditorState will be fine.
@@ -366,7 +355,7 @@ export function TiptapProvider({ children }: TiptapProviderProps) {
     // editorState in this file.
     selector: (ctx) => {
       if (!editor || !ctx.editor) return null
-      return menuBarStateSelector(ctx)
+      return menuBarSelector(ctx)
     }
     // selector: menuBarStateSelector
   })

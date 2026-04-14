@@ -4,17 +4,14 @@ import { ChevronDown } from 'lucide-react'
 import { DropdownMenu } from './DropdownMenu'
 import { cn } from '@/utils'
 
-type triggerProps = React.ComponentProps<'button'>
+type triggerProps = React.ComponentProps<'button'> & {
+  icon?: React.ReactNode
+}
 
 type DropdownProps = {
   children: React.ReactNode
   disabled?: boolean
   stopCloseOnMenuClick?: boolean
-  triggerAriaLabel?: string
-  triggerClassName?: string
-  triggerIcon?: React.ReactNode
-  triggerText?: string
-  triggerTitle?: string
   triggerProps?: triggerProps
 }
 
@@ -50,13 +47,17 @@ export const Dropdown = ({
   children,
   disabled = false,
   stopCloseOnMenuClick = false,
-  triggerAriaLabel,
-  triggerClassName,
-  triggerIcon,
-  triggerText,
-  triggerTitle,
-  triggerProps
+  triggerProps = {}
 }: DropdownProps) => {
+  const {
+    children: triggerChildren,
+    className: triggerClassName,
+    icon: triggerIcon,
+    onClick: triggerOnClick,
+    title: triggerTitle,
+    ...otherTriggerProps
+  } = triggerProps
+
   /* ======================
         state & refs
   ====================== */
@@ -150,12 +151,11 @@ export const Dropdown = ({
   const renderTrigger = () => {
     return (
       <button
-        {...triggerProps}
-        aria-label={triggerAriaLabel || triggerText}
+        {...otherTriggerProps}
         className={cn(triggerClasses, triggerClassName)}
         disabled={disabled}
         onClick={(e) => {
-          triggerProps?.onClick?.(e)
+          triggerOnClick?.(e)
           setShowDropDown((prev) => !prev)
         }}
         ref={triggerRef}
@@ -163,7 +163,7 @@ export const Dropdown = ({
         type='button'
       >
         {triggerIcon}
-        <span>{triggerText}</span>
+        {triggerChildren && <span>{triggerChildren}</span>}
         <ChevronDown />
       </button>
     )

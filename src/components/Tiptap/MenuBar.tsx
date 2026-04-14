@@ -1,7 +1,6 @@
 import { Copy, Eraser, RotateCcw, RotateCw, Trash2 } from 'lucide-react'
 import { DOMSerializer } from '@tiptap/pm/model'
 import { useTiptapContext } from './TipTapContext'
-
 import { Divider } from './Divider'
 import { BlockTypeDropdown } from './BlockTypeDropdown'
 import { TextFormatDropdown } from './TextFormatDropdown'
@@ -91,38 +90,7 @@ export const MenuBar = ({ editor }: MenuBarProps) => {
   }
 
   /* =====================
-      renderInsert()
-  ====================== */
-
-  // const renderInsert = () => {
-  //   return (
-  //     <>
-  //       <button
-  //         className={cn(buttonClasses)}
-  //         onClick={() => editor.chain().focus().setHorizontalRule().run()}
-  //         title='horizontal rule'
-  //         type='button'
-  //       >
-  //         <Ruler />
-  //       </button>
-
-  //       {/*
-  //      //# What does this do?
-  //     */}
-  //       <button
-  //         className={cn(buttonClasses)}
-  //         onClick={() => editor.chain().focus().setHardBreak().run()}
-  //         type='button'
-  //         title='hard break'
-  //       >
-  //         <CornerDownLeft />
-  //       </button>
-  //     </>
-  //   )
-  // }
-
-  /* =====================
-  renderClearActions()
+    renderClearActions()
   ====================== */
 
   const renderClearActions = () => {
@@ -139,8 +107,6 @@ export const MenuBar = ({ editor }: MenuBarProps) => {
         >
           <Eraser />
         </button>
-
-        {/* Clear (clearContent) — nukes everything, leaving a single empty paragraph. */}
 
         <button
           className={cn(
@@ -191,8 +157,6 @@ export const MenuBar = ({ editor }: MenuBarProps) => {
 
         <Divider />
 
-        {/* {renderInsert()} */}
-
         <InsertDropdown
           disabled={false} //# Don't hardcode this
           editor={editor}
@@ -237,7 +201,6 @@ export const MenuBar = ({ editor }: MenuBarProps) => {
               navigator.clipboard.writeText(editor.getHTML())
             } else {
               // Even if you select part of a block, this will give you back the entire block.
-
               const slice = editor.state.doc.slice($from.before(), $to.after())
               const serializer = DOMSerializer.fromSchema(editor.schema)
               const div = document.createElement('div')
@@ -248,14 +211,7 @@ export const MenuBar = ({ editor }: MenuBarProps) => {
           title='copy html'
           type='button'
         >
-          <svg
-            xmlns='http://www.w3.org/2000/svg'
-            width='24'
-            height='24'
-            fill='currentColor'
-            // className='bi bi-filetype-html'
-            viewBox='0 0 16 16'
-          >
+          <svg width='24' height='24' fill='currentColor' viewBox='0 0 16 16'>
             <path
               fillRule='evenodd'
               d='M14 4.5V11h-1V4.5h-2A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v9H2V2a2 2 0 0 1 2-2h5.5zm-9.736 7.35v3.999h-.791v-1.714H1.79v1.714H1V11.85h.791v1.626h1.682V11.85h.79Zm2.251.662v3.337h-.794v-3.337H4.588v-.662h3.064v.662zm2.176 3.337v-2.66h.038l.952 2.159h.516l.946-2.16h.038v2.661h.715V11.85h-.8l-1.14 2.596H9.93L8.79 11.85h-.805v3.999zm4.71-.674h1.696v.674H12.61V11.85h.79v3.325Z'

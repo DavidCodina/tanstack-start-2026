@@ -62,10 +62,13 @@ export const AlignmentTypeDropdown = ({
     <Dropdown
       disabled={disabled}
       // stopCloseOnMenuClick
-      triggerAriaLabel='alignment options'
-      triggerIcon={alignmentIcon}
-      triggerText={alignmentTypeToAlignmentName[alignmentType]}
-      triggerTitle='alignment options'
+      triggerProps={{
+        'aria-label': 'alignment options',
+        children: alignmentTypeToAlignmentName[alignmentType],
+        className: '',
+        icon: alignmentIcon,
+        title: 'alignment options'
+      }}
     >
       <DropdownItem
         className={editorState?.isAlignLeft ? SELECTED_MIXIN : ''}

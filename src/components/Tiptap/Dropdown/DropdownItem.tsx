@@ -1,6 +1,5 @@
 import { useContext, useEffect, useRef } from 'react'
 import { DropdownContext } from './DropdownContext'
-
 import { cn } from '@/utils'
 
 type DropdownItemProps = React.ComponentProps<'button'>
@@ -52,7 +51,7 @@ export const DropdownItem = ({
   const { registerItem } = dropDownContext
 
   /* ======================
-       useEffect()
+        useEffect()
   ====================== */
 
   useEffect(() => {

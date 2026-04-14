@@ -76,10 +76,13 @@ export const BlockTypeDropdown = ({
     <Dropdown
       disabled={disabled}
       // stopCloseOnMenuClick
-      triggerAriaLabel='block type options'
-      triggerIcon={dropdownIcon}
-      triggerText={blockTypeToBlockName[blockType]}
-      triggerTitle='block type options'
+      triggerProps={{
+        'aria-label': 'block type options',
+        children: blockTypeToBlockName[blockType],
+        className: '',
+        icon: dropdownIcon,
+        title: 'block type options'
+      }}
     >
       <DropdownItem
         className={editorState?.isParagraph ? SELECTED_MIXIN : ''}

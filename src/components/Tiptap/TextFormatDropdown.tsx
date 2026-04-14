@@ -38,10 +38,6 @@ shadow-xs
 /* ========================================================================
  
 ======================================================================== */
-// This is for rendering inline text formatting.
-// However, using the Tiptap/ProseMirror jargon, we would call these "marks" / MarksDropdown.
-
-//# Add lowercase, uppercase, capitalize here...
 
 export const TextFormatDropdown = ({
   editor,
@@ -51,6 +47,7 @@ export const TextFormatDropdown = ({
   const [stopCloseOnMenuClick, setStopCloseOnMenuClick] = React.useState(false)
 
   const textColorInputRef = React.useRef<HTMLInputElement | null>(null)
+  const backgroundColorInputRef = React.useRef<HTMLInputElement | null>(null)
 
   /* ======================
           return
@@ -60,20 +57,20 @@ export const TextFormatDropdown = ({
     <Dropdown
       disabled={disabled}
       stopCloseOnMenuClick={stopCloseOnMenuClick}
-      triggerAriaLabel='Text format options'
-      triggerClassName=''
-      triggerIcon={<ALargeSmall />}
-      triggerText={''}
-      triggerTitle='Text format options'
       triggerProps={{
+        'aria-label': 'text format options',
+        children: '',
+        className: '',
+        icon: <ALargeSmall />,
         onClick: () => {
           setStopCloseOnMenuClick(false)
-        }
+        },
+        title: 'text format options'
       }}
     >
       <DropdownItem
         className={editorState?.isBold ? SELECTED_MIXIN : ''}
-        //# disabled={!editorState?.canBold}
+        // disabled={!editorState?.canBold}
         onClick={() => editor.chain().focus().toggleBold().run()}
         title='bold'
       >
@@ -82,7 +79,7 @@ export const TextFormatDropdown = ({
 
       <DropdownItem
         className={editorState?.isItalic ? SELECTED_MIXIN : ''}
-        //# disabled={!editorState?.canItalic}
+        // disabled={!editorState?.canItalic}
         onClick={() => editor.chain().focus().toggleItalic().run()}
         title='italic'
       >
@@ -91,7 +88,7 @@ export const TextFormatDropdown = ({
 
       <DropdownItem
         className={editorState?.isUnderline ? SELECTED_MIXIN : ''}
-        //# disabled={!editorState?.canUnderline}
+        // disabled={!editorState?.canUnderline}
         onClick={() => editor.chain().focus().toggleUnderline().run()}
         title='underline'
       >
@@ -100,7 +97,7 @@ export const TextFormatDropdown = ({
 
       <DropdownItem
         className={editorState?.isStrike ? SELECTED_MIXIN : ''}
-        //# disabled={!editorState?.canStrike}
+        // disabled={!editorState?.canStrike}
         onClick={() => editor.chain().focus().toggleStrike().run()}
         title='strikethrough'
       >
@@ -109,7 +106,7 @@ export const TextFormatDropdown = ({
 
       <DropdownItem
         className={editorState?.isLink ? SELECTED_MIXIN : ''}
-        //# disabled={!editorState?.canSetLink && !editorState?.canUnsetLink}
+        // disabled={!editorState?.canSetLink && !editorState?.canUnsetLink}
         onClick={() => {
           if (editorState?.isLink) {
             // Already on a link — edit or remove it
@@ -163,7 +160,7 @@ export const TextFormatDropdown = ({
 
       <DropdownItem
         className={editorState?.isHighlight ? SELECTED_MIXIN : ''}
-        //# disabled={!editorState?.canHighlight}
+        // disabled={!editorState?.canHighlight}
         onClick={() => editor.chain().focus().toggleHighlight().run()}
         title='highlight'
       >
@@ -172,7 +169,7 @@ export const TextFormatDropdown = ({
 
       <DropdownItem
         className={editorState?.isCode ? SELECTED_MIXIN : ''}
-        //# disabled={!editorState?.canCode}
+        // disabled={!editorState?.canCode}
         onClick={() => editor.chain().focus().toggleCode().run()}
         title='code'
       >
@@ -207,17 +204,52 @@ export const TextFormatDropdown = ({
       >
         <input
           className='h-[24px] w-[24px] cursor-pointer rounded p-0'
-          // defaultValue='#15c213'
-          value={editorState?.color ? editorState?.color : '#000000'}
-          ref={textColorInputRef}
-          style={{ colorScheme: 'normal' }}
-          type='color'
           onInput={(event) => {
             editor.chain().focus().setColor(event.currentTarget.value).run()
           }}
-          // value={editorState?.color}
+          ref={textColorInputRef}
+          style={{ colorScheme: 'normal' }}
+          type='color'
+          value={editorState?.color ? editorState.color : '#000000'}
         />{' '}
         Text Color
+      </DropdownItem>
+
+      <DropdownItem
+        onClick={() => {
+          const backgroundColorInput = backgroundColorInputRef.current
+          if (!backgroundColorInput) return
+          backgroundColorInput.click()
+        }}
+        onMouseDown={() => {
+          setStopCloseOnMenuClick(true)
+        }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            setStopCloseOnMenuClick(true)
+          }
+        }}
+        title='background color'
+      >
+        <input
+          className='h-[24px] w-[24px] cursor-pointer rounded p-0'
+          onInput={(event) => {
+            editor
+              .chain()
+              .focus()
+              .setBackgroundColor(event.currentTarget.value)
+              .run()
+          }}
+          ref={backgroundColorInputRef}
+          style={{ colorScheme: 'normal' }}
+          type='color'
+          value={
+            editorState?.backgroundColor
+              ? editorState.backgroundColor
+              : '#000000'
+          }
+        />{' '}
+        Background Color
       </DropdownItem>
 
       <DropdownItem
@@ -239,10 +271,6 @@ export const TextFormatDropdown = ({
       >
         <Superscript /> Superscript
       </DropdownItem>
-
-      {/* What does this do?
-      Clear Marks (unsetAllMarks) — strips inline formatting (bold, italic, etc.)
-      from the selection but leaves the text and block structure intact. */}
 
       <DropdownItem
         className={''}
