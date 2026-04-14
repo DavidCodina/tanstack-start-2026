@@ -80,11 +80,11 @@ img.ProseMirror-separator {
 /* class="tiptap ProseMirror" is automatically applied to <div contendeditable="true">
 Note: The following component:
 
-  <EditorContent data-slot='editor-content' editor={editor} /> 
+  <EditorContent data-slot='tiptap-editor-content' editor={editor} /> 
   
 creates a <div> that wraps the actual contenteditable <div> such that the DOM looks like:
 
-  <div data-slot="editor-content">
+  <div data-slot="tiptap-editor-content">
     <div contenteditable="true" translate="no" class="tiptap ProseMirror" tabindex="0"></div>
   </div>
 */

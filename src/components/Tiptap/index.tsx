@@ -3,6 +3,19 @@ import { EditorContent } from '@tiptap/react'
 import { TiptapProvider, useTiptapContext } from './TipTapContext'
 import { MenuBar } from './MenuBar'
 
+import type { EditorProps } from './TipTapContext'
+import { cn } from '@/utils'
+
+type TiptapProps = Omit<React.ComponentProps<'div'>, 'children'> & {
+  editorProps?: EditorProps
+}
+
+const baseClasses = `
+[--tiptap-min-content-height:250px]
+bg-card rounded-lg border shadow
+focus-within:ring-[3px] focus-within:ring-primary/50
+`
+
 /* ========================================================================
 
 ======================================================================== */
@@ -16,6 +29,7 @@ import { MenuBar } from './MenuBar'
 //    Code DPS:            https://www.youtube.com/watch?v=hpQmgLPaCcE&list=PL6yN8EtcWUmYfgln8Vxm5sEde8FroZYt0
 //    De Mawo:             https://www.youtube.com/watch?v=MEhVUDP3a_k
 //    Solve It Out:        https://www.youtube.com/watch?v=LiELuVk12ig
+//    Age Concepts         https://www.youtube.com/watch?v=zIm1FYi8A7c
 //
 // Examples:               https://tiptap.dev/docs/examples
 // Roadmap:                https://tiptap.dev/roadmap
@@ -38,7 +52,7 @@ import { MenuBar } from './MenuBar'
 //
 ///////////////////////////////////////////////////////////////////////////
 
-const Tiptap = () => {
+const Tiptap = ({ className, ...otherProps }: TiptapProps) => {
   const { editor } = useTiptapContext()
 
   if (!editor) {
@@ -50,11 +64,15 @@ const Tiptap = () => {
   ====================== */
 
   return (
-    <div className='bg-card focus-within:ring-primary/50 mx-auto max-w-[850px] rounded-lg border shadow [--tiptap-min-content-height:250px] focus-within:ring-[3px]'>
+    <div
+      {...otherProps}
+      data-slot='tiptap-editor'
+      className={cn(baseClasses, className)}
+    >
       <MenuBar editor={editor} />
 
       <EditorContent
-        data-slot='editor-content'
+        data-slot='tiptap-editor-content'
         // Using resize-y works well for now, but if you run into actual
         // isues where content is hidden by overflow-auto, then you many want
         // to go to a programmatic solution.
@@ -65,11 +83,14 @@ const Tiptap = () => {
   )
 }
 
-//! temporary any
-const TiptapWithProvider = (props: any) => {
+/* ========================================================================
+
+======================================================================== */
+
+const TiptapWithProvider = ({ editorProps, ...otherProps }: TiptapProps) => {
   return (
-    <TiptapProvider>
-      <Tiptap {...props} />
+    <TiptapProvider editorProps={editorProps}>
+      <Tiptap {...otherProps} />
     </TiptapProvider>
   )
 }

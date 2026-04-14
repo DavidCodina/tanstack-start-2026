@@ -61,6 +61,7 @@ import { menuBarSelector } from './menuBarState'
 import { Indent } from './extensions/Indent'
 
 import type { Editor } from '@tiptap/core'
+// import type { UseEditorOptions } from '@tiptap/react'
 
 import type { MenuBarState } from './menuBarState'
 
@@ -69,100 +70,29 @@ type TiptapContextValue = {
   editorState: MenuBarState
 }
 
-type TiptapProviderProps = {
+/** A limited number of options to be passed to the useEditor configuration. */
+export type EditorProps = {
+  content?: string
+  placeholder?: string
+}
+
+export type TiptapProviderProps = {
   children: React.ReactNode
+  editorProps?: EditorProps
 }
 
 const TiptapContext = createContext<TiptapContextValue | undefined>(undefined)
 
-const defaultValue = `
-<h2>
-  Whuddup!
-</h2>
-<p>
-  this is a <em>basic</em> example of <strong>Tiptap</strong>. Sure, there are all kind of basic text styles you'd probably expect from a text editor. But wait until you see the lists:
-</p>
-<ul>
-  <li>
-    That's a bullet list with one …
-  </li>
-  <li>
-    … or two list items.
-  </li>
-</ul>
-<p>
-  Isn't that great? And all of that is editable. But wait, there's more. Let's try a code block:
-</p>
-<pre><code class="language-css">body {
-  display: none;
-}</code></pre>
-
-<blockquote>
-  <h5>My Code Quote</h5>
-  <p>This is a quote with an <code>h5</code> block, code block, and paragraph</p>
-  <pre><code>const x = 2;</code></pre>
-  <p>Bla, bla, bla...</p>
-</blockquote>
-`
 /* ========================================================================
              
 ======================================================================== */
 
-//# Separate the editor from the example.
-
-//# Add Lowercase, Uppercase, Capitalize
-//# This may be a situation for a custom extension.
-
-//# Research how to add font family (part of TextStyleKit)
-
-//# Sdd emoji support: https://tiptap.dev/docs/editor/extensions/nodes/emoji
-
-//# Add image support: https://tiptap.dev/docs/editor/extensions/nodes/image
-
-//# Add Youtube embed support: https://tiptap.dev/docs/editor/extensions/nodes/youtube
-
-//# Research how to add font sizes (part of TextStyleKit)
-
-//# Add fallbacks to CSS custom properties in Tiptap.css
-
-//# Add a DragHandle
-//# https://tiptap.dev/docs/editor/extensions/functionality/drag-handle-react
-
-//# Tiptap actually has a whole bunch of UI comonents
-//# https://tiptap.dev/docs/ui-components/components/overview
-//# Some of these are behind a paywall.
-
-//# Add Checkboxes:
-//# https://tiptap.dev/docs/editor/extensions/nodes/task-list
-
-//# Review Flowbite: https://flowbite.com/docs/plugins/wysiwyg/
-
-//# Reive: https://github.com/ueberdosis/awesome-tiptap/
-
-//# When are these useful?
-// <FloatingMenu editor={editor}>This is the floating menu</FloatingMenu>
-// <BubbleMenu editor={editor}>This is the bubble menu</BubbleMenu>
-
-//# Does Tiptap have any kind of built-in sanitization?
-
-//# Fix RTE import issue.
-
-//# See here for CustomCodeBlock. This is also a great example to pick apart.
-//# https://github.com/phyohtetarkar/tiptap-block-editor/blob/main/src/components/editor/default-extensions.ts
-
-//# Other things:
-//# - Tiptap has a CharacterCount extension that gives you live stats:
-//#    editor.storage.characterCount.characters() // e.g. 142
-//#    editor.storage.characterCount.words()      // e.g. 27
-//#
-//# - Slash Commands / Bubble Menu / Floating Menu
-//#   Tiptap ships three built-in UI helpers:
-//#     BubbleMenu — pops up contextually when text is selected (great for your bold/italic/highlight buttons)
-//#     FloatingMenu — appears on empty lines (good for / command palettes)
-//#     Slash commands aren't built-in but are a very common community extension
-
-export function TiptapProvider({ children }: TiptapProviderProps) {
+export function TiptapProvider({
+  children,
+  editorProps = {}
+}: TiptapProviderProps) {
   const editor = useEditor({
+    content: editorProps?.content,
     editable: true, // ⚠️ false doesn't seem to make a difference.
     ///////////////////////////////////////////////////////////////////////////
     //
@@ -195,7 +125,6 @@ export function TiptapProvider({ children }: TiptapProviderProps) {
       // https://github.com/phyohtetarkar/tiptap-block-editor/blob/main/src/components/editor/default-extensions.ts
       StarterKit.configure({
         // ⚠️ Rather than using Tiptap.css to style the elements, one cal also hardcode them directy into the HTML.
-
         // paragraph: {
         //   HTMLAttributes: {
         //     class: 'outline-2 outline-dashed outline-pink-500'
@@ -271,7 +200,7 @@ export function TiptapProvider({ children }: TiptapProviderProps) {
       }),
 
       Placeholder.configure({
-        placeholder: 'Write something...'
+        placeholder: editorProps?.placeholder
         // emptyEditorClass: 'is-editor-empty', // default
         // emptyNodeClass: 'is-empty' // default
         // dataAttribute: 'placeholder' // default => data-placeholder="Write something..."
@@ -287,10 +216,9 @@ export function TiptapProvider({ children }: TiptapProviderProps) {
         // },
       }),
 
-      Superscript, //# Expand on configuration.
-      Subscript, //# Expand on configuration.
+      Superscript,
+      Subscript,
       TextAlign.configure({
-        //# Maybe this is where canAlign... logic is false.
         types: ['heading', 'paragraph']
       }),
       Highlight,
@@ -302,7 +230,7 @@ export function TiptapProvider({ children }: TiptapProviderProps) {
         maxLevel: 8
       })
     ],
-    content: defaultValue,
+
     onUpdate: ({ editor }) => {
       const html = editor.getHTML()
       const _json = editor.getJSON()
