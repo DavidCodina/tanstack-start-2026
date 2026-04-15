@@ -6,6 +6,7 @@ import { BlockTypeDropdown } from './BlockTypeDropdown'
 import { TextFormatDropdown } from './TextFormatDropdown'
 import { AlignmentTypeDropdown } from './AlignmenTypeDropdown'
 import { InsertDropdown } from './InsertDropdown'
+import { FontFamilyDropdown } from './FontFamilyDropdown'
 import { FontSize } from './FontSize'
 
 import type { Editor } from '@tiptap/core'
@@ -143,6 +144,14 @@ export const MenuBar = ({ editor }: MenuBarProps) => {
         <Divider />
 
         <BlockTypeDropdown
+          disabled={false} //# Don't hardcode this
+          editor={editor}
+          editorState={editorState}
+        />
+
+        <Divider />
+
+        <FontFamilyDropdown
           disabled={false} //# Don't hardcode this
           editor={editor}
           editorState={editorState}

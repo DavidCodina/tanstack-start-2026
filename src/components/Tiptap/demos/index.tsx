@@ -111,7 +111,7 @@ export const TiptapDemo = () => {
   ====================== */
 
   return (
-    <section className='mx-auto max-w-[950px]'>
+    <section className='mx-auto max-w-[1100px]'>
       <Tiptap
         className='shadow'
         editorProps={{

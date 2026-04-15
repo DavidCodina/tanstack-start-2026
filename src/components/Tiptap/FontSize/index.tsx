@@ -62,6 +62,10 @@ group-hover:focus-visible:ring-white
 // it's not known to the editor. That's expected (and fine).
 
 export const FontSize = ({ disabled }: FontSizeProps) => {
+  /* ======================
+        state & refs
+  ====================== */
+
   const { editor, editorState } = useTiptapContext()
   // Generally, fontSize will be string or undefined.
   const fontSize = editorState?.fontSize
@@ -141,14 +145,11 @@ export const FontSize = ({ disabled }: FontSizeProps) => {
   }, [valueAsNumber])
 
   /* ======================
-          return
+   renderDecrementButton()
   ====================== */
 
-  return (
-    <div
-      className={baseClasses}
-      data-slot='tiptap-font-size' // Used for styling in Tiptap.css
-    >
+  const renderDecrementButton = () => {
+    return (
       <button
         aria-label='decrease font size'
         className={cn(
@@ -188,7 +189,15 @@ export const FontSize = ({ disabled }: FontSizeProps) => {
       >
         <Minus />
       </button>
+    )
+  }
 
+  /* ======================
+        renderInput()
+  ====================== */
+
+  const renderInput = () => {
+    return (
       <input
         className={inputClasses}
         disabled={disabled}
@@ -222,11 +231,15 @@ export const FontSize = ({ disabled }: FontSizeProps) => {
             setInternalValue(valueAsNumber.toString())
           }
 
+          ///////////////////////////////////////////////////////////////////////////
+          //
           // Focus jumping back to the editor selection can be unexpected for keyboard users.
           // This is mitigated by only focusing back on the selection if fontSize has
           // changed. Otherwise, allow the user to tab through the buttons.
           // This behavior is similar to what is done in the Lexical playgroud.
           // https://playground.lexical.dev/
+          //
+          ///////////////////////////////////////////////////////////////////////////
           if (editor && fontSizeWhenInputFocusedRef.current !== fontSize) {
             editor.chain().focus().run()
           }
@@ -277,14 +290,21 @@ export const FontSize = ({ disabled }: FontSizeProps) => {
           // prior to calling setFontSize().
           if (['e', 'E', '+', '-', '.', ' '].includes(e.key)) {
             e.preventDefault()
-            return
           }
         }}
         title='font size'
         type='number'
         value={internalValue}
       />
+    )
+  }
 
+  /* ======================
+   renderIncrementButton()
+  ====================== */
+
+  const renderIncrementButton = () => {
+    return (
       <button
         aria-label='increase font size'
         className={cn(
@@ -315,6 +335,21 @@ export const FontSize = ({ disabled }: FontSizeProps) => {
       >
         <Plus />
       </button>
+    )
+  }
+
+  /* ======================
+          return
+  ====================== */
+
+  return (
+    <div
+      className={baseClasses}
+      data-slot='tiptap-font-size' // Used for styling in Tiptap.css
+    >
+      {renderDecrementButton()}
+      {renderInput()}
+      {renderIncrementButton()}
     </div>
   )
 }
