@@ -11,7 +11,7 @@ type TiptapProps = Omit<React.ComponentProps<'div'>, 'children' | 'onChange'>
 
 const baseClasses = `
 [--tiptap-min-content-height:250px]
-bg-card rounded-lg border shadow
+bg-card rounded-lg border shadow-xs
 focus-within:ring-[3px] focus-within:ring-primary/50
 `
 

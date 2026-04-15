@@ -39,8 +39,6 @@ function PageHome() {
         </h1>
 
         <TiptapDemo />
-
-        <div style={{ marginBottom: 1000 }} />
       </PageContainer>
     </Page>
   )

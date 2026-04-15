@@ -149,9 +149,7 @@ export const FontSize = ({ disabled }: FontSizeProps) => {
         min={MIN_ALLOWED_FONT_SIZE}
         max={MAX_ALLOWED_FONT_SIZE}
         onBlur={() => {
-          //# If value is '', NaN, etc. reset to default.
-          //# Check e.target.value to see if it's correct
-          //# If it's not correct, then reset it to valueAsNumber.toString()
+          // When the input blurs, update internalValue to the current editorState.fontSize -> valueAsNumber
           setInternalValue(valueAsNumber.toString())
         }}
         // ArrowUp/ArrowDown also trigger the onChange
@@ -166,7 +164,7 @@ export const FontSize = ({ disabled }: FontSizeProps) => {
           //# if (currentValueAsNumber >= MAX_ALLOWED_FONT_SIZE) return
           //# if (currentValueAsNumber <= MIN_ALLOWED_FONT_SIZE) return
 
-          //# If newValue meets the criteria, then we can call:
+          //# If newValue meets the criteria, then call:
 
           // editor .chain()
           //   //# .focus()
