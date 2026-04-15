@@ -89,6 +89,30 @@ creates a <div> that wraps the actual contenteditable <div> such that the DOM lo
   </div>
 */
 
+/* =====================
+
+====================== */
+
+[data-slot='tiptap-font-size']
+  .appearance-none-fix[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+[data-slot='tiptap-font-size']
+  .appearance-none-fix[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+[data-slot='tiptap-font-size'] .appearance-none-fix[type='number'] {
+  -moz-appearance: textfield;
+}
+
+/* =====================
+
+====================== */
+
 [data-slot='tiptap-menu-bar']
   input[type='color']::-webkit-color-swatch-wrapper {
   padding: 0;
@@ -103,6 +127,10 @@ creates a <div> that wraps the actual contenteditable <div> such that the DOM lo
   border: 1px solid var(--color-foreground);
   border-radius: 4px;
 }
+
+/* =====================
+
+====================== */
 
 .tiptap :first-child {
   margin-top: 0;

@@ -204,6 +204,7 @@ export const TextFormatDropdown = ({
       >
         <input
           className='h-[24px] w-[24px] cursor-pointer rounded p-0'
+          //# Why not onChange?
           onInput={(event) => {
             editor.chain().focus().setColor(event.currentTarget.value).run()
           }}
@@ -233,6 +234,7 @@ export const TextFormatDropdown = ({
       >
         <input
           className='h-[24px] w-[24px] cursor-pointer rounded p-0'
+          //# Why not onChange?
           onInput={(event) => {
             editor
               .chain()

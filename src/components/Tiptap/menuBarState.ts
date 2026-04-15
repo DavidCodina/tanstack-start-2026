@@ -143,7 +143,13 @@ export function menuBarSelector(ctx: EditorStateSnapshot<Editor | null>) {
     // https://tiptap.dev/docs/editor/extensions/functionality/background-color
 
     color: ctx.editor.getAttributes('textStyle').color,
-    backgroundColor: ctx.editor.getAttributes('textStyle').backgroundColor
+    backgroundColor: ctx.editor.getAttributes('textStyle').backgroundColor,
+
+    /* =====================
+          Fon Size
+    ====================== */
+
+    fontSize: ctx.editor.getAttributes('textStyle').fontSize
   }
 }
 

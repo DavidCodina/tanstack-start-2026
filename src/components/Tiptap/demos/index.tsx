@@ -39,8 +39,6 @@ const defaultValue = `
 
 //# Add font family support (part of TextStyleKit)
 
-//# Add font size support   (part of TextStyleKit)
-
 //# Add Checkbox supprt:
 //# https://tiptap.dev/docs/editor/extensions/nodes/task-list
 
@@ -64,7 +62,7 @@ const defaultValue = `
 
 //# Review Flowbite: https://flowbite.com/docs/plugins/wysiwyg/
 
-//# Reive: https://github.com/ueberdosis/awesome-tiptap/
+//# Review: https://github.com/ueberdosis/awesome-tiptap/
 
 //# Does Tiptap have any kind of built-in sanitization?
 
@@ -82,10 +80,10 @@ export const TiptapDemo = () => {
 
   return (
     <Tiptap
-      className='mx-auto max-w-[850px]'
+      className='mx-auto max-w-[950px]'
       editorProps={{
         content: defaultValue,
-        placeholder: 'Write something dummy...'
+        placeholder: 'Write something...'
       }}
       onChange={(value) => {
         console.log('value from external onChange:', value)

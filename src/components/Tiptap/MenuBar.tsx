@@ -7,6 +7,8 @@ import { TextFormatDropdown } from './TextFormatDropdown'
 import { AlignmentTypeDropdown } from './AlignmenTypeDropdown'
 import { InsertDropdown } from './InsertDropdown'
 
+import { FontSize } from './FontSize'
+
 import type { Editor } from '@tiptap/core'
 
 import { cn } from '@/utils'
@@ -136,7 +138,7 @@ export const MenuBar = ({ editor }: MenuBarProps) => {
 
   return (
     <div data-slot='tiptap-menu-bar' className='border-b'>
-      <div className='mx-auto flex w-fit flex-wrap gap-2 p-2'>
+      <div className='mx-auto flex w-fit flex-wrap items-start gap-2 p-2'>
         {renderUndoRedo()}
 
         <Divider />
@@ -146,6 +148,10 @@ export const MenuBar = ({ editor }: MenuBarProps) => {
           editor={editor}
           editorState={editorState}
         />
+
+        <Divider />
+
+        <FontSize />
 
         <Divider />
 
