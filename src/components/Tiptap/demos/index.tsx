@@ -120,7 +120,7 @@ export const TiptapDemo = () => {
         }}
         onChange={(newValue) => {
           setValue(newValue.html)
-          console.log('value from external onChange:', value)
+          // console.log('value from external onChange:', value)
         }}
       />
 

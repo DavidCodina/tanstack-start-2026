@@ -6,7 +6,6 @@ import { BlockTypeDropdown } from './BlockTypeDropdown'
 import { TextFormatDropdown } from './TextFormatDropdown'
 import { AlignmentTypeDropdown } from './AlignmenTypeDropdown'
 import { InsertDropdown } from './InsertDropdown'
-
 import { FontSize } from './FontSize'
 
 import type { Editor } from '@tiptap/core'

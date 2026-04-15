@@ -42,11 +42,7 @@ import TextAlign from '@tiptap/extension-text-align'
 import { Placeholder } from '@tiptap/extensions'
 
 // https://tiptap.dev/docs/editor/extensions/marks/text-style
-import {
-  //# FontFamily,
-  //# FontSize,
-  TextStyleKit
-} from '@tiptap/extension-text-style'
+import { TextStyleKit } from '@tiptap/extension-text-style'
 
 // import Image from '@tiptap/extension-image'
 // import CharacterCount from '@tiptap/extension-character-count'
@@ -136,7 +132,7 @@ export function TiptapProvider({
 
     extensions: [
       //# What is the Document extension? It's already part of StarterKit, but what does it do?
-      TextStyleKit, // This already includes Color, BackgroundColor, etc.
+      TextStyleKit, // This already includes Color, BackgroundColor, FontSize, etc.
       //
 
       // ⚠️ Note you can also do this kind of thing.

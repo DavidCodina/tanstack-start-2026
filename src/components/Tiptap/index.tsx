@@ -21,7 +21,7 @@ focus-within:ring-[3px] focus-within:ring-primary/50
 ///////////////////////////////////////////////////////////////////////////
 //
 // Tiptap Youtube:         https://www.youtube.com/@tiptap-editor/videos
-// ✅ Cand Dev:            https://www.youtube.com/watch?v=QVffer2fRfg //# Start at 13:15
+// ✅ Cand Dev:            https://www.youtube.com/watch?v=QVffer2fRfg
 //    Cand Dev:            https://www.youtube.com/watch?v=M3BdmN4etYg
 // ✅ StackWild:           https://www.youtube.com/watch?v=s1lpwpeSGW4
 //    Age Concepts:        https://www.youtube.com/watch?v=zIm1FYi8A7c
