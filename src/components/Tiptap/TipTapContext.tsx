@@ -1,8 +1,6 @@
 import { createContext, use } from 'react'
 import { useEditor, useEditorState } from '@tiptap/react'
 
-// import { BubbleMenu, FloatingMenu } from '@tiptap/react/menus'
-
 ///////////////////////////////////////////////////////////////////////////
 //
 // https://tiptap.dev/docs/editor/extensions/functionality/starterkit
@@ -45,7 +43,6 @@ import { Placeholder } from '@tiptap/extensions'
 import { TextStyleKit } from '@tiptap/extension-text-style'
 
 // https://tiptap.dev/docs/editor/extensions/nodes/youtube
-//` import Youtube from '@tiptap/extension-youtube'
 import { CustomYoutube } from './extensions/CustomYoutube'
 
 // import Image from '@tiptap/extension-image'
@@ -105,30 +102,6 @@ export type TiptapProviderProps = {
 
 const TiptapContext = createContext<TiptapContextValue | null>(null)
 
-export type CustomSetYoutubeVideoOptions = {
-  src: string
-  width?: number
-  height?: number
-  start?: number
-  textAlign?: 'left' | 'center' | 'right' | 'justify'
-}
-
-// export function setYoutubeVideo(
-//   editor: Editor,
-//   options: CustomSetYoutubeVideoOptions
-// ) {
-//   const { textAlign, ...attrs } = options
-//   const nodeAttrs = {
-//     ...attrs,
-//     // keep the attribute on the node so your CustomYoutube extension can read it
-//     textAlign: textAlign ?? undefined
-//   }
-//   return editor.commands.insertContent({
-//     type: 'youtube',
-//     attrs: nodeAttrs
-//   })
-// }
-
 /* ========================================================================
              
 ======================================================================== */
@@ -145,7 +118,10 @@ export function TiptapProvider({
     immediatelyRender: false,
     // shouldRerenderOnTransaction: false,
     content: editorProps?.content,
-    editable: true, // ⚠️ false doesn't seem to make a difference.
+    // ⚠️ false doesn't seem to make a difference.
+    //# What is the way to programmatically change this later?
+    //# What exactly does it do?
+    editable: true,
     ///////////////////////////////////////////////////////////////////////////
     //
     //! I'm not sure if this is actually true, or at least it doesn't seem to
@@ -285,7 +261,11 @@ export function TiptapProvider({
 
       CustomYoutube.configure({
         controls: false,
-        nocookie: true
+        nocookie: true,
+
+        HTMLAttributes: {
+          class: ''
+        }
         //# Possibly try setting a custom width/height here and/or setting it to undefined.
       })
     ],
@@ -349,7 +329,6 @@ export function TiptapProvider({
       if (!editor || !ctx.editor) return null
       return menuBarSelector(ctx)
     }
-    // selector: menuBarStateSelector
   })
 
   /* ======================

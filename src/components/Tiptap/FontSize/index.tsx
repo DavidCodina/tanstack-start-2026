@@ -2,7 +2,7 @@ import * as React from 'react'
 
 import { Minus, Plus } from 'lucide-react'
 import { useTiptapContext } from '../TipTapContext'
-import { stringToNumberOrNull } from './utils'
+import { stringToNumberOrUndefined } from './utils'
 import { cn } from '@/utils'
 
 type FontSizeProps = {
@@ -69,7 +69,8 @@ export const FontSize = ({ disabled }: FontSizeProps) => {
   const { editor, editorState } = useTiptapContext()
   // Generally, fontSize will be string or undefined.
   const fontSize = editorState?.fontSize
-  const fontSizeAsNumber: number | null = stringToNumberOrNull(fontSize) // stringToNumber() still allows +/-
+  const fontSizeAsNumber: number | undefined =
+    stringToNumberOrUndefined(fontSize)
   const valueAsNumber =
     typeof fontSizeAsNumber === 'number' ? fontSizeAsNumber : DEFAULT_FONT_SIZE
 
@@ -209,7 +210,8 @@ export const FontSize = ({ disabled }: FontSizeProps) => {
           fontSizeWhenInputFocusedRef.current = fontSize
         }}
         onBlur={() => {
-          const internalValueAsNumber = stringToNumberOrNull(internalValue)
+          const internalValueAsNumber: number | undefined =
+            stringToNumberOrUndefined(internalValue)
 
           if (
             editor &&
@@ -265,7 +267,8 @@ export const FontSize = ({ disabled }: FontSizeProps) => {
             return
           }
 
-          const newValueAsNumber = stringToNumberOrNull(newValue)
+          const newValueAsNumber: number | undefined =
+            stringToNumberOrUndefined(newValue)
 
           if (
             typeof newValueAsNumber !== 'number' ||

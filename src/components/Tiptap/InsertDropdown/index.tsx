@@ -37,6 +37,122 @@ export const InsertDropdown = ({
   const [showYoutubeModal, setShowYoutubeModal] = React.useState(false)
 
   /* ======================
+ 
+  ====================== */
+
+  const renderYoutubeModal = () => {
+    if (!showYoutubeModal) return null
+
+    return (
+      <YoutubeModal
+        onSubmit={(values) => {
+          if (!editor || !values.url || typeof values.url !== 'string') {
+            setShowYoutubeModal(false)
+            return
+          }
+
+          // Simple preemptive URL validation.
+          if (values.url.startsWith('https://www.youtube.com/watch?v=')) {
+            editor.commands.setYoutubeVideo({
+              src: values.url,
+              // height is not set here. Why? Because Tiptap.css is already setting: height: auto; + aspect-ratio: 16 / 9;
+              width: values.width || 500,
+              // Even with undefined, it will try to set it to height: 480.
+              // On can change the default width and height in the useEditor() hook
+              // when implementing    CustomYoutube.configure({ ... }).
+              height: undefined,
+
+              ///////////////////////////////////////////////////////////////////////////
+              //
+              // ⚠️ Gotcha:
+              //
+              // Object literal may only specify known properties, and 'textAlign'
+              // does not exist in type 'SetYoutubeVideoOptions'.
+              // Solution: assert options back onto options object:
+              //
+              //   const setYoutubeVideo = editor.commands.setYoutubeVideo
+              //   type Options = Parameters<typeof setYoutubeVideo>[0]
+              //   {} as Options
+              //
+              // Or create a tiptap-augmentation.d.ts file:
+              //
+              // import '@tiptap/core'
+              //
+              // declare module '@tiptap/core' {
+              //   interface Commands<ReturnType> {
+              //     youtube: {
+              //       setYoutubeVideo: (options: {
+              //         src: string
+              //         width?: number
+              //         height?: number
+              //         start?: number
+              //         textAlign?: 'left' | 'center' | 'right' | 'justify' // Added
+              //       }) => ReturnType
+              //     }
+              //   }
+              // }
+              //
+              // But here's the crazy part. While in many cases, it would be fine to place such a file
+              // in src/types. But in this case it ONLY works if you place it directly in the project
+              // root. This has to do with how the declaration merging order is happening.
+              //
+              // When a .d.ts is in the root, TypeScript often treats it as a "Global Augmentation" that
+              // it loads before it starts resolving the specific imports inside your node_modules.
+              // Conversely, when it's in src, it's processed as part of the module graph, and by the time it gets
+              // there, it sees the "official" type already locked in, leading to a conflict.
+              //
+              // Most .d.ts augmentations you write are likely adding new properties to global objects or libraries that
+              // don't have those properties yet. Tiptap is "aggressive" because it has already claimed the territory.
+              // you are trying to occupy.
+              //
+              // In TypeScript, Interface Merging is additive.
+              //
+              //   - Your other files: If you augment an interface to add a property that doesn't exist (e.g., adding userRole to a Request object),
+              //     TypeScript simply glues your definition onto the original. It’s a clean "1 + 1 = 2" scenario.
+              //
+              //   - The Tiptap Case: The @tiptap/extension-youtube package has already told TypeScript: "I am the owner of the youtube
+              //     property in the Commands interface, and setYoutubeVideo only accepts these 4 specific arguments."
+              //
+              // The "Execution Order" of Types
+              // The location of your file (root vs. src/types) changes when TypeScript sees your code relative to the library code.
+              //
+              //   - In the Root: TypeScript treats it like a "Global Override." It often processes these top-level ambient declarations
+              //     before it dives deep into the specific import chains inside your src folder. It basically accepts your "truth" before
+              //     the library has a chance to complain.
+              //
+              //   - In src/types: Because this folder is inside your source tree and the file contains an import statement, it is treated
+              //     as a Module Augmentation. TypeScript processes it right alongside your actual code. By this point, it has already
+              //     resolved import Youtube from '@tiptap/extension-youtube', so the "official" type is already locked in. When it sees
+              //     your augmentation, it flags it as a "Subsequent property declaration" conflict.
+              //
+              // The "Dependency Loop"
+              //
+              //   - When your augmentation is in src/types, you are technically trying to augment @tiptap/core at the same time the
+              //     Extension is trying to augment it. Since the Extension's definition is "baked into" the package you installed,
+              //     the compiler gives the package priority to ensure the library's own code remains valid.
+              //
+              // TL;DR: place the .d.ts file in the project root.
+              //
+              ///////////////////////////////////////////////////////////////////////////
+
+              textAlign: values.textAlign
+            })
+          } else {
+            // Could to a toast here...
+            alert(`Invalid URL. It must begin with:
+https://www.youtube.com/watch?v=`)
+          }
+
+          setShowYoutubeModal(false)
+        }}
+        onCancel={() => {
+          setShowYoutubeModal(false)
+        }}
+      />
+    )
+  }
+
+  /* ======================
           return
   ====================== */
 
@@ -83,113 +199,7 @@ export const InsertDropdown = ({
         </DropdownItem>
       </Dropdown>
 
-      {showYoutubeModal && (
-        <YoutubeModal
-          onSubmit={(values) => {
-            if (!editor || !values.url || typeof values.url !== 'string') {
-              setShowYoutubeModal(false)
-              return
-            }
-
-            // Simple preemptive URL validation.
-            if (values.url.startsWith('https://www.youtube.com/watch?v=')) {
-              editor.commands.setYoutubeVideo({
-                src: values.url,
-                // height is not set here. Why? Because Tiptap.css is already setting: height: auto; + aspect-ratio: 16 / 9;
-                width: values.width || 500,
-                // Even with undefined, it will try to set it to height: 480.
-                // On can change the default width and height in the useEditor() hook
-                // when implementing    CustomYoutube.configure({ ... }).
-                height: undefined,
-
-                ///////////////////////////////////////////////////////////////////////////
-                //
-                // ⚠️ Gotcha:
-                //
-                // Object literal may only specify known properties, and 'textAlign'
-                // does not exist in type 'SetYoutubeVideoOptions'.
-                // Solution: assert options back onto options object:
-                //
-                //   const setYoutubeVideo = editor.commands.setYoutubeVideo
-                //   type Options = Parameters<typeof setYoutubeVideo>[0]
-                //   {} as Options
-                //
-                // Or create a tiptap-augmentation.d.ts file:
-                //
-                // import '@tiptap/core'
-                //
-                // declare module '@tiptap/core' {
-                //   interface Commands<ReturnType> {
-                //     youtube: {
-                //       setYoutubeVideo: (options: {
-                //         src: string
-                //         width?: number
-                //         height?: number
-                //         start?: number
-                //         textAlign?: 'left' | 'center' | 'right' | 'justify' // Added
-                //       }) => ReturnType
-                //     }
-                //   }
-                // }
-                //
-                // But here's the crazy part. While in many cases, it would be fine to place such a file
-                // in src/types. But in this case it ONLY works if you place it directly in the project
-                // root. This has to do with how the declaration merging order is happening.
-                //
-                // When a .d.ts is in the root, TypeScript often treats it as a "Global Augmentation" that
-                // it loads before it starts resolving the specific imports inside your node_modules.
-                // Conversely, when it's in src, it's processed as part of the module graph, and by the time it gets
-                // there, it sees the "official" type already locked in, leading to a conflict.
-                //
-                // Most .d.ts augmentations you write are likely adding new properties to global objects or libraries that
-                // don't have those properties yet. Tiptap is "aggressive" because it has already claimed the territory.
-                // you are trying to occupy.
-                //
-                // In TypeScript, Interface Merging is additive.
-                //
-                //   - Your other files: If you augment an interface to add a property that doesn't exist (e.g., adding userRole to a Request object),
-                //     TypeScript simply glues your definition onto the original. It’s a clean "1 + 1 = 2" scenario.
-                //
-                //   - The Tiptap Case: The @tiptap/extension-youtube package has already told TypeScript: "I am the owner of the youtube
-                //     property in the Commands interface, and setYoutubeVideo only accepts these 4 specific arguments."
-                //
-                // The "Execution Order" of Types
-                // The location of your file (root vs. src/types) changes when TypeScript sees your code relative to the library code.
-                //
-                //   - In the Root: TypeScript treats it like a "Global Override." It often processes these top-level ambient declarations
-                //     before it dives deep into the specific import chains inside your src folder. It basically accepts your "truth" before
-                //     the library has a chance to complain.
-                //
-                //   - In src/types: Because this folder is inside your source tree and the file contains an import statement, it is treated
-                //     as a Module Augmentation. TypeScript processes it right alongside your actual code. By this point, it has already
-                //     resolved import Youtube from '@tiptap/extension-youtube', so the "official" type is already locked in. When it sees
-                //     your augmentation, it flags it as a "Subsequent property declaration" conflict.
-                //
-                // The "Dependency Loop"
-                //
-                //   - When your augmentation is in src/types, you are technically trying to augment @tiptap/core at the same time the
-                //     Extension is trying to augment it. Since the Extension's definition is "baked into" the package you installed,
-                //     the compiler gives the package priority to ensure the library's own code remains valid.
-                //
-                // TL;DR: place the .d.ts file in the project root.
-                //
-                ///////////////////////////////////////////////////////////////////////////
-
-                textAlign: values.textAlign
-              })
-            } else {
-              // Could to a toast here...
-              alert(`Invalid URL. It must begin with:
-https://www.youtube.com/watch?v=`)
-            }
-
-            setShowYoutubeModal(false)
-          }}
-          onCancel={() => {
-            setShowYoutubeModal(false)
-          }}
-        />
-      )}
+      {renderYoutubeModal()}
     </>
   )
 }

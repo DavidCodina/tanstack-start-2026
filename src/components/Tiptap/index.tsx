@@ -15,6 +15,7 @@ type TiptapProps = Omit<
    * Set this to your default application font.
    */
   defaultFontFamily?: string
+  disabled?: boolean
 }
 
 const baseClasses = `
@@ -60,6 +61,8 @@ focus-within:ring-[3px] focus-within:ring-primary/50
 
 const Tiptap = ({
   className,
+  //# If disabled, then presumably change editor to readOnly and pass it into all buttons, inputs, etc.
+  disabled = false,
   defaultFontFamily,
   ...otherProps
 }: TiptapProps) => {
@@ -87,7 +90,11 @@ const Tiptap = ({
         }
       }}
     >
-      <MenuBar defaultFontFamily={defaultFontFamily} editor={editor} />
+      <MenuBar
+        defaultFontFamily={defaultFontFamily}
+        disabled={disabled}
+        editor={editor}
+      />
 
       <EditorContent
         data-slot='tiptap-editor-content'
@@ -96,10 +103,13 @@ const Tiptap = ({
         // to go to a programmatic solution. Fortunately, this is not an issue
         // for the BubbleMenu.
         className='min-h-(--tiptap-min-content-height) resize-y overflow-auto'
+        //# disabled={disabled}
         editor={editor}
       />
 
-      <FormatBubbleMenu />
+      <FormatBubbleMenu
+      //# disabled={disabled}
+      />
     </div>
   )
 }
@@ -114,7 +124,11 @@ const TiptapWithProvider = ({
   ...otherProps
 }: TiptapProviderProps & TiptapProps) => {
   return (
-    <TiptapProvider editorProps={editorProps} onChange={onChange}>
+    <TiptapProvider
+      //# disabled={disabled}
+      editorProps={editorProps}
+      onChange={onChange}
+    >
       <Tiptap {...otherProps} />
     </TiptapProvider>
   )

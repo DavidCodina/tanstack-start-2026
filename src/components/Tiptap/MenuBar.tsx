@@ -8,13 +8,13 @@ import { AlignmentTypeDropdown } from './AlignmenTypeDropdown'
 import { InsertDropdown } from './InsertDropdown'
 import { FontFamilyDropdown } from './FontFamilyDropdown'
 import { FontSize } from './FontSize'
-import { YoutubeButton } from './YoutubeButton' //! Temporary...
 import type { Editor } from '@tiptap/core'
 
 import { cn } from '@/utils'
 
 type MenuBarProps = {
   defaultFontFamily?: string
+  disabled?: boolean
   editor: Editor | null
 }
 
@@ -48,7 +48,11 @@ ${FOCUS_MIXIN}
 
 ======================================================================== */
 
-export const MenuBar = ({ defaultFontFamily, editor }: MenuBarProps) => {
+export const MenuBar = ({
+  defaultFontFamily,
+  disabled,
+  editor
+}: MenuBarProps) => {
   const { editorState } = useTiptapContext()
 
   if (!editor /* || !editorState */) {
@@ -68,7 +72,7 @@ export const MenuBar = ({ defaultFontFamily, editor }: MenuBarProps) => {
 
             !editorState?.canUndo && 'cursor-not-allowed opacity-50'
           )}
-          disabled={!editorState?.canUndo}
+          disabled={disabled || !editorState?.canUndo}
           onClick={() => editor.chain().focus().undo().run()}
           title='Undo'
           type='button'
@@ -81,7 +85,7 @@ export const MenuBar = ({ defaultFontFamily, editor }: MenuBarProps) => {
             buttonClasses,
             !editorState?.canRedo && 'cursor-not-allowed opacity-50'
           )}
-          disabled={!editorState?.canRedo}
+          disabled={disabled || !editorState?.canRedo}
           onClick={() => editor.chain().focus().redo().run()}
           title='Redo'
           type='button'
@@ -104,6 +108,7 @@ export const MenuBar = ({ defaultFontFamily, editor }: MenuBarProps) => {
             buttonClasses,
             'hover:border-yellow-600 hover:bg-yellow-400 hover:text-white'
           )}
+          disabled={disabled}
           onClick={() => editor.chain().focus().clearNodes().run()}
           title='remove nodes'
           type='button'
@@ -116,6 +121,7 @@ export const MenuBar = ({ defaultFontFamily, editor }: MenuBarProps) => {
             buttonClasses,
             'hover:border-rose-700 hover:bg-rose-500 hover:text-white'
           )}
+          disabled={disabled}
           onClick={() => {
             const { empty } = editor.state.selection
             if (empty) {
@@ -145,7 +151,7 @@ export const MenuBar = ({ defaultFontFamily, editor }: MenuBarProps) => {
         <Divider />
 
         <BlockTypeDropdown
-          disabled={false} //# Don't hardcode this
+          disabled={disabled}
           editor={editor}
           editorState={editorState}
         />
@@ -153,7 +159,7 @@ export const MenuBar = ({ defaultFontFamily, editor }: MenuBarProps) => {
         <Divider />
 
         <FontFamilyDropdown
-          disabled={false} //# Don't hardcode this
+          disabled={disabled}
           editor={editor}
           editorState={editorState}
           defaultFontFamily={defaultFontFamily}
@@ -161,12 +167,14 @@ export const MenuBar = ({ defaultFontFamily, editor }: MenuBarProps) => {
 
         <Divider />
 
-        <FontSize />
+        <FontSize
+        //# disabled={disabled}
+        />
 
         <Divider />
 
         <TextFormatDropdown
-          disabled={false} //# Don't hardcode this
+          disabled={disabled}
           editor={editor}
           editorState={editorState}
         />
@@ -174,7 +182,7 @@ export const MenuBar = ({ defaultFontFamily, editor }: MenuBarProps) => {
         <Divider />
 
         <InsertDropdown
-          disabled={false} //# Don't hardcode this
+          disabled={disabled}
           editor={editor}
           editorState={editorState}
         />
@@ -182,17 +190,16 @@ export const MenuBar = ({ defaultFontFamily, editor }: MenuBarProps) => {
         <Divider />
 
         <AlignmentTypeDropdown
-          disabled={false} //# Don't hardcode this
+          disabled={disabled}
           editor={editor}
           editorState={editorState}
         />
 
         <Divider />
 
-        <YoutubeButton />
-
         <button
           className={cn(buttonClasses)}
+          disabled={disabled}
           onClick={() => {
             const { empty } = editor.state.selection
             if (empty) {
@@ -211,6 +218,7 @@ export const MenuBar = ({ defaultFontFamily, editor }: MenuBarProps) => {
 
         <button
           className={cn(buttonClasses)}
+          disabled={disabled}
           onClick={() => {
             // If you ever wanted *strictly* the selected content (not the full block),
             // you'd swap those for plain `from`/`to`.

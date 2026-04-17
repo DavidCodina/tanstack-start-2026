@@ -58,6 +58,9 @@ I think we can do a more global solution on a top-level <div>
 //# Change the entire CustomYoutube.ts such that the parent is display: flex,
 //# and the new property is justifyContent, rather than textAlign.
 
+//# Implement disabled and follow it across and into all components.
+//# It should also set isEditable to false.
+
 //# Possibly add checks that remove properties from menu.
 //# For example, if isYoutube, then remove alignment.
 

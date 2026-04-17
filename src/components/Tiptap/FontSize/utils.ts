@@ -1,16 +1,14 @@
-type Options = {
-  noDecimal?: boolean
-  noNegative?: boolean
-}
-
 /* ======================
 
 ====================== */
 
-export const stringToNumberOrNull = (
+export const stringToNumberOrUndefined = (
   value: unknown,
-  options?: Options
-): number | null => {
+  options?: {
+    noDecimal?: boolean
+    noNegative?: boolean
+  }
+): number | undefined => {
   const noDecimal =
     typeof options?.noDecimal === 'boolean' ? options.noDecimal : false
 
@@ -19,11 +17,11 @@ export const stringToNumberOrNull = (
 
   // Already a valid number — return it directly.
   if (typeof value === 'number') {
-    return isNaN(value) ? null : value
+    return isNaN(value) ? undefined : value
   }
 
   if (typeof value !== 'string' || !value.trim()) {
-    return null
+    return undefined
   }
 
   // Remove non-numeric characters, allowing for '.' and possibly '-'.
@@ -33,7 +31,7 @@ export const stringToNumberOrNull = (
   let sanitized = value.replace(regex, '')
 
   if (!sanitized) {
-    return null
+    return undefined
   }
 
   // Truncate value if noDecimal is true.
@@ -41,7 +39,8 @@ export const stringToNumberOrNull = (
   // Instead, it's merely truncated. Thus, '.5' will ultimately return null.
   if (noDecimal === true) {
     sanitized = sanitized.split('.')[0]
-    if (typeof sanitized !== 'string' || sanitized.trim() == '') return null
+    if (typeof sanitized !== 'string' || sanitized.trim() == '')
+      return undefined
   }
 
   // parseFloat never throws — it returns NaN for unrecognizable input.
@@ -51,5 +50,19 @@ export const stringToNumberOrNull = (
   // parseFloat() will also strip redundant + signs
   const parsed = parseFloat(sanitized)
 
-  return isNaN(parsed) ? null : parsed
+  return isNaN(parsed) ? undefined : parsed
+}
+
+/* ======================
+
+====================== */
+// Usage:
+// const acceptableValues = ['left', 'center', 'right'] as const
+// if (isOneOf(acceptableValues, value)) { setTextAlign(value) }
+
+export function isOneOf<T extends readonly string[]>(
+  arr: T,
+  v: string
+): v is T[number] {
+  return arr.includes(v as any)
 }
