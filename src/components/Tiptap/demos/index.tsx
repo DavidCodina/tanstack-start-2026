@@ -2,46 +2,66 @@ import * as React from 'react'
 //# import DOMPurify from 'dompurify'
 import { Tiptap } from '../'
 
-const defaultValue = `
-<h2>
-  Whuddup!
-</h2>
-<p>
-  this is a <em>basic</em> example of <strong>Tiptap</strong>. Sure, there are all kind of basic text styles you'd probably expect from a text editor. But wait until you see the lists:
-</p>
-<ul>
-  <li>
-    That's a bullet list with one …
-  </li>
-  <li>
-    … or two list items.
-  </li>
-</ul>
-<p>
-  Isn't that great? And all of that is editable. But wait, there's more. Let's try a code block:
-</p>
-<pre><code class="language-css">body {
-  display: none;
-}</code></pre>
+// const defaultValue = `
+// <h2>
+//   Whuddup!
+// </h2>
+// <p>
+//   this is a <em>basic</em> example of <strong>Tiptap</strong>. Sure, there are all kind of basic text styles you'd probably expect from a text editor. But wait until you see the lists:
+// </p>
+// <ul>
+//   <li>
+//     That's a bullet list with one …
+//   </li>
+//   <li>
+//     … or two list items.
+//   </li>
+// </ul>
+// <p>
+//   Isn't that great? And all of that is editable. But wait, there's more. Let's try a code block:
+// </p>
+// <pre><code class="language-css">body {
+//   display: none;
+// }</code></pre>
 
-<blockquote>
-  <h5>My Code Quote</h5>
-  <p>This is a quote with an <code>h5</code> block, code block, and paragraph</p>
-  <pre><code>const x = 2;</code></pre>
-  <p>Bla, bla, bla...</p>
-</blockquote>
-`
+// <blockquote>
+//   <h5>My Code Quote</h5>
+//   <p>This is a quote with an <code>h5</code> block, code block, and paragraph</p>
+//   <pre><code>const x = 2;</code></pre>
+//   <p>Bla, bla, bla...</p>
+// </blockquote>
+// `
+
+// const defaultYoutube =
+//   '<p>asdfsad</p><div data-youtube-video="" style="text-align: left;"><iframe width="320" height="480" allowfullscreen="true" autoplay="false" disablekbcontrols="false" enableiframeapi="false" endtime="0" ivloadpolicy="0" loop="false" modestbranding="false" origin="" playlist="" rel="1" src="https://www.youtube-nocookie.com/embed/VPBgSxiuBxY?controls=0&amp;rel=1" start="0"></iframe></div><p>asdsadf</p>'
 
 /* ========================================================================
 
 ======================================================================== */
 
+/* Reconsider doing e.preventDefault() in each input.
+I think we can do a more global solution on a top-level <div>
+<div
+  className="modal"
+  onKeyDown={(e) => {
+    if (e.key === 'Enter') {
+      // Prevent the parent form from submitting
+      e.preventDefault()
+      e.stopPropagation()
+    }
+  }}
+>
+  ...
+</div>
+*/
+
+//# Prevent BubbleMenu on custom youtube.
+
+//# Possibly add checks that remove properties from menu.
+//# For example, if isYoutube, then remove alignment.
+
 //# Add Lowercase, Uppercase, Capitalize
 //# This may be a situation for a custom extension.
-
-//# Go into color picker inputs and make add an onKeydown to e.preventDefault() on Enter.
-
-//# Add font family support (part of TextStyleKit)
 
 //# Add Checkbox supprt:
 //# https://tiptap.dev/docs/editor/extensions/nodes/task-list
@@ -78,7 +98,7 @@ const defaultValue = `
 //# The dropdown menu currently doesn't respond well to viewport width resizing.
 
 export const TiptapDemo = () => {
-  const [value, setValue] = React.useState<string>(defaultValue)
+  const [value, setValue] = React.useState<string>('')
 
   ///////////////////////////////////////////////////////////////////////////
   //
@@ -111,11 +131,12 @@ export const TiptapDemo = () => {
   ====================== */
 
   return (
-    <section className='mx-auto max-w-[1100px]'>
+    <section className='mx-auto max-w-[1150px]'>
       <Tiptap
         className='shadow'
+        defaultFontFamily='' // Falls back to 'Poppins'.
         editorProps={{
-          content: defaultValue,
+          content: '',
           placeholder: 'Write something...'
         }}
         onChange={(newValue) => {

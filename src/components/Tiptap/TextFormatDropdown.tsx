@@ -208,6 +208,12 @@ export const TextFormatDropdown = ({
           onInput={(event) => {
             editor.chain().focus().setColor(event.currentTarget.value).run()
           }}
+          onKeyDown={(e) => {
+            // Prevent Enter from submitting a form.
+            if (e.key === 'Enter') {
+              e.preventDefault()
+            }
+          }}
           ref={textColorInputRef}
           style={{ colorScheme: 'normal' }}
           type='color'
@@ -241,6 +247,12 @@ export const TextFormatDropdown = ({
               .focus()
               .setBackgroundColor(event.currentTarget.value)
               .run()
+          }}
+          onKeyDown={(e) => {
+            // Prevent Enter from submitting a form.
+            if (e.key === 'Enter') {
+              e.preventDefault()
+            }
           }}
           ref={backgroundColorInputRef}
           style={{ colorScheme: 'normal' }}

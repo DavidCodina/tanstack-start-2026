@@ -146,23 +146,19 @@ export function menuBarSelector(ctx: EditorStateSnapshot<Editor | null>) {
     backgroundColor: ctx.editor.getAttributes('textStyle').backgroundColor,
 
     /* =====================
-            Font
+              Font
     ====================== */
 
     fontSize: ctx.editor.getAttributes('textStyle').fontSize,
     fontFamily: ctx.editor.getAttributes('textStyle').fontFamily,
 
-    // "Times New Roman"
-
-    isTimesNewRoman: ctx.editor.isActive('textStyle', {
-      fontFamily: 'Times New Roman'
-    })
-      ? true
-      : false,
-
     isArial: ctx.editor.isActive('textStyle', { fontFamily: 'Arial' })
       ? true
       : false,
+
+    isComicSans: ctx.editor.isActive('textStyle', {
+      fontFamily: '"Comic Sans MS", "Comic Sans"'
+    }),
 
     isCourier: ctx.editor.isActive('textStyle', { fontFamily: 'Courier' })
       ? true
@@ -172,19 +168,33 @@ export function menuBarSelector(ctx: EditorStateSnapshot<Editor | null>) {
       ? true
       : false,
 
-    isComicSans: ctx.editor.isActive('textStyle', {
-      fontFamily: '"Comic Sans MS", "Comic Sans"'
+    isGeorgia: ctx.editor.isActive('textStyle', { fontFamily: 'Georgia' })
+      ? true
+      : false,
+
+    isTahoma: ctx.editor.isActive('textStyle', { fontFamily: 'Tahoma' })
+      ? true
+      : false,
+
+    isTimesNewRoman: ctx.editor.isActive('textStyle', {
+      fontFamily: 'Times New Roman'
     })
+      ? true
+      : false,
 
-    // isInter: ctx.editor.isActive('textStyle', { fontFamily: 'Inter' }),
+    isVerdana: ctx.editor.isActive('textStyle', { fontFamily: 'Verdana' })
+      ? true
+      : false,
 
-    // isSerif: ctx.editor.isActive('textStyle', { fontFamily: 'serif' }),
-    // isMonospace: ctx.editor.isActive('textStyle', { fontFamily: 'monospace' }),
-
-    // isExo2: ctx.editor.isActive('textStyle', { fontFamily: '"Exo 2"' }),
     // isCssVariable: ctx.editor.isActive('textStyle', {
     //   fontFamily: 'var(--font-sans)'
     // })
+
+    /* =====================
+            Embeds
+    ====================== */
+
+    isYoutube: ctx.editor.isActive('youtube') ? true : false
   }
 }
 

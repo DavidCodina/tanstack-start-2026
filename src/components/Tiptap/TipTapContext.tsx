@@ -44,6 +44,10 @@ import { Placeholder } from '@tiptap/extensions'
 // https://tiptap.dev/docs/editor/extensions/marks/text-style
 import { TextStyleKit } from '@tiptap/extension-text-style'
 
+// https://tiptap.dev/docs/editor/extensions/nodes/youtube
+//` import Youtube from '@tiptap/extension-youtube'
+import { CustomYoutube } from './extensions/CustomYoutube'
+
 // import Image from '@tiptap/extension-image'
 // import CharacterCount from '@tiptap/extension-character-count'
 // import Table from '@tiptap/extension-table'
@@ -100,6 +104,30 @@ export type TiptapProviderProps = {
 }
 
 const TiptapContext = createContext<TiptapContextValue | null>(null)
+
+export type CustomSetYoutubeVideoOptions = {
+  src: string
+  width?: number
+  height?: number
+  start?: number
+  textAlign?: 'left' | 'center' | 'right' | 'justify'
+}
+
+// export function setYoutubeVideo(
+//   editor: Editor,
+//   options: CustomSetYoutubeVideoOptions
+// ) {
+//   const { textAlign, ...attrs } = options
+//   const nodeAttrs = {
+//     ...attrs,
+//     // keep the attribute on the node so your CustomYoutube extension can read it
+//     textAlign: textAlign ?? undefined
+//   }
+//   return editor.commands.insertContent({
+//     type: 'youtube',
+//     attrs: nodeAttrs
+//   })
+// }
 
 /* ========================================================================
              
@@ -248,6 +276,16 @@ export function TiptapProvider({
         types: ['paragraph', 'listItem', 'heading', 'codeBlock', 'blockquote'], // heading, codeBlock, blockquote
         minLevel: 0,
         maxLevel: 8
+      }),
+      // Youtube.configure({
+      //   controls: false,
+      //   nocookie: true,
+      //   inline: true
+      // })
+
+      CustomYoutube.configure({
+        controls: false,
+        nocookie: true
       })
     ],
 
@@ -291,9 +329,11 @@ export function TiptapProvider({
   /* ======================
           editorState
   ====================== */
-  //# Currently, I prefer having editorState in the TiptapContext.
-  //# However, this may be shooting myself in the foot in regards to optimization.
-  //# It may actually be more appropriate to localize it within MenuBar.tsx.
+  // Currently, I prefer having editorState in the TiptapContext.
+  // However, this may be shooting myself in the foot in regards to optimization.
+  // It may actually be more appropriate to localize it within MenuBar.tsx.
+  // That said, it also makes sense to have it here in order to allow the
+  // FormatBubbleMenu to access it.
 
   const editorState = useEditorState({
     // Technically if there's no editor, useEditorState will be fine.

@@ -89,6 +89,24 @@ creates a <div> that wraps the actual contenteditable <div> such that the DOM lo
   </div>
 */
 
+/* By configuring the Youtube extension to Youtube.configure({ inline: true })
+ The <div data-youtube-video> is wrapped in a <p> tag. This allows us to 
+ align the <iframe> IF the <iframe> is styled to display: inline-block.
+*/
+.tiptap p [data-youtube-video] {
+}
+
+.tiptap [data-youtube-video] {
+}
+
+.tiptap div[data-youtube-video] > iframe {
+  display: inline-block;
+  aspect-ratio: 16 / 9;
+  height: auto;
+  max-width: 100%;
+  border-radius: 10px;
+}
+
 /* =====================
 
 ====================== */

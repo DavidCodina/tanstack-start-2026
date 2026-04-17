@@ -7,7 +7,15 @@ import { FormatBubbleMenu } from './FormatBubbleMenu'
 import type { TiptapProviderProps } from './TipTapContext'
 import { cn } from '@/utils'
 
-type TiptapProps = Omit<React.ComponentProps<'div'>, 'children' | 'onChange'>
+type TiptapProps = Omit<
+  React.ComponentProps<'div'>,
+  'children' | 'onChange'
+> & {
+  /** Used by the FontFamilyDropdown as fallback value for the trigger.
+   * Set this to your default application font.
+   */
+  defaultFontFamily?: string
+}
 
 const baseClasses = `
 [--tiptap-min-content-height:250px]
@@ -50,7 +58,11 @@ focus-within:ring-[3px] focus-within:ring-primary/50
 //
 ///////////////////////////////////////////////////////////////////////////
 
-const Tiptap = ({ className, ...otherProps }: TiptapProps) => {
+const Tiptap = ({
+  className,
+  defaultFontFamily,
+  ...otherProps
+}: TiptapProps) => {
   const { editor } = useTiptapContext()
 
   if (!editor) {
@@ -67,7 +79,7 @@ const Tiptap = ({ className, ...otherProps }: TiptapProps) => {
       data-slot='tiptap-editor'
       className={cn(baseClasses, className)}
     >
-      <MenuBar editor={editor} />
+      <MenuBar defaultFontFamily={defaultFontFamily} editor={editor} />
 
       <EditorContent
         data-slot='tiptap-editor-content'

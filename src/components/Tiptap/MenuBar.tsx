@@ -8,12 +8,13 @@ import { AlignmentTypeDropdown } from './AlignmenTypeDropdown'
 import { InsertDropdown } from './InsertDropdown'
 import { FontFamilyDropdown } from './FontFamilyDropdown'
 import { FontSize } from './FontSize'
-
+import { YoutubeButton } from './YoutubeButton' //! Temporary...
 import type { Editor } from '@tiptap/core'
 
 import { cn } from '@/utils'
 
 type MenuBarProps = {
+  defaultFontFamily?: string
   editor: Editor | null
 }
 
@@ -47,7 +48,7 @@ ${FOCUS_MIXIN}
 
 ======================================================================== */
 
-export const MenuBar = ({ editor }: MenuBarProps) => {
+export const MenuBar = ({ defaultFontFamily, editor }: MenuBarProps) => {
   const { editorState } = useTiptapContext()
 
   if (!editor /* || !editorState */) {
@@ -155,6 +156,7 @@ export const MenuBar = ({ editor }: MenuBarProps) => {
           disabled={false} //# Don't hardcode this
           editor={editor}
           editorState={editorState}
+          defaultFontFamily={defaultFontFamily}
         />
 
         <Divider />
@@ -186,6 +188,8 @@ export const MenuBar = ({ editor }: MenuBarProps) => {
         />
 
         <Divider />
+
+        <YoutubeButton />
 
         <button
           className={cn(buttonClasses)}
