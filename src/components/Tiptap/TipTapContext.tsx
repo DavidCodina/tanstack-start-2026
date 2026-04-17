@@ -286,6 +286,7 @@ export function TiptapProvider({
       CustomYoutube.configure({
         controls: false,
         nocookie: true
+        //# Possibly try setting a custom width/height here and/or setting it to undefined.
       })
     ],
 

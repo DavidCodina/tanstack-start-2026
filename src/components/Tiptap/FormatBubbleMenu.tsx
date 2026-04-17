@@ -90,7 +90,7 @@ export const FormatBubbleMenu = () => {
           return
   ====================== */
 
-  if (!editor) {
+  if (!editor || editorState?.isYoutube) {
     return null
   }
 

@@ -6,6 +6,9 @@ type Options = {
 /* ======================
 
 ====================== */
+//# Possibly go back to FontSize and also use this instead.
+//# The benefit is that undefined works better with objects that
+//# potentially package up optional properties.
 
 export const stringToNumberOrUndefined = (
   value: unknown,

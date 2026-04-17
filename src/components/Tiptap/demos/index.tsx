@@ -55,8 +55,6 @@ I think we can do a more global solution on a top-level <div>
 </div>
 */
 
-//# Prevent BubbleMenu on custom youtube.
-
 //# Change the entire CustomYoutube.ts such that the parent is display: flex,
 //# and the new property is justifyContent, rather than textAlign.
 

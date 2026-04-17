@@ -74,7 +74,6 @@ export const YoutubeButton = () => {
                 // height is not set here. Why? Because Tiptap.css is already setting: height: auto; + aspect-ratio: 16 / 9;
                 width: values.width || 500,
                 // Even with undefined, it will try to set it to height: 480.
-                //# It's possible that we can correct for this in CustomYoutube.ts
                 height: undefined,
                 textAlign: values.textAlign
               })
