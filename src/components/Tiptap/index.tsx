@@ -78,6 +78,14 @@ const Tiptap = ({
       {...otherProps}
       data-slot='tiptap-editor'
       className={cn(baseClasses, className)}
+      // This stops event bubbling for all 'Enter' presses within the component.
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault()
+          e.stopPropagation()
+          otherProps.onKeyDown?.(e)
+        }
+      }}
     >
       <MenuBar defaultFontFamily={defaultFontFamily} editor={editor} />
 

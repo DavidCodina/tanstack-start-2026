@@ -1,3 +1,7 @@
+//# Not loving the text-blue-500
+
+//# Is there a way to check isYoutubeVideo, then open up editing options, similar to the Link?
+
 import * as React from 'react'
 import { AlignCenter, AlignLeft, AlignRight } from 'lucide-react'
 import { useClickOutside } from './useClickOutside'
@@ -28,15 +32,9 @@ const options: { value: TextAlign; label: string; Icon: React.ElementType }[] =
     { value: 'right', label: 'Right', Icon: AlignRight }
   ]
 
-const MIN = 150
-const MAX = 1000
-
 /* ========================================================================
 
 ======================================================================== */
-//# Not loving the text-blue-500
-
-//# Is there a way to check isYoutubeVideo, then open up editing options, similar to the Link?
 
 export const Modal = ({ onCancel, onSubmit }: ModalProps) => {
   /* =====================
@@ -49,12 +47,17 @@ export const Modal = ({ onCancel, onSubmit }: ModalProps) => {
     'left' | 'center' | 'right'
   >()
 
-  const urlInputCallbackRef = React.useCallback(
-    (node: HTMLInputElement | null) => {
-      node?.focus()
-    },
-    []
-  )
+  const widthAsNumberOrUndefined = stringToNumberOrUndefined(width, {
+    noDecimal: true,
+    noNegative: true
+  })
+
+  //! const urlInputCallbackRef = React.useCallback(
+  //   (node: HTMLInputElement | null) => {
+  //     node?.focus()
+  //   },
+  //   []
+  // )
 
   const clickOutsideRef = useClickOutside(() => {
     onCancel()
@@ -74,7 +77,7 @@ export const Modal = ({ onCancel, onSubmit }: ModalProps) => {
           Youtube URL <sup className='text-rose-500'>*</sup>
         </label>
         <input
-          ref={urlInputCallbackRef}
+          //! ref={urlInputCallbackRef}
           autoCapitalize='none'
           autoComplete='new-password'
           autoCorrect='off'
@@ -82,7 +85,6 @@ export const Modal = ({ onCancel, onSubmit }: ModalProps) => {
           id='youtube-url-input'
           className={inputClasses}
           onChange={(e) => setUrl(e.target.value)}
-          placeholder='https://www.youtube.com/watch?v=abc123'
           value={url}
         />
       </div>
@@ -103,15 +105,16 @@ export const Modal = ({ onCancel, onSubmit }: ModalProps) => {
           Width
         </label>
         <input
+          //# Review <input type="number"> in FontSize and add to this one.
+
           autoCapitalize='none'
           autoComplete='new-password'
           autoCorrect='off'
           spellCheck={false}
           id='youtube-width-input'
           className={inputClasses}
-          min={MIN}
-          max={MAX}
-          placeholder='500'
+          min={0}
+          max={1000}
           step={50}
           onChange={(e) => setWidth(e.target.value)}
           onKeyDown={(e) => {
@@ -186,6 +189,7 @@ export const Modal = ({ onCancel, onSubmit }: ModalProps) => {
                 htmlFor={`radio-align-${value}`}
                 className={cn(
                   labelBaseClasses,
+                  //# Don't do border
                   checked
                     ? `border-blue-700 bg-blue-500 text-white focus-within:ring-blue-500/50`
                     : `bg-card text-foreground hover:bg-accent focus-within:ring-primary/50`
@@ -227,19 +231,6 @@ export const Modal = ({ onCancel, onSubmit }: ModalProps) => {
         <button
           className='min-w-[80px] flex-1 cursor-pointer rounded border border-green-700 bg-green-500 px-2 py-1 text-sm font-medium text-white outline-none focus-visible:ring-[3px] focus-visible:ring-green-500/50'
           onClick={() => {
-            let widthAsNumberOrUndefined = stringToNumberOrUndefined(width, {
-              noDecimal: true,
-              noNegative: true
-            })
-
-            if (typeof widthAsNumberOrUndefined === 'number') {
-              if (widthAsNumberOrUndefined < MIN) {
-                widthAsNumberOrUndefined = MIN
-              } else if (widthAsNumberOrUndefined > MAX) {
-                widthAsNumberOrUndefined = MAX
-              }
-            }
-
             onSubmit?.({
               url: url,
               width: widthAsNumberOrUndefined,
@@ -257,6 +248,7 @@ export const Modal = ({ onCancel, onSubmit }: ModalProps) => {
   /* =====================
           return
   ====================== */
+  //# Should I be using z-9999?
 
   return (
     <div className='fixed inset-0 z-9999 bg-black/35'>

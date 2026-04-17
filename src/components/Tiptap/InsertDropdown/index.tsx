@@ -1,11 +1,11 @@
 import * as React from 'react'
 import '@tiptap/core'
 import { CornerDownLeft, Plus, Ruler } from 'lucide-react'
-import { Dropdown, DropdownItem } from './Dropdown'
+import { Dropdown, DropdownItem } from '../Dropdown'
 
 import type { JSX } from 'react'
 import type { Editor } from '@tiptap/core'
-import type { MenuBarState } from './menuBarState'
+import type { MenuBarState } from '../menuBarState'
 
 type InsertDropdownProps = {
   disabled?: boolean

@@ -280,11 +280,6 @@ export const FontSize = ({ disabled }: FontSizeProps) => {
           editor.chain().setFontSize(`${newValueAsNumber}px`).run()
         }}
         onKeyDown={(e) => {
-          // Prevent Enter from submitting the form.
-          if (e.key === 'Enter') {
-            e.preventDefault()
-          }
-
           // These characters can still sneak in on paste, which
           // is why we have the additiona checks in the onChange handler
           // prior to calling setFontSize().

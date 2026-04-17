@@ -327,7 +327,7 @@ export function TiptapProvider({
   })
 
   /* ======================
-          editorState
+        editorState
   ====================== */
   // Currently, I prefer having editorState in the TiptapContext.
   // However, this may be shooting myself in the foot in regards to optimization.
