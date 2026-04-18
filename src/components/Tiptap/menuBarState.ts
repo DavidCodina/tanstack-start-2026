@@ -201,7 +201,6 @@ export function menuBarSelector(ctx: EditorStateSnapshot<Editor | null>) {
 
     // Used within FormatBubbleMenu.tsx to opt out of showing the bubble menu.
     isCustomYoutube: ctx.editor.isActive('custom-youtube') ? true : false,
-
     customYoutubeSrc: ctx.editor.isActive('custom-youtube')
       ? ((ctx.editor.getAttributes('custom-youtube').src as string) ?? null)
       : null

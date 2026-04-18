@@ -34,11 +34,11 @@ import { Button } from '@/components'
 // </blockquote>
 // `
 
-// const defaultYoutube =
-//   '<p>asdfsad</p><div data-youtube-video="" style="text-align: left;"><iframe width="320" height="480" allowfullscreen="true" autoplay="false" disablekbcontrols="false" enableiframeapi="false" endtime="0" ivloadpolicy="0" loop="false" modestbranding="false" origin="" playlist="" rel="1" src="https://www.youtube-nocookie.com/embed/VPBgSxiuBxY?controls=0&amp;rel=1" start="0"></iframe></div><p>asdsadf</p>'
-
-const defaultYoutube =
-  '<p>asldfkj</p><div data-custom-youtube-video="" style="display: flex; justify-content: center;"><iframe width="400" height="480" allowfullscreen="true" autoplay="false" disablekbcontrols="false" enableiframeapi="false" endtime="0" ivloadpolicy="0" loop="false" modestbranding="false" origin="" playlist="" rel="1" src="https://www.youtube-nocookie.com/embed/rqwhDgikHq8?controls=0&amp;rel=1" start="0"></iframe></div><p>asdflk</p>'
+// ⚠️⚠️⚠️ This will work, which is why you MUST implement DOMPurify.
+// Ideally, this should be baked into TiptapContext, prior to setting the content configuration.
+// The <script> tag seems to get removed prior to being passed back out from the editor.
+// But there's not protection guarding against what's passed into the editor as a default value.
+const scriptTest = `<p>Hello. This is script test. Check your console logs.<script>console.log("You got hacked!")</script></p>`
 
 /* ========================================================================
 
@@ -84,7 +84,7 @@ const defaultYoutube =
 //# The dropdown menu currently doesn't respond well to viewport width resizing.
 
 export const TiptapDemo = () => {
-  const [value, setValue] = React.useState<string>(defaultYoutube)
+  const [value, setValue] = React.useState<string>(scriptTest)
   const [disabled, setDisabled] = React.useState(false)
 
   ///////////////////////////////////////////////////////////////////////////
@@ -134,7 +134,7 @@ export const TiptapDemo = () => {
         defaultFontFamily='' // Falls back to 'Poppins'.
         disabled={disabled}
         editorProps={{
-          content: defaultYoutube,
+          content: scriptTest,
           placeholder: 'Write something...'
         }}
         onChange={(newValue) => {

@@ -144,9 +144,8 @@ export const InsertDropdown = ({
               justifyContent: values.justifyContent
             })
           } else {
-            // Could to a toast here...
-            alert(`Invalid URL. It must begin with:
-https://www.youtube.com/watch?v=`)
+            // Could do a toast here in production.
+            alert(`Invalid URL.`)
           }
 
           setShowYoutubeModal(false)
