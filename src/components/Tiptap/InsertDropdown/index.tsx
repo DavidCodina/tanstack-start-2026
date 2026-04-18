@@ -30,7 +30,7 @@ type InsertDropdownProps = {
 
 export const InsertDropdown = ({
   editor,
-  // editorState,
+  editorState,
   disabled = false
 }: InsertDropdownProps): JSX.Element => {
   // For CustomYoutube extension
@@ -43,6 +43,8 @@ export const InsertDropdown = ({
   const renderYoutubeModal = () => {
     if (!showYoutubeModal || disabled) return null
 
+    const existingYoutubeUrl = editorState?.customYoutubeSrc || ''
+
     return (
       <YoutubeModal
         disabled={disabled}
@@ -53,7 +55,10 @@ export const InsertDropdown = ({
           }
 
           // Simple preemptive URL validation.
-          if (values.url.startsWith('https://www.youtube.com/watch?v=')) {
+          if (
+            values.url.startsWith('https://www.youtube.com/watch?v=') ||
+            values.url.startsWith('https://www.youtube-nocookie.com/embed')
+          ) {
             editor.commands.setYoutubeVideo({
               src: values.url,
               // height is not set here. Why? Because Tiptap.css is already setting: height: auto; + aspect-ratio: 16 / 9;
@@ -149,6 +154,7 @@ https://www.youtube.com/watch?v=`)
         onCancel={() => {
           setShowYoutubeModal(false)
         }}
+        url={existingYoutubeUrl}
       />
     )
   }

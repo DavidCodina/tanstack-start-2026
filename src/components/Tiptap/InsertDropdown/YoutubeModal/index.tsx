@@ -13,6 +13,7 @@ type YoutubeModalProps = {
     width?: number
     justifyContent?: string
   }) => void
+  url?: string
 }
 
 const inputClasses = `
@@ -32,20 +33,18 @@ const MAX = 1000
 /* ========================================================================
 
 ======================================================================== */
-//# Not loving the text-blue-500
-
-//# Is there a way to check isYoutubeVideo, then open up editing options, similar to the Link?
 
 export const YoutubeModal = ({
   disabled,
   onCancel,
-  onSubmit
+  onSubmit,
+  url: externalUrl = ''
 }: YoutubeModalProps) => {
   /* =====================
         state & refs
   ====================== */
 
-  const [url, setUrl] = React.useState('')
+  const [url, setUrl] = React.useState(externalUrl)
   const [width, setWidth] = React.useState('')
 
   // Initially, this was textAlign/setTextAlign, but later CustomYoutube.ts

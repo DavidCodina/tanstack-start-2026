@@ -195,8 +195,16 @@ export function menuBarSelector(ctx: EditorStateSnapshot<Editor | null>) {
     ====================== */
 
     isYoutube: ctx.editor.isActive('youtube') ? true : false,
-    // Used within FomratBubbleMenu.tsx to opt out of showing the bubble menu.
-    isCustomYoutube: ctx.editor.isActive('custom-youtube') ? true : false
+    youtubeSrc: ctx.editor.isActive('youtube')
+      ? ((ctx.editor.getAttributes('youtube').src as string) ?? null)
+      : null,
+
+    // Used within FormatBubbleMenu.tsx to opt out of showing the bubble menu.
+    isCustomYoutube: ctx.editor.isActive('custom-youtube') ? true : false,
+
+    customYoutubeSrc: ctx.editor.isActive('custom-youtube')
+      ? ((ctx.editor.getAttributes('custom-youtube').src as string) ?? null)
+      : null
   }
 }
 
