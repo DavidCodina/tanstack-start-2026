@@ -82,12 +82,7 @@ const Tiptap = ({
     <div
       {...otherProps}
       data-slot='tiptap-editor'
-      className={cn(
-        baseClasses,
-        className,
-        //! Temporary...
-        !editor.isEditable && 'outline-destructive outline-2 outline-dashed'
-      )}
+      className={cn(baseClasses, className)}
       // This stops event bubbling for all 'Enter' presses within the component.
       onKeyDown={(e) => {
         if (e.key === 'Enter') {

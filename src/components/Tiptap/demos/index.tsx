@@ -120,7 +120,7 @@ export const TiptapDemo = () => {
   return (
     <section className='mx-auto max-w-[1150px]'>
       <Button
-        className='mb-4'
+        className='mx-auto mb-4 flex'
         onClick={() => {
           setDisabled((prev) => !prev)
         }}
