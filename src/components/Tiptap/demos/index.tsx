@@ -34,10 +34,10 @@ import { Button } from '@/components'
 // </blockquote>
 // `
 
-// ⚠️⚠️⚠️ This will work, which is why you MUST implement DOMPurify.
-// Ideally, this should be baked into TiptapContext, prior to setting the content configuration.
-// The <script> tag seems to get removed prior to being passed back out from the editor.
-// But there's not protection guarding against what's passed into the editor as a default value.
+// ⚠️ Tiptap and/or React seem to protect from script injections like the following.
+// That said, it's still generally a good idea to sanitize a value with DOMPurify
+// prior to using it in Tiptap. It's even more important to sanitize the value
+// prior to using dangerouslySetInnerHTML
 const scriptTest = `<p>Hello. This is script test. Check your console logs.<script>console.log("You got hacked!")</script></p>`
 
 /* ========================================================================
