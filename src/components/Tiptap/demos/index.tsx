@@ -61,6 +61,8 @@ I think we can do a more global solution on a top-level <div>
 //# Implement disabled and follow it across and into all components.
 //# It should also set isEditable to false.
 
+//# Add fallbacks to CSS custom properties in Tiptap.css
+
 //# Possibly add checks that remove properties from menu.
 //# For example, if isYoutube, then remove alignment.
 
@@ -74,19 +76,16 @@ I think we can do a more global solution on a top-level <div>
 
 //# Add image support: https://tiptap.dev/docs/editor/extensions/nodes/image
 
-//# Add Youtube embed support: https://tiptap.dev/docs/editor/extensions/nodes/youtube
-
-//# Add fallbacks to CSS custom properties in Tiptap.css
-
 //# Add a DragHandle
 //# https://tiptap.dev/docs/editor/extensions/functionality/drag-handle-react
 
-//# Tiptap actually has a whole bunch of UI comonents
+//# Tiptap actually has a whole bunch of UI components
 //# https://tiptap.dev/docs/ui-components/components/overview
 //# Some of these are behind a paywall.
 
 //# See here for demo of LinkComponent:
 //# https://github.com/thapatechnical/job-portal-nextjs/blob/main/src/components/text-editor.tsx
+//# But really no need. Just follow the example of the YoutubeModal.
 
 //# Review Flowbite: https://flowbite.com/docs/plugins/wysiwyg/
 
