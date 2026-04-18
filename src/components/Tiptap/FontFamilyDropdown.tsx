@@ -88,6 +88,7 @@ export const FontFamilyDropdown = ({
     >
       <DropdownItem
         className={editorState?.isArial ? SELECTED_MIXIN : ''}
+        disabled={disabled}
         onClick={() => editor.chain().focus().setFontFamily('Arial').run()}
         title='arial'
       >
@@ -96,6 +97,7 @@ export const FontFamilyDropdown = ({
 
       <DropdownItem
         className={editorState?.isComicSans ? SELECTED_MIXIN : ''}
+        disabled={disabled}
         onClick={() =>
           editor
             .chain()
@@ -113,6 +115,7 @@ export const FontFamilyDropdown = ({
 
       <DropdownItem
         className={editorState?.isCourier ? SELECTED_MIXIN : ''}
+        disabled={disabled}
         onClick={() => editor.chain().focus().setFontFamily('Courier').run()}
         title='courier'
       >
@@ -122,6 +125,7 @@ export const FontFamilyDropdown = ({
 
       <DropdownItem
         className={editorState?.isCursive ? SELECTED_MIXIN : ''}
+        disabled={disabled}
         onClick={() => editor.chain().focus().setFontFamily('cursive').run()}
         title='cursive'
       >
@@ -130,6 +134,7 @@ export const FontFamilyDropdown = ({
 
       <DropdownItem
         className={editorState?.isGeorgia ? SELECTED_MIXIN : ''}
+        disabled={disabled}
         onClick={() => editor.chain().focus().setFontFamily('Georgia').run()}
         title='georgia'
       >
@@ -138,6 +143,7 @@ export const FontFamilyDropdown = ({
 
       <DropdownItem
         className={editorState?.isTahoma ? SELECTED_MIXIN : ''}
+        disabled={disabled}
         onClick={() => editor.chain().focus().setFontFamily('Tahoma').run()}
         title='tahoma'
       >
@@ -146,6 +152,7 @@ export const FontFamilyDropdown = ({
 
       <DropdownItem
         className={editorState?.isTimesNewRoman ? SELECTED_MIXIN : ''}
+        disabled={disabled}
         onClick={() =>
           editor.chain().focus().setFontFamily('Times New Roman').run()
         }
@@ -157,6 +164,7 @@ export const FontFamilyDropdown = ({
 
       <DropdownItem
         className={editorState?.isVerdana ? SELECTED_MIXIN : ''}
+        disabled={disabled}
         onClick={() => editor.chain().focus().setFontFamily('Verdana').run()}
         title='verdana'
       >
@@ -164,6 +172,7 @@ export const FontFamilyDropdown = ({
       </DropdownItem>
 
       <DropdownItem
+        disabled={disabled}
         onClick={() => editor.chain().focus().unsetFontFamily().run()}
         title='unset font family'
       >

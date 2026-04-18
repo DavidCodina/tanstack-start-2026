@@ -1,6 +1,8 @@
 import * as React from 'react'
 //# import DOMPurify from 'dompurify'
+
 import { Tiptap } from '../'
+import { Button } from '@/components'
 
 // const defaultValue = `
 // <h2>
@@ -35,31 +37,12 @@ import { Tiptap } from '../'
 // const defaultYoutube =
 //   '<p>asdfsad</p><div data-youtube-video="" style="text-align: left;"><iframe width="320" height="480" allowfullscreen="true" autoplay="false" disablekbcontrols="false" enableiframeapi="false" endtime="0" ivloadpolicy="0" loop="false" modestbranding="false" origin="" playlist="" rel="1" src="https://www.youtube-nocookie.com/embed/VPBgSxiuBxY?controls=0&amp;rel=1" start="0"></iframe></div><p>asdsadf</p>'
 
+const defaultYoutube =
+  '<p>asldfkj</p><div data-custom-youtube-video="" style="display: flex; justify-content: center;"><iframe width="400" height="480" allowfullscreen="true" autoplay="false" disablekbcontrols="false" enableiframeapi="false" endtime="0" ivloadpolicy="0" loop="false" modestbranding="false" origin="" playlist="" rel="1" src="https://www.youtube-nocookie.com/embed/rqwhDgikHq8?controls=0&amp;rel=1" start="0"></iframe></div><p>asdflk</p>'
+
 /* ========================================================================
 
 ======================================================================== */
-
-/* Reconsider doing e.preventDefault() in each input.
-I think we can do a more global solution on a top-level <div>
-<div
-  className="modal"
-  onKeyDown={(e) => {
-    if (e.key === 'Enter') {
-      // Prevent the parent form from submitting
-      e.preventDefault()
-      e.stopPropagation()
-    }
-  }}
->
-  ...
-</div>
-*/
-
-//# Change the entire CustomYoutube.ts such that the parent is display: flex,
-//# and the new property is justifyContent, rather than textAlign.
-
-//# Implement disabled and follow it across and into all components.
-//# It should also set isEditable to false.
 
 //# Add fallbacks to CSS custom properties in Tiptap.css
 
@@ -101,7 +84,8 @@ I think we can do a more global solution on a top-level <div>
 //# The dropdown menu currently doesn't respond well to viewport width resizing.
 
 export const TiptapDemo = () => {
-  const [value, setValue] = React.useState<string>('')
+  const [value, setValue] = React.useState<string>(defaultYoutube)
+  const [disabled, setDisabled] = React.useState(false)
 
   ///////////////////////////////////////////////////////////////////////////
   //
@@ -135,11 +119,22 @@ export const TiptapDemo = () => {
 
   return (
     <section className='mx-auto max-w-[1150px]'>
+      <Button
+        className='mb-4'
+        onClick={() => {
+          setDisabled((prev) => !prev)
+        }}
+        size='sm'
+        variant={disabled ? 'success' : 'destructive'}
+      >
+        {disabled ? 'Enable' : 'Disable'} Editor
+      </Button>
       <Tiptap
         className='shadow'
         defaultFontFamily='' // Falls back to 'Poppins'.
+        disabled={disabled}
         editorProps={{
-          content: '',
+          content: defaultYoutube,
           placeholder: 'Write something...'
         }}
         onChange={(newValue) => {

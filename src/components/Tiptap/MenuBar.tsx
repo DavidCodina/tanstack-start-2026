@@ -50,7 +50,7 @@ ${FOCUS_MIXIN}
 
 export const MenuBar = ({
   defaultFontFamily,
-  disabled,
+  disabled = false,
   editor
 }: MenuBarProps) => {
   const { editorState } = useTiptapContext()
@@ -167,9 +167,7 @@ export const MenuBar = ({
 
         <Divider />
 
-        <FontSize
-        //# disabled={disabled}
-        />
+        <FontSize disabled={disabled} />
 
         <Divider />
 

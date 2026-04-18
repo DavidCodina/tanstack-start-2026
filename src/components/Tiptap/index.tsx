@@ -61,8 +61,10 @@ focus-within:ring-[3px] focus-within:ring-primary/50
 
 const Tiptap = ({
   className,
-  //# If disabled, then presumably change editor to readOnly and pass it into all buttons, inputs, etc.
-  disabled = false,
+  // When disabled changes, TipTapContext.tsx sets editor.setEditable(!disabled).
+  // However, this only locks the contenteditable div. You still must guard your
+  // functionality by checking if disabled and/or editor.isEditable.
+  disabled,
   defaultFontFamily,
   ...otherProps
 }: TiptapProps) => {
@@ -80,7 +82,12 @@ const Tiptap = ({
     <div
       {...otherProps}
       data-slot='tiptap-editor'
-      className={cn(baseClasses, className)}
+      className={cn(
+        baseClasses,
+        className,
+        //! Temporary...
+        !editor.isEditable && 'outline-destructive outline-2 outline-dashed'
+      )}
       // This stops event bubbling for all 'Enter' presses within the component.
       onKeyDown={(e) => {
         if (e.key === 'Enter') {
@@ -103,13 +110,10 @@ const Tiptap = ({
         // to go to a programmatic solution. Fortunately, this is not an issue
         // for the BubbleMenu.
         className='min-h-(--tiptap-min-content-height) resize-y overflow-auto'
-        //# disabled={disabled}
         editor={editor}
       />
 
-      <FormatBubbleMenu
-      //# disabled={disabled}
-      />
+      <FormatBubbleMenu disabled={disabled} />
     </div>
   )
 }
@@ -119,17 +123,18 @@ const Tiptap = ({
 ======================================================================== */
 
 const TiptapWithProvider = ({
+  disabled = false,
   editorProps,
   onChange,
   ...otherProps
 }: TiptapProviderProps & TiptapProps) => {
   return (
     <TiptapProvider
-      //# disabled={disabled}
+      disabled={disabled}
       editorProps={editorProps}
       onChange={onChange}
     >
-      <Tiptap {...otherProps} />
+      <Tiptap disabled={disabled} {...otherProps} />
     </TiptapProvider>
   )
 }

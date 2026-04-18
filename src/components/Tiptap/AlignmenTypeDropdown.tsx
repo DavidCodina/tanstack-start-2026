@@ -72,6 +72,7 @@ export const AlignmentTypeDropdown = ({
     >
       <DropdownItem
         className={editorState?.isAlignLeft ? SELECTED_MIXIN : ''}
+        disabled={disabled}
         onClick={() => editor.chain().focus().toggleTextAlign('left').run()}
         title='left align'
       >
@@ -80,6 +81,7 @@ export const AlignmentTypeDropdown = ({
 
       <DropdownItem
         className={editorState?.isAlignCenter ? SELECTED_MIXIN : ''}
+        disabled={disabled}
         onClick={() => editor.chain().focus().toggleTextAlign('center').run()}
         title='center align'
       >
@@ -88,6 +90,7 @@ export const AlignmentTypeDropdown = ({
 
       <DropdownItem
         className={editorState?.isAlignRight ? SELECTED_MIXIN : ''}
+        disabled={disabled}
         onClick={() => editor.chain().focus().toggleTextAlign('right').run()}
         title='right align'
       >
@@ -96,6 +99,7 @@ export const AlignmentTypeDropdown = ({
 
       <DropdownItem
         className={editorState?.isAlignJustify ? SELECTED_MIXIN : ''}
+        disabled={disabled}
         onClick={() => editor.chain().focus().toggleTextAlign('justify').run()}
         title='justify align'
       >
@@ -114,6 +118,7 @@ export const AlignmentTypeDropdown = ({
 
       <DropdownItem
         className=''
+        disabled={disabled}
         onClick={() => editor.chain().focus().indent().run()}
         title='indent'
       >
@@ -122,8 +127,9 @@ export const AlignmentTypeDropdown = ({
 
       <DropdownItem
         className=''
+        disabled={disabled}
         onClick={() => editor.chain().focus().outdent().run()}
-        title='outdentt'
+        title='outdent'
       >
         <ListIndentDecrease /> Outdent
       </DropdownItem>

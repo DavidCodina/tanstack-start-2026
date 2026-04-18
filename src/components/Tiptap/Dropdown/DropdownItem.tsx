@@ -36,6 +36,7 @@ ${FOCUS_MIXIN}
 export const DropdownItem = ({
   children,
   className = '',
+  disabled,
   onClick,
   title,
   ...otherProps
@@ -66,6 +67,7 @@ export const DropdownItem = ({
     <button
       {...otherProps}
       className={cn(baseClasses, className)}
+      disabled={disabled}
       onClick={onClick}
       ref={ref}
       title={title}

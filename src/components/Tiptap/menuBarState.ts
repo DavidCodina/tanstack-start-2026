@@ -194,7 +194,9 @@ export function menuBarSelector(ctx: EditorStateSnapshot<Editor | null>) {
             Embeds
     ====================== */
 
-    isYoutube: ctx.editor.isActive('youtube') ? true : false
+    isYoutube: ctx.editor.isActive('youtube') ? true : false,
+    // Used within FomratBubbleMenu.tsx to opt out of showing the bubble menu.
+    isCustomYoutube: ctx.editor.isActive('custom-youtube') ? true : false
   }
 }
 

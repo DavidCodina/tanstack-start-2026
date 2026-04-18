@@ -5,12 +5,13 @@ import { isOneOf, stringToNumberOrUndefined } from './utils'
 import { cn } from '@/utils'
 
 type YoutubeModalProps = {
+  disabled?: boolean
   onCancel: () => void
 
   onSubmit: (values: {
     url: string
     width?: number
-    textAlign?: 'left' | 'center' | 'right'
+    justifyContent?: string
   }) => void
 }
 
@@ -19,14 +20,11 @@ block w-full rounded border px-2 py-1 text-sm outline-none
 focus:ring-[3px] focus:ring-primary/50
 `
 
-type TextAlign = 'left' | 'center' | 'right'
-
-const options: { value: TextAlign; label: string; Icon: React.ElementType }[] =
-  [
-    { value: 'left', label: 'Left', Icon: AlignLeft },
-    { value: 'center', label: 'Center', Icon: AlignCenter },
-    { value: 'right', label: 'Right', Icon: AlignRight }
-  ]
+const options: { value: string; label: string; Icon: React.ElementType }[] = [
+  { value: 'flex-start', label: 'Left', Icon: AlignLeft },
+  { value: 'center', label: 'Center', Icon: AlignCenter },
+  { value: 'flex-end', label: 'Right', Icon: AlignRight }
+]
 
 const MIN = 150
 const MAX = 1000
@@ -38,15 +36,23 @@ const MAX = 1000
 
 //# Is there a way to check isYoutubeVideo, then open up editing options, similar to the Link?
 
-export const YoutubeModal = ({ onCancel, onSubmit }: YoutubeModalProps) => {
+export const YoutubeModal = ({
+  disabled,
+  onCancel,
+  onSubmit
+}: YoutubeModalProps) => {
   /* =====================
         state & refs
   ====================== */
 
   const [url, setUrl] = React.useState('')
   const [width, setWidth] = React.useState('')
-  const [textAlign, setTextAlign] = React.useState<
-    'left' | 'center' | 'right'
+
+  // Initially, this was textAlign/setTextAlign, but later CustomYoutube.ts
+  // was changed to use flex + justifyContent. In either case, it makes
+  // no difference to the end user, I just prefer the latter.
+  const [alignment, setAlignment] = React.useState<
+    'flex-start' | 'center' | 'flex-end'
   >()
 
   const urlInputCallbackRef = React.useCallback(
@@ -74,6 +80,7 @@ export const YoutubeModal = ({ onCancel, onSubmit }: YoutubeModalProps) => {
           Youtube URL <sup className='text-rose-500'>*</sup>
         </label>
         <input
+          disabled={disabled}
           ref={urlInputCallbackRef}
           autoCapitalize='none'
           autoComplete='new-password'
@@ -103,6 +110,7 @@ export const YoutubeModal = ({ onCancel, onSubmit }: YoutubeModalProps) => {
           Width
         </label>
         <input
+          disabled={disabled}
           autoCapitalize='none'
           autoComplete='new-password'
           autoCorrect='off'
@@ -130,10 +138,10 @@ export const YoutubeModal = ({ onCancel, onSubmit }: YoutubeModalProps) => {
   }
 
   /* =====================
-    renderTextAlignRadios()
+    renderAlignmentRadios()
   ====================== */
 
-  const renderTextAlignRadios = () => {
+  const renderAlignmentRadios = () => {
     return (
       <fieldset
         className='flex-1'
@@ -160,9 +168,9 @@ export const YoutubeModal = ({ onCancel, onSubmit }: YoutubeModalProps) => {
 
           const value = target.value
 
-          const acceptableValues = ['left', 'center', 'right'] as const
+          const acceptableValues = ['flex-start', 'center', 'flex-end'] as const
           if (isOneOf(acceptableValues, value)) {
-            setTextAlign(value)
+            setAlignment(value)
           }
         }}
       >
@@ -171,7 +179,7 @@ export const YoutubeModal = ({ onCancel, onSubmit }: YoutubeModalProps) => {
         </legend>
         <div className='flex flex-1 gap-2'>
           {options.map(({ value, label, Icon }) => {
-            const checked = textAlign === value
+            const checked = alignment === value
 
             const labelBaseClasses = `
             relative flex flex-1 items-center justify-center gap-2 
@@ -192,8 +200,9 @@ export const YoutubeModal = ({ onCancel, onSubmit }: YoutubeModalProps) => {
                 )}
               >
                 <input
+                  disabled={disabled}
                   id={`radio-align-${value}`}
-                  name='text-align-radios'
+                  name='alignment-radios'
                   type='radio'
                   value={value}
                   className='sr-only'
@@ -224,8 +233,10 @@ export const YoutubeModal = ({ onCancel, onSubmit }: YoutubeModalProps) => {
         >
           Cancel
         </button>
+
         <button
           className='min-w-[80px] flex-1 cursor-pointer rounded border border-green-700 bg-green-500 px-2 py-1 text-sm font-medium text-white outline-none focus-visible:ring-[3px] focus-visible:ring-green-500/50'
+          disabled={disabled}
           onClick={() => {
             let widthAsNumberOrUndefined = stringToNumberOrUndefined(width, {
               noDecimal: true,
@@ -243,7 +254,7 @@ export const YoutubeModal = ({ onCancel, onSubmit }: YoutubeModalProps) => {
             onSubmit?.({
               url: url,
               width: widthAsNumberOrUndefined,
-              textAlign: textAlign
+              justifyContent: alignment
             })
           }}
           type='button'
@@ -271,7 +282,7 @@ export const YoutubeModal = ({ onCancel, onSubmit }: YoutubeModalProps) => {
 
         <div className='mb-6 flex gap-2'>
           {renderWidthInput()}
-          {renderTextAlignRadios()}
+          {renderAlignmentRadios()}
         </div>
 
         {renderActions()}

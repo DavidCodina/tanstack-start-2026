@@ -1,7 +1,11 @@
 import { mergeAttributes } from '@tiptap/core'
 // https://tiptap.dev/docs/editor/extensions/nodes/youtube
 import Youtube, { isValidYoutubeUrl } from '@tiptap/extension-youtube'
+
+// Note: YoutubeOptions is the type for the extenstion configuration options,
+// not for the setYoutubeVideo({ ... }) command options.
 // import type { YoutubeOptions } from '@tiptap/extension-youtube'
+
 // import type { DOMOutputSpecArray } from '@tiptap/core'
 
 type Tag = string
@@ -16,25 +20,56 @@ export type CustomSetYoutubeVideoOptions = {
   width?: number
   height?: number
   start?: number
-  textAlign?: 'left' | 'center' | 'right' // Added (see also <root>/tiptap-augmentation.d.ts)
+  justifyContent?: string // Added
 }
 
 /* ========================================================================
 
 ======================================================================== */
-// YoutubeOptions is the type for the extenstion configuration options,
-// not for the setYoutubeVideo({ ... }) command options.
+///////////////////////////////////////////////////////////////////////////
+//
+// This custom extension on top of the standar Youtube extension adds the
+// ability to align the <ifram> by using `justify-content` on the wrapper <div>.
+// The naive approach would be to instead configure the standard Youtube extension
+// as follows:
+//
+//   Youtube.configure({ inline: true })
+//
+// However, we don't actually want it to be inline (i.e., wrapped in a <p>).
+// By doing it this way, we can ALSO use the standar Youtube extension for
+// inline implementations.
+//
+///////////////////////////////////////////////////////////////////////////
 
 export const CustomYoutube = Youtube.extend(
   /*<YoutubeOptions>*/ {
+    name: 'custom-youtube', // 👈 Overrides 'youtube'
+
     addAttributes() {
       return {
         ...this.parent?.(),
-        textAlign: {
-          parseHTML: (element) => element.style.textAlign || '',
+
+        justifyContent: {
+          default: '',
+          parseHTML: (element) => {
+            // The base extension matches `div[data-youtube-video] iframe`,
+            // so `element` here is the <iframe>. The justify-content style
+            // lives on the parent wrapper <div>, so we must climb up one level.
+            return element.parentElement?.style.justifyContent || ''
+          },
+
+          // Keeps this out of the iframe's own attributes
           renderHTML: () => ({})
         }
       }
+    },
+
+    parseHTML() {
+      return [
+        {
+          tag: 'div[data-custom-youtube-video] iframe'
+        }
+      ]
     },
 
     addCommands() {
@@ -104,18 +139,29 @@ export const CustomYoutube = Youtube.extend(
       //
       ///////////////////////////////////////////////////////////////////////////
 
-      if (Array.isArray(parentResult) && node.attrs.textAlign) {
-        const [tag, wrapperAttrs = {}, content] = parentResult
-
-        const alignmentAttrs = node.attrs.textAlign
-          ? { style: `text-align: ${node.attrs.textAlign}` }
-          : {}
-
-        const mergedWrapperAttrs = mergeAttributes(wrapperAttrs, alignmentAttrs)
-        return [tag, mergedWrapperAttrs, content]
+      if (!Array.isArray(parentResult)) {
+        return parentResult
       }
 
-      return parentResult
+      const [tag, wrapperAttributes = {}, content] = parentResult
+
+      if ('data-youtube-video' in wrapperAttributes) {
+        delete wrapperAttributes['data-youtube-video']
+        wrapperAttributes['data-custom-youtube-video'] = ''
+      }
+
+      const newAttributes = node.attrs.justifyContent
+        ? {
+            style: `display: flex; justify-content: ${node.attrs.justifyContent}`
+          }
+        : {}
+
+      const mergedWrapperAttributes = mergeAttributes(
+        wrapperAttributes,
+        newAttributes
+      )
+
+      return [tag, mergedWrapperAttributes, content]
     }
   }
 )

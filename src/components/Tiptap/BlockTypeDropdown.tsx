@@ -20,7 +20,7 @@ import type { Editor } from '@tiptap/core'
 import type { MenuBarState } from './menuBarState'
 
 type BlockTypeDropdownProps = {
-  disabled?: boolean
+  disabled: boolean
   editor: Editor
   editorState: MenuBarState
 }
@@ -80,12 +80,14 @@ export const BlockTypeDropdown = ({
         'aria-label': 'block type options',
         children: blockTypeToBlockName[blockType],
         className: '',
+        disabled: disabled,
         icon: dropdownIcon,
         title: 'block type options'
       }}
     >
       <DropdownItem
         className={editorState?.isParagraph ? SELECTED_MIXIN : ''}
+        disabled={disabled}
         onClick={() => editor.chain().focus().setParagraph().run()}
         title='paragraph'
       >
@@ -94,6 +96,7 @@ export const BlockTypeDropdown = ({
 
       <DropdownItem
         className={editorState?.isHeading1 ? SELECTED_MIXIN : ''}
+        disabled={disabled}
         onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
         title='heading 1'
       >
@@ -102,6 +105,7 @@ export const BlockTypeDropdown = ({
 
       <DropdownItem
         className={editorState?.isHeading2 ? SELECTED_MIXIN : ''}
+        disabled={disabled}
         onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
         title='heading 2'
       >
@@ -110,6 +114,7 @@ export const BlockTypeDropdown = ({
 
       <DropdownItem
         className={editorState?.isHeading3 ? SELECTED_MIXIN : ''}
+        disabled={disabled}
         onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
         title='heading 3'
       >
@@ -118,6 +123,7 @@ export const BlockTypeDropdown = ({
 
       <DropdownItem
         className={editorState?.isHeading4 ? SELECTED_MIXIN : ''}
+        disabled={disabled}
         onClick={() => editor.chain().focus().toggleHeading({ level: 4 }).run()}
         title='heading 4'
       >
@@ -126,6 +132,7 @@ export const BlockTypeDropdown = ({
 
       <DropdownItem
         className={editorState?.isHeading5 ? SELECTED_MIXIN : ''}
+        disabled={disabled}
         onClick={() => editor.chain().focus().toggleHeading({ level: 5 }).run()}
         title='heading 5'
       >
@@ -134,6 +141,7 @@ export const BlockTypeDropdown = ({
 
       <DropdownItem
         className={editorState?.isHeading6 ? SELECTED_MIXIN : ''}
+        disabled={disabled}
         onClick={() => editor.chain().focus().toggleHeading({ level: 6 }).run()}
         title='heading 6'
       >
@@ -142,6 +150,7 @@ export const BlockTypeDropdown = ({
 
       <DropdownItem
         className={editorState?.isBulletList ? SELECTED_MIXIN : ''}
+        disabled={disabled}
         onClick={() => editor.chain().focus().toggleBulletList().run()}
         title='bullet list'
       >
@@ -150,6 +159,7 @@ export const BlockTypeDropdown = ({
 
       <DropdownItem
         className={editorState?.isOrderedList ? SELECTED_MIXIN : ''}
+        disabled={disabled}
         onClick={() => editor.chain().focus().toggleOrderedList().run()}
         title='numbered list'
       >
@@ -162,6 +172,7 @@ export const BlockTypeDropdown = ({
 
       <DropdownItem
         className={editorState?.isBlockquote ? SELECTED_MIXIN : ''}
+        disabled={disabled}
         onClick={() => editor.chain().focus().toggleBlockquote().run()}
         title='quote'
       >
@@ -170,6 +181,7 @@ export const BlockTypeDropdown = ({
 
       <DropdownItem
         className={editorState?.isCodeBlock ? SELECTED_MIXIN : ''}
+        disabled={disabled}
         onClick={() => editor.chain().focus().toggleCodeBlock().run()}
         title='code block'
       >

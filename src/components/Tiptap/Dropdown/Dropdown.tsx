@@ -177,7 +177,7 @@ export const Dropdown = ({
     <>
       {renderTrigger()}
 
-      {showDropDown && (
+      {showDropDown && !disabled && (
         <DropdownMenu
           dropDownRef={menuRef}
           onClose={() => {

@@ -1,4 +1,4 @@
-import { createContext, use } from 'react'
+import { createContext, use, useEffect } from 'react'
 import { useEditor, useEditorState } from '@tiptap/react'
 
 ///////////////////////////////////////////////////////////////////////////
@@ -109,8 +109,9 @@ const TiptapContext = createContext<TiptapContextValue | null>(null)
 export function TiptapProvider({
   children,
   editorProps = {},
+  disabled = false,
   onChange
-}: TiptapProviderProps & { children: React.ReactNode }) {
+}: TiptapProviderProps & { children: React.ReactNode; disabled?: boolean }) {
   const editor = useEditor({
     // Avoid Error: Tiptap Error: SSR has been detected, please set `immediatelyRender`
     // explicitly to `false` to avoid hydration mismatches.
@@ -121,7 +122,7 @@ export function TiptapProvider({
     // ⚠️ false doesn't seem to make a difference.
     //# What is the way to programmatically change this later?
     //# What exactly does it do?
-    editable: true,
+    editable: true, // On mount only.
     ///////////////////////////////////////////////////////////////////////////
     //
     //! I'm not sure if this is actually true, or at least it doesn't seem to
@@ -261,11 +262,11 @@ export function TiptapProvider({
 
       CustomYoutube.configure({
         controls: false,
-        nocookie: true,
+        nocookie: true
 
-        HTMLAttributes: {
-          class: ''
-        }
+        // HTMLAttributes: {
+        //   class: ''
+        // }
         //# Possibly try setting a custom width/height here and/or setting it to undefined.
       })
     ],
@@ -330,6 +331,19 @@ export function TiptapProvider({
       return menuBarSelector(ctx)
     }
   })
+
+  /* ======================
+         useEffect()
+  ====================== */
+  // ✅ Keeps editable in sync whenever `disabled` changes after mount
+
+  useEffect(() => {
+    if (!editor) return
+
+    // Only locks the contenteditable div. You still must guard your
+    // functionality by checking if disabled and/or editor.isEditable.
+    editor.setEditable(!disabled)
+  }, [editor, disabled])
 
   /* ======================
           return

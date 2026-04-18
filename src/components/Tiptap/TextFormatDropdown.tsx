@@ -70,7 +70,7 @@ export const TextFormatDropdown = ({
     >
       <DropdownItem
         className={editorState?.isBold ? SELECTED_MIXIN : ''}
-        // disabled={!editorState?.canBold}
+        disabled={disabled}
         onClick={() => editor.chain().focus().toggleBold().run()}
         title='bold'
       >
@@ -79,7 +79,7 @@ export const TextFormatDropdown = ({
 
       <DropdownItem
         className={editorState?.isItalic ? SELECTED_MIXIN : ''}
-        // disabled={!editorState?.canItalic}
+        disabled={disabled}
         onClick={() => editor.chain().focus().toggleItalic().run()}
         title='italic'
       >
@@ -88,7 +88,7 @@ export const TextFormatDropdown = ({
 
       <DropdownItem
         className={editorState?.isUnderline ? SELECTED_MIXIN : ''}
-        // disabled={!editorState?.canUnderline}
+        disabled={disabled}
         onClick={() => editor.chain().focus().toggleUnderline().run()}
         title='underline'
       >
@@ -97,7 +97,7 @@ export const TextFormatDropdown = ({
 
       <DropdownItem
         className={editorState?.isStrike ? SELECTED_MIXIN : ''}
-        // disabled={!editorState?.canStrike}
+        disabled={disabled}
         onClick={() => editor.chain().focus().toggleStrike().run()}
         title='strikethrough'
       >
@@ -106,7 +106,7 @@ export const TextFormatDropdown = ({
 
       <DropdownItem
         className={editorState?.isLink ? SELECTED_MIXIN : ''}
-        // disabled={!editorState?.canSetLink && !editorState?.canUnsetLink}
+        disabled={disabled}
         onClick={() => {
           if (editorState?.isLink) {
             // Already on a link — edit or remove it
@@ -160,7 +160,7 @@ export const TextFormatDropdown = ({
 
       <DropdownItem
         className={editorState?.isHighlight ? SELECTED_MIXIN : ''}
-        // disabled={!editorState?.canHighlight}
+        disabled={disabled}
         onClick={() => editor.chain().focus().toggleHighlight().run()}
         title='highlight'
       >
@@ -169,7 +169,7 @@ export const TextFormatDropdown = ({
 
       <DropdownItem
         className={editorState?.isCode ? SELECTED_MIXIN : ''}
-        // disabled={!editorState?.canCode}
+        disabled={disabled}
         onClick={() => editor.chain().focus().toggleCode().run()}
         title='code'
       >
@@ -180,6 +180,7 @@ export const TextFormatDropdown = ({
       For maximum control and consistency, implement a custom ColorPicker component.   */}
 
       <DropdownItem
+        disabled={disabled}
         onClick={() => {
           const textColorInput = textColorInputRef.current
           if (!textColorInput) return
@@ -204,6 +205,7 @@ export const TextFormatDropdown = ({
       >
         <input
           className='h-[24px] w-[24px] cursor-pointer rounded p-0'
+          disabled={disabled}
           //# Why not onChange?
           onInput={(event) => {
             editor.chain().focus().setColor(event.currentTarget.value).run()
@@ -217,6 +219,7 @@ export const TextFormatDropdown = ({
       </DropdownItem>
 
       <DropdownItem
+        disabled={disabled}
         onClick={() => {
           const backgroundColorInput = backgroundColorInputRef.current
           if (!backgroundColorInput) return
@@ -234,6 +237,7 @@ export const TextFormatDropdown = ({
       >
         <input
           className='h-[24px] w-[24px] cursor-pointer rounded p-0'
+          disabled={disabled}
           //# Why not onChange?
           onInput={(event) => {
             editor
@@ -256,6 +260,7 @@ export const TextFormatDropdown = ({
 
       <DropdownItem
         className={editorState?.isSubscript ? SELECTED_MIXIN : ''}
+        disabled={disabled}
         //# Check if superscript and remove.
         onClick={() => editor.chain().focus().toggleSubscript().run()}
         title='subscript'
@@ -265,6 +270,7 @@ export const TextFormatDropdown = ({
 
       <DropdownItem
         className={editorState?.isSuperscript ? SELECTED_MIXIN : ''}
+        disabled={disabled}
         //# Check if subscript and remove.
         onClick={() => editor.chain().focus().toggleSuperscript().run()}
         title='superscript'
@@ -274,6 +280,7 @@ export const TextFormatDropdown = ({
 
       <DropdownItem
         className={''}
+        disabled={disabled}
         onClick={() => editor.chain().focus().unsetAllMarks().run()}
         title='clear formatting' // clear marks
       >

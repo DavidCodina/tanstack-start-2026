@@ -33,7 +33,7 @@ export const InsertDropdown = ({
   // editorState,
   disabled = false
 }: InsertDropdownProps): JSX.Element => {
-  // For Youtube
+  // For CustomYoutube extension
   const [showYoutubeModal, setShowYoutubeModal] = React.useState(false)
 
   /* ======================
@@ -41,10 +41,11 @@ export const InsertDropdown = ({
   ====================== */
 
   const renderYoutubeModal = () => {
-    if (!showYoutubeModal) return null
+    if (!showYoutubeModal || disabled) return null
 
     return (
       <YoutubeModal
+        disabled={disabled}
         onSubmit={(values) => {
           if (!editor || !values.url || typeof values.url !== 'string') {
             setShowYoutubeModal(false)
@@ -66,7 +67,7 @@ export const InsertDropdown = ({
               //
               // ⚠️ Gotcha:
               //
-              // Object literal may only specify known properties, and 'textAlign'
+              // Object literal may only specify known properties, and 'justifyContent'
               // does not exist in type 'SetYoutubeVideoOptions'.
               // Solution: assert options back onto options object:
               //
@@ -86,7 +87,7 @@ export const InsertDropdown = ({
               //         width?: number
               //         height?: number
               //         start?: number
-              //         textAlign?: 'left' | 'center' | 'right' | 'justify' // Added
+              //         justifyContent?: string
               //       }) => ReturnType
               //     }
               //   }
@@ -135,7 +136,7 @@ export const InsertDropdown = ({
               //
               ///////////////////////////////////////////////////////////////////////////
 
-              textAlign: values.textAlign
+              justifyContent: values.justifyContent
             })
           } else {
             // Could to a toast here...
@@ -171,6 +172,7 @@ https://www.youtube.com/watch?v=`)
       >
         <DropdownItem
           className=''
+          disabled={disabled}
           onClick={() => editor.chain().focus().setHorizontalRule().run()}
           title='horizontal rule'
         >
@@ -179,6 +181,7 @@ https://www.youtube.com/watch?v=`)
 
         <DropdownItem
           className=''
+          disabled={disabled}
           onClick={() => editor.chain().focus().setHardBreak().run()}
           title='hard break'
         >
@@ -187,6 +190,7 @@ https://www.youtube.com/watch?v=`)
 
         <DropdownItem
           className=''
+          disabled={disabled}
           onClick={() => {
             setShowYoutubeModal(true)
           }}

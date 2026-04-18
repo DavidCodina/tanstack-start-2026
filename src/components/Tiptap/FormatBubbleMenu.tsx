@@ -83,14 +83,14 @@ ${FOCUS_MIXIN}
 //
 ///////////////////////////////////////////////////////////////////////////
 
-export const FormatBubbleMenu = () => {
+export const FormatBubbleMenu = ({ disabled }: { disabled?: boolean }) => {
   const { editor, editorState } = useTiptapContext()
 
   /* =====================
           return
   ====================== */
 
-  if (!editor || editorState?.isYoutube) {
+  if (!editor || disabled || editorState?.isCustomYoutube) {
     return null
   }
 
@@ -141,6 +141,7 @@ export const FormatBubbleMenu = () => {
       <button
         aria-label='toggle bold'
         className={cn(buttonClasses, editorState?.isBold && SELECTED_MIXIN)}
+        disabled={disabled}
         onClick={() => editor.chain().focus().toggleBold().run()}
         title='bold'
         type='button'
@@ -151,6 +152,7 @@ export const FormatBubbleMenu = () => {
       <button
         aria-label='toggle italic'
         className={cn(buttonClasses, editorState?.isItalic && SELECTED_MIXIN)}
+        disabled={disabled}
         onClick={() => editor.chain().focus().toggleItalic().run()}
         title='italic'
         type='button'
@@ -164,6 +166,7 @@ export const FormatBubbleMenu = () => {
           buttonClasses,
           editorState?.isUnderline && SELECTED_MIXIN
         )}
+        disabled={disabled}
         onClick={() => editor.chain().focus().toggleUnderline().run()}
         title='underline'
         type='button'
@@ -174,6 +177,7 @@ export const FormatBubbleMenu = () => {
       <button
         aria-label='toggle strikethrough'
         className={cn(buttonClasses, editorState?.isStrike && SELECTED_MIXIN)}
+        disabled={disabled}
         onClick={() => editor.chain().focus().toggleStrike().run()}
         title='strikethrough'
         type='button'
@@ -187,6 +191,7 @@ export const FormatBubbleMenu = () => {
           buttonClasses,
           editorState?.isHighlight && SELECTED_MIXIN
         )}
+        disabled={disabled}
         onClick={() => editor.chain().focus().toggleHighlight().run()}
         title='highlight'
         type='button'
@@ -197,6 +202,7 @@ export const FormatBubbleMenu = () => {
       <button
         aria-label='toggle code'
         className={cn(buttonClasses, editorState?.isCode && SELECTED_MIXIN)}
+        disabled={disabled}
         onClick={() => editor.chain().focus().toggleCode().run()}
         title='code'
         type='button'
@@ -207,6 +213,7 @@ export const FormatBubbleMenu = () => {
       <button
         aria-label='link'
         className={cn(buttonClasses, editorState?.isLink && SELECTED_MIXIN)}
+        disabled={disabled}
         onClick={() => {
           if (editorState?.isLink) {
             // Already on a link — edit or remove it
@@ -265,6 +272,7 @@ export const FormatBubbleMenu = () => {
           buttonClasses,
           editorState?.isSubscript && SELECTED_MIXIN
         )}
+        disabled={disabled}
         //# Check if superscript and remove.
         onClick={() => editor.chain().focus().toggleSubscript().run()}
         title='subscript'
@@ -279,6 +287,7 @@ export const FormatBubbleMenu = () => {
           buttonClasses,
           editorState?.isSuperscript && SELECTED_MIXIN
         )}
+        disabled={disabled}
         //# Check if subscript and remove.
         onClick={() => editor.chain().focus().toggleSuperscript().run()}
         title='superscript'

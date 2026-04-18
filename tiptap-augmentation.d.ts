@@ -12,7 +12,8 @@ declare module '@tiptap/core' {
         width?: number
         height?: number
         start?: number
-        textAlign?: 'left' | 'center' | 'right' // Added
+
+        justifyContent?: string // Added
       }) => ReturnType
     }
   }
