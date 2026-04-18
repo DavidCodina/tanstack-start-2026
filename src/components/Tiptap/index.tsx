@@ -1,10 +1,10 @@
 import './Tiptap.css'
 import { EditorContent } from '@tiptap/react'
-import { TiptapProvider, useTiptapContext } from './TipTapContext'
+import { TiptapProvider, useTiptapContext } from './TiptapContext'
 import { MenuBar } from './MenuBar'
 import { FormatBubbleMenu } from './FormatBubbleMenu'
 
-import type { TiptapProviderProps } from './TipTapContext'
+import type { TiptapProviderProps } from './TiptapContext'
 import { cn } from '@/utils'
 
 type TiptapProps = Omit<

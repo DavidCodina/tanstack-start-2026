@@ -1,7 +1,7 @@
 import * as React from 'react'
 
 import { Minus, Plus } from 'lucide-react'
-import { useTiptapContext } from '../TipTapContext'
+import { useTiptapContext } from '../TiptapContext'
 import { stringToNumberOrUndefined } from './utils'
 import { cn } from '@/utils'
 

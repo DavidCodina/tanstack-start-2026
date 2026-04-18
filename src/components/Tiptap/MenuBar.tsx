@@ -1,6 +1,6 @@
 import { Copy, Eraser, RotateCcw, RotateCw, Trash2 } from 'lucide-react'
 import { DOMSerializer } from '@tiptap/pm/model'
-import { useTiptapContext } from './TipTapContext'
+import { useTiptapContext } from './TiptapContext'
 import { Divider } from './Divider'
 import { BlockTypeDropdown } from './BlockTypeDropdown'
 import { TextFormatDropdown } from './TextFormatDropdown'

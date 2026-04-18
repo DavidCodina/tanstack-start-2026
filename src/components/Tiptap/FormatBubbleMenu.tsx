@@ -20,7 +20,7 @@ import {
   Underline
 } from 'lucide-react'
 
-import { useTiptapContext } from './TipTapContext'
+import { useTiptapContext } from './TiptapContext'
 
 import { cn } from '@/utils'
 
