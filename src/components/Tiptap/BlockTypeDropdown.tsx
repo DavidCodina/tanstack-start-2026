@@ -166,9 +166,14 @@ export const BlockTypeDropdown = ({
         <ListOrdered /> {blockTypeToBlockName.number}
       </DropdownItem>
 
-      {/* 
-      //# Possibly add check list
-      */}
+      <DropdownItem
+        className={editorState?.isTaskList ? SELECTED_MIXIN : ''}
+        disabled={disabled}
+        onClick={() => editor.chain().focus().toggleTaskList().run()}
+        title='check list'
+      >
+        <ListCheck /> {blockTypeToBlockName.check}
+      </DropdownItem>
 
       <DropdownItem
         className={editorState?.isBlockquote ? SELECTED_MIXIN : ''}

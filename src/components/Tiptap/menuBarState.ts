@@ -70,6 +70,7 @@ export function menuBarSelector(ctx: EditorStateSnapshot<Editor | null>) {
 
     isBulletList: ctx.editor.isActive('bulletList') ? true : false,
     isOrderedList: ctx.editor.isActive('orderedList') ? true : false,
+    isTaskList: ctx.editor.isActive('taskList') ? true : false,
     isCodeBlock: ctx.editor.isActive('codeBlock') ? true : false,
     isBlockquote: ctx.editor.isActive('blockquote') ? true : false,
 

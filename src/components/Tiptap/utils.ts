@@ -3,7 +3,6 @@ import type { Editor } from '@tiptap/core'
 /* ======================
 
 ====================== */
-//# Later we may also have 'check' for checklists.
 
 export const getBlockType = (editor: Editor) => {
   if (editor.isActive('heading', { level: 1 })) return 'h1'
@@ -15,6 +14,7 @@ export const getBlockType = (editor: Editor) => {
 
   if (editor.isActive('bulletList')) return 'bullet'
   if (editor.isActive('orderedList')) return 'number'
+  if (editor.isActive('taskList')) return 'check'
   if (editor.isActive('blockquote')) return 'quote'
   if (editor.isActive('codeBlock')) return 'code'
 

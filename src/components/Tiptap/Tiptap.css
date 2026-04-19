@@ -178,14 +178,73 @@ https://tiptap.dev/docs/editor/extensions/functionality/placeholder#additional-s
 /* ??? */
 .tiptap ul,
 .tiptap ol {
-  padding: 0 1rem; /* ??? */
-  margin: 1.25rem 1rem 1.25rem 0.4rem; /* ??? */
+  padding: 0 16px;
+  margin: 0 0 16px 16px;
 }
 
 .tiptap ul li p,
 .tiptap ol li p {
   margin-top: 0.25em;
   margin-bottom: 0.25em;
+}
+
+/* =================== */
+
+/* 
+<ul data-type="taskList">
+  <li>
+    <label contenteditable="false">
+      <input aria-label="Task item checkbox for Check 1" type="checkbox">
+      <span></span>
+    </label>
+    <div>
+      <p>Check 1</p>
+    </div>
+  </li>
+
+  <li> ... </li>
+</ul>
+*/
+
+ul[data-type='taskList'] {
+  list-style: none;
+  margin-left: 0;
+}
+
+ul[data-type='taskList'] li {
+  align-items: start;
+  display: flex;
+  gap: 4px;
+}
+
+ul[data-type='taskList'] li > label {
+  user-select: none;
+}
+
+ul[data-type='taskList'] input[type='checkbox'] {
+  /* Note: Browsers often apply a darkening on hover. */
+  accent-color: var(--color-green-600);
+  border-radius: 4px;
+  cursor: pointer;
+  display: block;
+  height: 20px;
+  margin: 0px;
+  width: 20px;
+}
+
+/* This is where the text goes - <div><p>...</p></div>. However,
+If you have nested checkboxes another <ul> will also go inside the <div>. */
+ul[data-type='taskList'] li > div {
+}
+
+ul[data-type='taskList'] li > div > p {
+  position: relative;
+  top: -2.5px; /* Correct for line-height. Probably better to use em units. */
+}
+
+ul[data-type='taskList'] ul[data-type='taskList'] {
+  margin: 0;
+  padding-left: 0;
 }
 
 /* =====================

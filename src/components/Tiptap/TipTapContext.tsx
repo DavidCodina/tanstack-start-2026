@@ -42,10 +42,14 @@ import { Placeholder } from '@tiptap/extensions'
 // https://tiptap.dev/docs/editor/extensions/marks/text-style
 import { TextStyleKit } from '@tiptap/extension-text-style'
 
+// https://tiptap.dev/docs/editor/extensions/nodes/task-list
+import { TaskItem, TaskList } from '@tiptap/extension-list'
+
 // https://tiptap.dev/docs/editor/extensions/nodes/youtube
 import { CustomYoutube } from './extensions/CustomYoutube'
 
 // import Image from '@tiptap/extension-image'
+
 // import CharacterCount from '@tiptap/extension-character-count'
 // import Table from '@tiptap/extension-table'
 // import TableRow from '@tiptap/extension-table-row'
@@ -268,6 +272,11 @@ export function TiptapProvider({
         //   class: ''
         // }
         //# Possibly try setting a custom width/height here and/or setting it to undefined.
+      }),
+
+      TaskList,
+      TaskItem.configure({
+        nested: true
       })
     ],
 

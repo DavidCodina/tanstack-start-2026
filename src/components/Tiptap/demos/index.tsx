@@ -44,6 +44,10 @@ const scriptTest = `<p>Hello. This is script test. Check your console logs.<scri
 
 ======================================================================== */
 
+//# Fix CSS issue with Nested checks.
+
+//# Add line height feature to dropdown and bubble menu.
+
 //# Add fallbacks to CSS custom properties in Tiptap.css
 
 //# Possibly add checks that remove properties from menu.
@@ -51,9 +55,6 @@ const scriptTest = `<p>Hello. This is script test. Check your console logs.<scri
 
 //# Add Lowercase, Uppercase, Capitalize
 //# This may be a situation for a custom extension.
-
-//# Add Checkbox supprt:
-//# https://tiptap.dev/docs/editor/extensions/nodes/task-list
 
 //# Add emoji support: https://tiptap.dev/docs/editor/extensions/nodes/emoji
 
