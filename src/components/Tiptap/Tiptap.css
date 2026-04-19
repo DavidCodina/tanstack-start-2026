@@ -181,11 +181,11 @@ https://tiptap.dev/docs/editor/extensions/functionality/placeholder#additional-s
   list-style-type: decimal;
 }
 
-/* ??? */
 .tiptap ul,
 .tiptap ol {
   padding: 0 16px;
-  margin: 0 0 16px 16px;
+  /* Don't set left-margin to keep the drag handle aligned correctly. */
+  margin: 0 0 16px 0px;
 }
 
 .tiptap ul li p,
@@ -215,6 +215,7 @@ https://tiptap.dev/docs/editor/extensions/functionality/placeholder#additional-s
 ul[data-type='taskList'] {
   list-style: none;
   margin-left: 0;
+  padding-left: 0;
 }
 
 ul[data-type='taskList'] li {
@@ -439,40 +440,33 @@ when the user selects an alignment option. */
 
 ====================== */
 
-/* Not sure when/where this is applied. */
-.ProseMirror .ProseMirror-widget {
+/* This is the underline that you see when dragging a block. 
+Note: the <div class="prosemirror-dropcursor-block" /> often takes
+a few seconds to disappear. The delay is a known quirk. ProseMirror's 
+dropcursor plugin removes the indicator by tracking dragleave/dragend events, 
+but the browser's drag lifecycle often keeps those events firing for a second 
+or two after you release, so ProseMirror doesn't clean up immediately. */
+.prosemirror-dropcursor-block {
+  background-color: transparent !important;
+  border-top: 0.75px dashed var(--color-blue-500);
+  border-bottom: 0.75px dashed var(--color-blue-500);
+  margin-top: -2px;
 }
 
-.ProseMirror-noderangeselection *::selection {
-  background: transparent;
-}
-
-.ProseMirror-noderangeselection * {
-  caret-color: transparent;
-}
-
-/* This style is applied when grabbing and dragging the handle. */
-.ProseMirror-selectednode,
-.ProseMirror-selectednoderange {
-  position: relative;
-}
-
-/* This style is also applies when grabbing and dragging the handle. */
-.ProseMirror-selectednode::before,
-.ProseMirror-selectednoderange::before {
+.prosemirror-dropcursor-block::after {
+  content: 'Drop Here';
   position: absolute;
-  pointer-events: none;
-  z-index: -1;
-  content: '';
-  top: -0.25rem;
-  left: -0.25rem;
-  right: -0.25rem;
-  bottom: -0.25rem;
-  background-color: #70cff850;
-  border-radius: 0.2rem;
+  line-height: 1;
+  display: flex;
+  justify-content: center;
+  background-color: var(--color-card);
+  font-size: 16px;
+  font-weight: 600;
+  padding: 0px 8px;
+  border-radius: 4px;
+  transform: translate(-50%, -50%);
+  left: 50%;
+  top: 50%;
+  width: fit-content;
+  color: var(--color-blue-500);
 }
-
-/* This is the underline that you see when dragging a block. */
-/* .prosemirror-dropcursor-block {
-  background-color: var(--color-sky-500) !important;
-} */

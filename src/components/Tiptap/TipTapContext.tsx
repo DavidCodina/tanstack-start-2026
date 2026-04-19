@@ -41,7 +41,7 @@ import TextAlign from '@tiptap/extension-text-align'
 import { Placeholder } from '@tiptap/extensions'
 
 // https://tiptap.dev/docs/editor/extensions/marks/text-style
-import { LineHeight, TextStyleKit } from '@tiptap/extension-text-style'
+import { TextStyleKit } from '@tiptap/extension-text-style'
 
 // https://tiptap.dev/docs/editor/extensions/nodes/task-list
 import { TaskItem, TaskList } from '@tiptap/extension-list'
@@ -142,8 +142,7 @@ export function TiptapProvider({
 
     extensions: [
       //# What is the Document extension? It's already part of StarterKit, but what does it do?
-      TextStyleKit, // This already includes Color, BackgroundColor, FontSize, etc.
-      LineHeight,
+      TextStyleKit, // This already includes Color, BackgroundColor, FontSize, LineHeight, etc.
 
       // ⚠️ Note you can also do this kind of thing.
       // StarterKit.configure({

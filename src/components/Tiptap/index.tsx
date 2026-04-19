@@ -137,6 +137,53 @@ const Tiptap = ({
         // https://tiptap.dev/docs/editor/extensions/functionality/drag-handle-react#computepositionconfig
         computePositionConfig={{
           placement: rtl ? 'right-start' : 'left-start'
+          // strategy: 'fixed'
+        }}
+        ///////////////////////////////////////////////////////////////////////////
+        //
+        // This is the underline that you see when dragging a block.
+        //
+        //   <div class="prosemirror-dropcursor-block" />
+        //
+        // However, it often takes a few seconds to disappear. The delay is a known quirk.
+        // ProseMirror's dropcursor plugin removes the indicator by tracking dragleave/dragend
+        // events, but the browser's drag lifecycle often keeps those events firing for a second
+        // or two after you release, so ProseMirror doesn't clean up immediately.
+        //
+        // The cleanest fix is to hook into dragend and/or drop on the editor DOM element yourself
+        // and force-remove the cursor node. Using onElementDragEnd should be sufficient, but as
+        // an alternative approach one could also do this:
+        //
+        //   React.useEffect(() => {
+        //     const contentEditableDiv = editor?.view?.dom
+        //     if (!contentEditableDiv) return
+        //     const removeCursor = () => {}
+        //     contentEditableDiv.addEventListener('dragend', removeCursor)
+        //     contentEditableDiv.addEventListener('drop', removeCursor)
+        //     return () => {
+        //       contentEditableDiv.removeEventListener('dragend', removeCursor)
+        //       contentEditableDiv.removeEventListener('drop', removeCursor)
+        //     }
+        //   }, [editor])
+        //
+        ///////////////////////////////////////////////////////////////////////////
+        onElementDragEnd={() => {
+          const removeCursor = () => {
+            // rAF lets ProseMirror process the event first,
+            // then we nuke any leftover dropcursor element
+            requestAnimationFrame(() => {
+              const dropCursor = document.querySelector(
+                '.prosemirror-dropcursor-block'
+              )
+              // ProseMirror recreates the element on each new drag, so setting
+              // display: none on the old one doesn't break future drags.
+              if (dropCursor && dropCursor instanceof HTMLElement) {
+                dropCursor.style.display = 'none'
+              }
+            })
+          }
+
+          removeCursor()
         }}
       >
         <GripVertical className='text-muted-foreground cursor-grab active:cursor-grabbing' />
