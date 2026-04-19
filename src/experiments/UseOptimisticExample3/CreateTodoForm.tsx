@@ -100,7 +100,11 @@ export const CreateTodoForm = ({
         />
       </div>
 
-      <button disabled={isPending} className='btn-green btn-sm block w-full'>
+      <button
+        disabled={isPending}
+        className='btn-green btn-sm block w-full'
+        type='submit'
+      >
         {isPending ? 'Submitting...' : 'Submit'}
       </button>
     </form>

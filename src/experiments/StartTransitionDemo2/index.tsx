@@ -34,6 +34,7 @@ const CounterCard = ({ isPending, count, handleClick }: any) => {
           handleClick()
         }}
         style={{ minWidth: 150 }}
+        type='button'
       >
         Increment
       </button>

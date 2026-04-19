@@ -42,9 +42,10 @@ export const BasicSidebar = () => {
           <ThemeToggle className='hover:bg-accent rounded-lg px-2 py-1 hover:cursor-pointer' />
 
           <button
+            aria-label='Close menu'
             onClick={() => setIsOpen(false)}
             className='hover:bg-accent rounded-lg p-1 hover:cursor-pointer'
-            aria-label='Close menu'
+            type='button'
           >
             <X size={32} />
           </button>
@@ -210,6 +211,7 @@ export const BasicSidebar = () => {
                 StartSSRDemo: !prev.StartSSRDemo
               }))
             }
+            type='button'
           >
             {groupedExpanded.StartSSRDemo ? (
               <ChevronDown size={20} />
@@ -296,6 +298,7 @@ export const BasicSidebar = () => {
         onClick={() => setIsOpen(true)}
         className='hover:bg-accent absolute top-3 left-3 z-49 w-fit rounded-lg p-2 hover:cursor-pointer'
         aria-label='Open menu'
+        type='button'
       >
         <Menu size={24} />
       </button>

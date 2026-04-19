@@ -53,10 +53,16 @@ export const CardDemo = () => {
             </p>
           </CardContent>
           <CardFooter className=''>
-            <button className='min-w-[100px] rounded-lg border border-red-700 bg-red-500 px-2 py-1 text-sm font-black text-white'>
+            <button
+              className='min-w-[100px] rounded-lg border border-red-700 bg-red-500 px-2 py-1 text-sm font-black text-white'
+              type='button'
+            >
               Cancel
             </button>
-            <button className='min-w-[100px] rounded-lg border border-blue-700 bg-blue-500 px-2 py-1 text-sm font-black text-white'>
+            <button
+              className='min-w-[100px] rounded-lg border border-blue-700 bg-blue-500 px-2 py-1 text-sm font-black text-white'
+              type='button'
+            >
               Confirm
             </button>
           </CardFooter>

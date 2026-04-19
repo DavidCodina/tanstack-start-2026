@@ -42,7 +42,7 @@ export const TabButton = ({
   ====================== */
 
   return (
-    <button {...props} className={getClassName()}>
+    <button {...props} className={getClassName()} type='button'>
       {isPending ? 'Loading...' : children}
     </button>
   )

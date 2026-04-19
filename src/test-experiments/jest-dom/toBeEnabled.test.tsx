@@ -16,7 +16,7 @@ import { render, screen } from '@testing-library/react'
 ///////////////////////////////////////////////////////////////////////////
 describe('toBeEnabled...', () => {
   test('should pass', () => {
-    render(<button>Click Me</button>)
+    render(<button type='button'>Click Me</button>)
     const button = screen.getByRole('button')
     expect(button).toBeEnabled()
   })

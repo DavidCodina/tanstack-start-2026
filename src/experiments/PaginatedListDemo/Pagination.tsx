@@ -95,6 +95,7 @@ export const Pagination = ({
               setFocus()
               handlePageChange(previousPage)
             }}
+            type='button'
           >
             {previousPage}
           </button>
@@ -127,6 +128,7 @@ export const Pagination = ({
               setFocus()
               handlePageChange(nextPage)
             }}
+            type='button'
           >
             {nextPage}
           </button>
@@ -164,6 +166,7 @@ export const Pagination = ({
           handlePageChange(1)
         }}
         className={`${nonActiveClassName} ${currentPage === 1 ? ` ${disabledClassName}` : ''}`}
+        type='button'
       >
         «
       </button>
@@ -178,6 +181,7 @@ export const Pagination = ({
           handlePageChange(currentPage - 1)
         }}
         className={`${nonActiveClassName} ${currentPage === 1 ? ` ${disabledClassName}` : ''}`}
+        type='button'
       >
         ‹
       </button>
@@ -187,6 +191,7 @@ export const Pagination = ({
       <button
         className={`${baseClasses} bg-blue-500 text-white`}
         ref={activeButtonRef}
+        type='button'
       >
         {page}
       </button>
@@ -202,6 +207,7 @@ export const Pagination = ({
           handlePageChange(currentPage + 1)
         }}
         className={`${nonActiveClassName} ${currentPage === pageCount ? ` ${disabledClassName}` : ''}`}
+        type='button'
       >
         ›
       </button>
@@ -215,6 +221,7 @@ export const Pagination = ({
           handlePageChange(pageCount)
         }}
         className={`${nonActiveClassName} ${currentPage === pageCount ? ` ${disabledClassName}` : ''}`}
+        type='button'
       >
         »
       </button>

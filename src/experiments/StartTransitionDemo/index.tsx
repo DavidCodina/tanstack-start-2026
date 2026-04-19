@@ -64,6 +64,7 @@ const UserCard = ({ isPending, user, userId, handleGetUser, title }: any) => {
           handleGetUser()
         }}
         style={{ minWidth: 150 }}
+        type='button'
       >
         {isPending
           ? `Getting User ${userId}...`

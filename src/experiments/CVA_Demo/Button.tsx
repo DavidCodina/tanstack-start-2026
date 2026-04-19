@@ -92,6 +92,7 @@ export const Button = ({
       className={cn(buttonVariants({ color, size }), className)}
       style={style}
       {...otherProps}
+      type='button'
     >
       {children}
     </button>

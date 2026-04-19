@@ -47,6 +47,7 @@ class ClassBasedCounter extends Component<Props, State> {
           <button
             className='btn-blue btn-sm min-w-[100px]'
             onClick={this.decrement}
+            type='button'
           >
             Decrement
           </button>
@@ -54,12 +55,14 @@ class ClassBasedCounter extends Component<Props, State> {
           <button
             className='btn-blue btn-sm min-w-[100px]'
             onClick={this.reset}
+            type='button'
           >
             Reset
           </button>
           <button
             className='btn-blue btn-sm min-w-[100px]'
             onClick={this.increment}
+            type='button'
           >
             Increment
           </button>

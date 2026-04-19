@@ -22,7 +22,11 @@ import { render, screen } from '@testing-library/react'
 ///////////////////////////////////////////////////////////////////////////
 describe('toBeDisabled...', () => {
   test('should pass', () => {
-    render(<button disabled>Click Me</button>)
+    render(
+      <button disabled type='button'>
+        Click Me
+      </button>
+    )
     const button = screen.getByRole('button')
     expect(button).toBeDisabled()
   })

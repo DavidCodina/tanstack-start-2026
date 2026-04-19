@@ -14,6 +14,7 @@ const MyButton = ({ ref, children }: any) => {
         }
       }}
       className='btn-blue btn-sm mx-auto my-6 block'
+      type='button'
     >
       {children}
     </button>

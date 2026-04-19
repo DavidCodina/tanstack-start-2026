@@ -67,7 +67,7 @@ export const SingleCheckDemo2 = () => {
 
   return (
     <>
-      <button onClick={(e) => e}></button>
+      <button onClick={(e) => e} type='button'></button>
       <Form
         noValidate
         actionsRef={actionsRef}

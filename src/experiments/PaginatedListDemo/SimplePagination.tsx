@@ -41,6 +41,7 @@ export const SimplePagination = ({
           'bg-neutral-300 hover:bg-neutral-400',
           currentPage === 1 && 'opacity-75'
         )}
+        type='button'
       >
         «
       </button>
@@ -59,6 +60,7 @@ export const SimplePagination = ({
           'bg-neutral-300 hover:bg-neutral-400',
           currentPage === 1 && 'opacity-75'
         )}
+        type='button'
       >
         ‹
       </button>
@@ -94,6 +96,7 @@ export const SimplePagination = ({
           'bg-neutral-300 hover:bg-neutral-400',
           currentPage === pageCount && 'opacity-75'
         )}
+        type='button'
       >
         ›
       </button>
@@ -111,6 +114,7 @@ export const SimplePagination = ({
           'bg-neutral-300 hover:bg-neutral-400',
           currentPage === pageCount && 'opacity-75'
         )}
+        type='button'
       >
         »
       </button>

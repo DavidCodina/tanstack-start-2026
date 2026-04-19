@@ -38,6 +38,16 @@ function PageHome() {
           _HOME
         </h1>
 
+        {/* <button
+          className='mx-auto mb-6 flex cursor-pointer rounded-lg border border-blue-900 bg-blue-500 px-2 py-1 font-medium text-white shadow hover:shadow-none'
+          onClick={() => {
+            alert('Clicked!')
+          }}
+          type='button'
+        >
+          Click Me
+        </button> */}
+
         <TiptapDemo />
       </PageContainer>
     </Page>

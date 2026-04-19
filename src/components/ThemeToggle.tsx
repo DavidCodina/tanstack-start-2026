@@ -84,6 +84,7 @@ export const ThemeToggle = ({ className, ...otherProps }: ThemeToggleProps) => {
       {...otherProps}
       className={cn(baseClasses, className)}
       onClick={() => setTheme(getNextTheme())}
+      type='button'
     >
       <span className='not-system:light:inline hidden'>
         {themeConfig.light.icon}

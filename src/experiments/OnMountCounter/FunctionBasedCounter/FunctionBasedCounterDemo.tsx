@@ -36,6 +36,7 @@ export const FunctionBasedCounterDemo = () => {
           <button
             className='btn-gray btn-sm'
             onClick={() => handleClick('decrement')}
+            type='button'
           >
             Decrement
           </button>
@@ -43,6 +44,7 @@ export const FunctionBasedCounterDemo = () => {
           <button
             className='btn-gray btn-sm'
             onClick={() => handleClick('reset')}
+            type='button'
           >
             Reset
           </button>
@@ -50,6 +52,7 @@ export const FunctionBasedCounterDemo = () => {
           <button
             className='btn-gray btn-sm'
             onClick={() => handleClick('increment')}
+            type='button'
           >
             Increment
           </button>

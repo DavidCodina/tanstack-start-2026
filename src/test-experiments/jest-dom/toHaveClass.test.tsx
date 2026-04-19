@@ -22,10 +22,16 @@ describe('toHaveClass...', () => {
   test('should pass', () => {
     render(
       <>
-        <button data-testid='delete-button' className='btn extra btn-danger'>
+        <button
+          data-testid='delete-button'
+          className='btn extra btn-danger'
+          type='button'
+        >
           Delete item
         </button>
-        <button data-testid='no-classes'>No Classes</button>
+        <button data-testid='no-classes' type='button'>
+          No Classes
+        </button>
       </>
     )
 

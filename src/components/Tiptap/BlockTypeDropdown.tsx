@@ -148,6 +148,16 @@ export const BlockTypeDropdown = ({
         <Heading6 /> {blockTypeToBlockName.h6}
       </DropdownItem>
 
+      {/* ================= */}
+
+      <hr
+        style={{
+          border: 'none',
+          borderTop: '1px solid var(--color-neutral-400)',
+          margin: '4px 10px'
+        }}
+      />
+
       <DropdownItem
         className={editorState?.isBulletList ? SELECTED_MIXIN : ''}
         disabled={disabled}

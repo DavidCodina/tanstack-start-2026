@@ -111,6 +111,7 @@ export const TodoItem = ({ handleGetTodos, item }: TodoItemProps) => {
             setIsEditable((v) => !v)
           }}
           title='Edit Item'
+          type='button'
         >
           {updatePending ? (
             <Loader2 className='animate-spin' />
@@ -128,6 +129,7 @@ export const TodoItem = ({ handleGetTodos, item }: TodoItemProps) => {
             handleDeleteTodo(item.id)
           }}
           title='Delete Item'
+          type='button'
         >
           {deletePending ? (
             <Loader2 className='animate-spin' />

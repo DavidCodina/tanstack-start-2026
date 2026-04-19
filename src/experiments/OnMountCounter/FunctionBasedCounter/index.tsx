@@ -117,14 +117,26 @@ export const FunctionBasedCounter = forwardRef<unknown, Props>((props, ref) => {
   return (
     <div {...props} ref={internalRef}>
       <div className='btn-group mx-auto mb-6' style={{ display: 'table' }}>
-        <button className='btn-blue btn-sm min-w-[100px]' onClick={decrement}>
+        <button
+          className='btn-blue btn-sm min-w-[100px]'
+          onClick={decrement}
+          type='button'
+        >
           Decrement
         </button>
 
-        <button className='btn-blue btn-sm min-w-[100px]' onClick={reset}>
+        <button
+          className='btn-blue btn-sm min-w-[100px]'
+          onClick={reset}
+          type='button'
+        >
           Reset
         </button>
-        <button className='btn-blue btn-sm min-w-[100px]' onClick={increment}>
+        <button
+          className='btn-blue btn-sm min-w-[100px]'
+          onClick={increment}
+          type='button'
+        >
           Increment
         </button>
       </div>

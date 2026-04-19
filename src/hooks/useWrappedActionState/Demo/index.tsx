@@ -56,6 +56,7 @@ export const Demo = () => {
               // ✅ action(undefined)
               action({ name: 'John Doe (2)' })
             }}
+            type='button'
           >
             Retry
           </button>
@@ -76,6 +77,7 @@ export const Demo = () => {
       <button
         className='mx-auto mb-6 block rounded bg-blue-500 px-2 py-1 font-bold text-white'
         onClick={() => setCount((v) => v + 1)}
+        type='button'
       >
         count: {count}
       </button>

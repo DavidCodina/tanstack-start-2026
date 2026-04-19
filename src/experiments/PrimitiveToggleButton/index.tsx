@@ -57,6 +57,7 @@ export const PrimitiveToggleButton = ({
         onClick?.(e)
         setIsActive((v) => !v)
       }}
+      type='button'
       {...otherProps}
     >
       {text}

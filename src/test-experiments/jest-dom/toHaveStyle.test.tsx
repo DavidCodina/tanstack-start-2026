@@ -28,6 +28,7 @@ describe('toHaveStyle...', () => {
             display: 'none',
             backgroundColor: 'red'
           }}
+          type='button'
         >
           Delete item
         </button>

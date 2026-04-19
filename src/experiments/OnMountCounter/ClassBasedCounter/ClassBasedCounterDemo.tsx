@@ -22,6 +22,7 @@ export const ClassBasedCounterDemo = () => {
               }
               counter.decrement()
             }}
+            type='button'
           >
             External Decrement
           </button>
@@ -35,6 +36,7 @@ export const ClassBasedCounterDemo = () => {
               }
               counter.reset()
             }}
+            type='button'
           >
             External Reset
           </button>
@@ -48,6 +50,7 @@ export const ClassBasedCounterDemo = () => {
               }
               counter.increment()
             }}
+            type='button'
           >
             External Increment
           </button>

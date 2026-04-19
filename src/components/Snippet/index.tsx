@@ -92,6 +92,7 @@ export const Snippet = (props: SnippetProps) => {
           )}
           onClick={() => clipboard.copy(code)}
           title='Copy to clipboard'
+          type='button'
         >
           {clipboard.copied ? (
             <ClipboardCheck className='pointer-events-none' />

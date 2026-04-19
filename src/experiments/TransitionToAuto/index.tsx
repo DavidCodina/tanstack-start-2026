@@ -37,6 +37,7 @@ export const TransitionToAuto = () => {
         onClick={() => {
           setShow((v) => !v)
         }}
+        type='button'
       >
         <svg
           xmlns='http://www.w3.org/2000/svg'

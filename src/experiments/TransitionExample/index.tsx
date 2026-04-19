@@ -30,6 +30,7 @@ export const TransitionExample = () => {
       className='btn-green btn-sm mx-auto my-12 block min-w-[200px]'
       disabled={isPending}
       onClick={handleClick}
+      type='button'
     >
       {isPending ? 'Loading...' : 'Get Data'}
     </button>
@@ -58,6 +59,7 @@ export const TransitionExample2 = () => {
         className='btn-green btn-sm mx-auto my-12 block min-w-[200px]'
         disabled={isPending}
         onClick={handleClick}
+        type='button'
       >
         {isPending ? 'Loading...' : 'Get Data'}
       </button>
@@ -65,6 +67,7 @@ export const TransitionExample2 = () => {
       <button
         className='btn-neutral btn-sm mx-auto my-12 block min-w-[200px]'
         onClick={() => setCount((v) => v + 1)}
+        type='button'
       >
         Count: {count}
       </button>
@@ -118,6 +121,7 @@ export const TransitionExample3 = () => {
         className='btn-green btn-sm mx-auto my-12 block min-w-[200px]'
         disabled={isPending}
         onClick={handleClick}
+        type='button'
       >
         {isPending ? 'Loading...' : 'Get Data'}
       </button>
@@ -125,6 +129,7 @@ export const TransitionExample3 = () => {
       <button
         className='btn-neutral btn-sm mx-auto my-12 block min-w-[200px]'
         onClick={() => setCount((v) => v + 1)}
+        type='button'
       >
         Count: {count}
       </button>

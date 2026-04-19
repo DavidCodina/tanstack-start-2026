@@ -142,6 +142,7 @@ export const UncontrolledDropzoneDemo = () => {
             setDisabled((v) => !v)
           }}
           className='btn-blue btn-sm'
+          type='button'
         >
           disabled: {disabled ? 'true' : 'false'}
         </button>
@@ -151,6 +152,7 @@ export const UncontrolledDropzoneDemo = () => {
             setShowPreviews((v) => !v)
           }}
           className='btn-blue btn-sm'
+          type='button'
         >
           showPreviews: {showPreviews ? 'true' : 'false'}
         </button>
@@ -163,6 +165,7 @@ export const UncontrolledDropzoneDemo = () => {
             // setValue('files', null, { shouldDirty: true, shouldTouch: true, shouldValidate: true })
           }}
           className='btn-blue btn-sm'
+          type='button'
         >
           Clear Files
         </button>

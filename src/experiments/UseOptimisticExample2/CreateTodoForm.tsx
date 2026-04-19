@@ -97,6 +97,7 @@ export const CreateTodoForm = ({ onSubmitAction, status }: Props) => {
       <button
         disabled={status === 'pending'}
         className='btn-green btn-sm block w-full'
+        type='submit'
       >
         {status === 'pending' ? 'Submitting...' : 'Submit'}
       </button>

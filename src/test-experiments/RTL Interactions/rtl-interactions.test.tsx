@@ -9,7 +9,11 @@ import {
 const ClickCounter = ({ dataTestId }: { dataTestId?: string }) => {
   const [count, setCount] = useState(0)
   return (
-    <button data-testid={dataTestId} onClick={() => setCount((v) => v + 1)}>
+    <button
+      data-testid={dataTestId}
+      onClick={() => setCount((v) => v + 1)}
+      type='button'
+    >
       Count: {count}
     </button>
   )
@@ -32,6 +36,7 @@ const Amount = () => {
         onClick={() => {
           setAmount(parseFloat(value))
         }}
+        type='button'
       >
         Set Amount
       </button>
@@ -80,7 +85,11 @@ describe('RTL Interactions...', () => {
     // Mocking Functions: https://www.youtube.com/watch?v=TuxmnyhPdhA&list=PLC3y8-rFHvwirqe1KHFCHJ0RqNuN61SJd&index=42
     const handleClick = vi.fn()
 
-    render(<button onClick={handleClick}>Click Me</button>)
+    render(
+      <button onClick={handleClick} type='button'>
+        Click Me
+      </button>
+    )
 
     const button = screen.getByRole('button')
 
@@ -100,7 +109,11 @@ describe('RTL Interactions...', () => {
     }
     const spy = vi.spyOn(obj, 'mockHandler')
 
-    render(<button onClick={obj.mockHandler}>Click Me</button>)
+    render(
+      <button onClick={obj.mockHandler} type='button'>
+        Click Me
+      </button>
+    )
     const button = screen.getByRole('button')
 
     await user.click(button)
@@ -119,7 +132,9 @@ describe('RTL Interactions...', () => {
       return (
         <div>
           {show ? (
-            <button onClick={() => setShow(false)}>Click Me</button>
+            <button onClick={() => setShow(false)} type='button'>
+              Click Me
+            </button>
           ) : (
             <div>The button has been removed.</div>
           )}
@@ -159,7 +174,11 @@ describe('RTL Interactions...', () => {
 
       return (
         <div>
-          {show && <button onClick={() => setShow(false)}>Click Me</button>}
+          {show && (
+            <button onClick={() => setShow(false)} type='button'>
+              Click Me
+            </button>
+          )}
         </div>
       )
     }

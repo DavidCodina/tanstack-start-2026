@@ -57,6 +57,7 @@ export const TWCounter = ({
         className
       )}
       onClick={(_e) => setCount((v) => v + 1)}
+      type='button'
     >
       {renderChildren()}
     </button>

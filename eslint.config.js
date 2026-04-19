@@ -17,6 +17,7 @@ import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended'
 
 // For more info, see https://github.com/storybookjs/eslint-plugin-storybook#configuration-flat-config-format
 import storybook from 'eslint-plugin-storybook'
+import custom from './custom-eslint-plugin/index.ts'
 
 /* ========================================================================
 
@@ -46,8 +47,9 @@ export default [
       'react-hooks': reactHooksPlugin,
       vitest: vitest, // ✅
       'jest-dom': jestDom, // ✅
-      'testing-library': testingLibrary
+      'testing-library': testingLibrary,
       //# 'jsx-a11y': jsxA11y,
+      custom
     },
     settings: {
       react: {
@@ -74,6 +76,8 @@ export default [
   {
     files: ['**/*.{js,jsx,ts,tsx,mjs,cjs}'],
     rules: {
+      'custom/always-button-type': 'warn',
+
       /* ======================
       eslint-plugin-prettier
     ====================== */

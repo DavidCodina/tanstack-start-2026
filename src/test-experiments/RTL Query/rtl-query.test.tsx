@@ -20,7 +20,7 @@ describe('Manual Queries...', () => {
   test('...', () => {
     const view = render(
       <>
-        <button>Click Me</button>
+        <button type='button'>Click Me</button>
       </>
     )
 
@@ -142,7 +142,7 @@ describe('RTL Query Types...', () => {
         setShow(true)
       }, 500)
     }, [])
-    return show ? <button>Click Me</button> : null
+    return show ? <button type='button'>Click Me</button> : null
   }
 
   test('findBy...', async () => {
@@ -223,7 +223,7 @@ describe('RTL Query Methods...', () => {
       <>
         <h1 aria-describedby='my h1 title'>H1 Title</h1>
         <h2>H2 Title</h2>
-        <button>Click Me</button>
+        <button type='button'>Click Me</button>
       </>
     )
 
@@ -390,7 +390,11 @@ describe('RTL Query Methods...', () => {
   // https://testing-library.com/docs/queries/bytitle
 
   test('...ByTitle should pass', () => {
-    render(<button title='my-button'>Click Me</button>)
+    render(
+      <button title='my-button' type='button'>
+        Click Me
+      </button>
+    )
     const button = screen.getByTitle('my-button')
     expect(button).toBeInTheDocument()
   })
@@ -401,7 +405,11 @@ describe('RTL Query Methods...', () => {
   // https://testing-library.com/docs/queries/bytestid
 
   test('...ByTestId should pass', () => {
-    render(<button data-testid='btn1'>Click Me</button>)
+    render(
+      <button data-testid='btn1' type='button'>
+        Click Me
+      </button>
+    )
     const button = screen.getByTestId('btn1')
     expect(button).toBeInTheDocument()
   })

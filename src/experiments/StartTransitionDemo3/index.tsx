@@ -78,7 +78,7 @@ export const GetUserButton = ({
   ====================== */
 
   return (
-    <button {...otherProps} className={getClassName()}>
+    <button {...otherProps} className={getClassName()} type='button'>
       {isPending && activeKey === buttonKey ? 'Loading...' : children}
     </button>
   )

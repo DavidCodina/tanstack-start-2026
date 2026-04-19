@@ -44,6 +44,8 @@ const scriptTest = `<p>Hello. This is script test. Check your console logs.<scri
 
 ======================================================================== */
 
+//# Review eslint plugin with AI: custom/always-button-type
+
 //# Update Link Feature to use a modal.
 //# See here for demo of LinkComponent:
 //# https://github.com/thapatechnical/job-portal-nextjs/blob/main/src/components/text-editor.tsx
@@ -99,19 +101,29 @@ export const TiptapDemo = () => {
   /* =====================
           return
   ====================== */
+  // The demo wrapper is a form, so I can test when onSubmit callback accidentally triggers.
 
   return (
-    <section className='mx-auto max-w-[1150px]'>
-      <Button
-        className='mx-auto mb-4 flex'
-        onClick={() => {
-          setDisabled((prev) => !prev)
-        }}
-        size='sm'
-        variant={disabled ? 'success' : 'destructive'}
-      >
-        {disabled ? 'Enable' : 'Disable'} Editor
-      </Button>
+    <form
+      className='mx-auto max-w-[1150px]'
+      onSubmit={(e) => {
+        e.preventDefault()
+        alert('onSubmit() called.')
+      }}
+    >
+      <div className='relative'>
+        <Button
+          className='absolute top-1 -right-6 min-w-[100px] rotate-45 text-lg uppercase shadow-[0px_2px_4px_rgba(0,0,0,0.5)]'
+          onClick={() => {
+            setDisabled((prev) => !prev)
+          }}
+          size='sm'
+          variant={disabled ? 'success' : 'destructive'}
+        >
+          {disabled ? 'Enable' : 'Disable'}
+        </Button>
+      </div>
+
       <Tiptap
         className='shadow'
         defaultFontFamily='' // Falls back to 'Poppins'.
@@ -126,72 +138,77 @@ export const TiptapDemo = () => {
         }}
       />
 
-      <br />
-      <br />
+      {!disabled && (
+        <>
+          <br />
+          <br />
 
-      {/* ====================
+          {/* ====================
   
-      ===================== */}
+          ===================== */}
 
-      <h3 className='text-primary text-2xl font-bold'>
-        dangerouslySetInnerHTML:
-      </h3>
+          <h3 className='text-primary text-2xl font-bold'>
+            dangerouslySetInnerHTML:
+          </h3>
 
-      <div
-        // ⚠️ In this case, using the tiptap CSS class works because the Tiptap instance
-        // is on the same page an imports the Tiptap.css file internally. However, for
-        // production, you'll want to @import the CSS file into your global stylesheet instead.
-        className='tiptap bg-card mb-8 min-h-[250px] rounded-lg border p-4 shadow'
-        dangerouslySetInnerHTML={{
-          __html: value //# sanitizedValue
-        }}
-      />
+          <div
+            // ⚠️ In this case, using the tiptap CSS class works because the Tiptap instance
+            // is on the same page an imports the Tiptap.css file internally. However, for
+            // production, you'll want to @import the CSS file into your global stylesheet instead.
+            className='tiptap bg-card mb-8 min-h-[250px] rounded-lg border p-4 shadow'
+            dangerouslySetInnerHTML={{
+              __html: value //# sanitizedValue
+            }}
+          />
 
-      <h3 className='text-primary text-2xl font-bold'>values.html:</h3>
+          <h3 className='text-primary text-2xl font-bold'>values.html:</h3>
 
-      <pre className='bg-card mb-8 overflow-auto rounded-lg border p-4 shadow'>
-        {JSON.stringify(value, null, 2)}
-      </pre>
+          <pre className='bg-card mb-8 overflow-auto rounded-lg border p-4 shadow'>
+            {JSON.stringify(value, null, 2)}
+          </pre>
 
-      <article className='bg-card mb-8 rounded-lg border p-4 shadow'>
-        <h3 className='text-primary text-2xl font-bold'>⚠️ Gotcha: </h3>
-        <p className='mb-4'>
-          Previously, I was outputting{' '}
-          <code className='text-pink-500'>value</code> by doing this:
-        </p>
+          <article className='bg-card mb-8 rounded-lg border p-4 shadow'>
+            <h3 className='text-primary text-2xl font-bold'>⚠️ Gotcha: </h3>
+            <p className='mb-4'>
+              Previously, I was outputting{' '}
+              <code className='text-pink-500'>value</code> by doing this:
+            </p>
 
-        <pre className='mb-4 px-4'>
-          <code className='text-sm text-pink-500'>
-            {`<div className='mb-8 rounded-lg border bg-card p-4'>{value}</div>`}
-          </code>
-        </pre>
+            <pre className='mb-4 px-4'>
+              <code className='text-sm text-pink-500'>
+                {`<div className='mb-8 rounded-lg border bg-card p-4'>{value}</div>`}
+              </code>
+            </pre>
 
-        <p className='mb-4'>
-          The big problem there occurs when you treat that as the{' '}
-          <em>actual</em> value, and try to then test it as a default/initial
-          value in this demo. In practice,{' '}
-          <code className='text-pink-500'>value</code> might contain something
-          like <code className='text-pink-500'>data-gutter="1\n2\n3"</code>, but
-          if you output to the UI as shown above, you'll simply get{' '}
-          <code className='text-pink-500'>data-gutter="1 2 3"</code>, which is
-          obviously <em>not the same</em>. It ends up stripping out the{' '}
-          <code className='text-pink-500'>\n</code> parts, which are crucial!
-          Solution: do this instead.
-        </p>
+            <p className='mb-4'>
+              The big problem there occurs when you treat that as the{' '}
+              <em>actual</em> value, and try to then test it as a
+              default/initial value in this demo. In practice,{' '}
+              <code className='text-pink-500'>value</code> might contain
+              something like{' '}
+              <code className='text-pink-500'>data-gutter="1\n2\n3"</code>, but
+              if you output to the UI as shown above, you'll simply get{' '}
+              <code className='text-pink-500'>data-gutter="1 2 3"</code>, which
+              is obviously <em>not the same</em>. It ends up stripping out the{' '}
+              <code className='text-pink-500'>\n</code> parts, which are
+              crucial! Solution: do this instead.
+            </p>
 
-        <pre className='mb-4 px-4'>
-          <code className='text-sm text-pink-500'>
-            {`<pre className='mb-8 overflow-auto rounded-lg border bg-card p-4'>
+            <pre className='mb-4 px-4'>
+              <code className='text-sm text-pink-500'>
+                {`<pre className='mb-8 overflow-auto rounded-lg border bg-card p-4'>
   {JSON.stringify(value, null, 2)}
 </pre>`}
-          </code>
-        </pre>
+              </code>
+            </pre>
 
-        <p>
-          Ultimately, this will necessitate a lot more horizontal scrolling to
-          see the value, but at least it's the <em>real</em> value.
-        </p>
-      </article>
-    </section>
+            <p>
+              Ultimately, this will necessitate a lot more horizontal scrolling
+              to see the value, but at least it's the <em>real</em> value.
+            </p>
+          </article>
+        </>
+      )}
+    </form>
   )
 }

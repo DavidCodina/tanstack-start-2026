@@ -311,6 +311,7 @@ export function TiptapProvider({
         // Setting outline-none will effectively disable the built-in .ProseMirror-focused class.
         //
         ///////////////////////////////////////////////////////////////////////////
+        // Or do:  class: disabled ? 'hidden' : 'outline-none py-2 pr-2 pl-6 h-full',
         class: 'outline-none py-2 pr-2 pl-6 h-full', // pl-6 is to accomodate the drag handle.
         style: ''
       }

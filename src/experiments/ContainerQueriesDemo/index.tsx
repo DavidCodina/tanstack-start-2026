@@ -64,6 +64,7 @@ export const ContainerQueriesDemo = () => {
               }
             })
           }}
+          type='button'
         >
           Max Width: {maxWidth}px
         </button>

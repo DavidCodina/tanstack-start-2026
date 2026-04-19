@@ -65,6 +65,7 @@ const BTN = ({ children, className = '', ...otherProps }: any) => {
         'rounded-lg bg-emerald-600 px-5 py-2 font-semibold text-white hover:bg-emerald-500 active:bg-emerald-600',
         className // It's important that this is passed last because the latter overwrites conflicts with the former.
       )}
+      type='button'
       {...otherProps}
     >
       {children}

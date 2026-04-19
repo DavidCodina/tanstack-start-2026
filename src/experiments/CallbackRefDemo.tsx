@@ -102,6 +102,7 @@ export const CallbackRefDemo = () => {
       <button
         className='min-w-[120px] cursor-pointer rounded border border-sky-700 bg-sky-500 px-2 py-1 text-sm font-bold text-white'
         onClick={() => setCount((v) => v + 1)}
+        type='button'
       >
         Count: {count}
       </button>
@@ -109,6 +110,7 @@ export const CallbackRefDemo = () => {
       <button
         className='min-w-[120px] cursor-pointer rounded border border-sky-700 bg-sky-500 px-2 py-1 text-sm font-bold text-white'
         onClick={() => setShow((v) => !v)}
+        type='button'
       >
         {show ? 'Hide' : 'Show'} Square
       </button>

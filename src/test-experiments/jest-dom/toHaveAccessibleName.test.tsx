@@ -28,7 +28,7 @@ describe('toHaveAccessibleName...', () => {
           <title>Test title</title>
         </svg>
 
-        <button data-testid='button-img-alt'>
+        <button data-testid='button-img-alt' type='button'>
           <img src='' alt='Test' />
         </button>
 
@@ -36,7 +36,7 @@ describe('toHaveAccessibleName...', () => {
           <img data-testid='img-paragraph' src='' alt='' /> Test content
         </p>
 
-        <button data-testid='svg-button'>
+        <button data-testid='svg-button' type='button'>
           <svg>
             <title>Test</title>
           </svg>

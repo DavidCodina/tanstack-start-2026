@@ -85,6 +85,7 @@ export const ClickCounter = ({
       onClick={() => {
         setInternalValue((v) => v + 1)
       }}
+      type='button'
     >
       {children} {internalValue}
     </button>

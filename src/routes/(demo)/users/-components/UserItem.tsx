@@ -138,6 +138,7 @@ export const UserItem = ({ item }: UserItemProps) => {
           setIsEditable((v) => !v)
         }}
         title='Edit Item'
+        type='button'
       >
         {updatePending ? (
           <Loader2 className='animate-spin' />
@@ -155,6 +156,7 @@ export const UserItem = ({ item }: UserItemProps) => {
           handleDeleteUser(item.id)
         }}
         title='Delete Item'
+        type='button'
       >
         {deletePending ? (
           <Loader2 className='animate-spin' />

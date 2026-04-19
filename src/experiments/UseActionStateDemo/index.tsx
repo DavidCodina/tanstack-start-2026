@@ -96,6 +96,7 @@ export const UseActionStateDemo = () => {
                 getUserAction()
               })
             }}
+            type='button'
           >
             Try Again
           </button>

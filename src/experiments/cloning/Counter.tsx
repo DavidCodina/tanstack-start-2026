@@ -28,6 +28,7 @@ export const Counter = ({ button }: { button?: ReactElement }) => {
     <button
       className='btn-neutral btn-sm mx-auto mb-6 block'
       onClick={() => setCount((v) => v + 1)}
+      type='button'
     >
       Count: {count}
     </button>
@@ -44,7 +45,9 @@ export const Counter = ({ button }: { button?: ReactElement }) => {
 export const CounterWithClonedButtonDemo1 = () => {
   return (
     <Counter
-      button={<button className='btn-blue btn-sm mx-auto mb-6 block' />}
+      button={
+        <button className='btn-blue btn-sm mx-auto mb-6 block' type='button' />
+      }
     />
   )
 }
@@ -55,7 +58,13 @@ export const CounterWithClonedButtonDemo1 = () => {
 // This example implements a Component button.
 
 const MyButton = (props: any) => {
-  return <button className='btn-green btn-sm mx-auto mb-6 block' {...props} />
+  return (
+    <button
+      className='btn-green btn-sm mx-auto mb-6 block'
+      type='button'
+      {...props}
+    />
+  )
 }
 
 export const CounterWithClonedButtonDemo2 = () => {

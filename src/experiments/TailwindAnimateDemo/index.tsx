@@ -54,7 +54,11 @@ export const TailwindAnimateDemo = () => {
 
   const renderCloseButton = () => {
     return (
-      <button className='absolute top-4 right-4' onClick={() => setOpen(false)}>
+      <button
+        className='absolute top-4 right-4'
+        onClick={() => setOpen(false)}
+        type='button'
+      >
         <svg
           xmlns='http://www.w3.org/2000/svg'
           width='24'
@@ -130,6 +134,7 @@ export const TailwindAnimateDemo = () => {
       <button
         className='btn-sky btn-sm mx-auto mb-4 block'
         onClick={() => setOpen((v) => !v)}
+        type='button'
       >
         {open ? 'Hide Content' : 'Show Content'}
       </button>

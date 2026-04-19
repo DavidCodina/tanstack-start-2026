@@ -13,7 +13,7 @@ import { render, screen } from '@testing-library/react'
 ///////////////////////////////////////////////////////////////////////////
 describe('toBeEmptyDOMElement...', () => {
   test('should pass', () => {
-    render(<button></button>)
+    render(<button type='button'></button>)
     const button = screen.getByRole('button')
     expect(button).toBeEmptyDOMElement()
   })

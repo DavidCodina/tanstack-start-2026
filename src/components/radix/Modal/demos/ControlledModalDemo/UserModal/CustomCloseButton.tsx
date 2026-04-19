@@ -36,6 +36,7 @@ export const CustomCloseButton = forwardRef<
       aria-label='Close'
       ref={ref}
       className={cn(baseClasses, className)}
+      type='button'
       {...otherProps}
     >
       <span className='sr-only'>Close</span>

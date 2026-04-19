@@ -27,12 +27,18 @@ describe('toHaveRole...', () => {
   test('should pass', () => {
     render(
       <>
-        <button data-testid='button'>Continue</button>
+        <button data-testid='button' type='button'>
+          Continue
+        </button>
         <div role='button' data-testid='button-explicit'>
           Continue
         </div>
 
-        <button role='switch button' data-testid='button-explicit-multiple'>
+        <button
+          role='switch button'
+          data-testid='button-explicit-multiple'
+          type='button'
+        >
           Continue
         </button>
         <a href='/about' data-testid='link'>

@@ -103,6 +103,7 @@ export const BadUseEffectDemo = () => {
       <button
         className='btn-sm mx-auto mb-6 flex rounded-lg border border-blue-700 bg-blue-500 px-2 py-1 font-bold text-white'
         onClick={() => setId((v) => v + 1)}
+        type='button'
       >
         User ID: {id}
       </button>

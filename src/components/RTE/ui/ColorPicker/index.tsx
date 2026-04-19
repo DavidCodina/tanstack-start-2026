@@ -185,6 +185,7 @@ export default function ColorPicker({
             key={basicColor}
             style={{ backgroundColor: basicColor }}
             onClick={(e) => onBasicColorClick(e, basicColor)}
+            type='button'
           />
         ))}
       </div>

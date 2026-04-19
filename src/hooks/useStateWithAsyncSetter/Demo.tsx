@@ -42,6 +42,7 @@ export const Demo = () => {
       <button
         className='mx-auto mb-2 block min-w-[150px] rounded bg-blue-500 px-2 py-1 font-bold text-white'
         onClick={handleIncrement}
+        type='button'
       >
         Count: {count}
       </button>

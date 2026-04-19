@@ -38,6 +38,7 @@ export const Joke = ({ jokePromise, onRefresh }: JokeProps) => {
       <button
         className='absolute top-1 right-1 cursor-pointer'
         onClick={onRefresh}
+        type='button'
       >
         <RefreshCw className='size-4' />
       </button>

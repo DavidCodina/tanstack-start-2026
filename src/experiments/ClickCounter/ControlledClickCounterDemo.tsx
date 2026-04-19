@@ -35,9 +35,15 @@ export const ControlledClickCounterDemo = () => {
       className={`mx-auto mb-6 inline-flex justify-center gap-2 rounded-lg border border-blue-600 bg-blue-500 font-bold text-white [&>button]:min-w-[100px] [&>button]:px-2 [&>button]:py-1`}
       style={{ display: 'table' }}
     >
-      <button onClick={() => setExternalValue((v) => v - 1)}>decrement</button>
-      <button onClick={() => setExternalValue(0)}>reset</button>
-      <button onClick={() => setExternalValue((v) => v + 1)}>increment</button>
+      <button onClick={() => setExternalValue((v) => v - 1)} type='button'>
+        decrement
+      </button>
+      <button onClick={() => setExternalValue(0)} type='button'>
+        reset
+      </button>
+      <button onClick={() => setExternalValue((v) => v + 1)} type='button'>
+        increment
+      </button>
     </div>
   )
 

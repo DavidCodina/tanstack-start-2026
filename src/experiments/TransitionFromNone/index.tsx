@@ -66,6 +66,7 @@ export const TransitionFromNone = () => {
           onClick={() => {
             setShow((v) => !v)
           }}
+          type='button'
         >
           Close Modal
         </button>
@@ -84,6 +85,7 @@ export const TransitionFromNone = () => {
         onClick={() => {
           setShow((v) => !v)
         }}
+        type='button'
       >
         {show ? 'Close Modal' : 'Open Modal'}
       </button>
