@@ -89,6 +89,12 @@ creates a <div> that wraps the actual contenteditable <div> such that the DOM lo
   </div>
 */
 
+/* <div contenteditable="true" class="tiptap ProseMirror" />*/
+
+/* Same <div> element as .ProseMirror {} */
+.tiptap {
+}
+
 /* =====================
 
 ====================== */
@@ -428,3 +434,45 @@ when the user selects an alignment option. */
 /* For inline implementations: Youtube.configure({ inline: true }) */
 .tiptap p [data-youtube-video] {
 }
+
+/* =====================
+
+====================== */
+
+/* Not sure when/where this is applied. */
+.ProseMirror .ProseMirror-widget {
+}
+
+.ProseMirror-noderangeselection *::selection {
+  background: transparent;
+}
+
+.ProseMirror-noderangeselection * {
+  caret-color: transparent;
+}
+
+/* This style is applied when grabbing and dragging the handle. */
+.ProseMirror-selectednode,
+.ProseMirror-selectednoderange {
+  position: relative;
+}
+
+/* This style is also applies when grabbing and dragging the handle. */
+.ProseMirror-selectednode::before,
+.ProseMirror-selectednoderange::before {
+  position: absolute;
+  pointer-events: none;
+  z-index: -1;
+  content: '';
+  top: -0.25rem;
+  left: -0.25rem;
+  right: -0.25rem;
+  bottom: -0.25rem;
+  background-color: #70cff850;
+  border-radius: 0.2rem;
+}
+
+/* This is the underline that you see when dragging a block. */
+/* .prosemirror-dropcursor-block {
+  background-color: var(--color-sky-500) !important;
+} */

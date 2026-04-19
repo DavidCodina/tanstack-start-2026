@@ -1,4 +1,5 @@
 import { createContext, use, useEffect } from 'react'
+
 import { useEditor, useEditorState } from '@tiptap/react'
 
 ///////////////////////////////////////////////////////////////////////////
@@ -311,7 +312,7 @@ export function TiptapProvider({
         // Setting outline-none will effectively disable the built-in .ProseMirror-focused class.
         //
         ///////////////////////////////////////////////////////////////////////////
-        class: 'outline-none p-2 h-full',
+        class: 'outline-none py-2 pr-2 pl-6 h-full', // pl-6 is to accomodate the drag handle.
         style: ''
       }
     }

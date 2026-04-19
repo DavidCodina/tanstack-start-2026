@@ -1,10 +1,17 @@
 import './Tiptap.css'
+import * as React from 'react'
 import { EditorContent } from '@tiptap/react'
+// https://tiptap.dev/docs/editor/extensions/functionality/drag-handle-react
+import DragHandle from '@tiptap/extension-drag-handle-react'
+import { GripVertical } from 'lucide-react'
+
 import { TiptapProvider, useTiptapContext } from './TiptapContext'
 import { MenuBar } from './MenuBar'
 import { FormatBubbleMenu } from './FormatBubbleMenu'
 
+import type { DragHandleProps } from '@tiptap/extension-drag-handle-react'
 import type { TiptapProviderProps } from './TiptapContext'
+
 import { cn } from '@/utils'
 
 type TiptapProps = Omit<
@@ -16,6 +23,16 @@ type TiptapProps = Omit<
    */
   defaultFontFamily?: string
   disabled?: boolean
+}
+
+type NestedProp = DragHandleProps['nested']
+type NestedOptions = Exclude<NestedProp, boolean | undefined>
+
+const NESTED_CONFIG_LTR: NestedOptions = {
+  edgeDetection: { threshold: -16, edges: ['left'] }
+}
+const NESTED_CONFIG_RTL: NestedOptions = {
+  edgeDetection: { threshold: -16, edges: ['right'] }
 }
 
 const baseClasses = `
@@ -73,14 +90,24 @@ const Tiptap = ({
   ...otherProps
 }: TiptapProps) => {
   const { editor } = useTiptapContext()
+  const [rtl, _setRtl] = React.useState(false)
+  // If you set nested to true, then the associated CSS will need to be
+  // modified slightly, for lists etc.
+  const [nested, _setNested] = React.useState(false)
 
-  if (!editor) {
-    return null
+  let nestedConfig: NestedProp
+
+  if (nested) {
+    nestedConfig = rtl ? NESTED_CONFIG_RTL : NESTED_CONFIG_LTR
   }
 
   /* =====================
           return
   ====================== */
+
+  if (!editor) {
+    return null
+  }
 
   return (
     <div
@@ -101,6 +128,19 @@ const Tiptap = ({
         disabled={disabled}
         editor={editor}
       />
+
+      <DragHandle
+        editor={editor}
+        className=''
+        // https://tiptap.dev/docs/editor/extensions/functionality/drag-handle-react#nested
+        nested={nestedConfig}
+        // https://tiptap.dev/docs/editor/extensions/functionality/drag-handle-react#computepositionconfig
+        computePositionConfig={{
+          placement: rtl ? 'right-start' : 'left-start'
+        }}
+      >
+        <GripVertical className='text-muted-foreground cursor-grab active:cursor-grabbing' />
+      </DragHandle>
 
       <EditorContent
         data-slot='tiptap-editor-content'
