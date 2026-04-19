@@ -21,10 +21,10 @@ type MenuBarProps = {
 const SOLID_BUTTON_BORDER_MIXIN = `border border-[rgba(0,0,0,0.3)] dark:border-[rgba(255,255,255,0.35)]`
 
 const HOVER_MIXIN = `
-hover:bg-blue-500
-hover:text-white
-hover:border-blue-700
-dark:hover:border-blue-300
+not-disabled:hover:bg-blue-500
+not-disabled:hover:text-white
+not-disabled:hover:border-blue-700
+not-disabled:dark:hover:border-blue-300
 `
 
 const FOCUS_MIXIN = `
@@ -106,7 +106,7 @@ export const MenuBar = ({
         <button
           className={cn(
             buttonClasses,
-            'hover:border-yellow-600 hover:bg-yellow-400 hover:text-white'
+            'not-disabled:hover:border-yellow-600 not-disabled:hover:bg-yellow-400 not-disabled:hover:text-white'
           )}
           disabled={disabled}
           onClick={() => editor.chain().focus().clearNodes().run()}
@@ -119,7 +119,7 @@ export const MenuBar = ({
         <button
           className={cn(
             buttonClasses,
-            'hover:border-rose-700 hover:bg-rose-500 hover:text-white'
+            'not-disabled:hover:border-rose-700 not-disabled:hover:bg-rose-500 not-disabled:hover:text-white'
           )}
           disabled={disabled}
           onClick={() => {

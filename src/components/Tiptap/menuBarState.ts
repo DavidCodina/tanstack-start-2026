@@ -113,6 +113,8 @@ export function menuBarSelector(ctx: EditorStateSnapshot<Editor | null>) {
 
     // ❌ canClearMarks: ctx.editor.can().chain().unsetAllMarks().run() ? true : false,
 
+    isLineHeightLarge: ctx.editor.isActive('textStyle', { lineHeight: '2.0' }),
+
     /* =====================
             Alignment
     ====================== */

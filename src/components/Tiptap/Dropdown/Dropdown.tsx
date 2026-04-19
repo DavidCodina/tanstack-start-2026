@@ -18,10 +18,10 @@ type DropdownProps = {
 const SOLID_BUTTON_BORDER_MIXIN = `border border-[rgba(0,0,0,0.3)] dark:border-[rgba(255,255,255,0.35)]`
 
 const HOVER_MIXIN = `
-hover:bg-blue-500
-hover:text-white
-hover:border-blue-700
-dark:hover:border-blue-300
+not-disabled:hover:bg-blue-500
+not-disabled:hover:text-white
+not-disabled:hover:border-blue-700
+not-disabled:dark:hover:border-blue-300
 `
 
 const FOCUS_MIXIN = `focus-visible:ring-[3px] focus-visible:ring-border/50`

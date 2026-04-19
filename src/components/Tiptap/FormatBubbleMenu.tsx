@@ -267,6 +267,39 @@ export const FormatBubbleMenu = ({ disabled }: { disabled?: boolean }) => {
       </button>
 
       <button
+        aria-label='toggle line height'
+        className={cn(
+          buttonClasses,
+          editorState?.isLineHeightLarge && SELECTED_MIXIN
+        )}
+        disabled={disabled}
+        onClick={() =>
+          editor.chain().focus().toggleTextStyle({ lineHeight: '2.0' }).run()
+        }
+        title='line height (2.0)'
+        type='button'
+      >
+        <svg
+          style={{
+            display: 'block',
+            margin: '-3px',
+            width: '30px',
+            height: '30px'
+          }}
+          viewBox='0 0 24 24'
+          fill='none'
+        >
+          <path
+            stroke='currentColor'
+            strokeLinecap='round'
+            strokeLinejoin='round'
+            strokeWidth={1.5}
+            d='M6 10V5m0 0L4 7m2-2 2 2m-2 7v5m0 0 2-2m-2 2-2-2m8-10h8m0 5h-8m0 5h8'
+          />
+        </svg>
+      </button>
+
+      <button
         aria-label='toggle subscript'
         className={cn(
           buttonClasses,

@@ -1,5 +1,7 @@
 import * as React from 'react'
 import { AlignCenter, AlignLeft, AlignRight } from 'lucide-react'
+
+import { useFocusTrap } from '../../useFocusTrap'
 import { useClickOutside } from './useClickOutside'
 import { isOneOf, stringToNumberOrUndefined } from './utils'
 import { cn } from '@/utils'
@@ -54,16 +56,25 @@ export const YoutubeModal = ({
     'flex-start' | 'center' | 'flex-end'
   >()
 
-  const urlInputCallbackRef = React.useCallback(
-    (node: HTMLInputElement | null) => {
-      node?.focus()
-    },
-    []
-  )
-
   const clickOutsideRef = useClickOutside(() => {
     onCancel()
   })
+
+  ///////////////////////////////////////////////////////////////////////////
+  //
+  // Note: Initially, a urlInputCallbackRef was explicitly created and
+  // passed to the URL input: ref={urlInputCallbackRef}
+  //
+  //   const urlInputCallbackRef = React.useCallback(
+  //     (node: HTMLInputElement | null) => { node?.focus() }, []
+  //   )
+  //
+  // However with the introduction of useFocusTrap(), the intial focus is
+  // now handled implicitly.
+  //
+  ///////////////////////////////////////////////////////////////////////////
+
+  const focusTrapRef = useFocusTrap()
 
   /* =====================
       renderUrlInput()
@@ -80,7 +91,6 @@ export const YoutubeModal = ({
         </label>
         <input
           disabled={disabled}
-          ref={urlInputCallbackRef}
           autoCapitalize='none'
           autoComplete='new-password'
           autoCorrect='off'
@@ -274,7 +284,10 @@ export const YoutubeModal = ({
       data-slot='tiptap-youtube-modal'
     >
       <div
-        ref={clickOutsideRef}
+        ref={(node) => {
+          clickOutsideRef.current = node
+          focusTrapRef(node)
+        }}
         className='bg-card absolute top-1/2 left-1/2 min-h-[100px] w-[600px] max-w-[calc(100%-48px)] -translate-x-1/2 -translate-y-1/2 rounded-lg border p-4'
       >
         {renderUrlInput()}

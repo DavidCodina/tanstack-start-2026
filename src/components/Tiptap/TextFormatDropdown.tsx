@@ -258,6 +258,38 @@ export const TextFormatDropdown = ({
         Background Color
       </DropdownItem>
 
+      {/* We could instead have a modal + form here to allow the user maximum 
+      flexibility in setting line-height. However, this is sufficient for now. 
+      Note: The same basic implementation is in  FormatBubbleMenu.tsx */}
+      <DropdownItem
+        className={editorState?.isLineHeightLarge ? SELECTED_MIXIN : ''}
+        disabled={disabled}
+        onClick={() =>
+          editor.chain().focus().toggleTextStyle({ lineHeight: '2.0' }).run()
+        }
+        title='line height (2.0)'
+      >
+        <svg
+          style={{
+            display: 'block',
+            margin: '-3px',
+            width: '30px',
+            height: '30px'
+          }}
+          viewBox='0 0 24 24'
+          fill='none'
+        >
+          <path
+            stroke='currentColor'
+            strokeLinecap='round'
+            strokeLinejoin='round'
+            strokeWidth={1.5}
+            d='M6 10V5m0 0L4 7m2-2 2 2m-2 7v5m0 0 2-2m-2 2-2-2m8-10h8m0 5h-8m0 5h8'
+          />
+        </svg>
+        Line Height (2.0)
+      </DropdownItem>
+
       <DropdownItem
         className={editorState?.isSubscript ? SELECTED_MIXIN : ''}
         disabled={disabled}

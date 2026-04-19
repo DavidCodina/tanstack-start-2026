@@ -35,7 +35,6 @@ bg-accent font-medium leading-none
 rounded-lg outline-none
 shadow-xs
 ${SOLID_BUTTON_BORDER_MIXIN}
-${HOVER_MIXIN}
 ${FOCUS_MIXIN}
 `
 
@@ -342,7 +341,7 @@ export const FontSize = ({ disabled }: FontSizeProps) => {
 
   return (
     <div
-      className={baseClasses}
+      className={cn(baseClasses, !disabled && HOVER_MIXIN)}
       data-slot='tiptap-font-size' // Used for styling in Tiptap.css
     >
       {renderDecrementButton()}

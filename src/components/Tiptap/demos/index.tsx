@@ -44,17 +44,10 @@ const scriptTest = `<p>Hello. This is script test. Check your console logs.<scri
 
 ======================================================================== */
 
-//# Fix CSS issue with Nested checks.
-
-//# Add line height feature to dropdown and bubble menu.
-
-//# Add fallbacks to CSS custom properties in Tiptap.css
-
-//# Possibly add checks that remove properties from menu.
-//# For example, if isYoutube, then remove alignment.
-
-//# Add Lowercase, Uppercase, Capitalize
-//# This may be a situation for a custom extension.
+//# Update Link Feature to use a modal.
+//# See here for demo of LinkComponent:
+//# https://github.com/thapatechnical/job-portal-nextjs/blob/main/src/components/text-editor.tsx
+//# But really no need. Just follow the example of the YoutubeModal.
 
 //# Add emoji support: https://tiptap.dev/docs/editor/extensions/nodes/emoji
 
@@ -63,26 +56,15 @@ const scriptTest = `<p>Hello. This is script test. Check your console logs.<scri
 //# Add a DragHandle
 //# https://tiptap.dev/docs/editor/extensions/functionality/drag-handle-react
 
-//# Tiptap actually has a whole bunch of UI components
-//# https://tiptap.dev/docs/ui-components/components/overview
-//# Some of these are behind a paywall.
-
-//# See here for demo of LinkComponent:
-//# https://github.com/thapatechnical/job-portal-nextjs/blob/main/src/components/text-editor.tsx
-//# But really no need. Just follow the example of the YoutubeModal.
-
-//# Review Flowbite: https://flowbite.com/docs/plugins/wysiwyg/
-
-//# Review: https://github.com/ueberdosis/awesome-tiptap/
-
-//# Does Tiptap have any kind of built-in sanitization?
-
 //# Fix RTE import issue.
 
 //# See here for CustomCodeBlock. This is also a great example to pick apart.
 //# https://github.com/phyohtetarkar/tiptap-block-editor/blob/main/src/components/editor/default-extensions.ts
 
 //# The dropdown menu currently doesn't respond well to viewport width resizing.
+
+//# Bonus: Add Lowercase, Uppercase, Capitalize
+//# This may be a situation for a custom extension.
 
 export const TiptapDemo = () => {
   const [value, setValue] = React.useState<string>(scriptTest)

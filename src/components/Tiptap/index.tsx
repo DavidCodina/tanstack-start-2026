@@ -31,19 +31,23 @@ focus-within:ring-[3px] focus-within:ring-primary/50
 //
 // Tiptap Youtube:         https://www.youtube.com/@tiptap-editor/videos
 // ✅ Cand Dev:            https://www.youtube.com/watch?v=QVffer2fRfg
-//    Cand Dev:            https://www.youtube.com/watch?v=M3BdmN4etYg
+// Cand Dev:               https://www.youtube.com/watch?v=M3BdmN4etYg
 // ✅ StackWild:           https://www.youtube.com/watch?v=s1lpwpeSGW4
-//    Age Concepts:        https://www.youtube.com/watch?v=zIm1FYi8A7c
+// Age Concepts:           https://www.youtube.com/watch?v=zIm1FYi8A7c
+//
 // ❌ Code DPS:            https://www.youtube.com/watch?v=hpQmgLPaCcE&list=PL6yN8EtcWUmYfgln8Vxm5sEde8FroZYt0
 // ❌ De Mawo:             https://www.youtube.com/watch?v=MEhVUDP3a_k
 // ❌ Solve It Out:        https://www.youtube.com/watch?v=LiELuVk12ig
 //
 // Examples:               https://tiptap.dev/docs/examples
+// UI componentss          https://tiptap.dev/docs/ui-components/components/overview
+// awesome-tiptap:         https://github.com/ueberdosis/awesome-tiptap/
 // Roadmap:                https://tiptap.dev/roadmap
 // Tiptap Editor Overview: https://tiptap.dev/docs/editor/getting-started/overview
 // Extenstions Overview:   https://tiptap.dev/docs/editor/extensions/overview
-// StarterKit:             https://tiptap.dev/docs/editor/extensions/functionality/starterkit
 //
+// Does TipTap sanitize HTML?
+// https://github.com/ueberdosis/tiptap/discussions/2845?utm_source=copilot.com
 //
 // Note: There is a @tiptap/cli. However, for TanStack Start, go manual.
 //
