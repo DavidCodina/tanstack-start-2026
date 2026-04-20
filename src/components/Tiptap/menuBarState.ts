@@ -211,6 +211,14 @@ export function menuBarSelector(ctx: EditorStateSnapshot<Editor | null>) {
     isImage: ctx.editor.isActive('image') ? true : false,
     imageSrc: ctx.editor.isActive('image')
       ? ((ctx.editor.getAttributes('image').src as string) ?? null)
+      : null,
+
+    isCustomImage: ctx.editor.isActive('custom-image') ? true : false,
+    customImageSrc: ctx.editor.isActive('custom-image')
+      ? ((ctx.editor.getAttributes('custom-image').src as string) ?? null)
+      : null,
+    customImageWidth: ctx.editor.isActive('custom-image')
+      ? ((ctx.editor.getAttributes('custom-image').width as string) ?? null)
       : null
   }
 }

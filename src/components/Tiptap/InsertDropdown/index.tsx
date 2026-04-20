@@ -42,10 +42,14 @@ export const InsertDropdown = ({
   ====================== */
   // Example URL: https://upload.wikimedia.org/wikipedia/en/c/c2/Peter_Griffin.png?_=20110515154115
 
+  //# Add alignment prop.
+  //# Add title prop.
+  //# Add alt prop.
   const renderImageModal = () => {
     if (!showImageModal || disabled) return null
 
-    const existingImageUrl = editorState?.imageSrc || ''
+    const existingImageUrl = editorState?.customImageSrc || ''
+    const existingImageWidth = editorState?.customImageWidth || ''
 
     return (
       <ImageModal
@@ -65,11 +69,12 @@ export const InsertDropdown = ({
           editor
             .chain()
             .focus()
-            .setImage({
+            .setCustomImage({
               src: values.url,
               alt: 'An image',
               title: 'An example',
-              width: values.width || 500
+              width: values.width || 500,
+              margin: values.margin || undefined
             })
             .run()
 
@@ -80,6 +85,7 @@ export const InsertDropdown = ({
           setShowImageModal(false)
         }}
         url={existingImageUrl}
+        width={existingImageWidth}
       />
     )
   }
@@ -88,6 +94,8 @@ export const InsertDropdown = ({
     renderYoutubeModal()
   ====================== */
 
+  //# Add width prop like above.
+  //# Possibly add alignment prop.
   const renderYoutubeModal = () => {
     if (!showYoutubeModal || disabled) return null
 

@@ -72,8 +72,14 @@ export const CustomYoutube = Youtube.extend(
       ]
     },
 
+    //# In fact, do we need this at all?
     addCommands() {
       return {
+        //# Should we do this?
+        //# Spread first so the parent's implementation is the fallback,
+        //# then shadow setImage with our typed version below.
+        //# ...this.parent?.(),
+
         setYoutubeVideo:
           (options: CustomSetYoutubeVideoOptions) =>
           ({ commands }) => {

@@ -12,6 +12,7 @@ type ImageModalProps = {
 
   onSubmit: (values: { url: string; width?: number; margin?: string }) => void
   url?: string
+  width?: string
 }
 
 const inputClasses = `
@@ -36,14 +37,15 @@ export const ImageModal = ({
   disabled,
   onCancel,
   onSubmit,
-  url: externalUrl = ''
+  url: externalUrl = '',
+  width: externalWidth = ''
 }: ImageModalProps) => {
   /* =====================
         state & refs
   ====================== */
 
   const [url, setUrl] = React.useState(externalUrl)
-  const [width, setWidth] = React.useState('')
+  const [width, setWidth] = React.useState(externalWidth)
 
   const [alignment, setAlignment] = React.useState<
     '0px auto 0px 0px' | '0px auto' | '0px 0px 0px auto' // left, center, right
@@ -129,7 +131,7 @@ export const ImageModal = ({
     renderAlignmentRadios()
   ====================== */
 
-  const _renderAlignmentRadios = () => {
+  const renderAlignmentRadios = () => {
     return (
       <fieldset
         className='flex-1'
@@ -246,7 +248,7 @@ export const ImageModal = ({
             onSubmit?.({
               url: url,
               width: widthAsNumberOrUndefined,
-              margin: undefined //! Temporary...
+              margin: alignment
             })
           }}
           type='button'
@@ -277,7 +279,7 @@ export const ImageModal = ({
 
         <div className='mb-6 flex gap-2'>
           {renderWidthInput()}
-          {/* {renderAlignmentRadios()} */}
+          {renderAlignmentRadios()}
         </div>
 
         {renderActions()}

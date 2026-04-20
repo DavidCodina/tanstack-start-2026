@@ -38,7 +38,10 @@ import { Button } from '@/components'
 // That said, it's still generally a good idea to sanitize a value with DOMPurify
 // prior to using it in Tiptap. It's even more important to sanitize the value
 // prior to using dangerouslySetInnerHTML
-const scriptTest = `<p>Hello. This is a <code>&#60;script&#62;</code> tag test. Check your console logs.<script>console.log("You got hacked!")</script></p>`
+// const scriptTest = `<p>Hello. This is a <code>&#60;script&#62;</code> tag test. Check your console logs.<script>console.log("You got hacked!")</script></p>`
+
+const imageDefault =
+  '<img data-custom-image src="https://upload.wikimedia.org/wikipedia/en/c/c2/Peter_Griffin.png?_=20110515154115" alt="An image" title="An example" width="200" style="margin: 0px auto;"><p></p>'
 
 /* ========================================================================
 
@@ -63,7 +66,7 @@ const scriptTest = `<p>Hello. This is a <code>&#60;script&#62;</code> tag test. 
 //# This may be a situation for a custom extension.
 
 export const TiptapDemo = () => {
-  const [value, setValue] = React.useState<string>(scriptTest)
+  const [value, setValue] = React.useState<string>(imageDefault)
   const [disabled, setDisabled] = React.useState(false)
 
   ///////////////////////////////////////////////////////////////////////////
@@ -123,7 +126,7 @@ export const TiptapDemo = () => {
         defaultFontFamily='' // Falls back to 'Poppins'.
         disabled={disabled}
         editorProps={{
-          content: scriptTest,
+          content: imageDefault,
           placeholder: 'Write something...'
         }}
         onChange={(newValue) => {

@@ -128,7 +128,12 @@ export const FormatBubbleMenu = ({ disabled }: { disabled?: boolean }) => {
           return
   ====================== */
 
-  if (!editor || disabled || editorState?.isCustomYoutube) {
+  if (
+    !editor ||
+    disabled ||
+    editorState?.isCustomImage ||
+    editorState?.isCustomYoutube
+  ) {
     return null
   }
 

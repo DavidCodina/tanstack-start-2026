@@ -1,5 +1,11 @@
 import '@tiptap/core'
 
+import type { SetImageOptions } from '@tiptap/extension-image'
+
+type CustomSetImageOptions = SetImageOptions & {
+  margin?: string
+}
+
 // Overwrite node_modules/@tiptap/extension-youtube/dist/index.d.ts
 // Because of the way tiptap integrates extensions in conjunction with
 // the "Execution Order" of types in TypeScript, it's crucial that this
@@ -15,6 +21,10 @@ declare module '@tiptap/core' {
 
         justifyContent?: string // Added
       }) => ReturnType
+    }
+
+    'custom-image': {
+      setCustomImage: (options: CustomSetImageOptions) => ReturnType
     }
   }
 }

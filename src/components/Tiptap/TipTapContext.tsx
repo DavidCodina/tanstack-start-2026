@@ -47,10 +47,12 @@ import { TextStyleKit } from '@tiptap/extension-text-style'
 import { TaskItem, TaskList } from '@tiptap/extension-list'
 
 // https://tiptap.dev/docs/editor/extensions/nodes/image
-import Image from '@tiptap/extension-image'
+// import Image from '@tiptap/extension-image'
 
 // https://tiptap.dev/docs/editor/extensions/nodes/youtube
 import { CustomYoutube } from './extensions/CustomYoutube'
+
+import { CustomImage } from './extensions/CustomImage'
 
 // import CharacterCount from '@tiptap/extension-character-count'
 // import Table from '@tiptap/extension-table'
@@ -279,7 +281,7 @@ export function TiptapProvider({
       TaskItem.configure({
         nested: true
       }),
-      Image.configure({
+      CustomImage.configure({
         // inline: true,
         ///////////////////////////////////////////////////////////////////////////
         //
