@@ -44,9 +44,13 @@ const scriptTest = `<p>Hello. This is a <code>&#60;script&#62;</code> tag test. 
 
 ======================================================================== */
 
-//# Add emoji support: https://tiptap.dev/docs/editor/extensions/nodes/emoji
+//# Build a CustomImage extension with alignment configuration option..
+//# The easiest way to do this, is to simply add a margin property to the image.
+//# Give AI the source code and docs and tell it what you want to do.
+// https://tiptap.dev/docs/editor/extensions/nodes/image
+// https://github.com/ueberdosis/tiptap/blob/main/packages/extension-image/src/image.ts
 
-//# Add image support: https://tiptap.dev/docs/editor/extensions/nodes/image
+//# Add emoji support: https://tiptap.dev/docs/editor/extensions/nodes/emoji
 
 //# Fix RTE import issue.
 

@@ -206,6 +206,11 @@ export function menuBarSelector(ctx: EditorStateSnapshot<Editor | null>) {
     isCustomYoutube: ctx.editor.isActive('custom-youtube') ? true : false,
     customYoutubeSrc: ctx.editor.isActive('custom-youtube')
       ? ((ctx.editor.getAttributes('custom-youtube').src as string) ?? null)
+      : null,
+
+    isImage: ctx.editor.isActive('image') ? true : false,
+    imageSrc: ctx.editor.isActive('image')
+      ? ((ctx.editor.getAttributes('image').src as string) ?? null)
       : null
   }
 }

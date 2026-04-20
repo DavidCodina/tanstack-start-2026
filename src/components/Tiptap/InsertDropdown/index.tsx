@@ -1,8 +1,9 @@
 import * as React from 'react'
 import '@tiptap/core'
-import { CornerDownLeft, Plus, Ruler } from 'lucide-react'
+import { CornerDownLeft, Image, Plus, Ruler } from 'lucide-react'
 import { Dropdown, DropdownItem } from '../Dropdown'
 import { YoutubeModal } from './YoutubeModal'
+import { ImageModal } from './ImageModal'
 
 import type { JSX } from 'react'
 import type { Editor } from '@tiptap/core'
@@ -33,11 +34,58 @@ export const InsertDropdown = ({
   editorState,
   disabled = false
 }: InsertDropdownProps): JSX.Element => {
-  // For CustomYoutube extension
   const [showYoutubeModal, setShowYoutubeModal] = React.useState(false)
+  const [showImageModal, setShowImageModal] = React.useState(false)
 
   /* ======================
- 
+      renderImageModal()
+  ====================== */
+  // Example URL: https://upload.wikimedia.org/wikipedia/en/c/c2/Peter_Griffin.png?_=20110515154115
+
+  const renderImageModal = () => {
+    if (!showImageModal || disabled) return null
+
+    const existingImageUrl = editorState?.imageSrc || ''
+
+    return (
+      <ImageModal
+        disabled={disabled}
+        onSubmit={(values) => {
+          if (!editor) {
+            setShowImageModal(false)
+            return
+          }
+
+          if (!values.url || typeof values.url !== 'string') {
+            editor.chain().focus()
+            setShowImageModal(false)
+            return
+          }
+
+          editor
+            .chain()
+            .focus()
+            .setImage({
+              src: values.url,
+              alt: 'An image',
+              title: 'An example',
+              width: values.width || 500
+            })
+            .run()
+
+          setShowImageModal(false)
+        }}
+        onCancel={() => {
+          if (editor) editor.chain().focus()
+          setShowImageModal(false)
+        }}
+        url={existingImageUrl}
+      />
+    )
+  }
+
+  /* ======================
+    renderYoutubeModal()
   ====================== */
 
   const renderYoutubeModal = () => {
@@ -49,7 +97,13 @@ export const InsertDropdown = ({
       <YoutubeModal
         disabled={disabled}
         onSubmit={(values) => {
-          if (!editor || !values.url || typeof values.url !== 'string') {
+          if (!editor) {
+            setShowYoutubeModal(false)
+            return
+          }
+
+          if (!values.url || typeof values.url !== 'string') {
+            // editor.chain().focus() // Not sure if this will do anything
             setShowYoutubeModal(false)
             return
           }
@@ -151,6 +205,8 @@ export const InsertDropdown = ({
           setShowYoutubeModal(false)
         }}
         onCancel={() => {
+          // Not sure if this will do anything
+          // if (editor) editor.chain().focus()
           setShowYoutubeModal(false)
         }}
         url={existingYoutubeUrl}
@@ -197,6 +253,17 @@ export const InsertDropdown = ({
           className=''
           disabled={disabled}
           onClick={() => {
+            setShowImageModal(true)
+          }}
+          title='image'
+        >
+          <Image /> Image
+        </DropdownItem>
+
+        <DropdownItem
+          className=''
+          disabled={disabled}
+          onClick={() => {
             setShowYoutubeModal(true)
           }}
           title='youtube'
@@ -208,6 +275,7 @@ export const InsertDropdown = ({
         </DropdownItem>
       </Dropdown>
 
+      {renderImageModal()}
       {renderYoutubeModal()}
     </>
   )

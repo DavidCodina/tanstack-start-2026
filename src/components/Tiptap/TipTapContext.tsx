@@ -46,10 +46,11 @@ import { TextStyleKit } from '@tiptap/extension-text-style'
 // https://tiptap.dev/docs/editor/extensions/nodes/task-list
 import { TaskItem, TaskList } from '@tiptap/extension-list'
 
+// https://tiptap.dev/docs/editor/extensions/nodes/image
+import Image from '@tiptap/extension-image'
+
 // https://tiptap.dev/docs/editor/extensions/nodes/youtube
 import { CustomYoutube } from './extensions/CustomYoutube'
-
-// import Image from '@tiptap/extension-image'
 
 // import CharacterCount from '@tiptap/extension-character-count'
 // import Table from '@tiptap/extension-table'
@@ -277,6 +278,33 @@ export function TiptapProvider({
       TaskList,
       TaskItem.configure({
         nested: true
+      }),
+      Image.configure({
+        // inline: true,
+        ///////////////////////////////////////////////////////////////////////////
+        //
+        // ⚠️ Gotcha:
+        // Enabling resizing creates two wrapper divs in the editor:
+        //
+        //   <div data-resize-container>
+        //     <div data-resize-wrapper>
+        //       <img />
+        //     </div>
+        //   </div>
+        //
+        // However, in the HTML output those divs are omitted and only the <img /> exists.
+        // This creates a unique challenge when it comes to implementing a custom Image
+        // extension that uses its own alignment logic. For this reason, this build does
+        // NOT use resizing.
+        //
+        ///////////////////////////////////////////////////////////////////////////
+        // resize: {
+        //   enabled: true,
+        //   directions: ['top', 'bottom', 'left', 'right'],
+        //   // minWidth: 50,
+        //   // minHeight: 50,
+        //   alwaysPreserveAspectRatio: true
+        // }
       })
     ],
 

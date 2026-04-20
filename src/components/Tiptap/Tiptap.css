@@ -212,23 +212,23 @@ https://tiptap.dev/docs/editor/extensions/functionality/placeholder#additional-s
 </ul>
 */
 
-ul[data-type='taskList'] {
+.tiptap ul[data-type='taskList'] {
   list-style: none;
   margin-left: 0;
   padding-left: 0;
 }
 
-ul[data-type='taskList'] li {
+.tiptap ul[data-type='taskList'] li {
   align-items: start;
   display: flex;
   gap: 4px;
 }
 
-ul[data-type='taskList'] li > label {
+.tiptap ul[data-type='taskList'] li > label {
   user-select: none;
 }
 
-ul[data-type='taskList'] input[type='checkbox'] {
+.tiptap ul[data-type='taskList'] input[type='checkbox'] {
   /* Note: Browsers often apply a darkening on hover. */
   accent-color: var(--color-green-600);
   border-radius: 4px;
@@ -241,21 +241,21 @@ ul[data-type='taskList'] input[type='checkbox'] {
 
 /* This is where the text goes - <div><p>...</p></div>. However,
 If you have nested checkboxes another <ul> will also go inside the <div>. */
-ul[data-type='taskList'] li > div {
+.tiptap ul[data-type='taskList'] li > div {
 }
 
-ul[data-type='taskList'] li > div > p {
+.tiptap ul[data-type='taskList'] li > div > p {
   position: relative;
   top: -2.5px; /* Correct for line-height. Probably better to use em units. */
 }
 
-ul[data-type='taskList'] ul[data-type='taskList'] {
+.tiptap ul[data-type='taskList'] ul[data-type='taskList'] {
   margin: 0;
   padding-left: 0;
 }
 
 /* =====================
-      Headings
+        Headings
 ====================== */
 
 .tiptap h1,
@@ -470,3 +470,83 @@ or two after you release, so ProseMirror doesn't clean up immediately. */
   width: fit-content;
   color: var(--color-blue-500);
 }
+
+/* =====================
+
+====================== */
+
+.tiptap div[data-resize-wrapper] {
+}
+
+.tiptap img {
+  border-radius: 10px;
+  display: block;
+  height: auto;
+  max-width: 100%;
+}
+
+/* If you're using Image.configure({ inline: true }), then it's important that
+the img be set to display: inline-block. Otherwise, the textAlign on the outer
+<p> tag will not affect the img. That said, it would be better to instead have
+a custom alignment implementation similar to that of the CustomYoutube extension. 
+Until then, using inline:true + display:inline-block is the best solution for 
+image manipulation. */
+
+/* Places sibling text at the top when display:inline-block.
+That said, as soon as the text wraps, it looks like garbage again
+because the inline implementation is not using float. This is precisely
+why inline:true is not the appropriate solution for image centering. */
+.tiptap p img {
+  display: inline-block;
+  vertical-align: top;
+}
+
+/* Basic styles if you intend to use the image resizing feature.
+This will pair well with an inlime image implementation, but not
+with the CustomImage extension.
+
+[data-resize-handle] {
+  position: absolute;
+  z-index: 10;
+}
+
+[data-resize-handle]:hover {
+  border: 1.25px dashed var(--color-blue-500);
+}
+
+[data-resize-handle='top'],
+[data-resize-handle='bottom'] {
+  cursor: ns-resize;
+  height: 2px;
+  left: 10px !important;
+  right: 10px !important;
+}
+
+[data-resize-handle='top'] {
+  top: -1px !important;
+}
+
+[data-resize-handle='bottom'] {
+  bottom: -1px !important;
+}
+
+.tiptap [data-resize-handle='left'],
+.tiptap [data-resize-handle='right'] {
+  cursor: ew-resize;
+  width: 2px;
+  top: 10px !important;
+  bottom: 10px !important;
+}
+
+[data-resize-handle='left'] {
+  left: -1px !important;
+}
+
+[data-resize-handle='right'] {
+  right: -1px !important;
+}
+
+
+[data-resize-state='true'] [data-resize-wrapper] {
+}
+*/
