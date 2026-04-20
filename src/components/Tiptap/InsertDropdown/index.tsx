@@ -134,35 +134,39 @@ export const InsertDropdown = ({
               //
               // ⚠️ Gotcha:
               //
-              // Object literal may only specify known properties, and 'justifyContent'
-              // does not exist in type 'SetYoutubeVideoOptions'.
-              // Solution: assert options back onto options object:
-              //
-              //   const setYoutubeVideo = editor.commands.setYoutubeVideo
-              //   type Options = Parameters<typeof setYoutubeVideo>[0]
-              //   {} as Options
-              //
-              // Or create a tiptap-augmentation.d.ts file:
+              // Make sure to create a tiptap-augmentation.d.ts file. For example:
               //
               // import '@tiptap/core'
+              // import type { SetImageOptions } from '@tiptap/extension-image'
+              //
+              // type CustomSetImageOptions = SetImageOptions & {
+              //   margin?: string
+              // }
+              ////
+              // type CustomSetYoutubeVideoOptions = {
+              //   src: string
+              //   width?: number
+              //   height?: number
+              //   start?: number
+              //   justifyContent?: string // Added
+              // }
               //
               // declare module '@tiptap/core' {
               //   interface Commands<ReturnType> {
-              //     youtube: {
-              //       setYoutubeVideo: (options: {
-              //         src: string
-              //         width?: number
-              //         height?: number
-              //         start?: number
-              //         justifyContent?: string
-              //       }) => ReturnType
+              //     'custom-image': {
+              //       setCustomImage: (options: CustomSetImageOptions) => ReturnType
+              //     }
+              //     'custom-youtube': {
+              //       setCustomYoutubeVideo: (
+              //         options: CustomSetYoutubeVideoOptions
+              //       ) => ReturnType
               //     }
               //   }
               // }
               //
-              // But here's the crazy part. While in many cases, it would be fine to place such a file
-              // in src/types. But in this case it ONLY works if you place it directly in the project
-              // root. This has to do with how the declaration merging order is happening.
+              // But here's the crazy part. In most cases, it would be fine to place such a file
+              // in src/types. However, in this case it ONLY works if you place it directly in the
+              // project root. This has to do with how the declaration merging order is happening.
               //
               // When a .d.ts is in the root, TypeScript often treats it as a "Global Augmentation" that
               // it loads before it starts resolving the specific imports inside your node_modules.

@@ -261,20 +261,10 @@ export function TiptapProvider({
         minLevel: 0,
         maxLevel: 8
       }),
-      // Youtube.configure({
-      //   controls: false,
-      //   nocookie: true,
-      //   inline: true
-      // })
 
       CustomYoutube.configure({
         controls: false,
         nocookie: true
-
-        // HTMLAttributes: {
-        //   class: ''
-        // }
-        //# Possibly try setting a custom width/height here and/or setting it to undefined.
       }),
 
       TaskList,
@@ -282,11 +272,20 @@ export function TiptapProvider({
         nested: true
       }),
       CustomImage.configure({
-        // inline: true,
         ///////////////////////////////////////////////////////////////////////////
         //
         // ⚠️ Gotcha:
-        // Enabling resizing creates two wrapper divs in the editor:
+        // If we enable resizing:
+        //
+        //   resize: {
+        //     enabled: true,
+        //     directions: ['top', 'bottom', 'left', 'right'],
+        //     // minWidth: 50,
+        //     // minHeight: 50,
+        //     alwaysPreserveAspectRatio: true
+        //   }
+        //
+        //  It creates two wrapper divs in the editor:
         //
         //   <div data-resize-container>
         //     <div data-resize-wrapper>
@@ -295,18 +294,11 @@ export function TiptapProvider({
         //   </div>
         //
         // However, in the HTML output those divs are omitted and only the <img /> exists.
-        // This creates a unique challenge when it comes to implementing a custom Image
-        // extension that uses its own alignment logic. For this reason, this build does
+        // This creates a unique challenge when it comes to implementing a CustomImage
+        // extension that uses its own alignment logic. Consequently, this version should
         // NOT use resizing.
         //
         ///////////////////////////////////////////////////////////////////////////
-        // resize: {
-        //   enabled: true,
-        //   directions: ['top', 'bottom', 'left', 'right'],
-        //   // minWidth: 50,
-        //   // minHeight: 50,
-        //   alwaysPreserveAspectRatio: true
-        // }
       })
     ],
 
@@ -315,7 +307,6 @@ export function TiptapProvider({
       const json = editor.getJSON()
       const text = editor.getText()
       const value = { html, json, text }
-
       // AI : getJSON() + setContent(json) is the recommended round-trip for persistence (?).
       // Or lift these into state, a form library, etc.
       onChange?.(value)

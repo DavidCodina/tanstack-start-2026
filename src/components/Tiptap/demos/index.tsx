@@ -49,6 +49,8 @@ const imageDefault =
 
 //# Add title and alt to ImageModal, then add the assocated state to menuBarState.ts
 
+//# Review addOptions() in CustomYoutube.ts
+
 //# Add emoji support: https://tiptap.dev/docs/editor/extensions/nodes/emoji
 
 //# Fix RTE import issue.

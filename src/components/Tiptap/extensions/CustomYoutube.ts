@@ -46,6 +46,35 @@ export const CustomYoutube = Youtube.extend(
   /*<YoutubeOptions>*/ {
     name: 'custom-youtube', // 👈 Overrides 'youtube'
 
+    // Todo: Review these options. Possibly opt out of height
+    //# by setting to undefined or deleting. Then review others
+    // addOptions() {
+    //   return {
+    //     addPasteHandler: true,
+    //     allowFullscreen: true,
+    //     autoplay: false,
+    //     ccLanguage: undefined,
+    //     ccLoadPolicy: undefined,
+    //     controls: true,
+    //     disableKBcontrols: false,
+    //     enableIFrameApi: false,
+    //     endTime: 0,
+    //     height: 480,
+    //     interfaceLanguage: undefined,
+    //     ivLoadPolicy: 0,
+    //     loop: false,
+    //     modestBranding: false,
+    //     HTMLAttributes: {},
+    //     inline: false,
+    //     nocookie: false,
+    //     origin: '',
+    //     playlist: '',
+    //     progressBarColor: undefined,
+    //     width: 640,
+    //     rel: 1,
+    //   }
+    // },
+
     addAttributes() {
       return {
         ...this.parent?.(),
@@ -65,6 +94,10 @@ export const CustomYoutube = Youtube.extend(
       }
     },
 
+    // Because the original Youtube extension specifically looks for
+    // 'div[data-youtube-video] iframe', it should not conflict with
+    // the current parseHTML() rule, provided that we call delete below:
+    // delete wrapperAttributes['data-youtube-video']
     parseHTML() {
       return [
         {
