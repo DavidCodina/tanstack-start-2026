@@ -41,17 +41,13 @@ import { Button } from '@/components'
 // const scriptTest = `<p>Hello. This is a <code>&#60;script&#62;</code> tag test. Check your console logs.<script>console.log("You got hacked!")</script></p>`
 
 const imageDefault =
-  '<img data-custom-image src="https://upload.wikimedia.org/wikipedia/en/c/c2/Peter_Griffin.png?_=20110515154115" alt="An image" title="An example" width="200" style="margin: 0px auto;"><p></p>'
+  '<p>Whuddup! This is Peter.</p><img data-custom-image src="https://upload.wikimedia.org/wikipedia/en/c/c2/Peter_Griffin.png?_=20110515154115" alt="An image" title="An example" width="200" style="margin: 0px auto;"><p></p>'
 
 /* ========================================================================
 
 ======================================================================== */
 
-//# Build a CustomImage extension with alignment configuration option..
-//# The easiest way to do this, is to simply add a margin property to the image.
-//# Give AI the source code and docs and tell it what you want to do.
-// https://tiptap.dev/docs/editor/extensions/nodes/image
-// https://github.com/ueberdosis/tiptap/blob/main/packages/extension-image/src/image.ts
+//# Add title and alt to ImageModal, then add the assocated state to menuBarState.ts
 
 //# Add emoji support: https://tiptap.dev/docs/editor/extensions/nodes/emoji
 

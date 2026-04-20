@@ -207,6 +207,8 @@ export function menuBarSelector(ctx: EditorStateSnapshot<Editor | null>) {
     customYoutubeSrc: ctx.editor.isActive('custom-youtube')
       ? ((ctx.editor.getAttributes('custom-youtube').src as string) ?? null)
       : null,
+    // Todo: Add customYoutubeWidth
+    // Todo: Add customYoutubeAlignment
 
     isImage: ctx.editor.isActive('image') ? true : false,
     imageSrc: ctx.editor.isActive('image')
@@ -220,6 +222,9 @@ export function menuBarSelector(ctx: EditorStateSnapshot<Editor | null>) {
     customImageWidth: ctx.editor.isActive('custom-image')
       ? ((ctx.editor.getAttributes('custom-image').width as string) ?? null)
       : null
+
+    // Todo: Add customImageAlignment
+    //# Possibly do the same for alt, title, etc.
   }
 }
 

@@ -80,6 +80,8 @@ export const CustomImage = Image.extend({
 
   addCommands() {
     return {
+      // No need for standard setImage to be included.
+      // ❌ ...this.parent?.(),
       setCustomImage: (options: CustomSetImageOptions) => {
         return (commandProps: CommandProps) => {
           const { commands } = commandProps

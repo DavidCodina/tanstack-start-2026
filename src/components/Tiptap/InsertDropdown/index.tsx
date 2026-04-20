@@ -121,7 +121,7 @@ export const InsertDropdown = ({
             values.url.startsWith('https://www.youtube.com/watch?v=') ||
             values.url.startsWith('https://www.youtube-nocookie.com/embed')
           ) {
-            editor.commands.setYoutubeVideo({
+            editor.commands.setCustomYoutubeVideo({
               src: values.url,
               // height is not set here. Why? Because Tiptap.css is already setting: height: auto; + aspect-ratio: 16 / 9;
               width: values.width || 500,

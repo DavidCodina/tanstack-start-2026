@@ -1,6 +1,7 @@
 import { mergeAttributes } from '@tiptap/core'
 // https://tiptap.dev/docs/editor/extensions/nodes/youtube
 import Youtube, { isValidYoutubeUrl } from '@tiptap/extension-youtube'
+import type { CommandProps } from '@tiptap/core'
 
 // Note: YoutubeOptions is the type for the extenstion configuration options,
 // not for the setYoutubeVideo({ ... }) command options.
@@ -72,17 +73,13 @@ export const CustomYoutube = Youtube.extend(
       ]
     },
 
-    //# In fact, do we need this at all?
     addCommands() {
       return {
-        //# Should we do this?
-        //# Spread first so the parent's implementation is the fallback,
-        //# then shadow setImage with our typed version below.
-        //# ...this.parent?.(),
-
-        setYoutubeVideo:
-          (options: CustomSetYoutubeVideoOptions) =>
-          ({ commands }) => {
+        // No need for standard setYoutubeVideo to be included.
+        // ❌ ...this.parent?.(),
+        setCustomYoutubeVideo: (options: CustomSetYoutubeVideoOptions) => {
+          return (commandProps: CommandProps) => {
+            const { commands } = commandProps
             if (!isValidYoutubeUrl(options.src)) {
               return false
             }
@@ -92,6 +89,7 @@ export const CustomYoutube = Youtube.extend(
               attrs: options
             })
           }
+        }
       }
     },
 
