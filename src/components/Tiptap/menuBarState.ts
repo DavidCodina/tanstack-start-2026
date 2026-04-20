@@ -95,7 +95,7 @@ export function menuBarSelector(ctx: EditorStateSnapshot<Editor | null>) {
       ? true
       : false,
     canUnsetLink: ctx.editor.can().chain().unsetLink().run() ? true : false,
-    currentLinkHref: ctx.editor.isActive('link') // => 'https://www.google.com'
+    linkHref: ctx.editor.isActive('link') // => 'https://www.google.com'
       ? ((ctx.editor.getAttributes('link').href as string) ?? null)
       : null,
 

@@ -38,32 +38,22 @@ import { Button } from '@/components'
 // That said, it's still generally a good idea to sanitize a value with DOMPurify
 // prior to using it in Tiptap. It's even more important to sanitize the value
 // prior to using dangerouslySetInnerHTML
-const scriptTest = `<p>Hello. This is script test. Check your console logs.<script>console.log("You got hacked!")</script></p>`
+const scriptTest = `<p>Hello. This is a <code>&#60;script&#62;</code> tag test. Check your console logs.<script>console.log("You got hacked!")</script></p>`
 
 /* ========================================================================
 
 ======================================================================== */
 
-//# Review eslint plugin with AI: custom/always-button-type
-
-//# Update Link Feature to use a modal.
-//# See here for demo of LinkComponent:
-//# https://github.com/thapatechnical/job-portal-nextjs/blob/main/src/components/text-editor.tsx
-//# But really no need. Just follow the example of the YoutubeModal.
-
 //# Add emoji support: https://tiptap.dev/docs/editor/extensions/nodes/emoji
 
 //# Add image support: https://tiptap.dev/docs/editor/extensions/nodes/image
-
-//# Add a DragHandle
-//# https://tiptap.dev/docs/editor/extensions/functionality/drag-handle-react
 
 //# Fix RTE import issue.
 
 //# See here for CustomCodeBlock. This is also a great example to pick apart.
 //# https://github.com/phyohtetarkar/tiptap-block-editor/blob/main/src/components/editor/default-extensions.ts
 
-//# The dropdown menu currently doesn't respond well to viewport width resizing.
+//# The dropdown menu doesn't respond well to viewport width resizing.
 
 //# Bonus: Add Lowercase, Uppercase, Capitalize
 //# This may be a situation for a custom extension.
