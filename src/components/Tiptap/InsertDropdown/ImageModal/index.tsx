@@ -6,13 +6,20 @@ import { useClickOutside } from './useClickOutside'
 import { isOneOf, stringToNumberOrUndefined } from './utils'
 import { cn } from '@/utils'
 
-type ImageModalProps = {
-  disabled?: boolean
-  onCancel: () => void
+type RadioOptions = { value: string; label: string; Icon: React.ElementType }[]
 
-  onSubmit: (values: { url: string; width?: number; margin?: string }) => void
+type ImageModalProps = {
+  alt?: string
+  disabled?: boolean
   url?: string
   width?: string
+  onCancel: () => void
+  onSubmit: (values: {
+    align?: 'left' | 'center' | 'right'
+    alt?: string
+    url: string
+    width?: number
+  }) => void
 }
 
 const inputClasses = `
@@ -20,10 +27,10 @@ block w-full rounded border px-2 py-1 text-sm outline-none
 focus:ring-[3px] focus:ring-primary/50
 `
 
-const options: { value: string; label: string; Icon: React.ElementType }[] = [
-  { value: '0px auto 0px 0px', label: 'Left', Icon: AlignLeft },
-  { value: '0px auto', label: 'Center', Icon: AlignCenter },
-  { value: '0px 0px 0px auto', label: 'Right', Icon: AlignRight }
+const options: RadioOptions = [
+  { value: 'left', label: 'Left', Icon: AlignLeft },
+  { value: 'center', label: 'Center', Icon: AlignCenter },
+  { value: 'right', label: 'Right', Icon: AlignRight }
 ]
 
 const MIN = 150
@@ -34,11 +41,12 @@ const MAX = 1000
 ======================================================================== */
 
 export const ImageModal = ({
+  alt: externalAlt = '',
+  url: externalUrl = '',
+  width: externalWidth = '',
   disabled,
   onCancel,
-  onSubmit,
-  url: externalUrl = '',
-  width: externalWidth = ''
+  onSubmit
 }: ImageModalProps) => {
   /* =====================
         state & refs
@@ -46,15 +54,11 @@ export const ImageModal = ({
 
   const [url, setUrl] = React.useState(externalUrl)
   const [width, setWidth] = React.useState(externalWidth)
-
-  const [alignment, setAlignment] = React.useState<
-    '0px auto 0px 0px' | '0px auto' | '0px 0px 0px auto' // left, center, right
-  >()
-
+  const [alt, setAlt] = React.useState(externalAlt)
+  const [align, setAlign] = React.useState<'left' | 'center' | 'right'>()
   const clickOutsideRef = useClickOutside(() => {
     onCancel()
   })
-
   const focusTrapRef = useFocusTrap()
 
   /* =====================
@@ -87,17 +91,17 @@ export const ImageModal = ({
   }
 
   /* =====================
-      renderWidthInput()
+      renderAltnput()
   ====================== */
 
-  const renderWidthInput = () => {
+  const renderAltInput = () => {
     return (
-      <div className='flex-1'>
+      <div className='mb-4'>
         <label
+          htmlFor='image-alt-input'
           className='mb-0 text-sm font-semibold text-blue-500'
-          htmlFor='image-width-input'
         >
-          Width
+          Alt
         </label>
         <input
           disabled={disabled}
@@ -105,12 +109,41 @@ export const ImageModal = ({
           autoComplete='new-password'
           autoCorrect='off'
           spellCheck={false}
-          id='image-width-input'
+          id='image-alt-input'
           className={inputClasses}
-          min={MIN}
+          onChange={(e) => setAlt(e.target.value)}
+          placeholder='My image...'
+          value={alt}
+        />
+        <div className='text-muted-foreground text-sm'>
+          Alternative information for screen readers, etc.
+        </div>
+      </div>
+    )
+  }
+
+  /* =====================
+      renderWidthInput()
+  ====================== */
+
+  const renderWidthInput = () => {
+    return (
+      <div className='mb-4 flex-1'>
+        <label
+          className='mb-0 text-sm font-semibold text-blue-500'
+          htmlFor='image-width-input'
+        >
+          Width
+        </label>
+        <input
+          autoCapitalize='none'
+          autoComplete='new-password'
+          autoCorrect='off'
+          className={inputClasses}
+          disabled={disabled}
+          id='image-width-input'
           max={MAX}
-          placeholder='500'
-          step={50}
+          min={MIN}
           onChange={(e) => setWidth(e.target.value)}
           onKeyDown={(e) => {
             // These characters can still sneak in on paste, which
@@ -120,6 +153,9 @@ export const ImageModal = ({
               e.preventDefault()
             }
           }}
+          placeholder='500'
+          spellCheck={false}
+          step={50}
           type='number'
           value={width}
         />
@@ -128,13 +164,13 @@ export const ImageModal = ({
   }
 
   /* =====================
-    renderAlignmentRadios()
+    renderAlignRadios()
   ====================== */
 
-  const renderAlignmentRadios = () => {
+  const renderAlignRadios = () => {
     return (
       <fieldset
-        className='flex-1'
+        className='mb-4 flex-1'
         onChange={(e) => {
           ///////////////////////////////////////////////////////////////////////////
           //
@@ -158,22 +194,18 @@ export const ImageModal = ({
 
           const value = target.value
 
-          const acceptableValues = [
-            '0px auto 0px 0px',
-            '0px auto',
-            '0px 0px 0px auto'
-          ] as const
+          const acceptableValues = ['left', 'center', 'right'] as const
           if (isOneOf(acceptableValues, value)) {
-            setAlignment(value)
+            setAlign(value)
           }
         }}
       >
         <legend className='mb-1 text-sm font-semibold text-blue-500'>
-          Alignment
+          Align
         </legend>
         <div className='flex flex-1 gap-2'>
           {options.map(({ value, label, Icon }) => {
-            const checked = alignment === value
+            const checked = align === value
 
             const labelBaseClasses = `
             relative flex flex-1 items-center justify-center gap-2 
@@ -194,12 +226,12 @@ export const ImageModal = ({
                 )}
               >
                 <input
+                  className='sr-only'
                   disabled={disabled}
                   id={`radio-align-${value}`}
-                  name='alignment-radios'
+                  name='align-radios'
                   type='radio'
                   value={value}
-                  className='sr-only'
                 />
                 <Icon className='h-4 w-4' aria-hidden='true' />
                 {label}
@@ -246,9 +278,10 @@ export const ImageModal = ({
             }
 
             onSubmit?.({
+              align: align,
+              alt: alt,
               url: url,
-              width: widthAsNumberOrUndefined,
-              margin: alignment
+              width: widthAsNumberOrUndefined
             })
           }}
           type='button'
@@ -276,12 +309,11 @@ export const ImageModal = ({
         className='bg-card absolute top-1/2 left-1/2 min-h-[100px] w-[600px] max-w-[calc(100%-48px)] -translate-x-1/2 -translate-y-1/2 rounded-lg border p-4'
       >
         {renderUrlInput()}
-
-        <div className='mb-6 flex gap-2'>
+        {renderAltInput()}
+        <div className='gap-2 sm:flex'>
           {renderWidthInput()}
-          {renderAlignmentRadios()}
+          {renderAlignRadios()}
         </div>
-
         {renderActions()}
       </div>
     </div>

@@ -271,35 +271,35 @@ export function TiptapProvider({
       TaskItem.configure({
         nested: true
       }),
-      CustomImage.configure({
-        ///////////////////////////////////////////////////////////////////////////
-        //
-        // ⚠️ Gotcha:
-        // If we enable resizing:
-        //
-        //   resize: {
-        //     enabled: true,
-        //     directions: ['top', 'bottom', 'left', 'right'],
-        //     // minWidth: 50,
-        //     // minHeight: 50,
-        //     alwaysPreserveAspectRatio: true
-        //   }
-        //
-        //  It creates two wrapper divs in the editor:
-        //
-        //   <div data-resize-container>
-        //     <div data-resize-wrapper>
-        //       <img />
-        //     </div>
-        //   </div>
-        //
-        // However, in the HTML output those divs are omitted and only the <img /> exists.
-        // This creates a unique challenge when it comes to implementing a CustomImage
-        // extension that uses its own alignment logic. Consequently, this version should
-        // NOT use resizing.
-        //
-        ///////////////////////////////////////////////////////////////////////////
-      })
+
+      ///////////////////////////////////////////////////////////////////////////
+      //
+      // ⚠️ Gotcha:
+      // If we enable resizing:
+      //
+      //   resize: {
+      //     enabled: true,
+      //     directions: ['top', 'bottom', 'left', 'right'],
+      //     // minWidth: 50,
+      //     // minHeight: 50,
+      //     alwaysPreserveAspectRatio: true
+      //   }
+      //
+      //  It creates two wrapper divs in the editor:
+      //
+      //   <div data-resize-container>
+      //     <div data-resize-wrapper>
+      //       <img />
+      //     </div>
+      //   </div>
+      //
+      // However, in the HTML output those divs are omitted and only the <img /> exists.
+      // This creates a unique challenge when it comes to implementing a CustomImage
+      // extension that uses its own alignment logic. Consequently, this version should
+      // NOT use resizing.
+      //
+      ///////////////////////////////////////////////////////////////////////////
+      CustomImage
     ],
 
     onUpdate: ({ editor }) => {

@@ -3,7 +3,7 @@ import '@tiptap/core'
 import type { SetImageOptions } from '@tiptap/extension-image'
 
 type CustomSetImageOptions = SetImageOptions & {
-  margin?: string
+  align?: 'left' | 'center' | 'right'
 }
 
 type CustomSetYoutubeVideoOptions = {

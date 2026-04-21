@@ -1,11 +1,11 @@
 // https://tiptap.dev/docs/editor/extensions/nodes/image
 import Image from '@tiptap/extension-image'
-
 import type { SetImageOptions } from '@tiptap/extension-image'
+
 import type { CommandProps } from '@tiptap/core'
 
 export type CustomSetImageOptions = SetImageOptions & {
-  align?: 'left' | 'center' | 'right'
+  margin?: string
 }
 
 /* ========================================================================
@@ -24,9 +24,9 @@ export type CustomSetImageOptions = SetImageOptions & {
 //   }
 //
 // One could argue that there's no need for the standard Image extension since we now
-// have CustomImage. However, the standard Image extension could be used specifically for
-// inline images. According to AI, the solution is to always register the CustomImage
-// BEFORE the standard Image extension in the extensions array.
+// have this custom one. However, the standard one could be used specifically for inline
+// images. According to AI, the solution is to always register the CustomImage BEFORE the
+// standard Image extension in the extensions array.
 //
 //   Once CustomImage's parseHTML claims an img[src][data-custom-image] element and creates a
 //   custom-image node from it, that element is consumed — Image's parseHTML rule never sees it.
@@ -49,35 +49,20 @@ export const CustomImage = Image.extend({
         default: ''
       },
 
-      ///////////////////////////////////////////////////////////////////////////
-      //
-      // Previously, alignment was handled using margin:
-      //
-      //   margin: {
-      //     default: '',
-      //     parseHTML(element) {
-      //       return element.style.margin || ''
-      //     },
-      //     renderHTML(attributes) {
-      //       if (!attributes.margin) return {}
-      //       return { style: `margin: ${attributes.margin}` }
-      //     }
-      //   }
-      //
-      // However, using data-align="..." is more idiomatic to Tiptap/ProseMirror,
-      // and avoids potentially overwriting the style attribute. Instead, the
-      // actual stying implementation is now dependent on CSS.
-      //
-      ///////////////////////////////////////////////////////////////////////////
+      margin: {
+        default: '',
 
-      align: {
-        default: null,
+        // Read back from inline style so content round-trips correctly
+        // (e.g. when loading saved HTML back into the editor).
         parseHTML(element) {
-          return element.getAttribute('data-align') || null
+          return element.style.margin || ''
         },
+
+        // Emit as an inline style so the output HTML is valid and
+        // doesn't carry a non-standard 'margin' attribute on <img>.
         renderHTML(attributes) {
-          if (!attributes.align) return {}
-          return { 'data-align': attributes.align }
+          if (!attributes.margin) return {}
+          return { style: `margin: ${attributes.margin}` }
         }
       }
     }

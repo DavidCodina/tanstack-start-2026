@@ -43,18 +43,18 @@ export const LinkModal = ({
     return (
       <div className='mb-4'>
         <label
-          htmlFor='link-url-input'
           className='mb-0 text-sm font-semibold text-blue-500'
+          htmlFor='link-url-input'
         >
           Link URL <sup className='text-rose-500'>*</sup>
         </label>
         <input
-          id='link-url-input'
           autoCapitalize='none'
           autoComplete='new-password'
           autoCorrect='off'
-          disabled={disabled}
           className={inputClasses}
+          disabled={disabled}
+          id='link-url-input'
           onChange={(e) => setUrl(e.target.value)}
           placeholder='https://www.google.com'
           spellCheck={false}

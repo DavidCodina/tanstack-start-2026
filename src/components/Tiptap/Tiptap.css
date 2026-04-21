@@ -475,14 +475,23 @@ or two after you release, so ProseMirror doesn't clean up immediately. */
 
 ====================== */
 
-.tiptap div[data-resize-wrapper] {
-}
-
 .tiptap img {
   border-radius: 10px;
   display: block;
   height: auto;
   max-width: 100%;
+}
+
+.tiptap img[data-align='left'] {
+  margin-right: auto;
+}
+
+.tiptap img[data-align='center'] {
+  margin: 0 auto;
+}
+
+.tiptap img[data-align='right'] {
+  margin-left: auto;
 }
 
 /* If you're using Image.configure({ inline: true }), then it's important that
@@ -504,6 +513,9 @@ why inline:true is not the appropriate solution for image centering. */
 /* Basic styles if you intend to use the image resizing feature.
 This will pair well with an inlime image implementation, but not
 with the CustomImage extension.
+
+.tiptap div[data-resize-wrapper] {
+}
 
 [data-resize-handle] {
   position: absolute;

@@ -40,14 +40,13 @@ import { Button } from '@/components'
 // prior to using dangerouslySetInnerHTML
 // const scriptTest = `<p>Hello. This is a <code>&#60;script&#62;</code> tag test. Check your console logs.<script>console.log("You got hacked!")</script></p>`
 
-const imageDefault =
-  '<p>Whuddup! This is Peter.</p><img data-custom-image src="https://upload.wikimedia.org/wikipedia/en/c/c2/Peter_Griffin.png?_=20110515154115" alt="An image" title="An example" width="200" style="margin: 0px auto;"><p></p>'
+const imageDefault = `<p>Hi. I'm Peter Griffin</p><img src="https://upload.wikimedia.org/wikipedia/en/c/c2/Peter_Griffin.png?_=20110515154115" alt="Family Guy" width="200" data-custom-image="" data-align="center"><p></p>`
 
 /* ========================================================================
 
 ======================================================================== */
 
-//# Add title and alt to ImageModal, then add the assocated state to menuBarState.ts
+//# Consider changing the CustomYoutubeNode to align left/center/right using a data attribue.
 
 //# Review addOptions() in CustomYoutube.ts
 

@@ -42,14 +42,14 @@ export const InsertDropdown = ({
   ====================== */
   // Example URL: https://upload.wikimedia.org/wikipedia/en/c/c2/Peter_Griffin.png?_=20110515154115
 
-  //# Add alignment prop.
-  //# Add title prop.
-  //# Add alt prop.
+  //# Add align prop.
+
   const renderImageModal = () => {
     if (!showImageModal || disabled) return null
 
     const existingImageUrl = editorState?.customImageSrc || ''
     const existingImageWidth = editorState?.customImageWidth || ''
+    const existingImageAlt = editorState?.customImageAlt || ''
 
     return (
       <ImageModal
@@ -70,11 +70,10 @@ export const InsertDropdown = ({
             .chain()
             .focus()
             .setCustomImage({
+              align: values.align || undefined,
+              alt: values.alt,
               src: values.url,
-              alt: 'An image',
-              title: 'An example',
-              width: values.width || 500,
-              margin: values.margin || undefined
+              width: values.width || 500
             })
             .run()
 
@@ -86,6 +85,7 @@ export const InsertDropdown = ({
         }}
         url={existingImageUrl}
         width={existingImageWidth}
+        alt={existingImageAlt}
       />
     )
   }
@@ -128,7 +128,7 @@ export const InsertDropdown = ({
               // Even with undefined, it will try to set it to height: 480.
               // On can change the default width and height in the useEditor() hook
               // when implementing    CustomYoutube.configure({ ... }).
-              height: undefined,
+              // height: undefined,
 
               ///////////////////////////////////////////////////////////////////////////
               //
@@ -140,9 +140,9 @@ export const InsertDropdown = ({
               // import type { SetImageOptions } from '@tiptap/extension-image'
               //
               // type CustomSetImageOptions = SetImageOptions & {
-              //   margin?: string
+              //   align?: 'left' | 'center' | 'right'
               // }
-              ////
+              //
               // type CustomSetYoutubeVideoOptions = {
               //   src: string
               //   width?: number
