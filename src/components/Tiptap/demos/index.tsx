@@ -48,8 +48,6 @@ const imageDefault = `<p>Hi. I'm Peter Griffin</p><img src="https://upload.wikim
 
 //# Change the CustomYoutubeNode to use align left/center/right using a data attribue.
 
-//# Review addOptions() in CustomYoutube.ts
-
 //# Add emoji support: https://tiptap.dev/docs/editor/extensions/nodes/emoji
 
 //# Fix RTE import issue.

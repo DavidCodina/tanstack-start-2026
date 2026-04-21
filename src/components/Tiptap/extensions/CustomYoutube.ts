@@ -46,32 +46,16 @@ export const CustomYoutube = Youtube.extend(
   /*<YoutubeOptions>*/ {
     name: 'custom-youtube', // 👈 Overrides 'youtube'
 
-    // Todo: Review these options. Possibly opt out of height
-    //# by setting to undefined or deleting. Then review others
+    // If you want to remove the default height/width, do this.
+    // Just make sure you set them explicitly in CSS and/or when
+    // calling setCustomYoutubeVideo().
+
     // addOptions() {
+    //   const defaultOptions = this.parent?.() as any
+    //   delete defaultOptions.height
+    //   delete defaultOptions.width
     //   return {
-    //     addPasteHandler: true,
-    //     allowFullscreen: true,
-    //     autoplay: false,
-    //     ccLanguage: undefined,
-    //     ccLoadPolicy: undefined,
-    //     controls: true,
-    //     disableKBcontrols: false,
-    //     enableIFrameApi: false,
-    //     endTime: 0,
-    //     height: 480,
-    //     interfaceLanguage: undefined,
-    //     ivLoadPolicy: 0,
-    //     loop: false,
-    //     modestBranding: false,
-    //     HTMLAttributes: {},
-    //     inline: false,
-    //     nocookie: false,
-    //     origin: '',
-    //     playlist: '',
-    //     progressBarColor: undefined,
-    //     width: 640,
-    //     rel: 1,
+    //     ...(defaultOptions as YoutubeOptions)
     //   }
     // },
 
