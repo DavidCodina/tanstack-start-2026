@@ -46,7 +46,7 @@ const imageDefault = `<p>Hi. I'm Peter Griffin</p><img src="https://upload.wikim
 
 ======================================================================== */
 
-//# Consider changing the CustomYoutubeNode to align left/center/right using a data attribue.
+//# Change the CustomYoutubeNode to use align left/center/right using a data attribue.
 
 //# Review addOptions() in CustomYoutube.ts
 

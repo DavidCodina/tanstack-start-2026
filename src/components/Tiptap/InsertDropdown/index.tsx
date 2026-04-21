@@ -42,14 +42,13 @@ export const InsertDropdown = ({
   ====================== */
   // Example URL: https://upload.wikimedia.org/wikipedia/en/c/c2/Peter_Griffin.png?_=20110515154115
 
-  //# Add align prop.
-
   const renderImageModal = () => {
     if (!showImageModal || disabled) return null
 
-    const existingImageUrl = editorState?.customImageSrc || ''
-    const existingImageWidth = editorState?.customImageWidth || ''
-    const existingImageAlt = editorState?.customImageAlt || ''
+    const existingUrl = editorState?.customImageSrc || ''
+    const existingWidth = editorState?.customImageWidth || ''
+    const existingAlt = editorState?.customImageAlt || ''
+    const existingAlign = editorState?.customImageAlign || ''
 
     return (
       <ImageModal
@@ -70,7 +69,7 @@ export const InsertDropdown = ({
             .chain()
             .focus()
             .setCustomImage({
-              align: values.align || undefined,
+              align: values.align,
               alt: values.alt,
               src: values.url,
               width: values.width || 500
@@ -83,9 +82,10 @@ export const InsertDropdown = ({
           if (editor) editor.chain().focus()
           setShowImageModal(false)
         }}
-        url={existingImageUrl}
-        width={existingImageWidth}
-        alt={existingImageAlt}
+        url={existingUrl}
+        width={existingWidth}
+        alt={existingAlt}
+        align={existingAlign}
       />
     )
   }
@@ -93,9 +93,9 @@ export const InsertDropdown = ({
   /* ======================
     renderYoutubeModal()
   ====================== */
-
   //# Add width prop like above.
-  //# Possibly add alignment prop.
+  //# Possibly add align prop.
+
   const renderYoutubeModal = () => {
     if (!showYoutubeModal || disabled) return null
 

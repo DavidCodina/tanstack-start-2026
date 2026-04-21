@@ -203,7 +203,6 @@ export function menuBarSelector(ctx: EditorStateSnapshot<Editor | null>) {
       : null,
 
     // Todo: Add youtubeWidth
-    // Maybe Todo: youtubeDataAlign
 
     // Used within FormatBubbleMenu.tsx to opt out of showing the bubble menu.
     isCustomYoutube: ctx.editor.isActive('custom-youtube') ? true : false,
@@ -211,7 +210,7 @@ export function menuBarSelector(ctx: EditorStateSnapshot<Editor | null>) {
       ? ((ctx.editor.getAttributes('custom-youtube').src as string) ?? null)
       : null,
     // Todo: Add customYoutubeWidth
-    // Maybe Todo: customYoutubeDataAlign
+    // Maybe Todo: customYoutubeAlign
 
     isImage: ctx.editor.isActive('image') ? true : false,
     imageSrc: ctx.editor.isActive('image')
@@ -225,22 +224,22 @@ export function menuBarSelector(ctx: EditorStateSnapshot<Editor | null>) {
       ? ((ctx.editor.getAttributes('image').alt as string) ?? null)
       : null,
 
-    // Todo: Add imageDataAlign
-
     isCustomImage: ctx.editor.isActive('custom-image') ? true : false,
     customImageSrc: ctx.editor.isActive('custom-image')
       ? ((ctx.editor.getAttributes('custom-image').src as string) ?? null)
       : null,
-
     customImageWidth: ctx.editor.isActive('custom-image')
       ? ((ctx.editor.getAttributes('custom-image').width as string) ?? null)
       : null,
-
     customImageAlt: ctx.editor.isActive('custom-image')
       ? ((ctx.editor.getAttributes('custom-image').alt as string) ?? null)
+      : null,
+    customImageAlign: ctx.editor.isActive('custom-image')
+      ? ((ctx.editor.getAttributes('custom-image').align as
+          | 'left'
+          | 'center'
+          | 'right') ?? null)
       : null
-
-    // Todo: Add customImageDataAlign
   }
 }
 

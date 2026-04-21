@@ -9,6 +9,7 @@ import { cn } from '@/utils'
 type RadioOptions = { value: string; label: string; Icon: React.ElementType }[]
 
 type ImageModalProps = {
+  align?: 'left' | 'center' | 'right' | ''
   alt?: string
   disabled?: boolean
   url?: string
@@ -41,6 +42,7 @@ const MAX = 1000
 ======================================================================== */
 
 export const ImageModal = ({
+  align: externalAlign = '',
   alt: externalAlt = '',
   url: externalUrl = '',
   width: externalWidth = '',
@@ -55,7 +57,9 @@ export const ImageModal = ({
   const [url, setUrl] = React.useState(externalUrl)
   const [width, setWidth] = React.useState(externalWidth)
   const [alt, setAlt] = React.useState(externalAlt)
-  const [align, setAlign] = React.useState<'left' | 'center' | 'right'>()
+  const [align, setAlign] = React.useState<'left' | 'center' | 'right' | ''>(
+    externalAlign
+  )
   const clickOutsideRef = useClickOutside(() => {
     onCancel()
   })
@@ -278,7 +282,7 @@ export const ImageModal = ({
             }
 
             onSubmit?.({
-              align: align,
+              align: align || undefined,
               alt: alt,
               url: url,
               width: widthAsNumberOrUndefined
