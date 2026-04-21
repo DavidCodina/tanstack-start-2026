@@ -40,13 +40,12 @@ import { Button } from '@/components'
 // prior to using dangerouslySetInnerHTML
 // const scriptTest = `<p>Hello. This is a <code>&#60;script&#62;</code> tag test. Check your console logs.<script>console.log("You got hacked!")</script></p>`
 
-const imageDefault = `<p>Hi. I'm Peter Griffin</p><img src="https://upload.wikimedia.org/wikipedia/en/c/c2/Peter_Griffin.png?_=20110515154115" alt="Family Guy" width="200" data-custom-image="" data-align="center"><p></p>`
+const imageDefault =
+  '<img src="https://upload.wikimedia.org/wikipedia/en/c/c2/Peter_Griffin.png?_=20110515154115" alt="Family Guy" width="250" data-custom-image="" data-custom-image-align="right"><p></p>'
 
 /* ========================================================================
 
 ======================================================================== */
-
-//# Change the CustomYoutubeNode to use align left/center/right using a data attribue.
 
 //# Add emoji support: https://tiptap.dev/docs/editor/extensions/nodes/emoji
 

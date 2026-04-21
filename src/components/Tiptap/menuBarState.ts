@@ -202,15 +202,26 @@ export function menuBarSelector(ctx: EditorStateSnapshot<Editor | null>) {
       ? ((ctx.editor.getAttributes('youtube').src as string) ?? null)
       : null,
 
-    // Todo: Add youtubeWidth
+    youtubeWidth: ctx.editor.isActive('youtube')
+      ? ((ctx.editor.getAttributes('youtube').width as string) ?? null)
+      : null,
 
     // Used within FormatBubbleMenu.tsx to opt out of showing the bubble menu.
     isCustomYoutube: ctx.editor.isActive('custom-youtube') ? true : false,
     customYoutubeSrc: ctx.editor.isActive('custom-youtube')
       ? ((ctx.editor.getAttributes('custom-youtube').src as string) ?? null)
       : null,
-    // Todo: Add customYoutubeWidth
-    // Maybe Todo: customYoutubeAlign
+
+    customYoutubeWidth: ctx.editor.isActive('custom-youtube')
+      ? ((ctx.editor.getAttributes('custom-youtube').width as string) ?? null)
+      : null,
+
+    customYoutubeAlign: ctx.editor.isActive('custom-youtube')
+      ? ((ctx.editor.getAttributes('custom-youtube').align as
+          | 'left'
+          | 'center'
+          | 'right') ?? null)
+      : null,
 
     isImage: ctx.editor.isActive('image') ? true : false,
     imageSrc: ctx.editor.isActive('image')

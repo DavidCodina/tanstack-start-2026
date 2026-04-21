@@ -34,8 +34,8 @@ export const InsertDropdown = ({
   editorState,
   disabled = false
 }: InsertDropdownProps): JSX.Element => {
-  const [showYoutubeModal, setShowYoutubeModal] = React.useState(false)
   const [showImageModal, setShowImageModal] = React.useState(false)
+  const [showYoutubeModal, setShowYoutubeModal] = React.useState(false)
 
   /* ======================
       renderImageModal()
@@ -52,7 +52,13 @@ export const InsertDropdown = ({
 
     return (
       <ImageModal
+        align={existingAlign}
+        alt={existingAlt}
         disabled={disabled}
+        onCancel={() => {
+          if (editor) editor.chain().focus()
+          setShowImageModal(false)
+        }}
         onSubmit={(values) => {
           if (!editor) {
             setShowImageModal(false)
@@ -78,14 +84,8 @@ export const InsertDropdown = ({
 
           setShowImageModal(false)
         }}
-        onCancel={() => {
-          if (editor) editor.chain().focus()
-          setShowImageModal(false)
-        }}
         url={existingUrl}
         width={existingWidth}
-        alt={existingAlt}
-        align={existingAlign}
       />
     )
   }
@@ -93,17 +93,23 @@ export const InsertDropdown = ({
   /* ======================
     renderYoutubeModal()
   ====================== */
-  //# Add width prop like above.
-  //# Possibly add align prop.
 
   const renderYoutubeModal = () => {
     if (!showYoutubeModal || disabled) return null
 
     const existingYoutubeUrl = editorState?.customYoutubeSrc || ''
+    const existingYoutubeWidth = editorState?.customYoutubeWidth || ''
+    const existingYoutubeAlign = editorState?.customYoutubeAlign || ''
 
     return (
       <YoutubeModal
+        align={existingYoutubeAlign}
         disabled={disabled}
+        onCancel={() => {
+          // Not sure if this will do anything
+          // if (editor) editor.chain().focus()
+          setShowYoutubeModal(false)
+        }}
         onSubmit={(values) => {
           if (!editor) {
             setShowYoutubeModal(false)
@@ -207,7 +213,7 @@ export const InsertDropdown = ({
               //
               ///////////////////////////////////////////////////////////////////////////
 
-              justifyContent: values.justifyContent
+              align: values.align
             })
           } else {
             // Could do a toast here in production.
@@ -216,12 +222,8 @@ export const InsertDropdown = ({
 
           setShowYoutubeModal(false)
         }}
-        onCancel={() => {
-          // Not sure if this will do anything
-          // if (editor) editor.chain().focus()
-          setShowYoutubeModal(false)
-        }}
         url={existingYoutubeUrl}
+        width={existingYoutubeWidth}
       />
     )
   }

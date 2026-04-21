@@ -1,21 +1,28 @@
 import * as React from 'react'
 import { AlignCenter, AlignLeft, AlignRight } from 'lucide-react'
-
 import { useFocusTrap } from '../../useFocusTrap'
 import { useClickOutside } from './useClickOutside'
 import { isOneOf, stringToNumberOrUndefined } from './utils'
 import { cn } from '@/utils'
 
-type YoutubeModalProps = {
-  disabled?: boolean
-  onCancel: () => void
+type RadioValue = 'left' | 'center' | 'right'
+type RadioOption = {
+  value: RadioValue
+  label: string
+  Icon: React.ElementType
+}
 
+type YoutubeModalProps = {
+  align?: RadioValue | ''
+  disabled?: boolean
+  url?: string
+  width?: string
+  onCancel: () => void
   onSubmit: (values: {
+    align?: RadioValue
     url: string
     width?: number
-    justifyContent?: string
   }) => void
-  url?: string
 }
 
 const inputClasses = `
@@ -23,10 +30,10 @@ block w-full rounded border px-2 py-1 text-sm outline-none
 focus:ring-[3px] focus:ring-primary/50
 `
 
-const options: { value: string; label: string; Icon: React.ElementType }[] = [
-  { value: 'flex-start', label: 'Left', Icon: AlignLeft },
+const options: RadioOption[] = [
+  { value: 'left', label: 'Left', Icon: AlignLeft },
   { value: 'center', label: 'Center', Icon: AlignCenter },
-  { value: 'flex-end', label: 'Right', Icon: AlignRight }
+  { value: 'right', label: 'Right', Icon: AlignRight }
 ]
 
 const MIN = 150
@@ -37,24 +44,20 @@ const MAX = 1000
 ======================================================================== */
 
 export const YoutubeModal = ({
+  align: externalAlign = '',
   disabled,
   onCancel,
   onSubmit,
-  url: externalUrl = ''
+  url: externalUrl = '',
+  width: externalWidth = ''
 }: YoutubeModalProps) => {
   /* =====================
         state & refs
   ====================== */
 
+  const [align, setAlign] = React.useState<RadioValue | ''>(externalAlign)
   const [url, setUrl] = React.useState(externalUrl)
-  const [width, setWidth] = React.useState('')
-
-  // Initially, this was textAlign/setTextAlign, but later CustomYoutube.ts
-  // was changed to use flex + justifyContent. In either case, it makes
-  // no difference to the end user, I just prefer the latter.
-  const [alignment, setAlignment] = React.useState<
-    'flex-start' | 'center' | 'flex-end'
-  >()
+  const [width, setWidth] = React.useState(externalWidth)
 
   const clickOutsideRef = useClickOutside(() => {
     onCancel()
@@ -84,21 +87,21 @@ export const YoutubeModal = ({
     return (
       <div className='mb-4'>
         <label
-          htmlFor='youtube-url-input'
           className='mb-0 text-sm font-semibold text-blue-500'
+          htmlFor='youtube-url-input'
         >
           Youtube URL <sup className='text-rose-500'>*</sup>
         </label>
         <input
-          disabled={disabled}
           autoCapitalize='none'
           autoComplete='new-password'
           autoCorrect='off'
-          spellCheck={false}
-          id='youtube-url-input'
           className={inputClasses}
+          disabled={disabled}
+          id='youtube-url-input'
           onChange={(e) => setUrl(e.target.value)}
           placeholder='https://www.youtube.com/watch?v=abc123'
+          spellCheck={false}
           value={url}
         />
       </div>
@@ -119,17 +122,15 @@ export const YoutubeModal = ({
           Width
         </label>
         <input
-          disabled={disabled}
           autoCapitalize='none'
           autoComplete='new-password'
           autoCorrect='off'
-          spellCheck={false}
-          id='youtube-width-input'
           className={inputClasses}
-          min={MIN}
+          disabled={disabled}
+          id='youtube-width-input'
           max={MAX}
+          min={MIN}
           placeholder='500'
-          step={50}
           onChange={(e) => setWidth(e.target.value)}
           onKeyDown={(e) => {
             // These characters can still sneak in on paste, which
@@ -139,6 +140,8 @@ export const YoutubeModal = ({
               e.preventDefault()
             }
           }}
+          spellCheck={false}
+          step={50}
           type='number'
           value={width}
         />
@@ -147,10 +150,10 @@ export const YoutubeModal = ({
   }
 
   /* =====================
-    renderAlignmentRadios()
+      renderAlignRadios()
   ====================== */
 
-  const renderAlignmentRadios = () => {
+  const renderAlignRadios = () => {
     return (
       <fieldset
         className='flex-1'
@@ -177,18 +180,18 @@ export const YoutubeModal = ({
 
           const value = target.value
 
-          const acceptableValues = ['flex-start', 'center', 'flex-end'] as const
+          const acceptableValues = ['left', 'center', 'right'] as const
           if (isOneOf(acceptableValues, value)) {
-            setAlignment(value)
+            setAlign(value)
           }
         }}
       >
         <legend className='mb-1 text-sm font-semibold text-blue-500'>
-          Alignment
+          Align
         </legend>
         <div className='flex flex-1 gap-2'>
           {options.map(({ value, label, Icon }) => {
-            const checked = alignment === value
+            const checked = align === value
 
             const labelBaseClasses = `
             relative flex flex-1 items-center justify-center gap-2 
@@ -209,12 +212,12 @@ export const YoutubeModal = ({
                 )}
               >
                 <input
+                  className='sr-only'
                   disabled={disabled}
                   id={`radio-align-${value}`}
-                  name='alignment-radios'
+                  name='align-radios'
                   type='radio'
                   value={value}
-                  className='sr-only'
                 />
                 <Icon className='h-4 w-4' aria-hidden='true' />
                 {label}
@@ -261,9 +264,9 @@ export const YoutubeModal = ({
             }
 
             onSubmit?.({
+              align: align || undefined,
               url: url,
-              width: widthAsNumberOrUndefined,
-              justifyContent: alignment
+              width: widthAsNumberOrUndefined
             })
           }}
           type='button'
@@ -291,12 +294,10 @@ export const YoutubeModal = ({
         className='bg-card absolute top-1/2 left-1/2 min-h-[100px] w-[600px] max-w-[calc(100%-48px)] -translate-x-1/2 -translate-y-1/2 rounded-lg border p-4'
       >
         {renderUrlInput()}
-
         <div className='mb-6 flex gap-2'>
           {renderWidthInput()}
-          {renderAlignmentRadios()}
+          {renderAlignRadios()}
         </div>
-
         {renderActions()}
       </div>
     </div>

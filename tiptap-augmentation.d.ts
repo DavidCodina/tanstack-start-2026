@@ -11,7 +11,7 @@ type CustomSetYoutubeVideoOptions = {
   width?: number
   height?: number
   start?: number
-  justifyContent?: string // Added
+  align?: 'left' | 'center' | 'right' // Added
 }
 
 // Because of the way tiptap integrates extensions in conjunction with

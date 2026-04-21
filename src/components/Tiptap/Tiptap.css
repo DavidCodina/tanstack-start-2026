@@ -432,6 +432,18 @@ when the user selects an alignment option. */
   border-radius: 10px;
 }
 
+.tiptap [data-custom-youtube-align='left'] {
+  margin-right: auto;
+}
+
+.tiptap [data-custom-youtube-align='center'] {
+  margin: 0 auto;
+}
+
+.tiptap [data-custom-youtube-align='right'] {
+  margin-left: auto;
+}
+
 /* For inline implementations: Youtube.configure({ inline: true }) */
 .tiptap p [data-youtube-video] {
 }
@@ -482,15 +494,15 @@ or two after you release, so ProseMirror doesn't clean up immediately. */
   max-width: 100%;
 }
 
-.tiptap img[data-align='left'] {
+.tiptap [data-custom-image-align='left'] {
   margin-right: auto;
 }
 
-.tiptap img[data-align='center'] {
+.tiptap [data-custom-image-align='center'] {
   margin: 0 auto;
 }
 
-.tiptap img[data-align='right'] {
+.tiptap [data-custom-image-align='right'] {
   margin-left: auto;
 }
 

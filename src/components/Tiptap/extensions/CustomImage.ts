@@ -73,11 +73,13 @@ export const CustomImage = Image.extend({
       align: {
         default: null,
         parseHTML(element) {
-          return element.getAttribute('data-align') || null
+          // Why not just use data-align? It's important to differentiate in
+          // order to prevent conflict with other elements (i.e., iframes, imgs, etc.)
+          return element.getAttribute('data-custom-image-align') || null
         },
         renderHTML(attributes) {
           if (!attributes.align) return {}
-          return { 'data-align': attributes.align }
+          return { 'data-custom-image-align': attributes.align }
         }
       }
     }

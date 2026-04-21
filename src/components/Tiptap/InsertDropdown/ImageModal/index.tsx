@@ -6,17 +6,22 @@ import { useClickOutside } from './useClickOutside'
 import { isOneOf, stringToNumberOrUndefined } from './utils'
 import { cn } from '@/utils'
 
-type RadioOptions = { value: string; label: string; Icon: React.ElementType }[]
+type RadioValue = 'left' | 'center' | 'right'
+type RadioOption = {
+  value: RadioValue
+  label: string
+  Icon: React.ElementType
+}
 
 type ImageModalProps = {
-  align?: 'left' | 'center' | 'right' | ''
+  align?: RadioValue | ''
   alt?: string
   disabled?: boolean
   url?: string
   width?: string
   onCancel: () => void
   onSubmit: (values: {
-    align?: 'left' | 'center' | 'right'
+    align?: RadioValue
     alt?: string
     url: string
     width?: number
@@ -28,7 +33,7 @@ block w-full rounded border px-2 py-1 text-sm outline-none
 focus:ring-[3px] focus:ring-primary/50
 `
 
-const options: RadioOptions = [
+const options: RadioOption[] = [
   { value: 'left', label: 'Left', Icon: AlignLeft },
   { value: 'center', label: 'Center', Icon: AlignCenter },
   { value: 'right', label: 'Right', Icon: AlignRight }
@@ -57,9 +62,7 @@ export const ImageModal = ({
   const [url, setUrl] = React.useState(externalUrl)
   const [width, setWidth] = React.useState(externalWidth)
   const [alt, setAlt] = React.useState(externalAlt)
-  const [align, setAlign] = React.useState<'left' | 'center' | 'right' | ''>(
-    externalAlign
-  )
+  const [align, setAlign] = React.useState<RadioValue | ''>(externalAlign)
   const clickOutsideRef = useClickOutside(() => {
     onCancel()
   })
@@ -73,21 +76,21 @@ export const ImageModal = ({
     return (
       <div className='mb-4'>
         <label
-          htmlFor='image-url-input'
           className='mb-0 text-sm font-semibold text-blue-500'
+          htmlFor='image-url-input'
         >
           Image URL <sup className='text-rose-500'>*</sup>
         </label>
         <input
-          disabled={disabled}
           autoCapitalize='none'
           autoComplete='new-password'
           autoCorrect='off'
-          spellCheck={false}
-          id='image-url-input'
           className={inputClasses}
+          disabled={disabled}
+          id='image-url-input'
           onChange={(e) => setUrl(e.target.value)}
           placeholder='https://...'
+          spellCheck={false}
           value={url}
         />
       </div>
@@ -102,21 +105,21 @@ export const ImageModal = ({
     return (
       <div className='mb-4'>
         <label
-          htmlFor='image-alt-input'
           className='mb-0 text-sm font-semibold text-blue-500'
+          htmlFor='image-alt-input'
         >
           Alt
         </label>
         <input
-          disabled={disabled}
           autoCapitalize='none'
           autoComplete='new-password'
           autoCorrect='off'
-          spellCheck={false}
-          id='image-alt-input'
           className={inputClasses}
+          disabled={disabled}
+          id='image-alt-input'
           onChange={(e) => setAlt(e.target.value)}
           placeholder='My image...'
+          spellCheck={false}
           value={alt}
         />
         <div className='text-muted-foreground text-sm'>

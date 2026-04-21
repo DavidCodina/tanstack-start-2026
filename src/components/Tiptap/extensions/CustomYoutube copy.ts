@@ -1,4 +1,4 @@
-// import { mergeAttributes } from '@tiptap/core'
+import { mergeAttributes } from '@tiptap/core'
 // https://tiptap.dev/docs/editor/extensions/nodes/youtube
 import Youtube, { isValidYoutubeUrl } from '@tiptap/extension-youtube'
 import type { CommandProps } from '@tiptap/core'
@@ -6,6 +6,7 @@ import type { CommandProps } from '@tiptap/core'
 // Note: YoutubeOptions is the type for the extenstion configuration options,
 // not for the setYoutubeVideo({ ... }) command options.
 // import type { YoutubeOptions } from '@tiptap/extension-youtube'
+
 // import type { DOMOutputSpecArray } from '@tiptap/core'
 
 type Tag = string
@@ -20,7 +21,7 @@ export type CustomSetYoutubeVideoOptions = {
   width?: number
   height?: number
   start?: number
-  align?: 'left' | 'center' | 'right' // Added
+  justifyContent?: string // Added
 }
 
 /* ========================================================================
@@ -28,9 +29,16 @@ export type CustomSetYoutubeVideoOptions = {
 ======================================================================== */
 ///////////////////////////////////////////////////////////////////////////
 //
-// This custom extension on top of the standard Youtube extension adds the
-// ability to align the <iframe> by associating CSS of your choice to the
-// data-align attribute.
+// This custom extension on top of the standar Youtube extension adds the
+// ability to align the <ifram> by using `justify-content` on the wrapper <div>.
+// The naive approach would be to instead configure the standard Youtube extension
+// as follows:
+//
+//   Youtube.configure({ inline: true })
+//
+// However, we don't actually want it to be inline (i.e., wrapped in a <p>).
+// By doing it this way, we can ALSO use the standar Youtube extension for
+// inline implementations.
 //
 ///////////////////////////////////////////////////////////////////////////
 
@@ -54,17 +62,18 @@ export const CustomYoutube = Youtube.extend(
     addAttributes() {
       return {
         ...this.parent?.(),
-        align: {
-          default: null,
-          parseHTML(element) {
-            // Why not just use data-align? It's important to differentiate in
-            // order to prevent conflict with other elements (i.e., iframes, imgs, etc.)
-            return element.getAttribute('data-custom-youtube-align') || null
+
+        justifyContent: {
+          default: '',
+          parseHTML: (element) => {
+            // The base extension matches `div[data-youtube-video] iframe`,
+            // so `element` here is the <iframe>. The justify-content style
+            // lives on the parent wrapper <div>, so we must climb up one level.
+            return element.parentElement?.style.justifyContent || ''
           },
-          renderHTML(attributes) {
-            if (!attributes.align) return {}
-            return { 'data-custom-youtube-align': attributes.align }
-          }
+
+          // Keeps this out of the iframe's own attributes
+          renderHTML: () => ({})
         }
       }
     },
@@ -162,7 +171,18 @@ export const CustomYoutube = Youtube.extend(
         wrapperAttributes['data-custom-youtube-video'] = ''
       }
 
-      return [tag, wrapperAttributes, content]
+      const newAttributes = node.attrs.justifyContent
+        ? {
+            style: `display: flex; justify-content: ${node.attrs.justifyContent}`
+          }
+        : {}
+
+      const mergedWrapperAttributes = mergeAttributes(
+        wrapperAttributes,
+        newAttributes
+      )
+
+      return [tag, mergedWrapperAttributes, content]
     }
   }
 )
