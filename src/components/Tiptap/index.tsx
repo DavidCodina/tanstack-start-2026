@@ -1,7 +1,6 @@
 import './Tiptap.css'
 import * as React from 'react'
 import { EditorContent } from '@tiptap/react'
-// https://tiptap.dev/docs/editor/extensions/functionality/drag-handle-react
 import DragHandle from '@tiptap/extension-drag-handle-react'
 import { GripVertical } from 'lucide-react'
 
@@ -78,6 +77,22 @@ focus-within:ring-[3px] focus-within:ring-primary/50
 //
 // See this: https://tiptap.dev/docs/guides/react-composable-api
 //
+// This component was initially developed with the following package versions:
+//
+//   "@tiptap/extension-drag-handle-react": "^3.22.4",
+//   "@tiptap/extension-highlight": "^3.22.3",
+//   "@tiptap/extension-image": "^3.22.4",
+//   "@tiptap/extension-list": "^3.22.4",
+//   "@tiptap/extension-subscript": "^3.22.3",
+//   "@tiptap/extension-superscript": "^3.22.3",
+//   "@tiptap/extension-text-align": "^3.22.3",
+//   "@tiptap/extension-text-style": "^3.22.3",
+//   "@tiptap/extension-youtube": "^3.22.3",
+//   "@tiptap/extensions": "^3.22.3",
+//   "@tiptap/pm": "^3.22.3",
+//   "@tiptap/react": "^3.22.3",
+//   "@tiptap/starter-kit": "^3.22.3",
+//
 ///////////////////////////////////////////////////////////////////////////
 
 const Tiptap = ({
@@ -91,8 +106,8 @@ const Tiptap = ({
 }: TiptapProps) => {
   const { editor } = useTiptapContext()
   const [rtl, _setRtl] = React.useState(false)
-  // If you set nested to true, then the associated CSS will need to be
-  // modified slightly, for lists etc.
+  // If you set nested to true, then the associated CSS
+  // will need to be modified slightly, for lists etc.
   const [nested, _setNested] = React.useState(false)
 
   let nestedConfig: NestedProp

@@ -47,17 +47,16 @@ const imageDefault =
 
 ======================================================================== */
 
-//# Add emoji support: https://tiptap.dev/docs/editor/extensions/nodes/emoji
+// Todo: Fix RTE import issue.
 
-//# Fix RTE import issue.
+// Todo: The dropdown menu doesn't respond well to viewport width resizing.
 
-//# See here for CustomCodeBlock. This is also a great example to pick apart.
+// Todo Bonus: See here for CustomCodeBlock. This is also a great example to pick apart.
 //# https://github.com/phyohtetarkar/tiptap-block-editor/blob/main/src/components/editor/default-extensions.ts
 
-//# The dropdown menu doesn't respond well to viewport width resizing.
+// Todo Bonus: Add Lowercase, Uppercase, Capitalize. This may be a case for a custom extension.
 
-//# Bonus: Add Lowercase, Uppercase, Capitalize
-//# This may be a situation for a custom extension.
+// Todo Bonus: Add emoji support: https://tiptap.dev/docs/editor/extensions/nodes/emoji
 
 export const TiptapDemo = () => {
   const [value, setValue] = React.useState<string>(imageDefault)

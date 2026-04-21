@@ -46,13 +46,13 @@ import { TextStyleKit } from '@tiptap/extension-text-style'
 // https://tiptap.dev/docs/editor/extensions/nodes/task-list
 import { TaskItem, TaskList } from '@tiptap/extension-list'
 
+import Emoji /* , { emojis } */ from '@tiptap/extension-emoji'
+
 // https://tiptap.dev/docs/editor/extensions/nodes/image
-// import Image from '@tiptap/extension-image'
+import { CustomImage } from './extensions/CustomImage'
 
 // https://tiptap.dev/docs/editor/extensions/nodes/youtube
 import { CustomYoutube } from './extensions/CustomYoutube'
-
-import { CustomImage } from './extensions/CustomImage'
 
 // import CharacterCount from '@tiptap/extension-character-count'
 // import Table from '@tiptap/extension-table'
@@ -262,14 +262,18 @@ export function TiptapProvider({
         maxLevel: 8
       }),
 
-      CustomYoutube.configure({
-        controls: false,
-        nocookie: true
-      }),
-
       TaskList,
       TaskItem.configure({
         nested: true
+      }),
+      Emoji.configure({
+        enableEmoticons: true
+
+        // ⚠️ There seems to be a TanStack Start-specific issue with how the suggestion plugin detects
+        // query changes. The suggestion is being triggered and immediately dismissed. The issue is
+        // that the suggestion is exiting immediately. This happens in Tanstack Start because of how
+        // it handles DOM updates.
+        // suggestion: createEmojiSuggestion(emojis)
       }),
 
       ///////////////////////////////////////////////////////////////////////////
@@ -299,7 +303,12 @@ export function TiptapProvider({
       // NOT use resizing.
       //
       ///////////////////////////////////////////////////////////////////////////
-      CustomImage
+      CustomImage,
+
+      CustomYoutube.configure({
+        controls: false,
+        nocookie: true
+      })
     ],
 
     onUpdate: ({ editor }) => {
