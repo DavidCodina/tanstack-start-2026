@@ -47,17 +47,12 @@ const imageDefault =
 
 ======================================================================== */
 
-//# Review suggestions logic.
-//# Compare suggestion/index.ts against _suggestion/index.ts
-//# Tell AI about the the onChange problem, and how we fixed it.
-//# Ask AI to improve current vesion.
-//#
-//# In order to really understand why the new solution works, watch this:
-//# https://www.youtube.com/watch?v=NBjycPpPHQQ
+//# Review EmojiSuggestion.tsx and fine-tune the Tailwind styles.
 
 // Todo: Fix RTE import issue.
 
 // Todo: The dropdown menu doesn't respond well to viewport width resizing.
+//# Consider switching to Floating UI - similar to EmojiSuggestion.tsx
 
 // Todo Bonus: See here for CustomCodeBlock. This is also a great example to pick apart.
 //# https://github.com/phyohtetarkar/tiptap-block-editor/blob/main/src/components/editor/default-extensions.ts

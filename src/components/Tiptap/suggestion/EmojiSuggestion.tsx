@@ -1,30 +1,18 @@
-import { useMemo } from 'react'
-
+import { useEffect } from 'react'
+import {
+  autoUpdate,
+  flip,
+  offset,
+  shift,
+  useFloating
+} from '@floating-ui/react'
 import {
   emojiSuggestionStore,
   useEmojiSuggestionState
 } from './emojiSuggestionStore'
 
+import type { Editor } from '@tiptap/react'
 import type { EmojiSuggestionItem } from './emojiSuggestionStore'
-
-/* =====================
-     
-====================== */
-
-function getPopupStyle(rect: DOMRect | null) {
-  if (!rect) {
-    return {
-      display: 'none'
-    } as const
-  }
-
-  return {
-    position: 'fixed' as const,
-    left: `${rect.left}px`,
-    top: `${rect.bottom + 8}px`,
-    pointerEvents: 'auto' as const
-  }
-}
 
 /* =====================
      
@@ -37,12 +25,38 @@ function getEmojiText(item: EmojiSuggestionItem) {
 /* ========================================================================
 
 ======================================================================== */
-// The original version used createPortal(), but we seem not to need it.
-//# Can this be modified to use Floating UI?
+// The EmojiSuggestion.tsx file defines the React component that consumes the store's state.
+// Because this component is not managed by Tiptap's ReactRenderer (as in the documenation example),
+// it is not subject to the component.destroy() call that previously caused the popup to vanish.
 
-export function EmojiSuggestion({ editor }: { editor: any }) {
+//# Run the Floating UI implementation past AI to double-check it for accuracy and best practices.
+//# Ask it to explain how it works.
+//# Ask if there's any suggestions for improvement.
+
+export function EmojiSuggestion({ editor }: { editor: Editor | null }) {
   const state = useEmojiSuggestionState()
-  const style = useMemo(() => getPopupStyle(state.rect), [state.rect])
+
+  const { refs, floatingStyles } = useFloating({
+    placement: 'bottom-start',
+    middleware: [offset(5), flip(), shift({ padding: 8 })],
+    whileElementsMounted: autoUpdate
+  })
+
+  /* =====================
+        useEffect()
+  ====================== */
+  // Register a virtual element whose getBoundingClientRect calls Tiptap's
+  // live clientRect function, so the popup tracks the caret on every scroll
+  // or resize cycle that autoUpdate triggers.
+  // Use setPositionReference for virtual elements (not setReference, which requires a real DOM element).
+
+  useEffect(() => {
+    if (state.clientRect) {
+      refs.setPositionReference({
+        getBoundingClientRect: () => state.clientRect!() ?? new DOMRect()
+      })
+    }
+  }, [state.clientRect, refs])
 
   /* =====================
           return
@@ -52,9 +66,14 @@ export function EmojiSuggestion({ editor }: { editor: any }) {
 
   return (
     <div
+      ref={(node) => {
+        refs.setFloating(node)
+      }}
       className='bg-card rounded-md border p-2 shadow-lg'
+      // Prevent clicking an emoji button from stealing focus from the editor,
+      // which would itself trigger an onExit.
       onMouseDown={(e) => e.preventDefault()}
-      style={style}
+      style={floatingStyles}
     >
       <div className='max-h-72 overflow-auto'>
         {state.items.map((item) => {
@@ -65,10 +84,8 @@ export function EmojiSuggestion({ editor }: { editor: any }) {
               key={item.name}
               className='flex w-full items-center gap-2 rounded px-2 py-1 text-left hover:bg-gray-100'
               onClick={() => {
-                if (!state.range) return
-
+                if (!editor || !state.range) return
                 editor.chain().focus().insertContentAt(state.range, text).run()
-
                 emojiSuggestionStore.reset()
               }}
               type='button'

@@ -206,6 +206,7 @@ const Tiptap = ({
         editor={editor}
       />
       <EmojiSuggestion editor={editor} />
+
       <FormatBubbleMenu disabled={disabled} />
     </div>
   )

@@ -273,12 +273,101 @@ export function TiptapProvider({
       }),
       Emoji.configure({
         enableEmoticons: true,
-        // ⚠️ There seems to be a TanStack Start-specific issue with how the suggestion plugin detects
-        // query changes. The suggestion is being triggered and immediately dismissed. The issue is
-        // that the suggestion is exiting immediately. This happens in Tanstack Start because of how
-        // it handles DOM updates. As proof, the menu does not disappear if we comment out the onExit()
-        // logic. Basically, onKeyDown then onExit is called after ever keystroke. This could also be
-        // less about Tanstack Start an more about how TiptapContext is implemented.
+        ///////////////////////////////////////////////////////////////////////////
+        //
+        // ⚠️ When state is lifted to a parent component, the resulting re-render causes
+        // Tiptap's suggestion plugin to prematurely trigger its exit logic.
+        // The suggestion is being triggered and immediately dismissed.
+        // Basically, onKeyDown then onExit is called after ever keystroke.
+        //
+        // In the official example, the render() function creates a ReactRenderer instance
+        // - Tiptap's own utility that mounts a React component imperatively into the DOM using
+        // document.body.appendChild(component.element). The critical thing is that this component
+        // lives inside React's component tree that Tiptap manages.
+        //
+        // When the Tiptap suggestion plugin is configured using the standard ReactRenderer approach,
+        // it creates a ProseMirror PluginView. This view is intrinsically tied to the EditorView lifecycle.
+        // The PluginView contains update and destroy methods that ProseMirror calls whenever the DOM view
+        // of the editor is refreshed. Iif the editor component is stable, these methods handle the mounting
+        // and unmounting of the suggestion popup gracefully. However, when React rerenders due to a state update
+        // in the parent compoent, the assummption of a stable editor view breaks down.
+        //
+        // The failure reported in the implementation occurs due to a race condition between the synchronous completion
+        // of a ProseMirror transaction and the asynchronous (or micro-task scheduled) re-rendering of the React tree.
+        // Why The Original Implementation Doesn't Work:
+        //
+        //   Keystroke → editor.onUpdate → onChange → parent setState → React rerender  → Tiptap view update → suggestion plugin onExit → component.destroy() ← POPUP GONE
+        //
+        /////////////////////////
+        //
+        // Why the current solution fixes it.
+        //
+        // The current solution addresses this problem by moving the suggestion UI state
+        // out of the volatile Tiptap plugin view and into a stable, module-level store.
+        // This architecture follows the principle of "state hoisting" but pushes the
+        // state entirely outside of the Tiptap lifecycle boundary.
+        //
+        //  In the original (broken) approach, the suggestion popup was a "child" of the ProseMirror plugin view.
+        // When ProseMirror re-synced with React, it destroyed the view, and thus the popup. In the new approach,
+        // the EmojiSuggestion component is mounted as a stable part of the React tree (likely near the root or as
+        // a sibling to the editor), and its visibility is controlled purely by the open flag in the
+        // emojiSuggestionStore.
+        //
+        // The emojiSuggestionStore.ts file acts as the "source of truth" for the suggestion UI,
+        // operating as a standalone state container that is "invisible" to the Tiptap plugin's destructive onExit signals.
+        //
+        //   let state = initialState
+        //   const listeners = new Set<() => void>()
+        //
+        // This is the most important architectural decision. These two variables live at module scope
+        // — they are plain JavaScript. They are not React state, not component state, not a ref.
+        // React has absolutely no awareness of them, and therefore React's render cycle can't touch them.
+        //
+        // The module-level store is what makes the state immune to React's component lifecycle
+        // — it can't be reset by a rerender or unmount. The decoupled component placement means
+        // EmojiSuggestion is never a victim of Tiptap's internal view lifecycle events
+        //
+        /////////////////////////
+        //
+        // Conclusion:
+        //
+        // The Tiptap docs' design isn't wrong in general — it works fine when the parent component is stable. But it assumes the editor
+        // React component won't be aggressively rerendered while a suggestion is active, which is a fragile assumption broken by any
+        // onChange-driven parent state update. Your solution correctly pushes the state management entirely out of React's control,
+        // which is the right pattern whenever an external imperative system (like a ProseMirror plugin) is driving UI state
+        // updates in parallel with React's own render cycle.
+        //
+        // As noted, this is all inside a Tanstack Start app, but is that actually part of the problem?
+        // It seems like the actual issue is the Tiptap ReactRenderer in conjunction with the very normal
+        // operation of grabbing the value from onChange and updating parent state. Presumably, we'd face
+        // the very same issue in a Next.js or vanilla Vite app. That being the case, it's crazy that
+        // Tiptap wouldn't account for that. It seems to me like their original implementation is
+        // fundamentally flawed.
+        //
+        // In fact, Tanstack Start is not the actual cause. The problem reproduces in any React app where you
+        // do the completely normal thing of lifting editor content into parent state via onChange.
+        //
+        // The ReactRenderer approach isn't inherently wrong. It works fine if you treat the editor as an
+        // uncontrolled component and never lift its content into React state while a suggestion is active.
+        // However, the expectation of that narrow usage pattern is naive at best.
+        //
+        // The ReactRenderer pattern — imperatively mounting/unmounting a React component in response to ProseMirror
+        // plugin lifecycle events — is fundamentally at odds with React's declarative model. ProseMirror's view lifecycle
+        // and React's reconciliation cycle are two separate, asynchronous systems, and Tiptap grafted one onto the
+        // other without a clean seam. When you do something as ordinary as onChange → setState, you're not doing anything
+        // exotic; you're just exposing that seam.
+        //
+        // The deeper irony is that the correct pattern — which is what you independently arrived at — is actually simpler
+        // conceptually. Don't try to manage a React component's lifecycle from inside a ProseMirror plugin. Instead,
+        // have the plugin write into an external store, and have a normal React component read from it. The plugin
+        // does its job (detecting suggestion state), React does its job (rendering UI based on state), and neither
+        // system tries to control the other's lifecycle. useSyncExternalStore exists precisely for this boundary between
+        // an external system and React, and it's the right tool.
+        //
+        // The current solution isn't merely a workaround — it's the correct architecture that Tiptap's docs should
+        // have recommended in the first place.
+        //
+        ///////////////////////////////////////////////////////////////////////////
         suggestion: suggestion
       }),
 
@@ -325,15 +414,6 @@ export function TiptapProvider({
       // AI : getJSON() + setContent(json) is the recommended round-trip for persistence (?).
       // Or lift these into state, a form library, etc.
 
-      ///////////////////////////////////////////////////////////////////////////
-      //
-      // This was messing with Emoji suggestions. More specifically, the fact that
-      // the callback was invoking setValue(newValue.html) and triggering a rerender,
-      // which was causing the original suggestion implementation to get torn down.
-      //
-      //   https://github.com/ueberdosis/tiptap/blob/main/demos/src/Nodes/Emoji/React/suggestion.js
-      //
-      ///////////////////////////////////////////////////////////////////////////
       onChange?.(value)
     },
 

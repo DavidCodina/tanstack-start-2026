@@ -10,6 +10,9 @@ type EmojiStorage = {
   emojis: EmojiItem[]
 }
 
+//# Compare all of this to:
+//# https://github.com/ueberdosis/tiptap/blob/main/demos/src/Nodes/Emoji/React/suggestion.js
+
 /* ========================================================================
 
 ======================================================================== */
@@ -19,7 +22,10 @@ function normalizeItems(items: EmojiItem[]) {
     name: item.name,
     shortcodes: item.shortcodes ?? [],
     tags: item.tags ?? [],
+    //# What the heck is .native?
     emoji: (item as any).emoji ?? (item as any).native ?? '',
+
+    //# Where in the world would a fallback come from?
     fallbackImage: (item as any).fallbackImage ?? ''
   }))
 }
@@ -27,27 +33,27 @@ function normalizeItems(items: EmojiItem[]) {
 /* ========================================================================
 
 ======================================================================== */
-//# Compare all of this to:
-//# https://github.com/ueberdosis/tiptap/blob/main/demos/src/Nodes/Emoji/React/suggestion.js
-//# What about using: import { computePosition } from '@floating-ui/dom'
 
 export const suggestion: Omit<SuggestionOptions<EmojiItem>, 'editor'> = {
   char: ':',
   allowSpaces: false,
   allowToIncludeChar: true,
-  allowedPrefixes: [' ', '\n'],
+  allowedPrefixes: [' ', '\n'], //# What does this do?
 
   items: ({ editor, query }) => {
     const { emojis } = editor.storage.emoji as EmojiStorage
     const q = query.toLowerCase()
 
     const filtered = emojis.filter(({ shortcodes, tags }) => {
+      //# Note this logic is different from the original implemenation.
+      //# https://github.com/ueberdosis/tiptap/blob/main/demos/src/Nodes/Emoji/React/suggestion.js
       return (
         shortcodes.some((shortcode) => shortcode.toLowerCase().startsWith(q)) ||
         tags.some((tag) => tag.toLowerCase().startsWith(q))
       )
     })
 
+    //# Is the slice actually working?
     const items = normalizeItems(filtered.slice(0, 10))
     emojiSuggestionStore.set({
       open: true,
@@ -65,7 +71,7 @@ export const suggestion: Omit<SuggestionOptions<EmojiItem>, 'editor'> = {
           open: true,
           query: props.query,
           items: normalizeItems(props.items),
-          rect: props.clientRect?.() ?? null,
+          clientRect: props.clientRect ?? null,
           range: props.range
         })
       },
@@ -75,7 +81,7 @@ export const suggestion: Omit<SuggestionOptions<EmojiItem>, 'editor'> = {
           open: true,
           query: props.query,
           items: normalizeItems(props.items),
-          rect: props.clientRect?.() ?? null,
+          clientRect: props.clientRect ?? null,
           range: props.range
         })
       },
