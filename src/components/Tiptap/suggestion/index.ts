@@ -1,5 +1,9 @@
 import { emojiSuggestionStore } from './emojiSuggestionStore'
 import type { EmojiItem } from '@tiptap/extension-emoji'
+
+// See here:
+// https://tiptap.dev/docs/editor/api/utilities/suggestion
+// https://github.com/ueberdosis/tiptap
 import type {
   SuggestionKeyDownProps,
   SuggestionOptions,
@@ -33,6 +37,9 @@ function normalizeItems(items: EmojiItem[]) {
 /* ========================================================================
 
 ======================================================================== */
+// Why are we omitting the editor?
+// The official Emoji suggestion configuration expects this:
+// Omit<SuggestionOptions<any, any>, "editor"> | undefined
 
 export const suggestion: Omit<SuggestionOptions<EmojiItem>, 'editor'> = {
   char: ':',

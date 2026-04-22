@@ -48,6 +48,19 @@ const imageDefault =
 ======================================================================== */
 
 //# Review EmojiSuggestion.tsx and fine-tune the Tailwind styles.
+//# Could also run the whole implementation past Cursor.
+//# Make sure to feed the official suggestion docs into the agent.
+
+//# Ask AI about the Floating UI transitive dependency.
+//# Most likely, you'll want to explicitly install it.
+
+//# Configure CustomImage to only use jpg,jpeg and png.
+
+//# Review actual Suggestion utility documentation:
+//# https://tiptap.dev/docs/editor/api/utilities/suggestion
+
+//# Watch tutorials on useSyncExternalStore.
+//# https://www.youtube.com/watch?v=NBjycPpPHQQ
 
 // Todo: Fix RTE import issue.
 
