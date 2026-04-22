@@ -51,21 +51,17 @@ const imageDefault =
 //# Could also run the whole implementation past Cursor.
 //# Make sure to feed the official suggestion docs into the agent.
 
-//# Ask AI about the Floating UI transitive dependency.
-//# Most likely, you'll want to explicitly install it.
-
-//# Configure CustomImage to only use jpg,jpeg and png.
-
 //# Review actual Suggestion utility documentation:
 //# https://tiptap.dev/docs/editor/api/utilities/suggestion
 
 //# Watch tutorials on useSyncExternalStore.
 //# https://www.youtube.com/watch?v=NBjycPpPHQQ
 
-// Todo: Fix RTE import issue.
+// Todo: Fix RTE / Lexical import issue.
 
 // Todo: The dropdown menu doesn't respond well to viewport width resizing.
-//# Consider switching to Floating UI - similar to EmojiSuggestion.tsx
+//# Switch to Floating UI - similar to EmojiSuggestion.tsx
+//# This will automatically correct by changing from bottom-start to bottom-end.
 
 // Todo Bonus: See here for CustomCodeBlock. This is also a great example to pick apart.
 //# https://github.com/phyohtetarkar/tiptap-block-editor/blob/main/src/components/editor/default-extensions.ts
