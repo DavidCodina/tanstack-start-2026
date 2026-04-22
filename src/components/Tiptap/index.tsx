@@ -219,6 +219,7 @@ const TiptapWithProvider = ({
   disabled = false,
   editorProps,
   onChange,
+
   ...otherProps
 }: TiptapProviderProps & TiptapProps) => {
   return (

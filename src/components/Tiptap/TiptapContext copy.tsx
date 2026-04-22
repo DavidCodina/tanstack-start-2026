@@ -120,12 +120,8 @@ export function TiptapProvider({
   editorProps = {},
   disabled = false,
   onChange
-}: TiptapProviderProps & {
-  children: React.ReactNode
-  disabled?: boolean
-}) {
+}: TiptapProviderProps & { children: React.ReactNode; disabled?: boolean }) {
   const editor = useEditor({
-    // shouldRerenderOnTransaction: false, //# What does this do?
     // Avoid Error: Tiptap Error: SSR has been detected, please set `immediatelyRender`
     // explicitly to `false` to avoid hydration mismatches.
     // Note: This will cause the value of editor to now be Editor | null.
@@ -276,9 +272,7 @@ export function TiptapProvider({
         // ⚠️ There seems to be a TanStack Start-specific issue with how the suggestion plugin detects
         // query changes. The suggestion is being triggered and immediately dismissed. The issue is
         // that the suggestion is exiting immediately. This happens in Tanstack Start because of how
-        // it handles DOM updates. As proof, the menu does not disappear if we comment out the onExit()
-        // logic. Basically, onKeyDown then onExit is called after ever keystroke. This could also be
-        // less about Tanstack Start an more about how TiptapContext is implemented.
+        // it handles DOM updates.
         suggestion: suggestion
       }),
 
@@ -324,11 +318,6 @@ export function TiptapProvider({
       const value = { html, json, text }
       // AI : getJSON() + setContent(json) is the recommended round-trip for persistence (?).
       // Or lift these into state, a form library, etc.
-
-      //! This seems to be messing with Emoji suggestions.
-      //! Or more specifically, the fact that we're calling setValue(newValue.html)
-      //! It seem like any time the parent component rerenders, the EmojiList is removed.
-      //! I verified this with a temporary ClickCounter in the parent
       onChange?.(value)
     },
 
@@ -401,14 +390,7 @@ export function TiptapProvider({
   ====================== */
 
   return (
-    <TiptapContext
-      value={{
-        editor,
-        editorState
-      }}
-    >
-      {children}
-    </TiptapContext>
+    <TiptapContext value={{ editor, editorState }}>{children}</TiptapContext>
   )
 }
 
