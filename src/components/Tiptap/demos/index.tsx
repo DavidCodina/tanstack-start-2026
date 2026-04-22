@@ -47,6 +47,14 @@ const imageDefault =
 
 ======================================================================== */
 
+//# Review suggestions logic.
+//# Compare suggestion/index.ts against _suggestion/index.ts
+//# Tell AI about the the onChange problem, and how we fixed it.
+//# Ask AI to improve current vesion.
+//#
+//# In order to really understand why the new solution works, watch this:
+//# https://www.youtube.com/watch?v=NBjycPpPHQQ
+
 // Todo: Fix RTE import issue.
 
 // Todo: The dropdown menu doesn't respond well to viewport width resizing.
@@ -136,7 +144,7 @@ export const TiptapDemo = () => {
 
             {/* ====================
   
-          ===================== */}
+            ===================== */}
 
             <h3 className='text-primary text-2xl font-bold'>
               dangerouslySetInnerHTML:

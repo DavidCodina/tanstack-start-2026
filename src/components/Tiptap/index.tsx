@@ -3,10 +3,10 @@ import * as React from 'react'
 import { EditorContent } from '@tiptap/react'
 import DragHandle from '@tiptap/extension-drag-handle-react'
 import { GripVertical } from 'lucide-react'
-
 import { TiptapProvider, useTiptapContext } from './TiptapContext'
 import { MenuBar } from './MenuBar'
 import { FormatBubbleMenu } from './FormatBubbleMenu'
+import { EmojiSuggestion } from './suggestion/EmojiSuggestion'
 
 import type { DragHandleProps } from '@tiptap/extension-drag-handle-react'
 import type { TiptapProviderProps } from './TiptapContext'
@@ -205,7 +205,7 @@ const Tiptap = ({
         className='min-h-(--tiptap-min-content-height) resize-y overflow-auto'
         editor={editor}
       />
-
+      <EmojiSuggestion editor={editor} />
       <FormatBubbleMenu disabled={disabled} />
     </div>
   )

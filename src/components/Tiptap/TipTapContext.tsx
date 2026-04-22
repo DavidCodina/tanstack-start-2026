@@ -325,16 +325,15 @@ export function TiptapProvider({
       // AI : getJSON() + setContent(json) is the recommended round-trip for persistence (?).
       // Or lift these into state, a form library, etc.
 
-      //! This seems to be messing with Emoji suggestions.
-      //! Or more specifically, the fact that we're calling setValue(newValue.html)
-      //! It seem like any time the parent component rerenders, the EmojiList is removed.
-      //! I verified this with a temporary ClickCounter in the parent. One solution to this
-      //! could be to store the onChange value in a ref, rather than state. That said, I've
-      //! never had to do anything like that before. To me, this feels more like a Tiptap issue.
-      //! It's possible that the Suggestion Menu can fix this:
-      // https://tiptap.dev/docs/ui-components/utils-components/suggestion-menu
-
-      // https://tiptap.dev/docs/ui-components/components/emoji-menu - This costs money.
+      ///////////////////////////////////////////////////////////////////////////
+      //
+      // This was messing with Emoji suggestions. More specifically, the fact that
+      // the callback was invoking setValue(newValue.html) and triggering a rerender,
+      // which was causing the original suggestion implementation to get torn down.
+      //
+      //   https://github.com/ueberdosis/tiptap/blob/main/demos/src/Nodes/Emoji/React/suggestion.js
+      //
+      ///////////////////////////////////////////////////////////////////////////
       onChange?.(value)
     },
 

@@ -1,120 +1,96 @@
-import { ReactRenderer } from '@tiptap/react'
-import { computePosition } from '@floating-ui/dom'
-import { EmojiList } from './EmojiList'
-
+import { emojiSuggestionStore } from './emojiSuggestionStore'
+import type { EmojiItem } from '@tiptap/extension-emoji'
 import type {
   SuggestionKeyDownProps,
   SuggestionOptions,
   SuggestionProps
 } from '@tiptap/suggestion'
 
-import type { EmojiItem } from '@tiptap/extension-emoji'
-
 type EmojiStorage = {
   emojis: EmojiItem[]
-}
-
-/* ======================
-
-====================== */
-
-function repositionComponent(
-  element: HTMLElement,
-  clientRect: () => DOMRect | null
-): void {
-  const rect = clientRect()
-  if (!rect) return
-
-  computePosition({ getBoundingClientRect: () => rect }, element, {
-    placement: 'bottom-start'
-  })
-    .then((pos) => {
-      Object.assign(element.style, {
-        left: `${pos.x}px`,
-        top: `${pos.y}px`,
-        position: pos.strategy === 'fixed' ? 'fixed' : 'absolute'
-      })
-      return pos
-    })
-    .catch((err) => err)
 }
 
 /* ========================================================================
 
 ======================================================================== */
-// The official type of suggestion is: Omit<SuggestionOptions<any, any>, "editor">
-// This is what  Emoji.configure({ suggestion }) expects.
+
+function normalizeItems(items: EmojiItem[]) {
+  return items.map((item) => ({
+    name: item.name,
+    shortcodes: item.shortcodes ?? [],
+    tags: item.tags ?? [],
+    emoji: (item as any).emoji ?? (item as any).native ?? '',
+    fallbackImage: (item as any).fallbackImage ?? ''
+  }))
+}
+
+/* ========================================================================
+
+======================================================================== */
+//# Compare all of this to:
+//# https://github.com/ueberdosis/tiptap/blob/main/demos/src/Nodes/Emoji/React/suggestion.js
+//# What about using: import { computePosition } from '@floating-ui/dom'
 
 export const suggestion: Omit<SuggestionOptions<EmojiItem>, 'editor'> = {
-  allowSpaces: false,
   char: ':',
-  // allowToIncludeChar: true,
-  // allowedPrefixes: null,
+  allowSpaces: false,
+  allowToIncludeChar: true,
+  allowedPrefixes: [' ', '\n'],
 
   items: ({ editor, query }) => {
     const { emojis } = editor.storage.emoji as EmojiStorage
+    const q = query.toLowerCase()
 
-    return emojis
-      .filter(({ shortcodes, tags }) => {
-        return (
-          shortcodes.find((shortcode) => {
-            return shortcode.startsWith(query.toLowerCase())
-          }) || tags.find((tag) => tag.startsWith(query.toLowerCase()))
-        )
-      })
-      .slice(0, 5)
+    const filtered = emojis.filter(({ shortcodes, tags }) => {
+      return (
+        shortcodes.some((shortcode) => shortcode.toLowerCase().startsWith(q)) ||
+        tags.some((tag) => tag.toLowerCase().startsWith(q))
+      )
+    })
+
+    const items = normalizeItems(filtered.slice(0, 10))
+    emojiSuggestionStore.set({
+      open: true,
+      query,
+      items
+    })
+
+    return filtered
   },
 
   render: () => {
-    let component: ReactRenderer | null = null
-
     return {
       onStart(props: SuggestionProps<EmojiItem>) {
-        component = new ReactRenderer(EmojiList, {
-          props,
-          editor: props.editor
+        emojiSuggestionStore.set({
+          open: true,
+          query: props.query,
+          items: normalizeItems(props.items),
+          rect: props.clientRect?.() ?? null,
+          range: props.range
         })
-
-        document.body.appendChild(component.element)
-        repositionComponent(
-          component.element,
-          props.clientRect as () => DOMRect | null
-        )
       },
 
-      onUpdate(props) {
-        if (!component) return
-
-        component.updateProps(props)
-        repositionComponent(
-          component.element,
-          props.clientRect as () => DOMRect | null
-        )
+      onUpdate(props: SuggestionProps<EmojiItem>) {
+        emojiSuggestionStore.set({
+          open: true,
+          query: props.query,
+          items: normalizeItems(props.items),
+          rect: props.clientRect?.() ?? null,
+          range: props.range
+        })
       },
 
       onKeyDown(props: SuggestionKeyDownProps) {
-        if (!component) return false
-
         if (props.event.key === 'Escape') {
-          document.body.removeChild(component.element)
-          component.destroy()
-          component = null // ??? Do we need this?
+          emojiSuggestionStore.reset()
           return true
         }
 
-        // ??? Why not just do this like the original?
-        // return component.ref?.onKeyDown(props)
-        //! Temporary any
-        return (component.ref as any)?.onKeyDown(props) ?? false
+        return false
       },
 
       onExit() {
-        if (!component) return
-        if (document.body.contains(component.element)) {
-          document.body.removeChild(component.element)
-        }
-        component.destroy()
-        component = null // ??? Do we need this?
+        emojiSuggestionStore.reset()
       }
     }
   }
