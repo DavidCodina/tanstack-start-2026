@@ -14,9 +14,6 @@ type EmojiStorage = {
   emojis: EmojiItem[]
 }
 
-//# Compare all of this to:
-//# https://github.com/ueberdosis/tiptap/blob/main/demos/src/Nodes/Emoji/React/suggestion.js
-
 /* ========================================================================
 
 ======================================================================== */
@@ -26,10 +23,7 @@ function normalizeItems(items: EmojiItem[]) {
     name: item.name,
     shortcodes: item.shortcodes ?? [],
     tags: item.tags ?? [],
-    //# What the heck is .native?
     emoji: (item as any).emoji ?? (item as any).native ?? '',
-
-    //# Where in the world would a fallback come from?
     fallbackImage: (item as any).fallbackImage ?? ''
   }))
 }
@@ -45,15 +39,13 @@ export const suggestion: Omit<SuggestionOptions<EmojiItem>, 'editor'> = {
   char: ':',
   allowSpaces: false,
   allowToIncludeChar: true,
-  allowedPrefixes: [' ', '\n'], //# What does this do?
+  // allowedPrefixes: [' ', '\n'],
 
   items: ({ editor, query }) => {
     const { emojis } = editor.storage.emoji as EmojiStorage
     const q = query.toLowerCase()
 
     const filtered = emojis.filter(({ shortcodes, tags }) => {
-      //# Note this logic is different from the original implemenation.
-      //# https://github.com/ueberdosis/tiptap/blob/main/demos/src/Nodes/Emoji/React/suggestion.js
       return (
         shortcodes.some((shortcode) => shortcode.toLowerCase().startsWith(q)) ||
         tags.some((tag) => tag.toLowerCase().startsWith(q))

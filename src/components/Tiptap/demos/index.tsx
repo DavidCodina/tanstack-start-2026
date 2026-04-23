@@ -48,13 +48,8 @@ const imageDefault =
 ======================================================================== */
 
 //# Review EmojiSuggestion.tsx and fine-tune the Tailwind styles.
-//# Could also run the whole implementation past Claude one more time..
+//# Could also run the whole implementation past Claude one more time.
 //# Make sure to feed the official suggestion docs into the agent.
-
-//# EmojiSuggestion.tsx is a little sluggish as I type.
-//# See if there's a fix for that.
-
-//# Also ask AI about switching back to useSyncExternalStore.
 
 //# Review actual Suggestion utility documentation:
 //# https://tiptap.dev/docs/editor/api/utilities/suggestion
