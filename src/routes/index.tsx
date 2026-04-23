@@ -1,6 +1,7 @@
 import { createFileRoute /* , useRouter */ } from '@tanstack/react-router'
 import { Page, PageContainer } from '@/components'
 import { TiptapDemo } from '@/components/Tiptap/demos'
+// import { FloatingUIDemo } from '@/components/FloatingUIDemo'
 
 export const Route = createFileRoute('/')({ component: PageHome })
 
@@ -39,6 +40,8 @@ function PageHome() {
         </h1>
 
         <TiptapDemo />
+
+        {/* <FloatingUIDemo /> */}
       </PageContainer>
     </Page>
   )
