@@ -47,6 +47,13 @@ const imageDefault =
 
 ======================================================================== */
 
+//# Typing an Emoji is absolutely broken in Safari.
+//# This seems less likely to be a Floating UI thing, and more about
+//# processing the list. Moreover, if I paste in :smil it works immediately,
+//# but the real lag comes from the next iteration
+
+//# Ask Claude why this is likely the case, and discuss optimization options.
+
 //# Review EmojiSuggestion.tsx and fine-tune the Tailwind styles.
 //# Could also run the whole implementation past Claude one more time.
 //# Make sure to feed the official suggestion docs into the agent.

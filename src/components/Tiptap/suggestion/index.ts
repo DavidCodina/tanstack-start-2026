@@ -45,15 +45,18 @@ export const suggestion: Omit<SuggestionOptions<EmojiItem>, 'editor'> = {
     const { emojis } = editor.storage.emoji as EmojiStorage
     const q = query.toLowerCase()
 
-    const filtered = emojis.filter(({ shortcodes, tags }) => {
-      return (
-        shortcodes.some((shortcode) => shortcode.toLowerCase().startsWith(q)) ||
-        tags.some((tag) => tag.toLowerCase().startsWith(q))
-      )
-    })
+    const filtered = emojis
+      .filter(({ shortcodes, tags }) => {
+        return (
+          shortcodes.some((shortcode) =>
+            shortcode.toLowerCase().startsWith(q)
+          ) || tags.some((tag) => tag.toLowerCase().startsWith(q))
+        )
+      })
+      // ⚠️ If you don't slice here, performance takes a huge hit.
+      .slice(0, 5)
 
-    //# Is the slice actually working?
-    const items = normalizeItems(filtered.slice(0, 10))
+    const items = normalizeItems(filtered)
     emojiSuggestionStore.set({
       open: true,
       query,

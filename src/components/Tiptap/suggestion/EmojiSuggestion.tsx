@@ -538,72 +538,80 @@ export function EmojiSuggestion({ editor }: { editor: Editor | null }) {
 /* ========================================================================
                             EmojiSuggestion v1
 ======================================================================== */
-/* Note: The initial implementation was significantly less 
-complex. However, it did not have full keyboard support nor
-was it taking full advantage of Floating UI's features.
+// Note: The initial implementation was significantly less
+// complex. However, it did not have full keyboard support nor
+// was it taking full advantage of Floating UI's features.
 
-import { useEffect } from 'react'
-import { autoUpdate, flip, offset, shift, useFloating } from '@floating-ui/react'
-import { emojiSuggestionStore, useEmojiSuggestionState } from './emojiSuggestionStore'
-import type { Editor } from '@tiptap/react'
-import type { EmojiSuggestionItem } from './emojiSuggestionStore'
+// import { useEffect } from 'react'
+// import {
+//   autoUpdate,
+//   flip,
+//   offset,
+//   shift,
+//   useFloating
+// } from '@floating-ui/react'
+// import {
+//   emojiSuggestionStore,
+//   useEmojiSuggestionState
+// } from './emojiSuggestionStore'
+// import type { Editor } from '@tiptap/react'
+// import type { EmojiSuggestionItem } from './emojiSuggestionStore'
 
-function getEmojiText(item: EmojiSuggestionItem) {
-  return item.emoji || item.shortcodes[0] || `:${item.name}:`
-}
+// function getEmojiText(item: EmojiSuggestionItem) {
+//   return item.emoji || item.shortcodes[0] || `:${item.name}:`
+// }
 
-export function EmojiSuggestion({ editor }: { editor: Editor | null }) {
-  const state = useEmojiSuggestionState()
+// export function EmojiSuggestion({ editor }: { editor: Editor | null }) {
+//   const state = useEmojiSuggestionState()
 
-  const { refs, floatingStyles } = useFloating({
-    placement: 'bottom-start',
-    middleware: [offset(5), flip(), shift({ padding: 8 })],
-    whileElementsMounted: autoUpdate
-  })
+//   const { refs, floatingStyles } = useFloating({
+//     placement: 'bottom-start',
+//     middleware: [offset(5), flip(), shift({ padding: 8 })],
+//     whileElementsMounted: autoUpdate
+//   })
 
-  useEffect(() => {
-    if (state.clientRect) {
-      refs.setPositionReference({
-        getBoundingClientRect: () => state.clientRect!() ?? new DOMRect()
-      })
-    }
-  }, [state.clientRect, refs])
+//   useEffect(() => {
+//     if (state.clientRect) {
+//       refs.setPositionReference({
+//         getBoundingClientRect: () => state.clientRect!() ?? new DOMRect()
+//       })
+//     }
+//   }, [state.clientRect, refs])
 
-  if (!state.open || state.items.length === 0) return null
-  return (
-    <div
-      ref={(node) => {
-        refs.setFloating(node)
-      }}
-      className='bg-card rounded-md border p-2 shadow-lg'
-      onMouseDown={(e) => e.preventDefault()}
-      style={floatingStyles}
-    >
-      <div className='max-h-72 overflow-auto'>
-        {state.items.map((item) => {
-          const text = getEmojiText(item)
+//   if (!state.open || state.items.length === 0) return null
+//   return (
+//     <div
+//       ref={(node) => {
+//         refs.setFloating(node)
+//       }}
+//       className='bg-card rounded-md border p-2 shadow-lg'
+//       onMouseDown={(e) => e.preventDefault()}
+//       style={floatingStyles}
+//     >
+//       <div className='max-h-72 overflow-auto'>
+//         {state.items.map((item) => {
+//           const text = getEmojiText(item)
 
-          return (
-            <button
-              key={item.name}
-              className='flex w-full items-center gap-2 rounded px-2 py-1 text-left hover:bg-gray-100'
-              onClick={() => {
-                if (!editor || !state.range) return
-                editor.chain().focus().insertContentAt(state.range, text).run()
-                emojiSuggestionStore.reset()
-              }}
-              type='button'
-            >
-              <span className='text-lg leading-none'>{item.emoji || text}</span>
-              <span className='flex-1 text-sm'>{item.name}</span>
-              <span className='text-xs text-gray-500'>
-                {item.shortcodes[0] ? `:${item.shortcodes[0]}:` : ''}
-              </span>
-            </button>
-          )
-        })}
-      </div>
-    </div>
-  )
-}
-*/
+//           return (
+//             <button
+//               key={item.name}
+//               className='flex w-full items-center gap-2 rounded px-2 py-1 text-left hover:bg-gray-100'
+//               onClick={() => {
+//                 if (!editor || !state.range) return
+//                 editor.chain().focus().insertContentAt(state.range, text).run()
+//                 emojiSuggestionStore.reset()
+//               }}
+//               type='button'
+//             >
+//               <span className='text-lg leading-none'>{item.emoji || text}</span>
+//               <span className='flex-1 text-sm'>{item.name}</span>
+//               <span className='text-xs text-gray-500'>
+//                 {item.shortcodes[0] ? `:${item.shortcodes[0]}:` : ''}
+//               </span>
+//             </button>
+//           )
+//         })}
+//       </div>
+//     </div>
+//   )
+// }
