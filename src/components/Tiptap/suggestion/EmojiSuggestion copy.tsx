@@ -41,7 +41,7 @@ export function EmojiSuggestion({ editor }: { editor: Editor | null }) {
   const state = useEmojiSuggestionState()
   const id = useId()
 
-  const { refs, floatingStyles, context /*, update */ } = useFloating({
+  const { refs, floatingStyles, update, context } = useFloating({
     placement: 'bottom-start',
     middleware: [offset(5), flip(), shift({ padding: 8 })],
     whileElementsMounted: autoUpdate
@@ -51,35 +51,50 @@ export function EmojiSuggestion({ editor }: { editor: Editor | null }) {
   const listRef = useRef<Array<HTMLElement | null>>([])
 
   /* =====================
-  1. Attach the editor DOM — for interactions (dismiss, keyboard, etc.)
-  ====================== */
-
-  useEffect(() => {
-    const editorDom = (editor as any)?.view?.dom ?? null
-    refs.setReference(editorDom)
-    return () => refs.setReference(null)
-  }, [editor, refs])
-
-  /* =====================
-  2. Virtual caret positioning — controls where the popup appears
+  1. Virtual caret positioning
   ====================== */
 
   useEffect(() => {
     if (!state.clientRect) {
-      refs.setPositionReference(null)
+      refs.setPositionReference(undefined as any)
       return
     }
-    refs.setPositionReference({
+
+    const virtualElement = {
       getBoundingClientRect: () => {
         try {
-          return state.clientRect!() ?? new DOMRect()
+          const rect = state.clientRect!()
+          return rect ?? new DOMRect()
         } catch {
           return new DOMRect()
         }
       }
-    })
-    return () => refs.setPositionReference(null)
-  }, [state.clientRect, refs])
+    }
+
+    refs.setPositionReference(virtualElement)
+    update?.()
+
+    return () => {
+      refs.setPositionReference(undefined as any)
+    }
+  }, [state.clientRect, refs, update])
+
+  /* =====================
+  2. Attach a real DOM reference for interactions (editor)
+  ====================== */
+
+  useEffect(() => {
+    const editorDom = (editor as any)?.view?.dom ?? null
+    if (editorDom) {
+      refs.setReference(editorDom)
+    } else {
+      refs.setReference(undefined as any)
+    }
+
+    return () => {
+      refs.setReference(undefined as any)
+    }
+  }, [editor, refs])
 
   /* =====================
   3. Floating UI interaction hooks
@@ -88,12 +103,8 @@ export function EmojiSuggestion({ editor }: { editor: Editor | null }) {
   const listNavigation = useListNavigation(context, {
     listRef,
     activeIndex,
-    // A callback that is called when the user navigates
-    // to a new active item, passed in a new activeIndex.
     onNavigate: setActiveIndex,
     focusItemOnHover: false
-    // focusItemOnOpen: false
-    // scrollItemIntoView: true
   })
 
   const dismiss = useDismiss(context, { outsidePress: true, escapeKey: true })
@@ -149,6 +160,7 @@ export function EmojiSuggestion({ editor }: { editor: Editor | null }) {
     if (!editorDom) return
 
     function onEditorKeyDown(e: KeyboardEvent) {
+      // Only handle the keys we care about
       if (e.key === 'ArrowDown') {
         e.preventDefault()
         setActiveIndex((i) => Math.min((i ?? 0) + 1, state.items.length - 1))
@@ -169,7 +181,9 @@ export function EmojiSuggestion({ editor }: { editor: Editor | null }) {
       }
     }
 
+    // Use capture phase to intercept keys before editor handlers if needed
     editorDom.addEventListener('keydown', onEditorKeyDown, { capture: true })
+
     return () => {
       editorDom.removeEventListener('keydown', onEditorKeyDown, {
         capture: true
@@ -202,6 +216,8 @@ export function EmojiSuggestion({ editor }: { editor: Editor | null }) {
       <div className='max-h-72 overflow-auto'>
         {state.items.map((item, idx) => {
           const text = getEmojiText(item)
+
+          //# Is this working?
           const isActive = idx === activeIndex
 
           return (
@@ -220,6 +236,13 @@ export function EmojiSuggestion({ editor }: { editor: Editor | null }) {
                 editor.chain().focus().insertContentAt(state.range, text).run()
                 emojiSuggestionStore.reset()
               }}
+              //! I don't think we actually want to do this.
+              //! However, if we comment it out the active item goes away on hover. Why?
+              //! onMouseEnter={() => setActiveIndex(idx)}
+              //! Ask AI
+
+              // The culprit is useListNavigation's default focusItemOnHover: true behavior,
+              // combined with the unusual dual-reference setup you have.
               type='button'
               role='option'
               aria-selected={isActive}
