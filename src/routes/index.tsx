@@ -9,6 +9,8 @@ export const Route = createFileRoute('/')({ component: PageHome })
 ======================================================================== */
 //# Update Tanstack Start specific dependencies.
 
+// Todo: Fix RTE / Lexical import issue.
+
 //# Create ControlledInputDemo and UncontrolledInputDemo
 
 //# Deep dive on latest recharts version.
@@ -39,8 +41,6 @@ function PageHome() {
         </h1>
 
         <TiptapDemo />
-
-        {/* <FloatingUIDemo /> */}
       </PageContainer>
     </Page>
   )

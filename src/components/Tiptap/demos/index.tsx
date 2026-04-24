@@ -1,5 +1,5 @@
 import * as React from 'react'
-//# import DOMPurify from 'dompurify'
+import DOMPurify from 'dompurify'
 
 import { Tiptap } from '../'
 import { Button } from '@/components'
@@ -46,61 +46,83 @@ const imageDefault =
 /* ========================================================================
 
 ======================================================================== */
-
-//# Review EmojiSuggestion.tsx and fine-tune the Tailwind styles.
-//# Could also run the whole implementation past Claude one more time.
-//# Make sure to feed the official suggestion docs into the agent.
-
-//# Review actual Suggestion utility documentation:
-//# https://tiptap.dev/docs/editor/api/utilities/suggestion
-
-// Todo: Fix RTE / Lexical import issue.
-
-// Todo: The dropdown menu doesn't respond well to viewport width resizing.
-//# Switch to Floating UI - similar to EmojiSuggestion.tsx
-//# This will automatically correct by changing from bottom-start to bottom-end.
-
-// Todo Bonus: See here for CustomCodeBlock. This is also a great example to pick apart.
-//# https://github.com/phyohtetarkar/tiptap-block-editor/blob/main/src/components/editor/default-extensions.ts
-
-// Todo Bonus: Add Lowercase, Uppercase, Capitalize. This may be a case for a custom extension.
-
-// Todo Bonus: Add emoji support: https://tiptap.dev/docs/editor/extensions/nodes/emoji
+///////////////////////////////////////////////////////////////////////////
+//
+// ⚠️ Todo: The dropdown menu doesn't respond well to viewport width resizing.
+// Switch to Floating UI - similar to EmojiSuggestion.tsx. This will correct
+// the issue by automatically changing from 'bottom-start' to 'bottom-end'.
+//
+// ⚠️ Todo Bonus: See here for CustomCodeBlock. This is also a great example to pick apart.
+// https://github.com/phyohtetarkar/tiptap-block-editor/blob/main/src/components/editor/default-extensions.ts
+//
+// ⚠️ Todo Bonus: Add Lowercase, Uppercase, Capitalize. This may be a case for a custom extension.
+//
+///////////////////////////////////////////////////////////////////////////
 
 export const TiptapDemo = () => {
   const [value, setValue] = React.useState<string>(imageDefault)
   const [disabled, setDisabled] = React.useState(false)
 
+  const [sanitizedValue, setSanitizedValue] = React.useState('')
+
+  /* =====================
+        useEffect()
+  ====================== */
   ///////////////////////////////////////////////////////////////////////////
   //
-  // There is some concern that DOMPurify.sanitize may not work with Next.js,
-  // but I think it's fine in client components.
-  // 2026: But actually this will cause an error in Tanstack Start on browser refresh:
-  // ❌ react-dom_client.js?v=c42d322c:7708 Uncaught Error: Switched to client rendering because the server rendering errored:
-  // __vite_ssr_import_2__.default.sanitize is not a function
+  // ⚠️ Gotcha: DOMPurify.sanitize is not compatible with SSR, so doing this
+  // directly in the component body will trigger an error:
   //
-  // Note that DOMPurify.sanitize() also exists within the InitialValuePlugin.
+  //   const sanitizedValue = DOMPurify.sanitize(value, {
+  //     USE_PROFILES: { html: true },
+  //     ADD_TAGS: ['iframe', 'a'],
+  //     ADD_ATTR: [
+  //       'allow',
+  //       'allowfullscreen',
+  //       'frameborder',
+  //       'scrolling',
+  //       'target',
+  //       'title'
+  //     ],
+  //     KEEP_CONTENT: false
+  //   })
+  //
+  //   ❌ Uncaught Error: Switched to client rendering because the server rendering errored:
+  //   __vite_ssr_import_2__.default.sanitize is not a functionxw
+  //
+  // The root cause is that DOMPurify accesses window and document, which don't exist in the
+  // SSR environment. The fix is to move sanitization into a useEffect so it only ever runs
+  // on the client after mount.
   //
   ///////////////////////////////////////////////////////////////////////////
 
-  // const sanitizedValue = DOMPurify.sanitize(value, {
-  //   USE_PROFILES: { html: true },
-  //   ADD_TAGS: ['iframe', 'a'],
-  //   ADD_ATTR: [
-  //     'allow',
-  //     'allowfullscreen',
-  //     'frameborder',
-  //     'scrolling',
-  //     'target',
-  //     'title'
-  //   ],
-  //   KEEP_CONTENT: false
-  // })
+  React.useEffect(() => {
+    setSanitizedValue(() => {
+      const sanitizedValue = DOMPurify.sanitize(value, {
+        USE_PROFILES: { html: true },
+        ADD_TAGS: ['iframe', 'a'],
+        ADD_ATTR: [
+          'allow',
+          'allowfullscreen',
+          'frameborder',
+          'scrolling',
+          'target',
+          'title'
+        ],
+        KEEP_CONTENT: false
+      })
+
+      return sanitizedValue
+    })
+  }, [value])
 
   /* =====================
           return
   ====================== */
-  // The demo wrapper is a form, so I can test when onSubmit callback accidentally triggers.
+  // Why is the demo wrapper is a form? It tells us
+  // when onSubmit callback accidentally triggers.
+  // Generally this implies typ="button" was accidentally
+  // omitted from some internal <button> element.
 
   return (
     <>
@@ -157,7 +179,7 @@ export const TiptapDemo = () => {
               // production, you'll want to @import the CSS file into your global stylesheet instead.
               className='tiptap bg-card mb-8 min-h-[250px] rounded-lg border p-4 shadow'
               dangerouslySetInnerHTML={{
-                __html: value //# sanitizedValue
+                __html: sanitizedValue // ❌ value
               }}
             />
 
