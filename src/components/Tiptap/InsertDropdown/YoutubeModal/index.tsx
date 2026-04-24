@@ -26,7 +26,11 @@ type YoutubeModalProps = {
 }
 
 const inputClasses = `
-block w-full rounded border px-2 py-1 text-sm outline-none
+block w-full min-w-0
+rounded-[0.375em] border outline-none
+text-sm placeholder:text-muted-foreground
+[&:not([type='file'])]:px-[0.5em]
+[&:not([type='file'])]:py-[0.25em]
 focus:ring-[3px] focus:ring-primary/50
 `
 
@@ -195,7 +199,8 @@ export const YoutubeModal = ({
 
             const labelBaseClasses = `
             relative flex flex-1 items-center justify-center gap-2 
-            rounded border px-2 py-1 text-sm font-medium 
+            px-[0.5em] py-[0.25em]
+            rounded-[0.375em] border text-sm font-medium 
             select-none cursor-pointer
             focus-within:ring-[3px]
             `

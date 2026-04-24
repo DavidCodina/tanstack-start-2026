@@ -10,13 +10,10 @@ import { useEditor, useEditorState } from '@tiptap/react'
 // StarterKit is more minimal than many people expect. Here's what it actually includes:
 //
 //   - Nodes: Blockquote, BulletList, CodeBlock, Document, HardBreak, Heading, HorizontalRule, ListItem, OrderedList, Paragraph, Text
-//#    How is Text different from Paragraph?
-//#    What is Document?
 //
 //   - Marks: Bold, Code, Italic, Link (New in v3), Strike, Underline (New in v3)
 //
 //   - Extensions: Dropcursor, Gapcursor, Undo/Redo, ListKeymap (New in v3), TrailingNode (New in v3)
-//#    Review all of these.
 //
 // So notably absent are TextAlign, Link, Image, Table, TaskList — and many others.
 // It's intentionally lean so you only bundle what you need.
@@ -125,7 +122,7 @@ export function TiptapProvider({
   disabled?: boolean
 }) {
   const editor = useEditor({
-    // shouldRerenderOnTransaction: false, //# What does this do?
+    // shouldRerenderOnTransaction: false, // ?
     // Avoid Error: Tiptap Error: SSR has been detected, please set `immediatelyRender`
     // explicitly to `false` to avoid hydration mismatches.
     // Note: This will cause the value of editor to now be Editor | null.
@@ -133,45 +130,17 @@ export function TiptapProvider({
     // shouldRerenderOnTransaction: false,
     content: editorProps?.content,
     // ⚠️ false doesn't seem to make a difference.
-    //# What is the way to programmatically change this later?
-    //# What exactly does it do?
     editable: true, // On mount only.
-    ///////////////////////////////////////////////////////////////////////////
-    //
-    //! I'm not sure if this is actually true, or at least it doesn't seem to
-    //! opt out of the styles at node_modules/@tiptap/core/src/style.ts
-    //
-    // AI: As of Tiptap v3, injectCSS: true no longer injects ProseMirror
-    // base styles automatically GitHub, so if you're on v3 you'll also need
-    // to manually import ProseMirror's own base CSS (from the prosemirror-view package) separately.
-    //
-    ///////////////////////////////////////////////////////////////////////////
     // injectCSS: false,
-
     extensions: [
-      //# What is the Document extension? It's already part of StarterKit, but what does it do?
-      TextStyleKit, // This already includes Color, BackgroundColor, FontSize, LineHeight, etc.
-
-      // ⚠️ Note you can also do this kind of thing.
-      // StarterKit.configure({
-      //   italic: false,  // Disable an included extension.
-      //   heading: { levels: [1, 2] } // Configure an included extension.
-      // })
-
+      TextStyleKit, // Includes Color, BackgroundColor, FontSize, LineHeight, etc.
       // See here for an example of configuring StarterKit:
       // https://github.com/phyohtetarkar/tiptap-block-editor/blob/main/src/components/editor/default-extensions.ts
       StarterKit.configure({
-        // ⚠️ Rather than using Tiptap.css to style the elements, one cal also hardcode them directy into the HTML.
-        // paragraph: {
-        //   HTMLAttributes: {
-        //     class: 'outline-2 outline-dashed outline-pink-500'
-        //   }
-        // },
         link: {
           // By default, clicking a link in the editor navigates to it. Since this is a rich text editor,
           // you almost certainly want this off — otherwise you can't click a link to edit it without
-          // using keyboard navigation.
-          //# But how does it disable the link in practice and will it work outside of the editor?
+          // using keyboard navigation. But how does it disable the link in practice?
           openOnClick: false,
 
           // ⚠️ autolink: false only disables the as-you-type detection.
@@ -238,19 +207,6 @@ export function TiptapProvider({
 
       Placeholder.configure({
         placeholder: editorProps?.placeholder
-        // emptyEditorClass: 'is-editor-empty', // default
-        // emptyNodeClass: 'is-empty' // default
-        // dataAttribute: 'placeholder' // default => data-placeholder="Write something..."
-
-        // showOnlyWhenEditable: true, // default
-        // Use different placeholders depending on the node type:
-        // placeholder: ({ node }) => {
-        //   if (node.type.name === 'heading') {
-        //     return 'What’s the title?'
-        //   }
-
-        //   return 'Can you add some further context?'
-        // },
       }),
 
       Superscript,
@@ -411,13 +367,8 @@ export function TiptapProvider({
       const json = editor.getJSON()
       const text = editor.getText()
       const value = { html, json, text }
-      // AI : getJSON() + setContent(json) is the recommended round-trip for persistence (?).
-      // Or lift these into state, a form library, etc.
-
       onChange?.(value)
     },
-
-    // Fires once after the editor is initialized. Useful if you need a reference to the editor instance for something outside React.
     onCreate: (_props) => {},
     onDestroy: (_props) => {},
     onMount: (_props) => {},

@@ -1,9 +1,9 @@
 import { emojiSuggestionStore } from './emojiSuggestionStore'
 import type { EmojiItem } from '@tiptap/extension-emoji'
 
-// See here:
+// See here: https://github.com/ueberdosis/tiptap
 // https://tiptap.dev/docs/editor/api/utilities/suggestion
-// https://github.com/ueberdosis/tiptap
+
 import type {
   SuggestionKeyDownProps,
   SuggestionOptions,

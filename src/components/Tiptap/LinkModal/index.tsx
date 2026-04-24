@@ -10,7 +10,11 @@ type LinkModalProps = {
 }
 
 const inputClasses = `
-block w-full rounded border px-2 py-1 text-sm outline-none
+block w-full min-w-0
+rounded-[0.375em] border outline-none
+text-sm placeholder:text-muted-foreground
+[&:not([type='file'])]:px-[0.5em]
+[&:not([type='file'])]:py-[0.25em]
 focus:ring-[3px] focus:ring-primary/50
 `
 

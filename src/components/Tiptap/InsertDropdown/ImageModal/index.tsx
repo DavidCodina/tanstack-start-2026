@@ -29,8 +29,20 @@ type ImageModalProps = {
 }
 
 const inputClasses = `
-block w-full rounded border px-2 py-1 text-sm outline-none
+block w-full min-w-0
+rounded-[0.375em] border outline-none
+text-sm placeholder:text-muted-foreground
 focus:ring-[3px] focus:ring-primary/50
+[&:not([type='file'])]:px-[0.5em]
+[&:not([type='file'])]:py-[0.25em]
+file:text-primary-foreground
+file:bg-blue-500
+file:border-r
+file:border-blue-500
+file:font-medium
+file:px-[0.5em]
+file:py-[0.25em]
+file:inline-flex
 `
 
 const options: RadioOption[] = [
@@ -45,6 +57,8 @@ const MAX = 1000
 /* ========================================================================
 
 ======================================================================== */
+// Ideally, the view should be split into a the choice of URL or File inputs,
+// but for now this implementation works and demonstrates proof of concept.
 
 export const ImageModal = ({
   align: externalAlign = '',
@@ -60,6 +74,8 @@ export const ImageModal = ({
   ====================== */
 
   const [url, setUrl] = React.useState(externalUrl)
+  const [_file, setFile] = React.useState<File | null>(null)
+  const [fileDataURL, setFileDataURL] = React.useState('')
   const [width, setWidth] = React.useState(externalWidth)
   const [alt, setAlt] = React.useState(externalAlt)
   const [align, setAlign] = React.useState<RadioValue | ''>(externalAlign)
@@ -67,6 +83,36 @@ export const ImageModal = ({
     onCancel()
   })
   const focusTrapRef = useFocusTrap()
+
+  /* =====================
+      fileToDataURL()
+  ====================== */
+
+  const fileToDataURL = (file: unknown) => {
+    const isFile = file instanceof File
+    if (!isFile) {
+      setFileDataURL('')
+      return
+    }
+
+    const reader = new FileReader()
+
+    reader.onload = () => {
+      const fileReaderResult =
+        typeof reader.result === 'string' ? reader.result : null
+
+      if (fileReaderResult && typeof fileReaderResult === 'string') {
+        setFileDataURL(fileReaderResult)
+        setUrl(fileReaderResult)
+      }
+    }
+
+    reader.onerror = () => {
+      setFileDataURL('')
+    }
+
+    reader.readAsDataURL(file)
+  }
 
   /* =====================
       renderUrlInput()
@@ -93,6 +139,91 @@ export const ImageModal = ({
           spellCheck={false}
           value={url}
         />
+      </div>
+    )
+  }
+
+  /* =====================
+      renderFileInput()
+  ====================== */
+  // ⚠️ Currently, all file validation occurs onChange, and causes the
+  // file to to be silently rejected. In production, one may want to
+  // add inline validation and/or toast notifications for better UX.
+  //
+  // ⚠️ There's also no file size constraint. This is something to
+  // carefully consider for production.
+
+  const renderFileInput = () => {
+    return (
+      <div className='mb-4 flex items-end gap-2'>
+        <div className='flex-1'>
+          <label
+            className='mb-0 text-sm font-semibold text-blue-500'
+            htmlFor='image-file-input'
+          >
+            Image
+          </label>
+          <input
+            accept='image/jpeg,image/jpg,image/png'
+            className={inputClasses}
+            disabled={disabled}
+            id='image-file-input'
+            onChange={(e) => {
+              const newFile = e.target.files?.[0] ?? null
+
+              if (!newFile || !(newFile instanceof File)) {
+                setFile(null)
+                setFileDataURL('')
+                // Optional: clear the input so the user can re‑select
+                e.target.value = ''
+                return
+              }
+
+              // Allowed MIME types
+              const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png']
+
+              // Validate MIME
+              if (!allowedTypes.includes(newFile.type)) {
+                setFile(null)
+                setFileDataURL('')
+                e.target.value = ''
+                return
+              }
+
+              // Allowed extensions (belt + suspenders)
+              const allowedExt = ['jpg', 'jpeg', 'png']
+              const ext = newFile.name.split('.').pop()?.toLowerCase()
+              // Validate extension
+              if (!ext || !allowedExt.includes(ext)) {
+                setFile(null)
+                setFileDataURL('')
+                e.target.value = ''
+                return
+              }
+
+              // Validate size
+              // Optional: max file size (2MB example)
+              // const maxSize = 2 * 1024 * 1024
+              // if (newFile.size > maxSize) {
+              //   setFile(null)
+              //   setFileDataURL('')
+              //   e.target.value = ''
+              //   return
+              // }
+
+              // Otherwise, if all checks pass...
+              setFile(newFile)
+              fileToDataURL(newFile)
+            }}
+            type='file'
+          />
+          <div className='text-muted-foreground text-sm'>
+            Optional: The file's data URL replaces the image URL above.
+          </div>
+        </div>
+        {fileDataURL && typeof fileDataURL === 'string' && (
+          <img className='block size-18 rounded' src={fileDataURL} />
+        )}
       </div>
     )
   }
@@ -268,6 +399,21 @@ export const ImageModal = ({
         </button>
 
         <button
+          className='min-w-[80px] flex-1 cursor-pointer rounded border border-yellow-700 bg-yellow-500 px-2 py-1 text-sm font-medium text-white outline-none focus-visible:ring-[3px] focus-visible:ring-rose-500/50'
+          onClick={() => {
+            setUrl('')
+            setFile(null)
+            setFileDataURL('')
+            setWidth('')
+            setAlt('')
+            setAlign('')
+          }}
+          type='button'
+        >
+          Reset
+        </button>
+
+        <button
           className='min-w-[80px] flex-1 cursor-pointer rounded border border-green-700 bg-green-500 px-2 py-1 text-sm font-medium text-white outline-none focus-visible:ring-[3px] focus-visible:ring-green-500/50'
           disabled={disabled}
           onClick={() => {
@@ -316,6 +462,7 @@ export const ImageModal = ({
         className='bg-card absolute top-1/2 left-1/2 min-h-[100px] w-[600px] max-w-[calc(100%-48px)] -translate-x-1/2 -translate-y-1/2 rounded-lg border p-4'
       >
         {renderUrlInput()}
+        {renderFileInput()}
         {renderAltInput()}
         <div className='gap-2 sm:flex'>
           {renderWidthInput()}
