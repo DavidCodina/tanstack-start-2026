@@ -13,7 +13,6 @@ import {
   X
 } from 'lucide-react'
 import { ThemeToggle } from '@/components/ThemeToggle'
-
 import { cn } from '@/utils'
 
 /* ========================================================================
@@ -62,16 +61,26 @@ export const BasicSidebar = () => {
     const linkClassName =
       'mb-2 flex items-center gap-3 rounded-lg p-3 hover:bg-accent'
     const activeClassName =
-      'flex items-center gap-3 p-3 rounded-lg bg-primary/50 hover:bg-primary/50 mb-2 text-white'
+      'flex items-center gap-3 p-3 rounded-lg bg-primary/50 hover:bg-primary/50 mb-2 text-white '
 
     return (
       <nav className='flex-1 overflow-y-auto p-4'>
+        {/*  See Navigation Guide for comprehensive overview of Link props, etc.
+        https://tanstack.com/router/v1/docs/guide/navigation */}
         <Link
           to='/'
           onClick={() => setIsOpen(false)}
-          className={linkClassName}
+          // ⚠️ Gotcha: While this may work in some cases, it's always better to use inactiveProps
+          // in conjunction with activeProps. Otherwise, you can run into Tailwind conflicts.
+          // ❌ className={linkClassName}
+          inactiveProps={{
+            className: linkClassName
+          }}
           activeProps={{
-            className: activeClassName
+            className: activeClassName,
+            style: {
+              outline: '4px dashed green'
+            }
           }}
         >
           <Home size={20} />

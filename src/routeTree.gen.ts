@@ -13,6 +13,7 @@ import { Route as TestRouteRouteImport } from './routes/test/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TestIndexRouteImport } from './routes/test/index'
 import { Route as AboutIndexRouteImport } from './routes/about/index'
+import { Route as TestNoLayoutRouteImport } from './routes/test_/no-layout'
 import { Route as TestIdRouteImport } from './routes/test/$id'
 import { Route as TestNestedIndexRouteImport } from './routes/test/nested/index'
 import { Route as ApiTqTodosIndexRouteImport } from './routes/api/tq-todos/index'
@@ -22,6 +23,7 @@ import { Route as demoTodosIndexRouteImport } from './routes/(demo)/todos/index'
 import { Route as demoTanstackQueryIndexRouteImport } from './routes/(demo)/tanstack-query/index'
 import { Route as demoSuspenseIndexRouteImport } from './routes/(demo)/suspense/index'
 import { Route as demoAwaitWithCatchIndexRouteImport } from './routes/(demo)/await-with-catch/index'
+import { Route as TestIdBonusRouteImport } from './routes/test/$id.bonus'
 import { Route as ApiTqTodosIdRouteImport } from './routes/api/tq-todos/$id'
 import { Route as demoUsersIdRouteImport } from './routes/(demo)/users/$id'
 import { Route as demoTodos2IdRouteImport } from './routes/(demo)/todos2/$id'
@@ -54,6 +56,11 @@ const TestIndexRoute = TestIndexRouteImport.update({
 const AboutIndexRoute = AboutIndexRouteImport.update({
   id: '/about/',
   path: '/about/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TestNoLayoutRoute = TestNoLayoutRouteImport.update({
+  id: '/test_/no-layout',
+  path: '/test/no-layout',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TestIdRoute = TestIdRouteImport.update({
@@ -100,6 +107,11 @@ const demoAwaitWithCatchIndexRoute = demoAwaitWithCatchIndexRouteImport.update({
   id: '/(demo)/await-with-catch/',
   path: '/await-with-catch/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const TestIdBonusRoute = TestIdBonusRouteImport.update({
+  id: '/bonus',
+  path: '/bonus',
+  getParentRoute: () => TestIdRoute,
 } as any)
 const ApiTqTodosIdRoute = ApiTqTodosIdRouteImport.update({
   id: '/api/tq-todos/$id',
@@ -171,7 +183,8 @@ const demoCatchAllIdSplatRoute = demoCatchAllIdSplatRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/test': typeof TestRouteRouteWithChildren
-  '/test/$id': typeof TestIdRoute
+  '/test/$id': typeof TestIdRouteWithChildren
+  '/test/no-layout': typeof TestNoLayoutRoute
   '/about/': typeof AboutIndexRoute
   '/test/': typeof TestIndexRoute
   '/api/names': typeof demoApiNamesRoute
@@ -181,6 +194,7 @@ export interface FileRoutesByFullPath {
   '/todos2/$id': typeof demoTodos2IdRoute
   '/users/$id': typeof demoUsersIdRoute
   '/api/tq-todos/$id': typeof ApiTqTodosIdRoute
+  '/test/$id/bonus': typeof TestIdBonusRoute
   '/await-with-catch/': typeof demoAwaitWithCatchIndexRoute
   '/suspense/': typeof demoSuspenseIndexRoute
   '/tanstack-query/': typeof demoTanstackQueryIndexRoute
@@ -198,7 +212,8 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/test/$id': typeof TestIdRoute
+  '/test/$id': typeof TestIdRouteWithChildren
+  '/test/no-layout': typeof TestNoLayoutRoute
   '/about': typeof AboutIndexRoute
   '/test': typeof TestIndexRoute
   '/api/names': typeof demoApiNamesRoute
@@ -208,6 +223,7 @@ export interface FileRoutesByTo {
   '/todos2/$id': typeof demoTodos2IdRoute
   '/users/$id': typeof demoUsersIdRoute
   '/api/tq-todos/$id': typeof ApiTqTodosIdRoute
+  '/test/$id/bonus': typeof TestIdBonusRoute
   '/await-with-catch': typeof demoAwaitWithCatchIndexRoute
   '/suspense': typeof demoSuspenseIndexRoute
   '/tanstack-query': typeof demoTanstackQueryIndexRoute
@@ -227,7 +243,8 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/test': typeof TestRouteRouteWithChildren
-  '/test/$id': typeof TestIdRoute
+  '/test/$id': typeof TestIdRouteWithChildren
+  '/test_/no-layout': typeof TestNoLayoutRoute
   '/about/': typeof AboutIndexRoute
   '/test/': typeof TestIndexRoute
   '/(demo)/api/names': typeof demoApiNamesRoute
@@ -237,6 +254,7 @@ export interface FileRoutesById {
   '/(demo)/todos2/$id': typeof demoTodos2IdRoute
   '/(demo)/users/$id': typeof demoUsersIdRoute
   '/api/tq-todos/$id': typeof ApiTqTodosIdRoute
+  '/test/$id/bonus': typeof TestIdBonusRoute
   '/(demo)/await-with-catch/': typeof demoAwaitWithCatchIndexRoute
   '/(demo)/suspense/': typeof demoSuspenseIndexRoute
   '/(demo)/tanstack-query/': typeof demoTanstackQueryIndexRoute
@@ -258,6 +276,7 @@ export interface FileRouteTypes {
     | '/'
     | '/test'
     | '/test/$id'
+    | '/test/no-layout'
     | '/about/'
     | '/test/'
     | '/api/names'
@@ -267,6 +286,7 @@ export interface FileRouteTypes {
     | '/todos2/$id'
     | '/users/$id'
     | '/api/tq-todos/$id'
+    | '/test/$id/bonus'
     | '/await-with-catch/'
     | '/suspense/'
     | '/tanstack-query/'
@@ -285,6 +305,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/test/$id'
+    | '/test/no-layout'
     | '/about'
     | '/test'
     | '/api/names'
@@ -294,6 +315,7 @@ export interface FileRouteTypes {
     | '/todos2/$id'
     | '/users/$id'
     | '/api/tq-todos/$id'
+    | '/test/$id/bonus'
     | '/await-with-catch'
     | '/suspense'
     | '/tanstack-query'
@@ -313,6 +335,7 @@ export interface FileRouteTypes {
     | '/'
     | '/test'
     | '/test/$id'
+    | '/test_/no-layout'
     | '/about/'
     | '/test/'
     | '/(demo)/api/names'
@@ -322,6 +345,7 @@ export interface FileRouteTypes {
     | '/(demo)/todos2/$id'
     | '/(demo)/users/$id'
     | '/api/tq-todos/$id'
+    | '/test/$id/bonus'
     | '/(demo)/await-with-catch/'
     | '/(demo)/suspense/'
     | '/(demo)/tanstack-query/'
@@ -341,6 +365,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   TestRouteRoute: typeof TestRouteRouteWithChildren
+  TestNoLayoutRoute: typeof TestNoLayoutRoute
   AboutIndexRoute: typeof AboutIndexRoute
   demoApiNamesRoute: typeof demoApiNamesRoute
   demoStartApiRequestRoute: typeof demoStartApiRequestRoute
@@ -392,6 +417,13 @@ declare module '@tanstack/react-router' {
       path: '/about'
       fullPath: '/about/'
       preLoaderRoute: typeof AboutIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/test_/no-layout': {
+      id: '/test_/no-layout'
+      path: '/test/no-layout'
+      fullPath: '/test/no-layout'
+      preLoaderRoute: typeof TestNoLayoutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/test/$id': {
@@ -456,6 +488,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/await-with-catch/'
       preLoaderRoute: typeof demoAwaitWithCatchIndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/test/$id/bonus': {
+      id: '/test/$id/bonus'
+      path: '/bonus'
+      fullPath: '/test/$id/bonus'
+      preLoaderRoute: typeof TestIdBonusRouteImport
+      parentRoute: typeof TestIdRoute
     }
     '/api/tq-todos/$id': {
       id: '/api/tq-todos/$id'
@@ -551,14 +590,25 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface TestIdRouteChildren {
+  TestIdBonusRoute: typeof TestIdBonusRoute
+}
+
+const TestIdRouteChildren: TestIdRouteChildren = {
+  TestIdBonusRoute: TestIdBonusRoute,
+}
+
+const TestIdRouteWithChildren =
+  TestIdRoute._addFileChildren(TestIdRouteChildren)
+
 interface TestRouteRouteChildren {
-  TestIdRoute: typeof TestIdRoute
+  TestIdRoute: typeof TestIdRouteWithChildren
   TestIndexRoute: typeof TestIndexRoute
   TestNestedIndexRoute: typeof TestNestedIndexRoute
 }
 
 const TestRouteRouteChildren: TestRouteRouteChildren = {
-  TestIdRoute: TestIdRoute,
+  TestIdRoute: TestIdRouteWithChildren,
   TestIndexRoute: TestIndexRoute,
   TestNestedIndexRoute: TestNestedIndexRoute,
 }
@@ -570,6 +620,7 @@ const TestRouteRouteWithChildren = TestRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   TestRouteRoute: TestRouteRouteWithChildren,
+  TestNoLayoutRoute: TestNoLayoutRoute,
   AboutIndexRoute: AboutIndexRoute,
   demoApiNamesRoute: demoApiNamesRoute,
   demoStartApiRequestRoute: demoStartApiRequestRoute,

@@ -1,6 +1,5 @@
 import { createFileRoute /* , useRouter */ } from '@tanstack/react-router'
 import { Page, PageContainer } from '@/components'
-import { TiptapDemo } from '@/components/Tiptap/demos'
 
 export const Route = createFileRoute('/')({ component: PageHome })
 
@@ -8,8 +7,28 @@ export const Route = createFileRoute('/')({ component: PageHome })
 
 ======================================================================== */
 //# Update Tanstack Start specific dependencies.
+//# As part of this create a demo side-project with the CLI.
+//# Note: newer builds may not even be using nitro() in vite.config.ts.
+//# I didn't see it added in a more recent tutorial.
+//# Note: .cta.json does this property: "chosenAddOns": ["eslint", "nitro", "start"]
 
-// Todo: Fix RTE / Lexical import issue.
+//# Go bact to BasicSidebar.tsx and implement inactiveProps everywhere.
+
+//# notFoundComponent in test/$id.tsx is not themed...
+//# Check other similar notFoundComponent imlementations as well.
+
+//# Review Tiptap demo, and possibly update DOMPurify logic to use a createClientOnlyFn().
+
+//# Newer versions of Tanstack Start may also add THEME_INIT_SCRIPT to __root.tsx.
+
+//# Review useSyncExternalStore()
+
+//# Update TypeScript. Note "baseUrl" in tsconfig.json may now be deprecated.
+//# Consult AI for new implementation syntax.
+
+// Todo: Fix RTE / Lexical import issue (i.e., DomPurify/SSR friction)
+
+//# Add Tanstack Table component.
 
 //# Create ControlledInputDemo and UncontrolledInputDemo
 
@@ -39,8 +58,6 @@ function PageHome() {
         >
           _HOME
         </h1>
-
-        <TiptapDemo />
       </PageContainer>
     </Page>
   )

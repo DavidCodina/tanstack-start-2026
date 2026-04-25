@@ -1,4 +1,4 @@
-import { createFileRoute, notFound } from '@tanstack/react-router'
+import { Outlet, createFileRoute, notFound } from '@tanstack/react-router'
 import { FlaskConical, TriangleAlert } from 'lucide-react'
 import { Page, PageContainer } from '@/components'
 
@@ -53,6 +53,9 @@ function PageTestDynamic() {
           <FlaskConical strokeWidth={1} className='mr-2 inline size-[1em]' />
           _TEST {id}
         </h1>
+
+        {/* This is merely to demonstrate the subview at /test/$id/bonus - the $id.bonus.tsx file. */}
+        <Outlet />
       </PageContainer>
     </Page>
   )
