@@ -80,7 +80,37 @@ export const getRouter = () => {
   const router = createRouter({
     routeTree,
     context: {
-      ...rqContext
+      ...rqContext,
+
+      ///////////////////////////////////////////////////////////////////////////
+      //
+
+      //
+      // Even though I'm passing 'Global Test' here, in routes/test/index.tsx,
+      // I intercept and overwrite it.
+      //
+      // beforeLoad: async (contextOptions) => {
+      //   const {
+      //     context: _context,
+      //     matches: _matches,
+      //     params: _params,
+      //     search: _search
+      //   } = contextOptions
+      //
+      //   console.log(_context)
+      //
+      //   // Whatever you return from here becomes page-specific context.
+      //   // Thus in loader we can do this: console.log(ctx.context.test)
+      //   return {
+      //     test: 'Testing page-specific context.'
+      //   }
+      // }
+      //
+      // Context is available in beforeLoad, loader and in the component body
+      // with: Route.useRouteContext().test
+      //
+      ///////////////////////////////////////////////////////////////////////////
+      test: 'Global Test'
     },
 
     // Or use pendinMs ins a specific route.

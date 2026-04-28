@@ -6,6 +6,9 @@ export const Route = createFileRoute('/')({ component: PageHome })
 /* ========================================================================
 
 ======================================================================== */
+
+//# Add a client-pagination demo that uses jsonplaceholder
+
 //# Update Tanstack Start specific dependencies.
 //# As part of this create a demo side-project with the CLI.
 //# Note: newer builds may not even be using nitro() in vite.config.ts.

@@ -6,7 +6,6 @@ import {
   createFileRoute,
   // getRouteApi,
   notFound
-
   // useSearch
 } from '@tanstack/react-router'
 import { FlaskConical } from 'lucide-react'
@@ -131,6 +130,8 @@ const getData = async () => {
 ====================== */
 
 // https://tanstack.com/router/latest/docs/framework/react/api/router/createFileRouteFunction
+// The trailing '/' indicates that it's an index route. Other routes like route.tsx (i.e., '/test'),
+// $id.tsx (i.e., '/test/$id') will not have a trailing '/' because they are not index routes.
 export const Route = createFileRoute('/test/')({
   component: PageTest,
 
@@ -142,26 +143,26 @@ export const Route = createFileRoute('/test/')({
   // https://tanstack.com/router/v1/docs/framework/react/guide/authenticated-routes#the-routebeforeload-option
   //
   ///////////////////////////////////////////////////////////////////////////
-  beforeLoad: async (contextOptions) => {
-    const {
-      context: _context,
-      matches: _matches,
-      params: _params,
-      search: _search
-    } = contextOptions
-    // This runs on both client and server
-    // console.log(
-    //   '\n\n-----------------------------\n\n',
-    //   context,
-    //   '\n\n-----------------------------\n\n'
-    // )
+  // beforeLoad: async (contextOptions) => {
+  //   const {
+  //     context: _context,
+  //     matches: _matches,
+  //     params: _params,
+  //     search: _search
+  //   } = contextOptions
+  //   // This runs on both client and server
+  //   // console.log(
+  //   //   '\n\n-----------------------------\n\n',
+  //   //   context,
+  //   //   '\n\n-----------------------------\n\n'
+  //   // )
 
-    // Whatever you return from here becomes page-specific context.
-    // Thus in loader we can do this: console.log(ctx.context.test)
-    return {
-      test: 'Testing page-specific context.'
-    }
-  },
+  //   // Whatever you return from here becomes page-specific context.
+  //   // Thus in loader we can do this: console.log(ctx.context.test)
+  //   return {
+  //     test: 'Testing page-specific context.'
+  //   }
+  // },
 
   server: {
     // https://tanstack.com/start/latest/docs/framework/react/guide/middleware
@@ -172,22 +173,54 @@ export const Route = createFileRoute('/test/')({
   //# Learn more about this.
   //# staticData: {},
 
+  ///////////////////////////////////////////////////////////////////////////
+  //
+  // ⚠️ Gotcha: Order matters.
+  //
+  //   1. validateSearch.
+  //   2. loaderDeps.
+  //   3. loader.
+  //
+  // Otherwise you may enounter Typescript errors.
   // Recommended: Use Zod to validate the search params.
+  //
+  ///////////////////////////////////////////////////////////////////////////
   validateSearch: SearchParamsSchema,
   // Not recommended: Use a maximally wide implementation like this.
   // validateSearch: (search: Record<string, unknown>) => search,
 
-  // Why loaderDeps? It has to do with caching.
-  // See Code Genix at 50:50: https://www.youtube.com/watch?v=WyqxZniJk5w
-  // Also Ali Alaa at 2:17:30 : https://www.youtube.com/watch?v=8_sGz4DHwIA&t=1s
-  loaderDeps: ({ search }) => ({ search }),
+  ///////////////////////////////////////////////////////////////////////////
+  //
+  // Why loaderDeps? By default, the loader doesn't expose search params.
+  //
+  //   loader: async (ctx) => {
+  //     const { deps } = ctx
+  //     const searchParams = deps.search // ❌ Property 'search' does not exist on type '{}'
+  //     console.log({ searchParams })
+  //   },
+  //
+  // Why aren't searach params exposed by default? It has to do with caching.
+  // By default, the loader function caches its return value. If the params were
+  // exposed directly within the loader without loaderDeps, then it could lead to
+  // a stale value being returned. Essentially, loaderDeps is Tanstack Router's way
+  // of differentiating cache keys.
+  //
+  // See Code Genix at 51:00: https://www.youtube.com/watch?v=WyqxZniJk5w
+  // Also Ali Alaa at 2:09:50 & 2:17:30 : https://www.youtube.com/watch?v=8_sGz4DHwIA&t=1s
+  //
+  ///////////////////////////////////////////////////////////////////////////
+
+  loaderDeps: (param) => {
+    const { search } = param
+    return { search }
+  },
 
   // The loader function exists on both the client and the server.
   // You can't make database calls in the loader function.
   // For that you'd need a server function, which ONLY runs on the server.
   loader: async (_ctx) => {
     // console.log(ctx.context.test)
-    // const { deps } = ctx
+    // const { deps } = _ctx
     // const searchParams = deps.search
 
     const result = await getData()
@@ -196,6 +229,9 @@ export const Route = createFileRoute('/test/')({
 
   // shouldReload: () => {},
 
+  // Runs while loading data, not when rendering the component. To conditionally
+  // render UI as a result of a JSX rendering error, use onCatch.
+  onError: (_error) => {},
   ///////////////////////////////////////////////////////////////////////////
   //
   // The component passed to the errorComponent property runs against errors that occur in
@@ -206,11 +242,18 @@ export const Route = createFileRoute('/test/')({
   //
   // errorComponent does not run for errors in the actual component logic. For that, use onCatch
   //
+  // See Ali Alaa at 2:35:15 - https://www.youtube.com/watch?v=8_sGz4DHwIA
+  //
   ///////////////////////////////////////////////////////////////////////////
 
   errorComponent: (errorComponentProps) => {
+    // const {error, info, reset } = errorComponentProps
+
     return (
       <ErrorComponent
+        // errorComponentProps.reset() will not rerun the cached data from loader.
+        // Thus in some cases, we may want to call router.invalidate() or some other
+        // operation prior to resetting. Ali Alaa discusses this at 2:38:35.
         // beforeReset={async () => {}}
         invalidateRoute
         title={`ERROR FROM '/test/'`}
@@ -240,6 +283,7 @@ export const Route = createFileRoute('/test/')({
   pendingMs: 1000, // Defaults to 1000
   pendingMinMs: 500, // Defaults to 500
   // This is bad UX - just like loading.tsx in Next.js
+  // See Ali Alaa at 2:26:40 - https://www.youtube.com/watch?v=8_sGz4DHwIA&t=1s
   pendingComponent: (_ctx) => {
     return (
       <Page>
@@ -274,6 +318,8 @@ export const Route = createFileRoute('/test/')({
   //
   //   throw notFound({ routeId: '/test' })
   //
+  // See Ali Alaa at 2:41:45 - https://www.youtube.com/watch?v=8_sGz4DHwIA
+  //
   ///////////////////////////////////////////////////////////////////////////
 
   notFoundComponent: (notFoundRouteProps) => {
@@ -295,7 +341,7 @@ export const Route = createFileRoute('/test/')({
 function PageTest() {
   // Will block page load until this is ready.
   // No need to await this.
-  const result = Route.useLoaderData()
+  const loaderData = Route.useLoaderData()
 
   // const searchParams = Route.useSearch()
   // console.log('\n\nsearchParams', searchParams)
@@ -327,7 +373,7 @@ function PageTest() {
         </h1>
 
         <pre className='bg-card mx-auto mb-6 max-w-[500px] overflow-scroll rounded-lg border p-4 text-sm shadow'>
-          {JSON.stringify(result, null, 2)}
+          {JSON.stringify(loaderData, null, 2)}
         </pre>
       </PageContainer>
     </Page>

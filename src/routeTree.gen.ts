@@ -22,6 +22,7 @@ import { Route as demoTodos2IndexRouteImport } from './routes/(demo)/todos2/inde
 import { Route as demoTodosIndexRouteImport } from './routes/(demo)/todos/index'
 import { Route as demoTanstackQueryIndexRouteImport } from './routes/(demo)/tanstack-query/index'
 import { Route as demoSuspenseIndexRouteImport } from './routes/(demo)/suspense/index'
+import { Route as demoServerPaginationIndexRouteImport } from './routes/(demo)/server-pagination/index'
 import { Route as demoAwaitWithCatchIndexRouteImport } from './routes/(demo)/await-with-catch/index'
 import { Route as TestIdBonusRouteImport } from './routes/test/$id.bonus'
 import { Route as ApiTqTodosIdRouteImport } from './routes/api/tq-todos/$id'
@@ -30,6 +31,7 @@ import { Route as demoTodos2IdRouteImport } from './routes/(demo)/todos2/$id'
 import { Route as demoTodosIdRouteImport } from './routes/(demo)/todos/$id'
 import { Route as demoTanstackQueryIdRouteImport } from './routes/(demo)/tanstack-query/$id'
 import { Route as demoStartApiRequestRouteImport } from './routes/(demo)/start.api-request'
+import { Route as demoOptionalChar123IdChar125RouteImport } from './routes/(demo)/optional/{-$id}'
 import { Route as demoApiNamesRouteImport } from './routes/(demo)/api.names'
 import { Route as demoTanstackQueryUseSuspenseQueryIndexRouteImport } from './routes/(demo)/tanstack-query/use-suspense-query/index'
 import { Route as demoStartSsrIndexRouteImport } from './routes/(demo)/start.ssr.index'
@@ -103,6 +105,12 @@ const demoSuspenseIndexRoute = demoSuspenseIndexRouteImport.update({
   path: '/suspense/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const demoServerPaginationIndexRoute =
+  demoServerPaginationIndexRouteImport.update({
+    id: '/(demo)/server-pagination/',
+    path: '/server-pagination/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const demoAwaitWithCatchIndexRoute = demoAwaitWithCatchIndexRouteImport.update({
   id: '/(demo)/await-with-catch/',
   path: '/await-with-catch/',
@@ -143,6 +151,12 @@ const demoStartApiRequestRoute = demoStartApiRequestRouteImport.update({
   path: '/start/api-request',
   getParentRoute: () => rootRouteImport,
 } as any)
+const demoOptionalChar123IdChar125Route =
+  demoOptionalChar123IdChar125RouteImport.update({
+    id: '/(demo)/optional/{-$id}',
+    path: '/optional/{-$id}',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const demoApiNamesRoute = demoApiNamesRouteImport.update({
   id: '/(demo)/api/names',
   path: '/api/names',
@@ -188,6 +202,7 @@ export interface FileRoutesByFullPath {
   '/about/': typeof AboutIndexRoute
   '/test/': typeof TestIndexRoute
   '/api/names': typeof demoApiNamesRoute
+  '/optional/{-$id}': typeof demoOptionalChar123IdChar125Route
   '/start/api-request': typeof demoStartApiRequestRoute
   '/tanstack-query/$id': typeof demoTanstackQueryIdRoute
   '/todos/$id': typeof demoTodosIdRoute
@@ -196,6 +211,7 @@ export interface FileRoutesByFullPath {
   '/api/tq-todos/$id': typeof ApiTqTodosIdRoute
   '/test/$id/bonus': typeof TestIdBonusRoute
   '/await-with-catch/': typeof demoAwaitWithCatchIndexRoute
+  '/server-pagination/': typeof demoServerPaginationIndexRoute
   '/suspense/': typeof demoSuspenseIndexRoute
   '/tanstack-query/': typeof demoTanstackQueryIndexRoute
   '/todos/': typeof demoTodosIndexRoute
@@ -217,6 +233,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutIndexRoute
   '/test': typeof TestIndexRoute
   '/api/names': typeof demoApiNamesRoute
+  '/optional/{-$id}': typeof demoOptionalChar123IdChar125Route
   '/start/api-request': typeof demoStartApiRequestRoute
   '/tanstack-query/$id': typeof demoTanstackQueryIdRoute
   '/todos/$id': typeof demoTodosIdRoute
@@ -225,6 +242,7 @@ export interface FileRoutesByTo {
   '/api/tq-todos/$id': typeof ApiTqTodosIdRoute
   '/test/$id/bonus': typeof TestIdBonusRoute
   '/await-with-catch': typeof demoAwaitWithCatchIndexRoute
+  '/server-pagination': typeof demoServerPaginationIndexRoute
   '/suspense': typeof demoSuspenseIndexRoute
   '/tanstack-query': typeof demoTanstackQueryIndexRoute
   '/todos': typeof demoTodosIndexRoute
@@ -248,6 +266,7 @@ export interface FileRoutesById {
   '/about/': typeof AboutIndexRoute
   '/test/': typeof TestIndexRoute
   '/(demo)/api/names': typeof demoApiNamesRoute
+  '/(demo)/optional/{-$id}': typeof demoOptionalChar123IdChar125Route
   '/(demo)/start/api-request': typeof demoStartApiRequestRoute
   '/(demo)/tanstack-query/$id': typeof demoTanstackQueryIdRoute
   '/(demo)/todos/$id': typeof demoTodosIdRoute
@@ -256,6 +275,7 @@ export interface FileRoutesById {
   '/api/tq-todos/$id': typeof ApiTqTodosIdRoute
   '/test/$id/bonus': typeof TestIdBonusRoute
   '/(demo)/await-with-catch/': typeof demoAwaitWithCatchIndexRoute
+  '/(demo)/server-pagination/': typeof demoServerPaginationIndexRoute
   '/(demo)/suspense/': typeof demoSuspenseIndexRoute
   '/(demo)/tanstack-query/': typeof demoTanstackQueryIndexRoute
   '/(demo)/todos/': typeof demoTodosIndexRoute
@@ -280,6 +300,7 @@ export interface FileRouteTypes {
     | '/about/'
     | '/test/'
     | '/api/names'
+    | '/optional/{-$id}'
     | '/start/api-request'
     | '/tanstack-query/$id'
     | '/todos/$id'
@@ -288,6 +309,7 @@ export interface FileRouteTypes {
     | '/api/tq-todos/$id'
     | '/test/$id/bonus'
     | '/await-with-catch/'
+    | '/server-pagination/'
     | '/suspense/'
     | '/tanstack-query/'
     | '/todos/'
@@ -309,6 +331,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/test'
     | '/api/names'
+    | '/optional/{-$id}'
     | '/start/api-request'
     | '/tanstack-query/$id'
     | '/todos/$id'
@@ -317,6 +340,7 @@ export interface FileRouteTypes {
     | '/api/tq-todos/$id'
     | '/test/$id/bonus'
     | '/await-with-catch'
+    | '/server-pagination'
     | '/suspense'
     | '/tanstack-query'
     | '/todos'
@@ -339,6 +363,7 @@ export interface FileRouteTypes {
     | '/about/'
     | '/test/'
     | '/(demo)/api/names'
+    | '/(demo)/optional/{-$id}'
     | '/(demo)/start/api-request'
     | '/(demo)/tanstack-query/$id'
     | '/(demo)/todos/$id'
@@ -347,6 +372,7 @@ export interface FileRouteTypes {
     | '/api/tq-todos/$id'
     | '/test/$id/bonus'
     | '/(demo)/await-with-catch/'
+    | '/(demo)/server-pagination/'
     | '/(demo)/suspense/'
     | '/(demo)/tanstack-query/'
     | '/(demo)/todos/'
@@ -368,6 +394,7 @@ export interface RootRouteChildren {
   TestNoLayoutRoute: typeof TestNoLayoutRoute
   AboutIndexRoute: typeof AboutIndexRoute
   demoApiNamesRoute: typeof demoApiNamesRoute
+  demoOptionalChar123IdChar125Route: typeof demoOptionalChar123IdChar125Route
   demoStartApiRequestRoute: typeof demoStartApiRequestRoute
   demoTanstackQueryIdRoute: typeof demoTanstackQueryIdRoute
   demoTodosIdRoute: typeof demoTodosIdRoute
@@ -375,6 +402,7 @@ export interface RootRouteChildren {
   demoUsersIdRoute: typeof demoUsersIdRoute
   ApiTqTodosIdRoute: typeof ApiTqTodosIdRoute
   demoAwaitWithCatchIndexRoute: typeof demoAwaitWithCatchIndexRoute
+  demoServerPaginationIndexRoute: typeof demoServerPaginationIndexRoute
   demoSuspenseIndexRoute: typeof demoSuspenseIndexRoute
   demoTanstackQueryIndexRoute: typeof demoTanstackQueryIndexRoute
   demoTodosIndexRoute: typeof demoTodosIndexRoute
@@ -482,6 +510,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof demoSuspenseIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(demo)/server-pagination/': {
+      id: '/(demo)/server-pagination/'
+      path: '/server-pagination'
+      fullPath: '/server-pagination/'
+      preLoaderRoute: typeof demoServerPaginationIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/(demo)/await-with-catch/': {
       id: '/(demo)/await-with-catch/'
       path: '/await-with-catch'
@@ -536,6 +571,13 @@ declare module '@tanstack/react-router' {
       path: '/start/api-request'
       fullPath: '/start/api-request'
       preLoaderRoute: typeof demoStartApiRequestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(demo)/optional/{-$id}': {
+      id: '/(demo)/optional/{-$id}'
+      path: '/optional/{-$id}'
+      fullPath: '/optional/{-$id}'
+      preLoaderRoute: typeof demoOptionalChar123IdChar125RouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(demo)/api/names': {
@@ -623,6 +665,7 @@ const rootRouteChildren: RootRouteChildren = {
   TestNoLayoutRoute: TestNoLayoutRoute,
   AboutIndexRoute: AboutIndexRoute,
   demoApiNamesRoute: demoApiNamesRoute,
+  demoOptionalChar123IdChar125Route: demoOptionalChar123IdChar125Route,
   demoStartApiRequestRoute: demoStartApiRequestRoute,
   demoTanstackQueryIdRoute: demoTanstackQueryIdRoute,
   demoTodosIdRoute: demoTodosIdRoute,
@@ -630,6 +673,7 @@ const rootRouteChildren: RootRouteChildren = {
   demoUsersIdRoute: demoUsersIdRoute,
   ApiTqTodosIdRoute: ApiTqTodosIdRoute,
   demoAwaitWithCatchIndexRoute: demoAwaitWithCatchIndexRoute,
+  demoServerPaginationIndexRoute: demoServerPaginationIndexRoute,
   demoSuspenseIndexRoute: demoSuspenseIndexRoute,
   demoTanstackQueryIndexRoute: demoTanstackQueryIndexRoute,
   demoTodosIndexRoute: demoTodosIndexRoute,

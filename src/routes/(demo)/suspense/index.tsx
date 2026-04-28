@@ -37,7 +37,7 @@ const getData = async () => {
 
 export const Route = createFileRoute('/(demo)/suspense/')({
   component: PageSuspense,
-  validateSearch: (search: Record<string, unknown>) => search,
+  // validateSearch: (search: Record<string, unknown>) => search,
   loader: async (_ctx) => {
     // In this case we're returning an unrespolved Promise.
     const dataPromise = getData()

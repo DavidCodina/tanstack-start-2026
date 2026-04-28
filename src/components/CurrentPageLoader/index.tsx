@@ -1,16 +1,21 @@
 import * as React from 'react'
 import { useRouterState } from '@tanstack/react-router'
+
+import type { SpinnerProps } from '@/components'
+
 import { Spinner } from '@/components'
 import { cn } from '@/utils'
 
 export type CurrentPageLoaderProps = React.ComponentProps<'div'> & {
   /** Pass an array of routes to opt-in to only specific routes. */
   routes?: string[]
+  spinnerProps?: SpinnerProps
 }
 
+// ⚠️ Use fixed NOT absolute.
 const baseClasses = `
 flex items-center justify-center
-absolute inset-0 pointer-events-none
+fixed inset-0 pointer-events-none
 bg-black/10
 z-51
 `
@@ -37,6 +42,8 @@ z-51
 export const CurrentPageLoader = ({
   className = '',
   routes,
+
+  spinnerProps,
   ...otherProps
 }: CurrentPageLoaderProps) => {
   const routerState = useRouterState()
@@ -72,7 +79,16 @@ export const CurrentPageLoader = ({
       className={cn(baseClasses, className)}
       data-slot='current-page-loader'
     >
-      <Spinner className='text-primary size-16' delay={500} />
+      <Spinner
+        {...spinnerProps}
+        className={cn(
+          'text-primary size-16',
+          typeof spinnerProps?.className === 'string'
+            ? spinnerProps.className
+            : ''
+        )}
+        delay={500}
+      />
     </div>
   )
 }

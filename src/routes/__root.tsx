@@ -32,6 +32,7 @@ import { Providers } from '@/contexts'
 // the actual injection of the context occurs in router.tsx.
 interface MyRouterContext {
   queryClient: QueryClient
+  test: string
 }
 
 /* ========================================================================

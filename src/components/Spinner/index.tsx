@@ -2,7 +2,7 @@ import * as React from 'react'
 import { Loader2Icon } from 'lucide-react'
 import { cn } from '@/utils'
 
-type SpinnerProps = React.ComponentProps<'svg'> & {
+export type SpinnerProps = React.ComponentProps<'svg'> & {
   delay?: number
   initialShowSpinner?: boolean
 }

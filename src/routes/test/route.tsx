@@ -8,8 +8,8 @@ import { Page, PageContainer } from '@/components'
 // https://tanstack.com/router/v1/docs/framework/react/routing/routing-concepts#layout-routes
 // https://www.youtube.com/watch?v=2TAOEK9IgTg (Pathless Layout discussed at 3:25)
 
-// I believe route components can also be created by having a test.tsx file as a sibiling to the
-// test/ folder. However, because we also have a rout.tsx here, it's unclear what would happen.
+// I believe route components can also be created by having a test.tsx file as a sibling to the
+// test/ folder. However, because we also have a route.tsx here, it's unclear what would happen.
 
 // See also Pathless Layout Routes:
 // https://tanstack.com/router/v1/docs/framework/react/routing/routing-concepts#pathless-layout-routes
