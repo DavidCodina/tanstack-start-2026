@@ -1,4 +1,4 @@
-import { createFileRoute /* , useRouter */ } from '@tanstack/react-router'
+import { Link, createFileRoute /* , useRouter */ } from '@tanstack/react-router'
 import { Page, PageContainer } from '@/components'
 
 export const Route = createFileRoute('/')({ component: PageHome })
@@ -6,8 +6,6 @@ export const Route = createFileRoute('/')({ component: PageHome })
 /* ========================================================================
 
 ======================================================================== */
-
-//# Add a client-pagination demo that uses jsonplaceholder
 
 //# Update Tanstack Start specific dependencies.
 //# As part of this create a demo side-project with the CLI.
@@ -61,6 +59,10 @@ function PageHome() {
         >
           _HOME
         </h1>
+
+        <Link to='/client-pagination' preload={false} replace>
+          Client Pagination
+        </Link>
       </PageContainer>
     </Page>
   )

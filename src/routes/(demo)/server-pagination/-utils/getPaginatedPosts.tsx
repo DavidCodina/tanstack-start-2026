@@ -29,13 +29,13 @@ type GetPaginatedPosts = (
 export const getPaginatedPosts: GetPaginatedPosts = async (arg = {}) => {
   const page = arg.page && typeof arg.page === 'number' ? arg.page : 1
   // Initially, I did not have  || 999999. However, JSONPlaceholder seems to only
-  // return the X-Total-Count header if one explicitly specifies a limit.
+  // return the X-Total-Count header if one specifies a limit.
   const limit = arg.limit || 999999
 
   try {
     // This is useful for demonstrating that Tanstack Router is caching
     // the loader return value relative to the search params.
-    await sleep(2000)
+    await sleep(4000)
     const URL = `https://jsonplaceholder.typicode.com/posts${limit && typeof limit === 'number' ? `?_start=${(page - 1) * limit}&_limit=${limit}` : ''}`
 
     const res = await fetch(URL)

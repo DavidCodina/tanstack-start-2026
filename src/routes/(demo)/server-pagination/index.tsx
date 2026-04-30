@@ -27,7 +27,8 @@ const SearchParamsSchema = z.object({
   //
   ///////////////////////////////////////////////////////////////////////////
   page: z.number().default(DEFAULT_PAGE).catch(DEFAULT_PAGE),
-  limit: z.number().default(DEFAULT_LIMIT).catch(DEFAULT_LIMIT)
+  limit: z.number().default(DEFAULT_LIMIT).catch(DEFAULT_LIMIT),
+  random: z.string().optional()
 })
 
 /* ======================
@@ -49,19 +50,73 @@ export const Route = createFileRoute('/(demo)/server-pagination/')({
   //
   // We could also just do it from scratch, but using Zod is a best practice.
   //
-  // validateSearch: (search: Record<string, unknown>) => {
+  // validateSearch: (
+  //   search: Record<string, unknown>
+  // ): {
+  //   limit?: number
+  //   page?: number
+  //   random?: string
+  // } => {
   //   return {
   //     limit: (search.limit as number) || DEFAULT_LIMIT,
-  //     page: (search.page as number) || DEFAULT_PAGE
+  //     page: (search.page as number) || DEFAULT_PAGE,
+  //     // random: (search.random as string) || ''
   //   }
   // },
+  //
+  // Side note: order also matters with createMiddleware().client().server()
   //
   ///////////////////////////////////////////////////////////////////////////
   validateSearch: SearchParamsSchema,
 
   loaderDeps: (param) => {
     const { search } = param
-    return { search }
+
+    ///////////////////////////////////////////////////////////////////////////
+    //
+    // Because we're returning the entirety of the search params, we are essentially
+    // saying, "any time ANY search param changes, re-run the loader." However, we might
+    // have many other search params, some of which don't necessitate re-running the loader.
+    // For that reason, it's better to only return what you need as dependencies.
+    //
+    //   ❌ return { search }
+    //
+    // That said, loaderDeps alone doesn't prevent the loader from re-running. It only
+    // defines the cache key — i.e., what uniquely identifies a cached loader result.
+    // The other half of the equation is staleTime, which controls how long that cached
+    // result is considered fresh before the loader runs again.
+    //
+    // With the default staleTime: 0, cached data is immediately stale, so every navigation triggers
+    // a fresh loader call regardless of whether the deps changed. This gotcha is also mentioned by
+    // Josef Bender here at 4:55: https://www.youtube.com/watch?v=3jJ2Xz-oWt8
+    //
+    // To actually see the effect of selectively returning deps, you need to set staleTime to something larger
+    // than 0 (e.g., staleTime: Infinity).
+    //
+    // Also, this kind of workaround will NOT avoid a page reload:
+    //
+    //   const params = new URLSearchParams(window.location.search)
+    //   params.set('random', 'abc123')
+    //   window.history.replaceState({}, '', `?${params.toString()}`)
+    //
+    // Why not? Because the router intercepts history writes. TanStack Router treats any URL change
+    // as a navigation. The router uses a history implementation that patches pushState/replaceState
+    // and listens for location changes, so calling window.history.replaceState is intercepted and will
+    // update the router location. TanStack Router monkey-patches window.history.pushState and
+    // window.history.replaceState via its @tanstack/history package, so it does intercept those calls
+    // and triggers its own navigation logic — loader and all.
+    //
+    // So... In practice, I would generally strongly discourage setting staleTime to anything other than 0.
+    // Thus in practice, we could just return { search }.
+    //
+    ///////////////////////////////////////////////////////////////////////////
+    return {
+      search: {
+        page: search.page,
+        limit: search.limit
+        // random: search.random
+      }
+    }
   },
 
   loader: async (ctx) => {
@@ -70,9 +125,10 @@ export const Route = createFileRoute('/(demo)/server-pagination/')({
 
     const { page, limit } = searchParams
     const result = await getPaginatedPosts({ page, limit })
-
+    // console.log('loader ran with:', searchParams)
     return result
   }
+  // staleTime: Infinity // 👈 Cache lives forever (until invalidated manually)
 })
 
 /* ========================================================================
@@ -83,13 +139,14 @@ function PageServerPagination() {
   const router = useRouter()
 
   // For this demo, isFetching is used by the refresh button.
+  // See Frontend Masters: Tanstack Start Fundamentals, section 2 at 23:00.
   const { isFetching } = Route.useMatch()
 
   const loaderData = Route.useLoaderData()
   const { data, success } = loaderData
 
   const searchParams = Route.useSearch()
-  const { limit } = searchParams
+  const { limit = DEFAULT_LIMIT } = searchParams
 
   /* ======================
       renderControls()
@@ -104,7 +161,7 @@ function PageServerPagination() {
     const pages = Math.ceil(total / limit)
 
     return (
-      <div className='outlin-2 mb-6 flex flex-wrap justify-center gap-2'>
+      <div className='mb-6 flex flex-wrap justify-center gap-2'>
         {Array.from({ length: pages }, (_, index) => {
           const page = index + 1
           return (
@@ -120,6 +177,9 @@ function PageServerPagination() {
                     page: page,
                     limit: limit
                   }}
+                  // Prevent prefetching on hover.
+                  preload={false}
+                  replace
                 >
                   Page {page}
                 </Link>
@@ -134,7 +194,34 @@ function PageServerPagination() {
           isIcon
           loading={!!isFetching}
           onClick={async () => {
-            await router.invalidate()
+            ///////////////////////////////////////////////////////////////////////////
+            //
+            // router.invalidate() with no arguments will invalidate  all cached loader
+            // data across every route  in your router, not just the current page.
+            //
+            //   ❌ router.invalidate() // 💥 Shotgun Blast!
+            //   Todo: Create an ESLint rule warning against callign router.invalidate() without filter.
+            //
+            // That's bad. Fortunately, router.invalidate() can be more fine-grained.
+            // See Frontend Masters: Tanstack Start Fundamentals, section 2 at 27:45.
+            //
+            // router.invalidate()  operates at the route match level, so the finest
+            // granularity it offers is a single route, which is what the following
+            // filter achieves.
+            //
+            // To get sub-route granularity (invalidating specific pieces of data within
+            // a page), the recommended approach is to integrate TanStack Query
+            //
+            ///////////////////////////////////////////////////////////////////////////
+
+            router.invalidate({
+              filter: (route) => route.routeId === '/(demo)/server-pagination/'
+            })
+
+            // Side note: Let's say we were clearing the cache for some other page, and we
+            // wanted to make extra sure we didn't show stale data while the background refresh
+            // was happening. Then do this:
+            // router.clearCache({ filter: (route) => route.routeId === '/(demo)/server-pagination/' })
           }}
           size='sm'
           title='refresh'
@@ -142,6 +229,26 @@ function PageServerPagination() {
         >
           <RotateCw />
         </Button>
+
+        {/* <Button
+          className=''
+          render={
+            <Link
+              to='/server-pagination'
+              search={(prev) => {
+                return {
+                  ...prev,
+                  random: 'abc123'
+                }
+              }}
+              replace
+            >
+              Set Random Search Param
+            </Link>
+          }
+          size='sm'
+          variant='secondary'
+        /> */}
       </div>
     )
   }

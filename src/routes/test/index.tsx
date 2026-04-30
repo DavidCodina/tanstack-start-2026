@@ -215,9 +215,18 @@ export const Route = createFileRoute('/test/')({
     return { search }
   },
 
+  ///////////////////////////////////////////////////////////////////////////
+  //
   // The loader function exists on both the client and the server.
   // You can't make database calls in the loader function.
   // For that you'd need a server function, which ONLY runs on the server.
+  //
+  // Tip: If several pages use the same data, then it may make more sense to
+  // load the data from a shared route.tsx. Then from within a given page, one
+  // can implement const layoutRoute = getRouteApi('...'). Alternatively, one
+  // can implement const {} = useLoaderData({ from: '...' }).
+  //
+  ///////////////////////////////////////////////////////////////////////////
   loader: async (_ctx) => {
     // console.log(ctx.context.test)
     // const { deps } = _ctx
@@ -282,8 +291,19 @@ export const Route = createFileRoute('/test/')({
 
   pendingMs: 1000, // Defaults to 1000
   pendingMinMs: 500, // Defaults to 500
+  ///////////////////////////////////////////////////////////////////////////
+  //
   // This is bad UX - just like loading.tsx in Next.js
+  //
   // See Ali Alaa at 2:26:40 - https://www.youtube.com/watch?v=8_sGz4DHwIA&t=1s
+  // See See Frontend Masters: Tanstack Start Fundamentals, section 3 at 6:45.
+  // If you return a Promise from a loader then pass it to a component without
+  // wrapping that component in Suspense, then it will also trigger the pendingComponent.
+  // Why? When you use a pendingComponent, Tanstack Router wraps your entire route with
+  // a Suspense component. However, using your own Suspense gives you a more fine-grained
+  // fallback.
+  //
+  ///////////////////////////////////////////////////////////////////////////
   pendingComponent: (_ctx) => {
     return (
       <Page>
@@ -358,7 +378,14 @@ function PageTest() {
   }
 
   return (
-    <Page>
+    <Page
+      currentPageLoader
+      currentPageLoaderProps={{
+        spinnerProps: {
+          className: 'text-pink-500'
+        }
+      }}
+    >
       <PageContainer>
         <h1
           className='text-primary mb-12 text-center text-7xl'
