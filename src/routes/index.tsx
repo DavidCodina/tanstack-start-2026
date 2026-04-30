@@ -60,8 +60,8 @@ function PageHome() {
           _HOME
         </h1>
 
-        <Link to='/client-pagination' preload={false} replace>
-          Client Pagination
+        <Link to='/server-pagination' preload={false}>
+          Server Pagination
         </Link>
       </PageContainer>
     </Page>

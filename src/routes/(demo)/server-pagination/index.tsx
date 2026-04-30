@@ -106,6 +106,10 @@ export const Route = createFileRoute('/(demo)/server-pagination/')({
     // window.history.replaceState via its @tanstack/history package, so it does intercept those calls
     // and triggers its own navigation logic — loader and all.
     //
+    // What actually does work is setting staleTime > 0 IN CONJUNCTION with a shouldReload() function,
+    // to ensure always running on page mount. This works because the loaderDeps seem to work on top of
+    // staleTime and shouldReload.
+    //
     // So... In practice, I would generally strongly discourage setting staleTime to anything other than 0.
     // Thus in practice, we could just return { search }.
     //
@@ -119,6 +123,11 @@ export const Route = createFileRoute('/(demo)/server-pagination/')({
     }
   },
 
+  //^ shouldReload: (loaderFnContext) => {
+  //^   const { cause } = loaderFnContext
+  //^   return cause === 'enter'
+  //^ },
+
   loader: async (ctx) => {
     const { deps } = ctx
     const searchParams = deps.search
@@ -128,7 +137,8 @@ export const Route = createFileRoute('/(demo)/server-pagination/')({
     // console.log('loader ran with:', searchParams)
     return result
   }
-  // staleTime: Infinity // 👈 Cache lives forever (until invalidated manually)
+
+  //^ staleTime: Infinity
 })
 
 /* ========================================================================

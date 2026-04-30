@@ -77,10 +77,7 @@ export const BasicSidebar = () => {
             className: linkClassName
           }}
           activeProps={{
-            className: activeClassName,
-            style: {
-              outline: '4px dashed green'
-            }
+            className: activeClassName
           }}
         >
           <Home size={20} />
