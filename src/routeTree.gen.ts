@@ -22,7 +22,6 @@ import { Route as demoTodos2IndexRouteImport } from './routes/(demo)/todos2/inde
 import { Route as demoTodosIndexRouteImport } from './routes/(demo)/todos/index'
 import { Route as demoTanstackQueryIndexRouteImport } from './routes/(demo)/tanstack-query/index'
 import { Route as demoSuspenseIndexRouteImport } from './routes/(demo)/suspense/index'
-import { Route as demoSsrFalseIndexRouteImport } from './routes/(demo)/ssr-false/index'
 import { Route as demoServerPaginationIndexRouteImport } from './routes/(demo)/server-pagination/index'
 import { Route as demoClientPaginationIndexRouteImport } from './routes/(demo)/client-pagination/index'
 import { Route as demoAwaitWithCatchIndexRouteImport } from './routes/(demo)/await-with-catch/index'
@@ -105,11 +104,6 @@ const demoTanstackQueryIndexRoute = demoTanstackQueryIndexRouteImport.update({
 const demoSuspenseIndexRoute = demoSuspenseIndexRouteImport.update({
   id: '/(demo)/suspense/',
   path: '/suspense/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const demoSsrFalseIndexRoute = demoSsrFalseIndexRouteImport.update({
-  id: '/(demo)/ssr-false/',
-  path: '/ssr-false/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const demoServerPaginationIndexRoute =
@@ -226,7 +220,6 @@ export interface FileRoutesByFullPath {
   '/await-with-catch/': typeof demoAwaitWithCatchIndexRoute
   '/client-pagination/': typeof demoClientPaginationIndexRoute
   '/server-pagination/': typeof demoServerPaginationIndexRoute
-  '/ssr-false/': typeof demoSsrFalseIndexRoute
   '/suspense/': typeof demoSuspenseIndexRoute
   '/tanstack-query/': typeof demoTanstackQueryIndexRoute
   '/todos/': typeof demoTodosIndexRoute
@@ -259,7 +252,6 @@ export interface FileRoutesByTo {
   '/await-with-catch': typeof demoAwaitWithCatchIndexRoute
   '/client-pagination': typeof demoClientPaginationIndexRoute
   '/server-pagination': typeof demoServerPaginationIndexRoute
-  '/ssr-false': typeof demoSsrFalseIndexRoute
   '/suspense': typeof demoSuspenseIndexRoute
   '/tanstack-query': typeof demoTanstackQueryIndexRoute
   '/todos': typeof demoTodosIndexRoute
@@ -294,7 +286,6 @@ export interface FileRoutesById {
   '/(demo)/await-with-catch/': typeof demoAwaitWithCatchIndexRoute
   '/(demo)/client-pagination/': typeof demoClientPaginationIndexRoute
   '/(demo)/server-pagination/': typeof demoServerPaginationIndexRoute
-  '/(demo)/ssr-false/': typeof demoSsrFalseIndexRoute
   '/(demo)/suspense/': typeof demoSuspenseIndexRoute
   '/(demo)/tanstack-query/': typeof demoTanstackQueryIndexRoute
   '/(demo)/todos/': typeof demoTodosIndexRoute
@@ -330,7 +321,6 @@ export interface FileRouteTypes {
     | '/await-with-catch/'
     | '/client-pagination/'
     | '/server-pagination/'
-    | '/ssr-false/'
     | '/suspense/'
     | '/tanstack-query/'
     | '/todos/'
@@ -363,7 +353,6 @@ export interface FileRouteTypes {
     | '/await-with-catch'
     | '/client-pagination'
     | '/server-pagination'
-    | '/ssr-false'
     | '/suspense'
     | '/tanstack-query'
     | '/todos'
@@ -397,7 +386,6 @@ export interface FileRouteTypes {
     | '/(demo)/await-with-catch/'
     | '/(demo)/client-pagination/'
     | '/(demo)/server-pagination/'
-    | '/(demo)/ssr-false/'
     | '/(demo)/suspense/'
     | '/(demo)/tanstack-query/'
     | '/(demo)/todos/'
@@ -429,7 +417,6 @@ export interface RootRouteChildren {
   demoAwaitWithCatchIndexRoute: typeof demoAwaitWithCatchIndexRoute
   demoClientPaginationIndexRoute: typeof demoClientPaginationIndexRoute
   demoServerPaginationIndexRoute: typeof demoServerPaginationIndexRoute
-  demoSsrFalseIndexRoute: typeof demoSsrFalseIndexRoute
   demoSuspenseIndexRoute: typeof demoSuspenseIndexRoute
   demoTanstackQueryIndexRoute: typeof demoTanstackQueryIndexRoute
   demoTodosIndexRoute: typeof demoTodosIndexRoute
@@ -535,13 +522,6 @@ declare module '@tanstack/react-router' {
       path: '/suspense'
       fullPath: '/suspense/'
       preLoaderRoute: typeof demoSuspenseIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/(demo)/ssr-false/': {
-      id: '/(demo)/ssr-false/'
-      path: '/ssr-false'
-      fullPath: '/ssr-false/'
-      preLoaderRoute: typeof demoSsrFalseIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(demo)/server-pagination/': {
@@ -716,7 +696,6 @@ const rootRouteChildren: RootRouteChildren = {
   demoAwaitWithCatchIndexRoute: demoAwaitWithCatchIndexRoute,
   demoClientPaginationIndexRoute: demoClientPaginationIndexRoute,
   demoServerPaginationIndexRoute: demoServerPaginationIndexRoute,
-  demoSsrFalseIndexRoute: demoSsrFalseIndexRoute,
   demoSuspenseIndexRoute: demoSuspenseIndexRoute,
   demoTanstackQueryIndexRoute: demoTanstackQueryIndexRoute,
   demoTodosIndexRoute: demoTodosIndexRoute,

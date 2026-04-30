@@ -1,4 +1,4 @@
-import { Link, createFileRoute /* , useRouter */ } from '@tanstack/react-router'
+import { createFileRoute /* , useRouter */ } from '@tanstack/react-router'
 import { Page, PageContainer } from '@/components'
 
 export const Route = createFileRoute('/')({ component: PageHome })
@@ -59,10 +59,6 @@ function PageHome() {
         >
           _HOME
         </h1>
-
-        <Link to='/server-pagination' preload={false}>
-          Server Pagination
-        </Link>
       </PageContainer>
     </Page>
   )

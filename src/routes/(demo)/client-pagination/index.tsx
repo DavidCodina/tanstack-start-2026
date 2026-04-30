@@ -19,12 +19,17 @@ export const Route = createFileRoute('/(demo)/client-pagination/')({
   component: PageClientPagination,
   validateSearch: SearchParamsSchema,
 
+  ///////////////////////////////////////////////////////////////////////////
+  //
   // If you have additional search params that actually do need to trigger a reload,
   // loaderDeps seems to still have precedence over shouldReload.
-  // loaderDeps: (param) => {
-  //   const { search } = param
-  //   return { search: { page: ... }}
-  // },
+  //
+  //   loaderDeps: (param) => {
+  //     const { search } = param
+  //     return { search: { page: ... }}
+  //   },
+  //
+  ///////////////////////////////////////////////////////////////////////////
 
   shouldReload: (loaderFnContext) => {
     const { cause } = loaderFnContext
@@ -36,11 +41,15 @@ export const Route = createFileRoute('/(demo)/client-pagination/')({
     return result
   },
 
+  ///////////////////////////////////////////////////////////////////////////
+  //
   // staleTime: Infinity causes cache to forever (until invalidated manually).
   // Some soret of staleTime > 0 is necessary to avoid a page reload when
   // updating search params. However, this now cuases a problem. We always
   // want the loader to run on initial navigation to the page. The cleanest
   // way to acheive this is with the above shouldReload function.
+  //
+  ///////////////////////////////////////////////////////////////////////////
   staleTime: Infinity
 })
 
@@ -77,6 +86,8 @@ function PageClientPagination() {
               className=''
               render={
                 <Link
+                  // ⚠️ Note: even navigating to the same page will trigger a page reload
+                  // This is why we have to set staleTime: Infinity plust shouldReload().
                   to='/client-pagination' // cause === 'stay'
                   search={{
                     page: page,
@@ -91,6 +102,14 @@ function PageClientPagination() {
               ///////////////////////////////////////////////////////////////////////////
               //
               // ⚠️ Note: This kind of workaround will NOT avoid a page reload.
+              //
+              //   onClick={() => {
+              //     const params = new URLSearchParams(window.location.search)
+              //     params.set('page', page.toString())
+              //     params.set('limit', limit.toString())
+              //     window.history.replaceState({}, '', `?${params.toString()}`)
+              //   }}
+              //
               // Why not? Because the router intercepts history writes. TanStack Router treats any URL change
               // as a navigation. The router uses a history implementation that patches pushState/replaceState
               // and listens for location changes, so calling window.history.replaceState is intercepted and will
@@ -99,13 +118,6 @@ function PageClientPagination() {
               // and triggers its own navigation logic — loader and all.
               //
               ///////////////////////////////////////////////////////////////////////////
-
-              // onClick={() => {
-              //   const params = new URLSearchParams(window.location.search)
-              //   params.set('page', page.toString())
-              //   params.set('limit', limit.toString())
-              //   window.history.replaceState({}, '', `?${params.toString()}`)
-              // }}
               size='sm'
               variant='secondary'
             />
