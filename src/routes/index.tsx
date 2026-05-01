@@ -13,7 +13,7 @@ export const Route = createFileRoute('/')({ component: PageHome })
 //# I didn't see it added in a more recent tutorial.
 //# Note: .cta.json does this property: "chosenAddOns": ["eslint", "nitro", "start"]
 
-//# Go bact to BasicSidebar.tsx and implement inactiveProps everywhere.
+//# Go back to BasicSidebar.tsx and implement inactiveProps everywhere.
 
 //# notFoundComponent in test/$id.tsx is not themed...
 //# Check other similar notFoundComponent imlementations as well.
