@@ -1,0 +1,130 @@
+/* .table-container {
+  --table-text-color: #333;
+  --table-page-link-color: #409;
+  --table-focus-box-shadow-color: 0 0 0 0.25rem rgb(68, 0, 153, 0.25);
+  --table-focus-border-color: #a280cc;
+} */
+
+/* ======================
+  <input type='text'> styles
+  ====================== */
+/* We may also need basic line-height, etc. */
+
+.xx-table-form-control {
+  appearance: none;
+  background-clip: padding-box;
+  background-color: #fff;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  /* color: var(--table-text-color); */
+  display: block;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+  padding: 4px 8px;
+  transition:
+    border-color 0.15s ease-in-out,
+    box-shadow 0.15s ease-in-out;
+  width: 100%;
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.xx-table-form-control:focus {
+  background-color: #fff;
+  /* border-color: ${focusBorderColor};
+    box-shadow: ${focusBoxShadowColor}; 
+    color: ${textColor}; */
+  outline: 0;
+}
+
+.xx-table-form-control::-moz-placeholder {
+  color: #6c757d;
+  opacity: 1;
+}
+
+.xx-table-form-control::placeholder {
+  color: #6c757d;
+  opacity: 1;
+}
+
+/* ======================
+    Pagination styles
+====================== */
+
+.xx-table-pagination {
+  display: flex;
+  list-style: none;
+  padding-left: 0;
+  user-select: none;
+}
+
+.xx-table-page-link {
+  background-color: #fff;
+  border: 1px solid #dee2e6;
+  /* color: var(--table-page-link-color); */
+  display: block;
+  font-size: 14px;
+  padding: 4px 8px;
+  position: relative;
+  text-decoration: none;
+  transition:
+    color 0.15s ease-in-out,
+    background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out,
+    box-shadow 0.15s ease-in-out;
+
+  /* @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    } */
+}
+
+.xx-table-page-link:hover {
+  background-color: #e9ecef;
+  border-color: #dee2e6;
+  /* color: var(--table-page-link-color); */
+  z-index: 2;
+}
+
+.xx-table-page-link:focus {
+  /* border-color: var(--table-focus-border-color); */
+  /* boxshadow: var(--table-focus-box-shadow-color); */
+  /* color: var(--table-page-link-color); */
+  outline: 0;
+  z-index: 3;
+}
+
+.xx-table-page-link.active,
+.active > .xx-table-page-link {
+  /* background-color: var(--table-page-link-color); */
+  /* border-color: var(--table-page-link-color); */
+  color: #fff;
+  z-index: 3;
+}
+
+.xx-table-page-link.disabled,
+.disabled > .xx-table-page-link {
+  background-color: #fff;
+  border-color: #dee2e6;
+  color: #6c757d;
+  pointer-events: none;
+}
+
+.xx-table-page-item:not(:first-child) .xx-table-page-link {
+  margin-left: -1px;
+}
+
+.xx-table-page-item:first-child .xx-table-page-link {
+  border-bottom-left-radius: 4px;
+  border-top-left-radius: 4px;
+}
+
+.xx-table-page-item:last-child .xx-table-page-link {
+  border-bottom-right-radius: 4px;
+  border-top-right-radius: 4px;
+}
+
+.xx-table-user-select-none {
+  user-select: none !important;
+}

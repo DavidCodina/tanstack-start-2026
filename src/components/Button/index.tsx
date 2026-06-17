@@ -1,7 +1,7 @@
-import { Button as ButtonPrimitive } from '@base-ui/react/button'
-import { buttonVariants } from './buttonVariants'
-import type { VariantProps } from 'class-variance-authority'
 import { cn } from '@/utils'
+import { Button as ButtonPrimitive } from '@base-ui/react/button'
+import type { VariantProps } from 'class-variance-authority'
+import { buttonVariants } from './buttonVariants'
 
 type ButtonProps = ButtonPrimitive.Props &
   VariantProps<typeof buttonVariants> & {

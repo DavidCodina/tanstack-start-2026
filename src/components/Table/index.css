@@ -46,6 +46,12 @@ Tailwind plugin. */
   width: 100%;
 }
 
+.shadcn-table-scroll-container {
+  overflow-x: auto;
+  position: relative;
+  width: 100%;
+}
+
 .shadcn-table {
   background-color: var(--table-bg);
   border-collapse: collapse;
