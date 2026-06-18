@@ -1,23 +1,15 @@
+import * as React from 'react'
 import type { Table } from '@tanstack/react-table'
 
 import { cn } from '@/utils'
+import { useCSSVariable } from '@/hooks'
 
-//# Work on positioning of Pagination when no GlobalFilter
+// Could update chevrons, but for now I'm okay with the current: « ‹ › »
+// import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react'
 
-//# If GlobalFilter, Pagination, Title are all negative then we should automatically
-//# remove the Controls section.
-
-//# Update Chevrons
-//# import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react'
-//#  <ChevronsLeft className='size-[1em]' />
-
-//# Make border responsive to primary and secondary variants.
+//# Add variants here.
 
 //# Make entire thing responsive to size - maybe...
-
-//# Check for options like enablePagination.
-
-//# Add disabled styles to input, select and buttons.
 
 /* ======================
 
@@ -64,20 +56,24 @@ focus-visible:ring-[3px]
 focus-visible:ring-primary/40
 `
 
-//# Could add disabled styles.
+const DISABLED_MIXIN = `
+disabled:text-(--table-disabled-color)
+disabled:border-(--table-disabled-color)
+disabled:placeholder:text-(--table-disabled-color)
+`
+
 const inputClasses = `
 flex bg-card
 w-[64px] min-w-0
 m-0 min-h-[0px] p-0.5
-
 text-[10px] leading-none
 rounded-[0.375em]
 border outline-none
 placeholder:text-muted-foreground
 ${FOCUS_MIXIN}
+${DISABLED_MIXIN}
 `
 
-//# Could add disabled styles.
 const selectClasses = `
 appearance-none block bg-card
 w-[50px] min-w-0
@@ -86,12 +82,15 @@ text-[10px] leading-none
 rounded-[0.375em]
 border outline-none
 ${FOCUS_MIXIN}
+${DISABLED_MIXIN}
 `
 
 // Conceptualizing the pagination buttons as 'links' is somewhat of a misnomer.
 // The convention goes all the way back to Bootsrap where they originally used
 // link tags: <a class="page-link" href="#">. See here:
 // https://getbootstrap.com/docs/5.3/components/pagination/#overview
+// Note: Because two of the buttons use -ml-px, there's a slighltly brighter effect
+// on the side borders when opacity is applied.
 const pageLinkClasses = `
 relative flex items-center bg-card
 px-2 py-1
@@ -102,11 +101,9 @@ data-[slot=table-pagination-button]:hover:bg-accent
 data-[slot=table-pagination-button]:hover:z-1
 ${FOCUS_MIXIN}
 focus-visible:z-2
-disabled:text-neutral-400
-disabled:border-neutral-400
-disabled:opacity-50
+${DISABLED_MIXIN}
 disabled:pointer-events-none
-
+disabled:opacity-65
 `
 
 /* ======================
@@ -114,12 +111,11 @@ disabled:pointer-events-none
 ====================== */
 
 type PaginationProps = {
+  disabled?: boolean
   pageSize: number
   pageSizes: number[]
   tableInstance: Table<Record<string, any>>
-  disabled?: boolean
-  //# showControls: boolean
-  //# showPagination: boolean
+  variant?: 'primary' | 'secondary'
 }
 
 /* ========================================================================
@@ -146,21 +142,15 @@ export const Pagination = ({
   const canPreviousPage = tableInstance.getCanPreviousPage()
   const canNextPage = tableInstance.getCanNextPage()
 
-  /* ======================
-  getPaginationItemClassName()
-  ====================== */
+  let caretColor = useCSSVariable({
+    value: '--color-foreground',
+    fallback: '#000000'
+  })
 
-  const getPaginationItemClassName = (mode?: 'previous' | 'next') => {
-    let classes = ''
-
-    if (mode === 'previous' && !canPreviousPage) {
-      classes = `${classes} disabled`
-    } else if (mode === 'next' && !canNextPage) {
-      classes = `${classes} disabled`
-    }
-
-    return classes
-  }
+  // ⚠️ Gotcha: if the color is a hex color, then you need to replace # with %23.
+  caretColor = caretColor?.startsWith('#')
+    ? caretColor.replace('#', '%23')
+    : caretColor
 
   /* ======================
         renderFirst()
@@ -168,7 +158,7 @@ export const Pagination = ({
 
   const renderFirst = () => {
     return (
-      <li className={getPaginationItemClassName('previous')}>
+      <li>
         <button
           data-slot='table-pagination-button'
           className={cn(pageLinkClasses, 'rounded-l-sm')}
@@ -188,7 +178,7 @@ export const Pagination = ({
 
   const renderPrevious = () => {
     return (
-      <li className={getPaginationItemClassName('previous')}>
+      <li>
         <button
           data-slot='table-pagination-button'
           className={cn(pageLinkClasses, '-ml-px')}
@@ -208,24 +198,44 @@ export const Pagination = ({
   // Show current page: x of n
 
   const renderInfo = () => {
+    const caret = `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3e%3cpath fill='none' stroke='${caretColor}' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e")`
     return (
-      <li className={''}>
+      <li>
         <div
           className={cn(
             pageLinkClasses,
             'gap-2 border-x-0',
-            disabled && 'border-neutral-400'
+            disabled && 'border-(--table-disabled-color) opacity-65'
           )}
         >
-          <div className='text-primary shrink-0 text-xs'>
+          <div
+            className={cn(
+              'text-primary shrink-0 text-xs',
+              disabled && 'text-(--table-disabled-color)'
+            )}
+          >
             <strong className=''>
               {tableInstance.getState().pagination.pageIndex + 1}{' '}
             </strong>{' '}
-            <span className='text-muted-foreground'>of</span>{' '}
+            <span
+              className={cn(
+                'text-muted-foreground',
+                disabled && 'text-(--table-disabled-color)'
+              )}
+            >
+              of
+            </span>{' '}
             <strong className=''>{tableInstance.getPageCount()}</strong>
           </div>
 
-          <span className='text-muted-foreground mx-[5px] my-0'>|</span>
+          <span
+            className={cn(
+              'text-muted-foreground mx-[5px] my-0',
+              disabled && 'text-(--table-disabled-color)'
+            )}
+          >
+            |
+          </span>
 
           {/* Manually input the page number */}
           <input
@@ -249,7 +259,7 @@ export const Pagination = ({
               tableInstance.setPageSize(Number(e.target.value))
             }}
             style={{
-              backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e")`,
+              backgroundImage: !disabled ? caret : undefined,
               backgroundPosition: '100% 80%',
               backgroundRepeat: 'no-repeat',
               backgroundSize: '16px 12px',
@@ -276,7 +286,7 @@ export const Pagination = ({
 
   const renderNext = () => {
     return (
-      <li className={getPaginationItemClassName('next')}>
+      <li>
         <button
           data-slot='table-pagination-button'
           className={cn(pageLinkClasses)}
@@ -296,7 +306,7 @@ export const Pagination = ({
 
   const renderLast = () => {
     return (
-      <li className={getPaginationItemClassName('next')}>
+      <li>
         <button
           data-slot='table-pagination-button'
           className={cn(pageLinkClasses, '-ml-px rounded-r-sm')}
@@ -317,7 +327,7 @@ export const Pagination = ({
   ====================== */
 
   return (
-    <ul className={'m-0 flex list-none pl-0 select-none'}>
+    <ul className={cn('m-0 flex list-none pl-0 select-none')}>
       {renderFirst()}
       {renderPrevious()}
       {renderInfo()}

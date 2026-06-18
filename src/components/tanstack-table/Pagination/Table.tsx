@@ -17,7 +17,7 @@ import { Alert } from '../../Alert'
 import { defaultColumnSizing, sortingFns } from './tableInstanceOptions'
 
 import { TableContainer } from './TableContainer'
-import { ScrollContainer } from './ScrollContainer'
+import { TableScrollContainer } from './TableScrollContainer'
 import { Pagination } from './Pagination'
 import { fuzzyFilter } from './filters'
 import { ColumnFilter } from './ColumnFilter'
@@ -79,12 +79,15 @@ export const Table = ({
   borderless = false,
   columns,
   data,
+  disabled = false,
   enableColumnFilters, // Don't set default here!
   enableGetSize = false,
   enableGlobalFilter, // Don't set default here!
+  enablePagination = true,
+
   flush = true,
   hover = false,
-  showFooter = true, //# Test this
+  showFooter = true,
   size,
   status,
   striped = false,
@@ -115,8 +118,7 @@ export const Table = ({
   pageIndex = 0,
   pageSize: pageSizeProp = 10,
   pageSizes = [10, 20, 30, 40, 50], // Note: pageSize will also added to the page size <select> during the mapping process.
-  showControls = true,
-  showPagination = true
+  showControls = true
 
   /* =================== */
 
@@ -152,6 +154,7 @@ export const Table = ({
   // subtitleClassName = '',
   // subtitleStyle = {},
 }: TableProps) => {
+  disabled = typeof disabled === 'boolean' ? disabled : false
   enableGlobalFilter =
     typeof enableGlobalFilter === 'boolean'
       ? enableGlobalFilter
@@ -188,20 +191,19 @@ export const Table = ({
   // Also used as part of conditional statement that determines whether or not to render <tfoot>.
   const hasFooter = firstColumn.hasOwnProperty('footer')
 
-  //* New...
   const dataLength = data?.length || 0
-  //* New...
-  const noControlsShown = !enableGlobalFilter && !showPagination
+  //# If title is added, then also consier this here...
+  const noControlsShown = !enableGlobalFilter && !enablePagination
 
   /* ======================
-        Pagination   //* New...
+        Pagination  
   ====================== */
-  // If showPagination is false, then set pageSize to the length of data.
+  // If enablePagination is false, then set pageSize to the length of data.
   // This will work during initialization. However, in order to make
-  // the showPagination prop dynamically update, we also do this below
-  // the table initialization: if (!showPagination) { table.setPageSize(data.length) }
+  // the enablePagination prop dynamically update, we also do this below
+  // the table initialization: if (!enablePagination) { table.setPageSize(data.length) }
 
-  const pageSize = showPagination === true ? pageSizeProp : dataLength
+  const pageSize = enablePagination === true ? pageSizeProp : dataLength
 
   /* ======================
       Memoize Columns 
@@ -215,15 +217,38 @@ export const Table = ({
   }, [columns])
 
   /* ======================
-    Table  Initialization
+    Table Initialization
   ====================== */
   // I was getting a React Compiler warning that I had to silence,
   // but that seems to have gone away for some reason.
   // --- eslint-disable-next-line react-hooks/incompatible-library
 
-  //* New...
+  ///////////////////////////////////////////////////////////////////////////
+  //
+  // Note: the docs show two different ways of implementing client-side pagination.
+  // https://tanstack.com/table/latest/docs/guide/pagination
+  //
+  //   1. You can explicitly implement pagination state:
+  //
+  //     const [pagination, setPagination] = useState({
+  //       pageIndex: 0, //initial page index
+  //       pageSize: 10, //default page size
+  //     })
+  //
+  //   Then pass it to state: { pagination }
+  //
+  //   2. Alternatively, if you have no need for managing the pagination state
+  //   in your own scope, but you need to set different initial values for the
+  //   pageIndex and pageSize, you can use the initialState option.
+  //
+  // We are using the second option here.
+  //
+  ///////////////////////////////////////////////////////////////////////////
+
   const initialState: InitialTableState = {
     pagination: {
+      // By default, pageIndex is reset to 0 when page-altering state changes occur,
+      // such as when the data is updated, filters change, grouping changes, etc.
       pageIndex: pageIndex,
       pageSize: pageSize
     }
@@ -236,8 +261,10 @@ export const Table = ({
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    // Fun fact: conditionally adding/removing getPaginationRowModel based on the value of
+    // enablePagination won't actually work because it's consumed only once during initialization.
+    // ...(enablePagination ? { getPaginationRowModel: getPaginationRowModel() } : {}),
     getPaginationRowModel: getPaginationRowModel(),
-
     filterFns: {
       fuzzy: fuzzyFilter // Define as a filter function that can be used in column definitions
     },
@@ -251,6 +278,7 @@ export const Table = ({
     onColumnFiltersChange: setColumnFilters,
     onGlobalFilterChange: setGlobalFilter,
     onSortingChange: setSorting, // Optional: control sorting state in your own scope for easy access
+
     globalFilterFn: 'includesString', // 'fuzzy', // Apply fuzzy filter to the global filter (most common use case for fuzzy filter),
 
     // The type defs define this as: sortingFns?: Record<string, SortingFn<any>>
@@ -308,18 +336,19 @@ export const Table = ({
   // })
 
   /* ======================
-        useEffect() //* New...
+        useEffect()  
   ====================== */
   // This useEffect() watches the showPagination prop.
 
   const setPageSize = tableInstance.setPageSize
+
   React.useEffect(() => {
-    if (!showPagination) {
+    if (!enablePagination) {
       setPageSize(dataLength)
     } else {
       setPageSize(pageSizeProp)
     }
-  }, [dataLength, pageSizeProp, showPagination, setPageSize])
+  }, [dataLength, pageSizeProp, enablePagination, setPageSize])
 
   /* ======================
         renderTitle()
@@ -356,6 +385,7 @@ export const Table = ({
         )}
         globalFilter={globalFilter}
         setGlobalFilter={setGlobalFilter}
+        disabled={disabled}
       />
     )
   }
@@ -363,22 +393,27 @@ export const Table = ({
   /* ======================
       renderControls()
   ====================== */
-  //# Add showControls prop.
 
   const renderControls = () => {
+    if (!showControls || noControlsShown) return null
+
     return (
       <div
         className={cn(
-          'bg-card flex gap-2 border-b border-(--table-border-color) p-3'
+          'bg-card flex justify-center gap-2 border-b border-(--table-border-color) p-3'
         )}
       >
         {renderGlobalFilter()}
 
-        <Pagination
-          pageSize={pageSizeProp}
-          pageSizes={pageSizes}
-          tableInstance={tableInstance}
-        />
+        {enablePagination && (
+          <Pagination
+            disabled={disabled}
+            pageSize={pageSizeProp}
+            pageSizes={pageSizes}
+            tableInstance={tableInstance}
+            variant={variant}
+          />
+        )}
       </div>
     )
   }
@@ -406,6 +441,7 @@ export const Table = ({
                     columnFilterProps.className
                   )}
                   column={header.column}
+                  disabled={disabled}
                 />
               )
 
@@ -454,7 +490,11 @@ export const Table = ({
               return (
                 <th
                   {...headCellProps}
-                  className={cn('align-top', headCellProps.className)}
+                  className={cn(
+                    'align-top',
+                    headCellProps.className
+                    //` disabled && 'text-neutral-400'
+                  )}
                   key={header.id}
                   colSpan={header.colSpan}
                   ///////////////////////////////////////////////////////////////////////////
@@ -481,16 +521,19 @@ export const Table = ({
                     ...headCellProps.style
                   }}
                 >
-                  {/* {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext() )} */}
-
                   {header.isPlaceholder ? null : (
                     <div
-                      className={
+                      className={cn(
                         header.column.getCanSort()
                           ? 'flex cursor-pointer items-center gap-2 select-none *:whitespace-nowrap'
-                          : 'flex items-center gap-2 *:whitespace-nowrap'
+                          : 'flex items-center gap-2 *:whitespace-nowrap',
+                        disabled && 'cursor-not-allowed'
+                      )}
+                      onClick={
+                        disabled
+                          ? undefined
+                          : header.column.getToggleSortingHandler()
                       }
-                      onClick={header.column.getToggleSortingHandler()}
                       title={
                         canSort
                           ? header.column.getNextSortingOrder() === 'asc'
@@ -545,10 +588,12 @@ export const Table = ({
           <tr {...bodyRowProps}>
             <td
               colSpan={columns?.length || 1}
-              className={cn('py-8 text-center text-lg font-medium', {
-                'text-primary': variant === 'primary',
-                'text-secondary': variant === 'secondary'
-              })}
+              className={cn(
+                'py-8 text-center text-lg font-medium',
+                !disabled && variant === 'primary' && 'text-primary',
+                !disabled && variant === 'secondary' && 'text-secondary',
+                disabled && 'text-(--table-disabled-color)'
+              )}
             >
               No Data...
             </td>
@@ -561,13 +606,18 @@ export const Table = ({
       <tbody {...bodyProps}>
         {tableInstance
           .getRowModel()
-          .rows //.slice(0, 10) //^ Demo only!
+          .rows //.slice(0, 10) // Demo only!
           .map((row) => (
             <tr {...bodyRowProps} key={row.id}>
               {row.getVisibleCells().map((cell) => (
                 <td
                   {...bodyCellProps}
                   key={cell.id}
+                  className={cn(
+                    bodyCellProps.className,
+
+                    disabled && 'text-(--table-disabled-color)'
+                  )}
                   style={{
                     width: enableGetSize ? cell.column.getSize() : undefined,
                     ...bodyCellProps.style
@@ -601,6 +651,7 @@ export const Table = ({
               <th
                 {...footCellProps}
                 key={header.id}
+                className={cn(footCellProps.className)}
                 colSpan={header.colSpan}
                 style={{
                   width: enableGetSize ? header.getSize() : undefined,
@@ -627,10 +678,14 @@ export const Table = ({
 
   const renderTable = () => {
     return (
-      <TableContainer {...tableContainerProps} variant={variant}>
+      <TableContainer
+        {...tableContainerProps}
+        disabled={disabled}
+        variant={variant}
+      >
         {renderControls()}
 
-        <ScrollContainer {...scrollContainerProps}>
+        <TableScrollContainer {...scrollContainerProps}>
           <table
             {...tableProps}
             className={cn(
@@ -642,10 +697,10 @@ export const Table = ({
               striped && 'table-striped',
               stripedColumns && 'table-striped-columns',
               { 'table-xs': size === 'xs', 'table-sm': size === 'sm' },
-              {
-                'shadcn-table-primary': variant === 'primary',
-                'shadcn-table-secondary': variant === 'secondary'
-              },
+
+              !disabled && variant === 'primary' && 'shadcn-table-primary',
+              !disabled && variant === 'secondary' && 'shadcn-table-secondary',
+              disabled && 'shadcn-table-disabled',
               tableProps.className
             )}
           >
@@ -653,7 +708,7 @@ export const Table = ({
             {renderTableBody()}
             {renderTableFooter()}
           </table>
-        </ScrollContainer>
+        </TableScrollContainer>
       </TableContainer>
     )
   }

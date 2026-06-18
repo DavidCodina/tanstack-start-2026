@@ -10,7 +10,7 @@ const themeConfig: Record<UserTheme, { icon: React.ReactNode; label: string }> =
   {
     light: { icon: <Sun />, label: 'Light Theme' },
     dark: { icon: <Moon />, label: 'Dark Theme' },
-    system: { icon: <Computer />, label: 'System Theme' }
+    system: { icon: <Computer />, label: 'System Theme' } //# Should be SunMoon
   }
 
 const baseClasses = `cursor-pointer`

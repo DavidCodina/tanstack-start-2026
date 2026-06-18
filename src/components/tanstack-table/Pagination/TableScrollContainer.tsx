@@ -6,7 +6,7 @@ import { cn } from '@/utils'
 
 ======================================================================== */
 
-export const ScrollContainer = ({
+export const TableScrollContainer = ({
   children,
   className = '',
   ...otherProps
@@ -14,6 +14,7 @@ export const ScrollContainer = ({
   return (
     <div
       {...otherProps}
+      data-slot='table-scroll-container'
       className={cn('shadcn-table-scroll-container', className)}
     >
       {children}

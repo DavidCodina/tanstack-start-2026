@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
+import { Button } from '../../Button'
+
 import data from '../data.json'
 import {
   columns as cols
@@ -78,6 +80,13 @@ export const PaginationExample1 = () => {
     'idle' | 'pending' | 'success' | 'error'
   >('pending')
 
+  const [enableGlobalFilter, setEnableGlobalFilter] = useState(true)
+  const [enablePagination, setEnablePagination] = useState(true)
+  const [showControls, setShowControls] = useState(true)
+  const [showFooter, setShowFooter] = useState(true)
+
+  const [disabled, setDisabled] = useState(false)
+
   /* ======================
          useEffect()
   ====================== */
@@ -120,55 +129,116 @@ export const PaginationExample1 = () => {
   ====================== */
 
   return (
-    <Table
-      apiRef={apiRef}
-      data={data}
-      columns={columns}
-      status={status}
-      striped
-      // stripedColumns
-      hover
-      // borderless
-      bordered
-      size='sm'
-      variant='secondary'
-      // enableGlobalFilter={false}
-      // enableColumnFilters={false}
-      // enableGetSize
-      tableContainerProps={{}}
-      scrollContainerProps={{}}
-      tableProps={{}}
-      headProps={{}}
-      headRowProps={{}}
-      headCellProps={{}}
-      bodyProps={{}}
-      bodyRowProps={{}}
-      bodyCellProps={{}}
-      footProps={{}}
-      footRowProps={{}}
-      footCellProps={{}}
-      globalFilterProps={{}}
-      columnFilterProps={{}}
-      tableOptions={{}}
-      //# Test this
-      showFooter={false}
+    <>
+      <div className='mb-6 flex flex-wrap justify-center gap-2'>
+        <Button
+          className='min-w-[150px]'
+          onClick={() => {
+            setDisabled((v) => !v)
+          }}
+          size='xs'
+          variant='pink'
+        >
+          {!disabled ? 'Disable Table' : 'Enable Table'}
+        </Button>
 
-      //# Test this
-      // showPagination={true} //# Change to enablePagination
-      // showControls={true}
-      // pageIndex={1}
-      // pageSize={5}
+        <Button
+          className='min-w-[150px]'
+          onClick={() => {
+            setShowControls((v) => !v)
+          }}
+          size='xs'
+          variant='pink'
+        >
+          {showControls ? 'Hide Controls' : 'Show Controls'}
+        </Button>
 
-      //# Test this
-      // title={titleInfo?.title}
-      // subtitle={titleInfo?.subtitle}
+        <Button
+          className='min-w-[150px]'
+          onClick={() => {
+            setEnableGlobalFilter((v) => !v)
+          }}
+          size='xs'
+          variant='pink'
+        >
+          {enableGlobalFilter ? 'Disable Filter' : 'Enable Filter'}
+        </Button>
+        <Button
+          className='min-w-[150px]'
+          onClick={() => {
+            setEnablePagination((v) => !v)
+          }}
+          size='xs'
+          variant='pink'
+        >
+          {enablePagination ? 'Disable Pagination' : 'Enable Pagination'}
+        </Button>
 
-      // titleContainerClassName=''
-      // titleContainerStyle={{ textAlign: 'center' }}
-      // titleClassName='outline-strong outline-sky outline-width-1 outline-shadow'
-      // titleStyle={{ fontSize: 28 }}
-      // subtitleClassName=''
-      // subtitleStyle={{ color: '#409' }}
-    />
+        <Button
+          className='min-w-[150px]'
+          onClick={() => {
+            setShowFooter((v) => !v)
+          }}
+          size='xs'
+          variant='pink'
+        >
+          {showFooter ? 'Hide Footer' : 'Show Footer'}
+        </Button>
+      </div>
+
+      <Table
+        disabled={disabled}
+        apiRef={apiRef}
+        data={data}
+        columns={columns}
+        status={status}
+        striped
+        // stripedColumns
+        hover
+        // borderless
+        bordered
+        size='sm'
+        variant='secondary'
+        enableGlobalFilter={enableGlobalFilter}
+        enablePagination={enablePagination}
+        // enableColumnFilters={false}
+        // enableGetSize
+        showControls={showControls}
+        tableContainerProps={{}}
+        scrollContainerProps={{}}
+        tableProps={{}}
+        headProps={{}}
+        headRowProps={{}}
+        headCellProps={{}}
+        bodyProps={{}}
+        bodyRowProps={{}}
+        bodyCellProps={{}}
+        footProps={{}}
+        footRowProps={{}}
+        footCellProps={{}}
+        globalFilterProps={{}}
+        columnFilterProps={{}}
+        tableOptions={{}}
+        //# Test this
+        showFooter={showFooter}
+
+        //# Test this
+        // showPagination={true} //# Change to enablePagination
+        // showControls={true}
+        // pageIndex={1}
+        // pageSize={5}
+
+        //# Test this
+        // title={titleInfo?.title}
+        // subtitle={titleInfo?.subtitle}
+
+        // titleContainerClassName=''
+        // titleContainerStyle={{ textAlign: 'center' }}
+        // titleClassName='outline-strong outline-sky outline-width-1 outline-shadow'
+        // titleStyle={{ fontSize: 28 }}
+        // subtitleClassName=''
+        // subtitleStyle={{ color: '#409' }}
+      />
+    </>
   )
 }

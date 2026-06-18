@@ -15,7 +15,9 @@ focus-visible:ring-(--table-border-color)/40
 
 const FIELD_DISABLED_MIXIN = `
 disabled:cursor-not-allowed 
-disabled:border-neutral-400
+disabled:border-(--table-disabled-color)
+disabled:placeholder:text-(--table-disabled-color)
+disabled:opacity-65
 `
 
 const baseClasses = `
@@ -67,7 +69,7 @@ export const GlobalFilter = ({
 
   return (
     <DebouncedInput
-      {...otherProps}
+      {...otherProps} // e.g., disabled, etc.
       className={cn(baseClasses, className)}
       onChange={handleChange}
       placeholder={placeholder}

@@ -9,5 +9,6 @@ export * from './useRunOncePerMount'
 export * from './useForceRender'
 export * from './useThrottle'
 export * from './useThrottledFunction'
-
+export * from './useCSSVariable'
+export * from './useCSSFromTailwind'
 export * from './useMergedRef'

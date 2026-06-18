@@ -33,7 +33,9 @@ export type TableAPI = TableInstance<Record<string, any>>
 export type Column = ColumnDef<Record<string, any>, any>
 export type LooseColumn = Record<string, any>
 
-export type TableContainerProps = React.ComponentProps<'div'>
+export type TableContainerProps = React.ComponentProps<'div'> & {
+  disabled?: boolean
+}
 export type ScrollContainerProps = React.ComponentProps<'div'>
 
 type TableElementProps = React.ComponentProps<'table'>
@@ -77,6 +79,8 @@ export type TableVariant = 'primary' | 'secondary'
 ======================================================================== */
 
 export type TableProps = {
+  /** Passes disabled to pagination controls, filter inputs, sorting controls, etc. */
+  disabled?: boolean
   data: Record<string, any>[] | null
   ///////////////////////////////////////////////////////////////////////////
   //
@@ -103,6 +107,7 @@ export type TableProps = {
   enableGetSize?: boolean
   enableGlobalFilter?: boolean
   enableColumnFilters?: boolean
+  enablePagination?: boolean
   showFooter?: boolean
   size?: 'xs' | 'sm'
   variant?: TableVariant
@@ -121,6 +126,7 @@ export type TableProps = {
     | 'getCoreRowModel'
     | 'getSortedRowModel'
     | 'getFilteredRowModel'
+    | 'getPaginationRowModel'
     | 'globalFilterFn'
     | 'sortingFns'
     | 'filterFns'
@@ -134,7 +140,6 @@ export type TableProps = {
   pageSize?: number
   pageSizes?: number[]
   showControls?: boolean
-  showPagination?: boolean
 
   /* =================== */
 

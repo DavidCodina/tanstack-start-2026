@@ -37,6 +37,8 @@ Tailwind plugin. */
   --table-group-divider-color: var(--table-border-color);
 
   --table-header-footer-accent-bg: var(--primary-soft);
+
+  --table-disabled-color: var(--color-neutral-400);
 }
 
 .shadcn-table-container {
@@ -272,6 +274,34 @@ have precedence over striping. */
        Variants
 ====================== */
 
+.shadcn-table-container.shadcn-table-disabled {
+  border-color: var(--color-neutral-400);
+  --table-striped-bg: oklch(from var(--table-disabled-color) l c h / 0.05);
+  --table-hover-outline-color: var(--table-disabled-color);
+  --table-hover-bg: oklch(from var(--table-disabled-color) l c h / 0.1);
+}
+
+.shadcn-table-disabled {
+  --table-striped-bg: oklch(from var(--table-disabled-color) l c h / 0.05);
+  --table-hover-outline-color: var(--table-disabled-color);
+  --table-hover-bg: oklch(from var(--table-disabled-color) l c h / 0.1);
+}
+
+.shadcn-table.shadcn-table-disabled thead tr {
+  border-bottom-color: var(--table-disabled-color);
+}
+
+.shadcn-table.shadcn-table-disabled th {
+  border-color: var(--table-disabled-color);
+  color: var(--table-disabled-color);
+}
+
+.shadcn-table.shadcn-table-disabled tfoot tr {
+  border-top-color: var(--table-disabled-color);
+}
+
+/* =================== */
+
 .shadcn-table-container.shadcn-table-primary {
   border-color: var(--color-primary);
   --table-striped-bg: oklch(from var(--color-primary) l c h / 0.05);
@@ -280,7 +310,7 @@ have precedence over striping. */
 }
 
 .shadcn-table-primary {
-  /* If border-color is set here,t hen it will be inherited throughout
+  /* If border-color is set here, then it will be inherited throughout
   the table. It's being omitted here based on the assumption thta 99% of
   the time the table's outer border will come from the container.
   /* border-color: var(--color-primary); */
@@ -301,6 +331,8 @@ have precedence over striping. */
 .shadcn-table.shadcn-table-primary tfoot tr {
   border-top-color: var(--color-primary);
 }
+
+/* =================== */
 
 .shadcn-table-container.shadcn-table-secondary {
   border-color: var(--color-secondary);
