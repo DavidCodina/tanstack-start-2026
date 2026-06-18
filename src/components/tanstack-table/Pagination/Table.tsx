@@ -490,11 +490,7 @@ export const Table = ({
               return (
                 <th
                   {...headCellProps}
-                  className={cn(
-                    'align-top',
-                    headCellProps.className
-                    //` disabled && 'text-neutral-400'
-                  )}
+                  className={cn('align-top', headCellProps.className)}
                   key={header.id}
                   colSpan={header.colSpan}
                   ///////////////////////////////////////////////////////////////////////////

@@ -1,4 +1,3 @@
-import * as React from 'react'
 import type { Table } from '@tanstack/react-table'
 
 import { cn } from '@/utils'
@@ -6,10 +5,6 @@ import { useCSSVariable } from '@/hooks'
 
 // Could update chevrons, but for now I'm okay with the current: « ‹ › »
 // import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react'
-
-//# Add variants here.
-
-//# Make entire thing responsive to size - maybe...
 
 /* ======================
 
@@ -124,11 +119,14 @@ type PaginationProps = {
 // None of the props below are given default values here.
 // Instead, all default values are set on Table props.
 
+// Todo: Make entire thing responsive to size - maybe...
+
 export const Pagination = ({
+  disabled = false,
   pageSize,
   pageSizes, // Note: pageSize will also added to the page size <select> during the mapping process.
   tableInstance,
-  disabled = false
+  variant // Todo: implement variant
 }: PaginationProps) => {
   pageSizes = Array.isArray(pageSizes)
     ? sortNumbersAscending(pageSizes)
@@ -142,6 +140,10 @@ export const Pagination = ({
   const canPreviousPage = tableInstance.getCanPreviousPage()
   const canNextPage = tableInstance.getCanNextPage()
 
+  //# While this works, it's also very brittle and dependent internally on the
+  //# implementation details of useTheme(), which is highly specific to this
+  //# Tanstack Start app. A better solution would be to use the <ChevronDown />
+  //# in conjunction with actual 'text-foreground' utility class.
   let caretColor = useCSSVariable({
     value: '--color-foreground',
     fallback: '#000000'
