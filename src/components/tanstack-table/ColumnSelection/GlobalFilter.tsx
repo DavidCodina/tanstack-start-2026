@@ -14,13 +14,16 @@ focus-visible:ring-(--table-border-color)/40
 `
 
 const FIELD_DISABLED_MIXIN = `
-disabled:cursor-not-allowed 
-disabled:border-neutral-400
+disabled:pointer-events-none
+disabled:border-(--table-disabled-color)
+disabled:placeholder:text-(--table-disabled-color)
+disabled:opacity-65
 `
 
+// Use flex-1 and not w-full
 const baseClasses = `
-flex bg-card
-w-full min-w-0
+flex flex-1 bg-card
+min-w-0
 px-[0.5em] py-[0.25em]
 text-base leading-[1.5] font-normal
 rounded-[0.375em]
@@ -37,6 +40,7 @@ ${FIELD_DISABLED_MIXIN}
 
 export const GlobalFilter = ({
   className = '',
+  enableGlobalFilter,
   globalFilter = '',
   setGlobalFilter,
   placeholder = 'Search all columns...',
@@ -65,9 +69,11 @@ export const GlobalFilter = ({
           return
   ====================== */
 
+  if (enableGlobalFilter !== true) return null
+
   return (
     <DebouncedInput
-      {...otherProps}
+      {...otherProps} // e.g., disabled, etc.
       className={cn(baseClasses, className)}
       onChange={handleChange}
       placeholder={placeholder}

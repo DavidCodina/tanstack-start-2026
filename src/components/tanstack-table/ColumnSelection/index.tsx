@@ -66,7 +66,7 @@ const getData = async () => {
 //
 //////////////////////////////////////////////////////////////////////////
 
-export const PaginationExample1 = () => {
+export const ColumnSelectionExample1 = () => {
   /* ======================
        state  & refs
   ====================== */
@@ -82,10 +82,14 @@ export const PaginationExample1 = () => {
 
   const [enableGlobalFilter, setEnableGlobalFilter] = useState(true)
   const [enablePagination, setEnablePagination] = useState(true)
+  const [enableColumns, setEnableColumns] = useState(true)
   const [showControls, setShowControls] = useState(true)
   const [showFooter, setShowFooter] = useState(true)
-
   const [disabled, setDisabled] = useState(false)
+
+  const [columnVisibility, setColumnVisibility] = useState<
+    Record<string, boolean>
+  >({ id: false }) // { select: false }
 
   /* ======================
          useEffect()
@@ -125,14 +129,31 @@ export const PaginationExample1 = () => {
   // }, [status])
 
   /* ======================
-          return
+      renderControls()
   ====================== */
 
-  return (
-    <>
+  const renderControls = () => {
+    return (
       <div className='mb-6 flex flex-wrap justify-center gap-2'>
         <Button
-          className='min-w-[150px]'
+          className='min-w-[130px]'
+          onClick={() => {
+            setColumnVisibility((prev) => {
+              const isId = prev.id !== false
+              return {
+                ...prev,
+                id: !isId
+              }
+            })
+          }}
+          size='xs'
+          variant='cyan'
+        >
+          {columnVisibility.id === false ? 'Add id' : 'Remove id'}
+        </Button>
+
+        <Button
+          className='min-w-[130px]'
           onClick={() => {
             setDisabled((v) => !v)
           }}
@@ -143,7 +164,7 @@ export const PaginationExample1 = () => {
         </Button>
 
         <Button
-          className='min-w-[150px]'
+          className='min-w-[130px]'
           onClick={() => {
             setShowControls((v) => !v)
           }}
@@ -154,7 +175,7 @@ export const PaginationExample1 = () => {
         </Button>
 
         <Button
-          className='min-w-[150px]'
+          className='min-w-[130px]'
           onClick={() => {
             setEnableGlobalFilter((v) => !v)
           }}
@@ -164,7 +185,7 @@ export const PaginationExample1 = () => {
           {enableGlobalFilter ? 'Disable Filter' : 'Enable Filter'}
         </Button>
         <Button
-          className='min-w-[150px]'
+          className='min-w-[130px]'
           onClick={() => {
             setEnablePagination((v) => !v)
           }}
@@ -175,7 +196,18 @@ export const PaginationExample1 = () => {
         </Button>
 
         <Button
-          className='min-w-[150px]'
+          className='min-w-[130px]'
+          onClick={() => {
+            setEnableColumns((v) => !v)
+          }}
+          size='xs'
+          variant='cyan'
+        >
+          {enableColumns ? 'Disable Columns' : 'Enable Columns'}
+        </Button>
+
+        <Button
+          className='min-w-[130px]'
           onClick={() => {
             setShowFooter((v) => !v)
           }}
@@ -185,12 +217,34 @@ export const PaginationExample1 = () => {
           {showFooter ? 'Hide Footer' : 'Show Footer'}
         </Button>
       </div>
+    )
+  }
+
+  /* ======================
+          return
+  ====================== */
+
+  return (
+    <>
+      {renderControls()}
 
       <Table
         disabled={disabled}
         apiRef={apiRef}
         data={data}
         columns={columns}
+        enableColumnSelection={enableColumns}
+        // columnVisibility is an optional prop that allows the consumer to
+        // dynamically modify the default visibility of the columns. It works
+        // on mount, and anytime thereafter.
+        columnVisibility={columnVisibility}
+        // If one is controlling visibility externally AND also showing the built-in
+        // visibility check UI, then it's best to also pass in an onColumnVisibilityChange
+        // callback. That way if the internal visibility state changes, we can pass
+        // it back to the consuming environment, so the two states remain in sync.
+        onColumnVisibilityChange={(newColumnVisibility) => {
+          setColumnVisibility(newColumnVisibility)
+        }}
         status={status}
         striped
         // stripedColumns

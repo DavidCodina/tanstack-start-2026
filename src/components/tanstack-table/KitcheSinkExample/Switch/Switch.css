@@ -1,6 +1,7 @@
-// https://codepen.io/KittyGiraudel/pen/AzYrPb
-// This CSS is still kind of hacky...
-
+/* 
+https://codepen.io/KittyGiraudel/pen/AzYrPb
+This CSS is still kind of hacky...
+*/
 .switch-input {
   clip: rect(0 0 0 0);
   position: absolute;
@@ -14,14 +15,14 @@ Thus, clicking anywhere on the switch will trigger it */
   background: linear-gradient(#d7dfe2, #bcc7cd);
   border-radius: 6px;
   box-shadow: 
-    // This is for the light contour at the top of the switch base.
+    /* This is for the light contour at the top of the switch base. */
     inset 0 2px 0 rgba(255, 255, 255, 0.6),
-    // This is for the dark contour on other three sides.
-    inset 0 -1px 1px 1px rgba(0, 0, 0, 0.3),
-    // This is the actual shadow around the switch base.
-    0 0 4px 1px rgba(0, 0, 0, 0.2),
-    // This is a secondary shadow  around the switch base.
-    0 1px 2px 1px rgba(0, 0, 0, 0.1);
+    /* This is for the dark contour on other three sides.*/ inset 0 -1px 1px 1px
+      rgba(0, 0, 0, 0.3),
+    /* This is the actual shadow around the switch base. */ 0 0 4px 1px
+      rgba(0, 0, 0, 0.2),
+    /* This is a secondary shadow  around the switch base. */ 0 1px 2px 1px
+      rgba(0, 0, 0, 0.1);
   cursor: pointer;
   display: block;
   font-size: 8px;
@@ -100,9 +101,11 @@ Thus, clicking anywhere on the switch will trigger it */
     #b7bfc2 100%
   ); /* W3C */
   border-radius: 0.35em;
-  box-shadow: 0 0 1px 2px rgba(0, 0, 0, 0.7),
+  box-shadow:
+    0 0 1px 2px rgba(0, 0, 0, 0.7),
     inset 0 2px 0 rgba(255, 255, 255, 0.6),
-    inset 0 -1px 0 1px rgba(0, 0, 0, 0.3), 0 8px 10px rgba(0, 0, 0, 0.15);
+    inset 0 -1px 0 1px rgba(0, 0, 0, 0.3),
+    0 8px 10px rgba(0, 0, 0, 0.15);
   content: '';
   cursor: pointer;
   display: block;
@@ -189,16 +192,13 @@ Thus, clicking anywhere on the switch will trigger it */
   background: #788b91; /* This is the light color when off. */
   border-radius: 50%;
   box-shadow: 
-    // This is for the actual light.
+    /* This is for the actual light. */
     inset 0 -1px 8px rgba(0, 0, 0, 0.7),
-    // This is for bottom of light.
-    inset 0 -2px 2px rgba(0, 0, 0, 0.2),
-    // This is for top of light.
-    0 1px 0 white,
-    // This is for the top of light.
-    0 -1px 0 rgba(0, 0, 0, 0.5),
-    // This is for the shadow underneath switch;
-    -26px 10px 8px 6px rgba(0, 0, 0, 0.25);
+    /* This is for bottom of light. */ inset 0 -2px 2px rgba(0, 0, 0, 0.2),
+    /* This is for top of light. */ 0 1px 0 white,
+    /* This is for the top of light. */ 0 -1px 0 rgba(0, 0, 0, 0.5),
+    /* This is for the shadow underneath switch; */ -26px 10px 8px 6px
+      rgba(0, 0, 0, 0.25);
   content: '';
   height: 12px;
   position: absolute;
@@ -211,9 +211,11 @@ Thus, clicking anywhere on the switch will trigger it */
 .switch-input:checked ~ .switch-label:before,
 .switch-input.checked ~ .switch-label:before {
   background: #66ff66; /* This is the light color when on. */
-  box-shadow: inset 0 -1px 8px rgba(0, 0, 0, 0.7),
-    inset 0 -2px 2px rgba(0, 0, 0, 0.2), 0 1px 0 white,
+  box-shadow:
+    inset 0 -1px 8px rgba(0, 0, 0, 0.7),
+    inset 0 -2px 2px rgba(0, 0, 0, 0.2),
+    0 1px 0 white,
     0 -1px 0 rgba(0, 0, 0, 0.5),
-    // This is for the shadow underneath switch
-    -62px 10px 8px 6px rgba(0, 0, 0, 0.25);
+    /* This is for the shadow underneath switch */ -62px 10px 8px 6px
+      rgba(0, 0, 0, 0.25);
 }

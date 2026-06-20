@@ -647,7 +647,7 @@ export const Table = ({
   ====================== */
   ///////////////////////////////////////////////////////////////////////////
   //
-  // This useEffect() watdches for changes to rowSelection, then calls a refed
+  // This useEffect() watches for changes to rowSelection, then calls a refed
   // version of the onSelectionChange prop. Initially, I tried to avoid running
   // onSelectionChange() in the useEffect() by doing this directly within
   // useReactTable's onRowSelectionChange confirguration. While it seemed to work,
@@ -837,7 +837,7 @@ export const Table = ({
 
                         {{
                           asc: (
-                            <div className='flex items-center justify-center gap-1 whitespace-nowrap text-xs font-normal leading-none'>
+                            <div className='flex items-center justify-center gap-1 text-xs leading-none font-normal whitespace-nowrap'>
                               <svg
                                 xmlns='http://www.w3.org/2000/svg'
                                 width='12'
@@ -853,7 +853,7 @@ export const Table = ({
                             </div>
                           ),
                           desc: (
-                            <div className='flex items-center justify-center gap-1 whitespace-nowrap text-xs font-normal leading-none'>
+                            <div className='flex items-center justify-center gap-1 text-xs leading-none font-normal whitespace-nowrap'>
                               <svg
                                 xmlns='http://www.w3.org/2000/svg'
                                 width='12'
@@ -870,7 +870,7 @@ export const Table = ({
                           )
                         }[header.column.getIsSorted() as string] ??
                           (disableSort ? null : (
-                            <div className='flex items-center justify-center gap-1 whitespace-nowrap text-xs font-normal leading-none'>
+                            <div className='flex items-center justify-center gap-1 text-xs leading-none font-normal whitespace-nowrap'>
                               <svg
                                 xmlns='http://www.w3.org/2000/svg'
                                 width='12'
@@ -1008,7 +1008,7 @@ export const Table = ({
       // Todo: Render loading spinner, or skeleton.
 
       return (
-        <div className='my-6 text-center text-3xl font-black leading-none text-violet-800'>
+        <div className='my-6 text-center text-3xl leading-none font-black text-violet-800'>
           Loading...
         </div>
       )

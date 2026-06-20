@@ -15,8 +15,9 @@ focus-visible:ring-(--table-border-color)/40
 `
 
 const FIELD_DISABLED_MIXIN = `
-disabled:cursor-not-allowed 
-disabled:border-neutral-400
+disabled:pointer-events-none
+disabled:border-(--table-disabled-color)
+disabled:placeholder:text-(--table-disabled-color)
 `
 
 // 'text-xs leading-[1.5] file:text-xs file:leading-[1.5]'
@@ -56,7 +57,7 @@ export const ColumnFilter = ({
 
   return (
     <DebouncedInput
-      {...otherProps}
+      {...otherProps} // e.g., disabled, etc.
       placeholder='Search...'
       className={cn(baseClasses, className)}
       ///////////////////////////////////////////////////////////////////////////

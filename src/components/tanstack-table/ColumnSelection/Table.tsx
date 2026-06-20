@@ -8,19 +8,19 @@ import {
   useReactTable
   // FilterFn,
   // getFilteredRowModel,
-
   // InitialTableState,
 } from '@tanstack/react-table'
-
+import { AlertCircle, ArrowUpDown, MoveDown, MoveUp } from 'lucide-react'
 // import { RankingInfo } from '@tanstack/match-sorter-utils'
 
-import { AlertCircle, ArrowUpDown, MoveDown, MoveUp } from 'lucide-react'
-
 import { Alert } from '../../Alert'
-
 import { defaultColumnSizing, sortingFns } from './tableInstanceOptions'
 
-import { Controls } from './Controls'
+import { TableContainer } from './TableContainer'
+import { TableScrollContainer } from './TableScrollContainer'
+import { Pagination } from './Pagination'
+import { ColumnSelection } from './ColumnSelection'
+//! import { IndeterminateCheckbox } from './IndeterminateCheckbox'
 import { fuzzyFilter } from './filters'
 import { ColumnFilter } from './ColumnFilter'
 import { GlobalFilter } from './GlobalFilter'
@@ -38,6 +38,25 @@ import { cn } from '@/utils'
 // The shadcn-table class does this: background-color: var(--table-bg),
 // which itself refers to --color-card
 const tableBaseClasses = `shadcn-table`
+
+function isBooleanObject(arg: any): arg is Record<string, boolean> {
+  if (typeof arg !== 'object' || arg === null) {
+    return false
+  }
+
+  for (const key in arg) {
+    if (!arg.hasOwnProperty(key)) {
+      continue // Skip inherited properties
+    }
+
+    const value = arg[key]
+    if (typeof value !== 'boolean') {
+      return false
+    }
+  }
+
+  return true
+}
 
 /* ========================================================================
 
@@ -75,18 +94,31 @@ const tableBaseClasses = `shadcn-table`
 //
 ///////////////////////////////////////////////////////////////////////////
 
+//# Work on UI within renderColumnSelectCheckboxes()
+//# Move it all into a ColumnSelection component.
+
+//# ColumnSelection should also receive disabled and respond accordingly.
+//# ColumnSelection checkboxes should also hook into variant color.
+//# Review IndeterminateCheckbox
+
 export const Table = ({
   apiRef,
   bordered = false,
   borderless = false,
   columns,
+  columnVisibility: columnVisibilityProp = {},
+  onColumnVisibilityChange,
   data,
+  disabled = false,
   enableColumnFilters, // Don't set default here!
   enableGetSize = false,
   enableGlobalFilter, // Don't set default here!
+  enablePagination = true,
+  enableColumnSelection = true,
+
   flush = true,
   hover = false,
-  showFooter = true, //# Test this
+  showFooter = true,
   size,
   status,
   striped = false,
@@ -97,6 +129,7 @@ export const Table = ({
   /* =================== */
 
   tableContainerProps = {},
+  scrollContainerProps = {},
   tableProps = {},
   headProps = {},
   headRowProps = {},
@@ -110,14 +143,16 @@ export const Table = ({
   globalFilterProps = {},
   columnFilterProps = {},
 
+  //# Some kind of props for Pagination component.
+  //# Some kidn of props for ColumnSelection component.
+
   /* =================== */
   // TanStack table configuration props.
 
   pageIndex = 0,
   pageSize: pageSizeProp = 10,
   pageSizes = [10, 20, 30, 40, 50], // Note: pageSize will also added to the page size <select> during the mapping process.
-  showControls = true,
-  showPagination = true
+  showControls = true
 
   /* =================== */
 
@@ -153,6 +188,12 @@ export const Table = ({
   // subtitleClassName = '',
   // subtitleStyle = {},
 }: TableProps) => {
+  // It's possible that columns and/or data  might be null or undefined
+  // on mount. This could potentially break some of the logic here.
+  // columns = Array.isArray(columns) ? columns : []
+  data = Array.isArray(data) ? data : []
+
+  disabled = typeof disabled === 'boolean' ? disabled : false
   enableGlobalFilter =
     typeof enableGlobalFilter === 'boolean'
       ? enableGlobalFilter
@@ -177,6 +218,26 @@ export const Table = ({
   )
   const [sorting, setSorting] = React.useState<SortingState>([])
 
+  // const [rowSelection, setRowSelection] = React.useState<Record<string, boolean>>({})
+
+  // const [columnOrder, setColumnOrder] = React.useState<ColumnOrderState>(() => {
+  //   return isStringArray(columnOrderProp) ? columnOrderProp : []
+  // })
+
+  // Initialize columnVisibility using columnVisibilityProp.
+  // Otherwise default to {}. columnVisibility is always an object columnIds
+  // keys and boolean values. A column is visible if the key/value is omitted
+  // or if it is set to true. A column is not visible when it's key is listed
+  // and the associated value is explicitly set to false.
+  const [columnVisibility, setColumnVisibility] = React.useState<
+    Record<string, boolean>
+  >(() => {
+    return isBooleanObject(columnVisibilityProp) ? columnVisibilityProp : {}
+  })
+
+  const firstRenderRef = React.useRef(true)
+  // const onSelectionChangeRef = React.useRef<any>(onSelectionChange)
+
   /* ======================
         Derived State
   ====================== */
@@ -189,20 +250,35 @@ export const Table = ({
   // Also used as part of conditional statement that determines whether or not to render <tfoot>.
   const hasFooter = firstColumn.hasOwnProperty('footer')
 
-  //* New...
   const dataLength = data?.length || 0
-  //* New...
-  const noControlsShown = !enableGlobalFilter && !showPagination
+  //# If title is added, then also consider this here...
+  const noControlsShown =
+    !enableGlobalFilter && !enablePagination && !enableColumnSelection
+
+  ///////////////////////////////////////////////////////////////////////////
+  //
+  // Why are we using this? We need to pass columnVisibilityProp into a useEffect(), but
+  // we'll end up runing into this error:
+  //
+  //   Maximum update depth exceeded. This can happen when a component calls setState inside useEffect, but useEffect either doesn't have a dependency array, or one of the dependencies changes on every render.
+  //
+  // This happens because the useEffect() that watches columnVisibilityProp also updates the internal
+  // columnVisibility, which then ends up potentially triggering an infinite loop.
+  //
+  ///////////////////////////////////////////////////////////////////////////
+  const stringifiedColumnVisibilityProp = isBooleanObject(columnVisibilityProp)
+    ? JSON.stringify(columnVisibilityProp)
+    : JSON.stringify({})
 
   /* ======================
-        Pagination   //* New...
+        Pagination  
   ====================== */
-  // If showPagination is false, then set pageSize to the length of data.
+  // If enablePagination is false, then set pageSize to the length of data.
   // This will work during initialization. However, in order to make
-  // the showPagination prop dynamically update, we also do this below
-  // the table initialization: if (!showPagination) { table.setPageSize(data.length) }
+  // the enablePagination prop dynamically update, we also do this below
+  // the table initialization: if (!enablePagination) { table.setPageSize(data.length) }
 
-  const pageSize = showPagination === true ? pageSizeProp : dataLength
+  const pageSize = enablePagination === true ? pageSizeProp : dataLength
 
   /* ======================
       Memoize Columns 
@@ -212,33 +288,61 @@ export const Table = ({
   // it in useMemo() before passing it into the table instance.
 
   const cols = React.useMemo(() => {
+    if (!Array.isArray(columns)) {
+      return []
+    }
     return columns
   }, [columns])
 
   /* ======================
-    Table  Initialization
+    Table Initialization
   ====================== */
   // I was getting a React Compiler warning that I had to silence,
   // but that seems to have gone away for some reason.
   // --- eslint-disable-next-line react-hooks/incompatible-library
 
-  //* New...
+  ///////////////////////////////////////////////////////////////////////////
+  //
+  // Note: the docs show two different ways of implementing client-side pagination.
+  // https://tanstack.com/table/latest/docs/guide/pagination
+  //
+  //   1. You can explicitly implement pagination state:
+  //
+  //     const [pagination, setPagination] = useState({
+  //       pageIndex: 0, //initial page index
+  //       pageSize: 10, //default page size
+  //     })
+  //
+  //   Then pass it to state: { pagination }
+  //
+  //   2. Alternatively, if you have no need for managing the pagination state
+  //   in your own scope, but you need to set different initial values for the
+  //   pageIndex and pageSize, you can use the initialState option.
+  //
+  // We are using the second option here.
+  //
+  ///////////////////////////////////////////////////////////////////////////
+
   const initialState: InitialTableState = {
     pagination: {
+      // By default, pageIndex is reset to 0 when page-altering state changes occur,
+      // such as when the data is updated, filters change, grouping changes, etc.
       pageIndex: pageIndex,
       pageSize: pageSize
     }
   }
 
   const tableInstance = useReactTable({
-    data: data || [],
-    columns: (cols || []) as Column[],
+    data: data,
+    columns: cols as Column[],
 
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    // Fun fact: conditionally adding/removing getPaginationRowModel based on the value of
+    // enablePagination won't actually work because it's consumed only once during initialization.
+    // ...(enablePagination ? { getPaginationRowModel: getPaginationRowModel() } : {}),
     getPaginationRowModel: getPaginationRowModel(),
-
     filterFns: {
       fuzzy: fuzzyFilter // Define as a filter function that can be used in column definitions
     },
@@ -252,6 +356,13 @@ export const Table = ({
     onColumnFiltersChange: setColumnFilters,
     onGlobalFilterChange: setGlobalFilter,
     onSortingChange: setSorting, // Optional: control sorting state in your own scope for easy access
+
+    onColumnVisibilityChange: (updater) => {
+      // The updater is this:
+      // (old) => ({ ...old, [column.id]: value != null ? value : !column.getIsVisible() })
+      // Which is why what you actually want to send back to the consumer is the custom columnVisibility state.
+      setColumnVisibility(updater)
+    },
     globalFilterFn: 'includesString', // 'fuzzy', // Apply fuzzy filter to the global filter (most common use case for fuzzy filter),
 
     // The type defs define this as: sortingFns?: Record<string, SortingFn<any>>
@@ -262,7 +373,10 @@ export const Table = ({
     state: {
       columnFilters,
       globalFilter,
-      sorting
+      sorting,
+      columnVisibility
+      // rowSelection,
+      // columnOrder,
     },
 
     // https://tanstack.com/table/v8/docs/api/core/table#initialstate
@@ -292,11 +406,6 @@ export const Table = ({
     ...tableOptions
   })
 
-  // access sorting state from the table instance
-  // console.log(tableInstance.getState().sorting)
-
-  //! const { getHeaderGroups, getRowModel, getFooterGroups } = tableInstance
-
   // useEffect(() => {
   //   const logAutoFilterFns = () => {
   //     if (!tableInstance || typeof tableInstance.getAllColumns !== 'function') { return }
@@ -314,27 +423,98 @@ export const Table = ({
   // })
 
   /* ======================
-        useEffect() //* New...
+      Column Visibility  
+  ====================== */
+
+  const visibleLeafColumns = tableInstance.getVisibleLeafColumns() // => [ ... ]
+
+  // If no columns are visible then we return null in the JSX instead of showing the table.
+  const atLeastOneVisibleColumn =
+    Array.isArray(visibleLeafColumns) && visibleLeafColumns.length > 0
+
+  ///////////////////////////////////////////////////////////////////////////
+  //
+  // This useEffect() watches for changes to stringifiedColumnVisibilityProp
+  // such that on change, it will call table.setColumnVisibility(). This
+  // allows changes to the visible columns to be dynamically passed in
+  // from the consuming environment.
+  //
+  // It seems counterintuitive, but here we do the following:
+  //
+  //   ✅ tableInstance.setColumnVisibility(parsedColumnVisibilityProp)
+  //   ❌ setColumnVisibility(parsedColumnVisibilityProp)
+  //
+  // The control flow of the two-way binding is tricky to conceptualize. However, it seems
+  // that when one updates in this way, it will trigger the options.onColumnVisibilityChange,
+  // which in turn updates the explicit/local columnVisibility state.
+  //
+  // The final piece of the two-way binding entails the next useEffect() which watches
+  // for changes to columnVisibility, then calls handleColumnVisibilityChange?.(columnVisibility)
+  //
+  // After trying several alternative approaches, this seems to be the way that keeps everything
+  // in sync while also avoiding race conditions and infinite loops.
+  //
+  ///////////////////////////////////////////////////////////////////////////
+
+  React.useEffect(() => {
+    if (firstRenderRef.current === true) {
+      return
+    }
+
+    const parsedColumnVisibilityProp = JSON.parse(
+      stringifiedColumnVisibilityProp
+    )
+    // Rather than asserting parsedColumnVisibilityProp as VisibilityState,
+    // we can use a typeguard. Otherwise, we'll get a TypeScript complaint:
+    // Argument of type 'unknown' is not assignable to parameter of type 'Updater<VisibilityState>'.
+    if (isBooleanObject(parsedColumnVisibilityProp)) {
+      tableInstance.setColumnVisibility(parsedColumnVisibilityProp)
+    }
+  }, [stringifiedColumnVisibilityProp, tableInstance])
+
+  ///////////////////////////////////////////////////////////////////////////
+  //
+  // This useEffect() watches for changes to local columnVisibility state.
+  // If it changes AND there's a columnVisibilityChange prop, then
+  // it executes that callback, passing the internal columnVisibility state
+  // back out to the consuming environment. This allows an externally controlled
+  // implementation to stay in sync with any internal state changes. The use
+  // of a ref here is merely a hack to bypass the useEffect's dependency array
+  // such that the function prop doesn't trigger the useEffect on each rerender.
+  //
+  ///////////////////////////////////////////////////////////////////////////
+
+  const onColumnVisibilityChangeEvent = React.useEffectEvent(
+    (visibility: typeof columnVisibility) => {
+      onColumnVisibilityChange?.(visibility)
+    }
+  )
+
+  React.useEffect(() => {
+    if (firstRenderRef.current === true) {
+      return
+    }
+
+    onColumnVisibilityChangeEvent(columnVisibility)
+  }, [columnVisibility])
+
+  /* ======================
+        useEffect()  
   ====================== */
   // This useEffect() watches the showPagination prop.
 
   const setPageSize = tableInstance.setPageSize
+
   React.useEffect(() => {
-    if (!showPagination) {
+    if (!enablePagination) {
       setPageSize(dataLength)
     } else {
       setPageSize(pageSizeProp)
     }
-  }, [dataLength, pageSizeProp, showPagination, setPageSize])
+  }, [dataLength, pageSizeProp, enablePagination, setPageSize])
 
   /* ======================
-        renderTitle()
-  ====================== */
-
-  //# ...
-
-  /* ======================
-            API
+    useEffect() for apiRef
   ====================== */
 
   React.useEffect(() => {
@@ -344,60 +524,68 @@ export const Table = ({
   }, [tableInstance]) // eslint-disable-line
 
   /* ======================
-    renderGlobalFilter()
+        useEffect()  
+  ====================== */
+  // This useEffect updates the firstRenderRef.
+  // It should always be the LAST useEffect().
+
+  React.useEffect(() => {
+    if (firstRenderRef.current === true) {
+      firstRenderRef.current = false
+    }
+  }, [])
+
+  /* ======================
+        renderTitle()
   ====================== */
 
-  const renderGlobalFilter = () => {
-    if (!enableGlobalFilter) return null
+  //# ...
 
-    const globalFilterComponent = (
-      <GlobalFilter
-        {...globalFilterProps}
-        className={cn(
-          {
-            'text-xs': size === 'xs',
-            'text-sm': size === 'sm'
-          },
-          globalFilterProps.className
-        )}
-        globalFilter={globalFilter}
-        setGlobalFilter={setGlobalFilter}
-      />
-    )
+  /* ======================
+      renderControls()
+  ====================== */
+  //# Test responsiveness against different viewport sizes.
+
+  const renderControls = () => {
+    if (!showControls || noControlsShown) return null
 
     return (
-      <div
-        className={cn(
-          'bg-card sticky border-b border-(--table-border-color) p-3'
-        )}
-      >
-        {globalFilterComponent}
-      </div>
+      <section className='bg-card flex flex-col gap-3 border-b border-(--table-border-color) p-3'>
+        <div className={cn('flex flex-wrap items-start justify-center gap-3')}>
+          <GlobalFilter
+            {...globalFilterProps}
+            className={cn(
+              {
+                'text-xs': size === 'xs',
+                'text-sm': size === 'sm'
+              },
+              globalFilterProps.className
+            )}
+            globalFilter={globalFilter}
+            setGlobalFilter={setGlobalFilter}
+            disabled={disabled}
+            enableGlobalFilter={enableGlobalFilter}
+          />
+
+          {enablePagination && (
+            <Pagination
+              disabled={disabled}
+              pageSize={pageSizeProp}
+              pageSizes={pageSizes}
+              tableInstance={tableInstance}
+              variant={variant}
+            />
+          )}
+        </div>
+
+        <ColumnSelection
+          disabled={disabled}
+          enableColumnSelection={enableColumnSelection}
+          tableInstance={tableInstance}
+          variant={variant}
+        />
+      </section>
     )
-  }
-
-  const _renderGlobalFilterInHead = () => {
-    if (!enableGlobalFilter) return null
-
-    const globalFilterComponent = (
-      <GlobalFilter
-        {...globalFilterProps}
-        globalFilter={globalFilter}
-        setGlobalFilter={setGlobalFilter}
-      />
-    )
-
-    if (columns && columns.length > 0) {
-      return (
-        <tr>
-          <td style={{ border: 'none' }} colSpan={columns.length}>
-            {globalFilterComponent}
-          </td>
-        </tr>
-      )
-    }
-
-    return null
   }
 
   /* ======================
@@ -423,6 +611,7 @@ export const Table = ({
                     columnFilterProps.className
                   )}
                   column={header.column}
+                  disabled={disabled}
                 />
               )
 
@@ -498,16 +687,19 @@ export const Table = ({
                     ...headCellProps.style
                   }}
                 >
-                  {/* {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext() )} */}
-
                   {header.isPlaceholder ? null : (
                     <div
-                      className={
+                      className={cn(
                         header.column.getCanSort()
                           ? 'flex cursor-pointer items-center gap-2 select-none *:whitespace-nowrap'
-                          : 'flex items-center gap-2 *:whitespace-nowrap'
+                          : 'flex items-center gap-2 *:whitespace-nowrap',
+                        disabled && 'pointer-events-none'
+                      )}
+                      onClick={
+                        disabled
+                          ? undefined
+                          : header.column.getToggleSortingHandler()
                       }
-                      onClick={header.column.getToggleSortingHandler()}
                       title={
                         canSort
                           ? header.column.getNextSortingOrder() === 'asc'
@@ -562,10 +754,12 @@ export const Table = ({
           <tr {...bodyRowProps}>
             <td
               colSpan={columns?.length || 1}
-              className={cn('py-8 text-center text-lg font-medium', {
-                'text-primary': variant === 'primary',
-                'text-secondary': variant === 'secondary'
-              })}
+              className={cn(
+                'py-8 text-center text-lg font-medium',
+                !disabled && variant === 'primary' && 'text-primary',
+                !disabled && variant === 'secondary' && 'text-secondary',
+                disabled && 'text-(--table-disabled-color)'
+              )}
             >
               No Data...
             </td>
@@ -578,13 +772,18 @@ export const Table = ({
       <tbody {...bodyProps}>
         {tableInstance
           .getRowModel()
-          .rows //.slice(0, 10) //^ Demo only!
+          .rows //.slice(0, 10) // Demo only!
           .map((row) => (
             <tr {...bodyRowProps} key={row.id}>
               {row.getVisibleCells().map((cell) => (
                 <td
                   {...bodyCellProps}
                   key={cell.id}
+                  className={cn(
+                    bodyCellProps.className,
+
+                    disabled && 'text-(--table-disabled-color)'
+                  )}
                   style={{
                     width: enableGetSize ? cell.column.getSize() : undefined,
                     ...bodyCellProps.style
@@ -618,6 +817,7 @@ export const Table = ({
               <th
                 {...footCellProps}
                 key={header.id}
+                className={cn(footCellProps.className)}
                 colSpan={header.colSpan}
                 style={{
                   width: enableGetSize ? header.getSize() : undefined,
@@ -639,50 +839,52 @@ export const Table = ({
   }
 
   /* ======================
-      renderTable()
+        renderTable()
   ====================== */
+  //# Test/Review the No Columns Selected! UI / logic.
 
   const renderTable = () => {
     return (
-      <div
+      <TableContainer
         {...tableContainerProps}
-        className={cn(
-          'shadcn-table-container rounded-xl',
-
-          {
-            '[--table-border-color:var(--color-primary)]':
-              variant === 'primary',
-            '[--table-border-color:var(--color-secondary)]':
-              variant === 'secondary'
-          },
-          tableContainerProps.className
-        )}
-        // style={{ borderRadius: 15, WebkitOverflowScrolling: 'touch' }}
+        disabled={disabled}
+        variant={variant}
       >
-        {renderGlobalFilter()}
-        <table
-          {...tableProps}
-          className={cn(
-            tableBaseClasses,
-            bordered && 'table-bordered',
-            borderless && !bordered && 'table-borderless',
-            flush && 'table-flush',
-            hover && 'table-hover',
-            striped && 'table-striped',
-            stripedColumns && 'table-striped-columns',
-            { 'table-xs': size === 'xs', 'table-sm': size === 'sm' },
-            {
-              'shadcn-table-primary': variant === 'primary',
-              'shadcn-table-secondary': variant === 'secondary'
-            },
-            tableProps.className
-          )}
-        >
-          {renderTableHeader()}
-          {renderTableBody()}
-          {renderTableFooter()}
-        </table>
-      </div>
+        {renderControls()}
+
+        {atLeastOneVisibleColumn ? (
+          <TableScrollContainer {...scrollContainerProps}>
+            <table
+              {...tableProps}
+              className={cn(
+                tableBaseClasses,
+                bordered && 'table-bordered',
+                borderless && !bordered && 'table-borderless',
+                flush && 'table-flush',
+                hover && 'table-hover',
+                striped && 'table-striped',
+                stripedColumns && 'table-striped-columns',
+                { 'table-xs': size === 'xs', 'table-sm': size === 'sm' },
+
+                !disabled && variant === 'primary' && 'shadcn-table-primary',
+                !disabled &&
+                  variant === 'secondary' &&
+                  'shadcn-table-secondary',
+                disabled && 'shadcn-table-disabled',
+                tableProps.className
+              )}
+            >
+              {renderTableHeader()}
+              {renderTableBody()}
+              {renderTableFooter()}
+            </table>
+          </TableScrollContainer>
+        ) : (
+          <div className='py-6 text-center text-sm font-medium italic'>
+            No Columns Selected!
+          </div>
+        )}
+      </TableContainer>
     )
   }
 
@@ -731,39 +933,7 @@ export const Table = ({
       )
     }
 
-    return (
-      <>
-        <Controls
-          // className & style props.
-          controlsClassName={'border-2 border-green-500 border-dashed mb-6'}
-          controlsStyle={{}}
-          globalFilterClassName={''}
-          globalFilterStyle={{}}
-          paginationClassName={''}
-          paginationStyle={{}}
-          paginationItemClassName={''}
-          paginationItemStyle={{}}
-          paginationButtonClassName={''}
-          paginationButtonStyle={{}}
-          pageNumberInputClassName={''}
-          pageNumberInputStyle={{}}
-          pageSizeSelectClassName={''}
-          pageSizeSelectStyle={{}}
-          // Other...
-          noControlsShown={noControlsShown}
-          globalFilter={globalFilter}
-          setGlobalFilter={setGlobalFilter}
-          pageSize={pageSizeProp}
-          pageSizes={pageSizes}
-          showControls={showControls}
-          showGlobalFilter={enableGlobalFilter}
-          showPagination={showPagination}
-          table={tableInstance}
-        />
-
-        {renderTable()}
-      </>
-    )
+    return renderTable()
   }
 
   /* ======================

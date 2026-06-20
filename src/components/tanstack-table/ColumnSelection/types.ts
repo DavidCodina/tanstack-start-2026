@@ -22,7 +22,8 @@ import type {
   Column as ColumnObject,
   TableOptions as Options,
   // SortingState,
-  Table as TableInstance
+  Table as TableInstance,
+  VisibilityState
 } from '@tanstack/react-table'
 
 export type TableOptions = Options<Record<string, any>>
@@ -33,7 +34,10 @@ export type TableAPI = TableInstance<Record<string, any>>
 export type Column = ColumnDef<Record<string, any>, any>
 export type LooseColumn = Record<string, any>
 
-type TableContainerProps = React.ComponentProps<'div'>
+export type TableContainerProps = React.ComponentProps<'div'> & {
+  disabled?: boolean
+}
+export type ScrollContainerProps = React.ComponentProps<'div'>
 
 type TableElementProps = React.ComponentProps<'table'>
 
@@ -60,6 +64,7 @@ export type GlobalFilterProps = Omit<
 > & {
   globalFilter: string
   setGlobalFilter: React.Dispatch<React.SetStateAction<string>>
+  enableGlobalFilter?: boolean
 }
 
 export type ColumnFilterProps = Omit<
@@ -69,13 +74,22 @@ export type ColumnFilterProps = Omit<
   column: ColumnObject<Record<string, any>, unknown>
 }
 
-type TableVariant = 'primary' | 'secondary'
+export type TableVariant = 'primary' | 'secondary'
+
+export type ColumnSelectionProps = React.ComponentProps<'div'> & {
+  disabled?: boolean
+  enableColumnSelection: boolean | undefined
+  tableInstance: TableInstance<Record<string, any>>
+  variant?: TableVariant
+}
 
 /* ========================================================================
 
 ======================================================================== */
 
 export type TableProps = {
+  /** Passes disabled to pagination controls, filter inputs, sorting controls, etc. */
+  disabled?: boolean
   data: Record<string, any>[] | null
   ///////////////////////////////////////////////////////////////////////////
   //
@@ -97,11 +111,15 @@ export type TableProps = {
   //
   ///////////////////////////////////////////////////////////////////////////
   columns: LooseColumn[] | null
+  columnVisibility?: VisibilityState
+  onColumnVisibilityChange?: (newColumnVisibility: VisibilityState) => void
   status: 'idle' | 'pending' | 'success' | 'error'
   apiRef?: React.RefObject<TableAPI | null>
   enableGetSize?: boolean
   enableGlobalFilter?: boolean
   enableColumnFilters?: boolean
+  enablePagination?: boolean
+  enableColumnSelection?: boolean
   showFooter?: boolean
   size?: 'xs' | 'sm'
   variant?: TableVariant
@@ -120,12 +138,14 @@ export type TableProps = {
     | 'getCoreRowModel'
     | 'getSortedRowModel'
     | 'getFilteredRowModel'
+    | 'getPaginationRowModel'
     | 'globalFilterFn'
     | 'sortingFns'
     | 'filterFns'
     | 'state'
     | 'onColumnFiltersChange'
     | 'onGlobalFilterChange'
+    | 'onColumnVisibilityChange'
     | 'onSortingChange'
   >
 
@@ -133,11 +153,11 @@ export type TableProps = {
   pageSize?: number
   pageSizes?: number[]
   showControls?: boolean
-  showPagination?: boolean
 
   /* =================== */
 
   tableContainerProps?: TableContainerProps
+  scrollContainerProps?: ScrollContainerProps
   tableProps?: TableElementProps
   headProps?: THeadProps
   headRowProps?: TRProps

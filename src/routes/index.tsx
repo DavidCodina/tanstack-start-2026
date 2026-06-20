@@ -1,6 +1,6 @@
 import { createFileRoute /* , useRouter */ } from '@tanstack/react-router'
 import { Page, PageContainer } from '@/components'
-import { PaginationExample1 } from '@/components/tanstack-table/Pagination'
+import { ColumnSelectionExample1 } from '@/components/tanstack-table/ColumnSelection'
 
 export const Route = createFileRoute('/')({ component: PageHome })
 
@@ -61,7 +61,7 @@ function PageHome() {
           _HOME
         </h1>
 
-        <PaginationExample1 />
+        <ColumnSelectionExample1 />
       </PageContainer>
     </Page>
   )

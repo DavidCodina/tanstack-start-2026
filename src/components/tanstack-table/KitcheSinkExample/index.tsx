@@ -5,7 +5,7 @@ import { Switch } from './Switch'
 
 import { columns as cols } from './columns'
 import data from '../data.json'
-import { sleep } from 'utils'
+import { sleep } from '@/utils'
 
 const getData = async () => {
   try {

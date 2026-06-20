@@ -291,6 +291,10 @@ have precedence over striping. */
   border-bottom-color: var(--table-disabled-color);
 }
 
+.shadcn-table.shadcn-table-disabled tbody tr td {
+  pointer-events: none;
+}
+
 .shadcn-table.shadcn-table-disabled th {
   border-color: var(--table-disabled-color);
   color: var(--table-disabled-color);
