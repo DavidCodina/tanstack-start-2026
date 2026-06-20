@@ -39,7 +39,11 @@ export const columns = [
     //   onClick={header.column.getToggleSortingHandler()}
     //
     ///////////////////////////////////////////////////////////////////////////
-    enableSorting: false
+    enableSorting: false,
+    // meta.label will be used internally by ColumnSelection's renderColumnCheckboxes() for
+    // each associated Checkbox label. If no meta.label is provided, it will fall back to
+    // the column.id.
+    meta: { label: 'ID' }
   }),
 
   columnHelper.accessor('first_name', {
@@ -47,7 +51,8 @@ export const columns = [
     header: () => <span>First Name</span>,
     footer: (ctx) => ctx.column.id,
     sortUndefined: 'last', // Force undefined values to the end
-    enableColumnFilter: true
+    enableColumnFilter: true,
+    meta: { label: 'First Name' }
   }),
 
   columnHelper.accessor('last_name', {
@@ -55,7 +60,8 @@ export const columns = [
     header: () => <span>Last Name</span>,
     footer: (ctx) => ctx.column.id,
     sortUndefined: 'last',
-    enableColumnFilter: true
+    enableColumnFilter: true,
+    meta: { label: 'Last Name' }
   }),
 
   ///////////////////////////////////////////////////////////////////////////
@@ -171,7 +177,8 @@ export const columns = [
       // works equally well. This means we can just use 'sortByRawValue'
       //
       ///////////////////////////////////////////////////////////////////////////
-      sortingFn: 'sortByRawValue' as any
+      sortingFn: 'sortByRawValue' as any,
+      meta: { label: 'Date of Birth' }
     }
   ),
 
@@ -179,21 +186,24 @@ export const columns = [
     cell: (ctx) => ctx.getValue(),
     header: () => <span>Country</span>,
     footer: (ctx) => ctx.column.id,
-    sortUndefined: 'last'
+    sortUndefined: 'last',
+    meta: { label: 'Country' }
   }),
 
   columnHelper.accessor('phone', {
     cell: (ctx) => ctx.getValue(),
     header: () => <span>Phone</span>,
     footer: (ctx) => ctx.column.id,
-    sortUndefined: 'last'
+    sortUndefined: 'last',
+    meta: { label: 'Phone' }
   }),
 
   columnHelper.accessor('email', {
     cell: (info) => info.getValue(),
     header: () => <span>Email</span>,
     footer: (info) => info.column.id,
-    sortUndefined: 'last'
+    sortUndefined: 'last',
+    meta: { label: 'Email' }
   }),
 
   columnHelper.accessor('age', {
@@ -259,13 +269,14 @@ export const columns = [
     //   3. Create our own custom filterFn here, inline.
     //
     ///////////////////////////////////////////////////////////////////////////
-    filterFn: 'includesString' // 'fuzzy'
+    filterFn: 'includesString', // 'fuzzy'
     // filterFn: (row, id, filterValue) => {
     //   const value: number = row.getValue(id)
     //   if (typeof value !== 'number') { return false }
     //   const valueAsString = value.toString()
     //   return valueAsString.includes(filterValue)
     // }
+    meta: { label: 'Age' }
   }),
 
   // By coincidence, 'false' comes before 'true' when sorting alphabetically.
@@ -282,7 +293,8 @@ export const columns = [
       id: 'is_cool',
       header: () => <span>Is Cool</span>,
       footer: (ctx) => ctx.column.id,
-      enableColumnFilter: true
+      enableColumnFilter: true,
+      meta: { label: 'Is Cool' }
     }
   )
 ]

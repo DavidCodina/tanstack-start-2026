@@ -167,9 +167,12 @@ export const RowSelectionExample1 = () => {
 
   const renderControls = () => {
     return (
-      <div className='mb-6 flex flex-wrap justify-center gap-2'>
+      <div
+        // Note: auto-fit (i.e., not auto-fill) works much better when
+        // using justify-center. Why? Because we don't want ghost columns.
+        className={`mx-auto mb-6 grid max-w-[930px] grid-cols-[repeat(auto-fit,minmax(150px,1fr))] justify-center gap-2`}
+      >
         <Button
-          className='min-w-[130px]'
           onClick={() => {
             setDisabled((v) => !v)
           }}
@@ -179,7 +182,6 @@ export const RowSelectionExample1 = () => {
           {!disabled ? 'Disable Table' : 'Enable Table'}
         </Button>
         <Button
-          className='min-w-[130px]'
           onClick={() => {
             setEnableRowSelection((v) => !v)
           }}
@@ -192,7 +194,6 @@ export const RowSelectionExample1 = () => {
         </Button>
 
         <Button
-          className='min-w-[130px]'
           onClick={() => runVariantCycle(undefined)}
           size='xs'
           variant='cyan'
@@ -205,7 +206,6 @@ export const RowSelectionExample1 = () => {
         </Button>
 
         <Button
-          className='min-w-[130px]'
           onClick={() => {
             // In the case of toggling the select column, we do actually need to do it more carefully.
             toggleRowSelect()
@@ -219,7 +219,6 @@ export const RowSelectionExample1 = () => {
         </Button>
 
         <Button
-          className='min-w-[130px]'
           onClick={() => {
             // Suprisingly, you don't actually need to do this:
             // setColumnVisibility((prev) => {
@@ -239,7 +238,6 @@ export const RowSelectionExample1 = () => {
         </Button>
 
         <Button
-          className='min-w-[130px]'
           onClick={() => {
             setShowControls((v) => !v)
           }}
@@ -250,7 +248,6 @@ export const RowSelectionExample1 = () => {
         </Button>
 
         <Button
-          className='min-w-[130px]'
           onClick={() => {
             setEnableGlobalFilter((v) => !v)
           }}
@@ -260,7 +257,6 @@ export const RowSelectionExample1 = () => {
           {enableGlobalFilter ? 'Disable Filter' : 'Enable Filter'}
         </Button>
         <Button
-          className='min-w-[130px]'
           onClick={() => {
             setEnablePagination((v) => !v)
           }}
@@ -271,7 +267,6 @@ export const RowSelectionExample1 = () => {
         </Button>
 
         <Button
-          className='min-w-[130px]'
           onClick={() => {
             setEnableColumns((v) => !v)
           }}
@@ -282,7 +277,6 @@ export const RowSelectionExample1 = () => {
         </Button>
 
         <Button
-          className='min-w-[130px]'
           onClick={() => {
             setShowFooter((v) => !v)
           }}

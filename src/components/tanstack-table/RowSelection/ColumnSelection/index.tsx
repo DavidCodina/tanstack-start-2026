@@ -11,7 +11,6 @@ const checkGroupClasses = `flex gap-2 items-center`
 /* ========================================================================
 
 ======================================================================== */
-//# Refine this to columnSelectionContainerProps and so on...
 
 export const ColumnSelection = ({
   className = '',
@@ -61,6 +60,13 @@ export const ColumnSelection = ({
 
   const renderColumnCheckboxes = () => {
     return tableInstance.getAllLeafColumns().map((column) => {
+      let label = column.id
+
+      const meta = column.columnDef.meta
+      if (meta && 'label' in meta && typeof meta.label === 'string') {
+        label = meta.label
+      }
+
       return (
         <div className={checkGroupClasses} key={column.id}>
           <Checkbox
@@ -81,14 +87,7 @@ export const ColumnSelection = ({
             )}
             htmlFor={`${column.id}-${id}`}
           >
-            {/* 
-              This exposes the actual data keys to the end user. This may not be ideal.
-              The Table --> Controls component could receive a visibilityCheckLabels 
-              array that provides transformations for each associated label. For example:
-              [ { id: 'first_name', formatted: 'First Name' }, { id: 'last_name', formatted: 'Last Name'}, ... ]
-              */}
-
-            {column.id}
+            {label}
           </label>
         </div>
       )
@@ -99,9 +98,7 @@ export const ColumnSelection = ({
           return 
   ====================== */
 
-  if (!enableColumnSelection) {
-    return null
-  }
+  if (!enableColumnSelection) return null
 
   return (
     <div

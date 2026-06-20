@@ -144,7 +144,7 @@ export const Table = ({
   columnFilterProps = {},
 
   //# Some kind of props for Pagination component.
-  //# Some kidn of props for ColumnSelection component.
+  //# Some kind of props for ColumnSelection component.
 
   /* =================== */
   // TanStack table configuration props.
@@ -302,6 +302,27 @@ export const Table = ({
     return columns
   }, [columns])
 
+  ///////////////////////////////////////////////////////////////////////////
+  //
+  // In the case of the selectableColumn, we DEFINITELY don't want
+  // it recreated on every render, so we MUST memoize it.
+  //
+  // Note: if you want to pass props to IndetermateCheckbox and/or Checkbox
+  // from the outside, then you'll likely need to JSON.stringify() them from
+  // outside of useMemo() then JSON.parse() them from within useMemo(). Otherwise,
+  // things like the style prop will break the memoization. However, you should also
+  // be aware that any handlers like onChange, onClick, etc. will be silently dropped.
+  // Why? JSON.stringify just skips them without throwing any error or warning.
+  //
+  // Perhaps a better alternative would be to have an indeterminateCheckboxPropsRef,
+  // and/or checkboxPropsRef to get around the useMemo dependency array. However,
+  // if you wanted it to always stay up to date, you'd also need a useEffect that would
+  // watch for changes to the props themselves and then update the ref(s).
+  //
+  // In any case, there's currently no need to expose props for the IndetermateCheckbox and/or Checkbox.
+  //
+  ///////////////////////////////////////////////////////////////////////////
+
   const colsPlusSelectable = React.useMemo(() => {
     const selectableColumn: Column = {
       // ⚠️ This id is being hardcoded. It's crucial that the consumer be
@@ -343,7 +364,8 @@ export const Table = ({
         )
       },
 
-      enableSorting: false
+      enableSorting: false,
+      meta: { label: 'Row Select' }
     }
 
     if (hasFooter) {
@@ -370,16 +392,11 @@ export const Table = ({
     // Initially was just doing  ...columns, but was getting this TypeScript error:
     // Type 'LooseColumn[] | null' must have a '[Symbol.iterator]()' method that returns an iterator.
     // The spread operator ... requires the value to be iterable. null is not iterable, so TypeScript
-    // complains when columns is typed as LooseColumn[] | null — even though you have an Array.isArray(columns) check earlier in the component, TypeScript doesn't narrow the type of columns inside the useMemo callback because that narrowing doesn't carry over into a separate closure.
+    // complains when columns is typed as LooseColumn[] | null — even though you have an
+    // Array.isArray(columns) check earlier in the component, TypeScript doesn't narrow the type of
+    // columns inside the useMemo callback because that narrowing doesn't carry over into a separate closure.
     return [selectableColumn, ...(columns ?? [])]
-  }, [
-    columns,
-    disabled,
-    hasFooter,
-    variant
-    //# rowSelectCheckboxClassName,
-    //# stringifiedRowSelectCheckboxStyle
-  ])
+  }, [columns, disabled, hasFooter, variant])
 
   /* ======================
     Table Initialization
