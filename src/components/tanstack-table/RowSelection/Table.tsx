@@ -304,8 +304,8 @@ export const Table = ({
 
   const colsPlusSelectable = React.useMemo(() => {
     const selectableColumn: Column = {
-      // ⚠️ This id is being hardcoded. It's crucial that the consumer be aware
-      // that this is always the column id for this specific column.
+      // ⚠️ This id is being hardcoded. It's crucial that the consumer be
+      // aware that this is ALWAYS the column id for this specific column.
       id: 'row_select',
 
       header: ({ table }) => {

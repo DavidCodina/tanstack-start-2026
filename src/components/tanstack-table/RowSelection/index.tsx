@@ -7,6 +7,7 @@ import { columns as cols } from './columns'
 import { Table } from './Table'
 import type { TableAPI } from './Table'
 
+import { useCycle } from '@/hooks'
 import { sleep } from '@/utils'
 
 const getData = async () => {
@@ -25,8 +26,6 @@ const getData = async () => {
     }
   }
 }
-
-//# Implement useCycle to cycle through variants.
 
 /* ========================================================================
 
@@ -89,10 +88,11 @@ export const RowSelectionExample1 = () => {
   >({ table_row_select: false })
 
   const [enableRowSelection, setEnableRowSelection] = useState(true)
-  //* New...
   const [selection, setSelection] = useState<Record<string, boolean>[] | null>(
     null
   )
+
+  const [variant, runVariantCycle] = useCycle(undefined, 'primary', 'secondary')
 
   /* ======================
          useEffect()
@@ -171,6 +171,16 @@ export const RowSelectionExample1 = () => {
         <Button
           className='min-w-[130px]'
           onClick={() => {
+            setDisabled((v) => !v)
+          }}
+          size='xs'
+          variant='cyan'
+        >
+          {!disabled ? 'Disable Table' : 'Enable Table'}
+        </Button>
+        <Button
+          className='min-w-[130px]'
+          onClick={() => {
             setEnableRowSelection((v) => !v)
           }}
           size='xs'
@@ -179,6 +189,19 @@ export const RowSelectionExample1 = () => {
           {enableRowSelection === false
             ? 'Enable Row Selection'
             : 'Disable Row Selection'}
+        </Button>
+
+        <Button
+          className='min-w-[130px]'
+          onClick={() => runVariantCycle(undefined)}
+          size='xs'
+          variant='cyan'
+        >
+          {variant === 'primary'
+            ? 'Primary Vriant'
+            : variant === 'secondary'
+              ? 'Secondary Variant'
+              : 'Default Variant'}
         </Button>
 
         <Button
@@ -213,17 +236,6 @@ export const RowSelectionExample1 = () => {
           variant='cyan'
         >
           {columnVisibility.id === false ? 'Add id' : 'Remove id'}
-        </Button>
-
-        <Button
-          className='min-w-[130px]'
-          onClick={() => {
-            setDisabled((v) => !v)
-          }}
-          size='xs'
-          variant='cyan'
-        >
-          {!disabled ? 'Disable Table' : 'Enable Table'}
         </Button>
 
         <Button
@@ -320,7 +332,7 @@ export const RowSelectionExample1 = () => {
         // borderless
         bordered
         size='sm'
-        variant='secondary'
+        variant={variant}
         enableGlobalFilter={enableGlobalFilter}
         enablePagination={enablePagination}
         // enableColumnFilters={false}
