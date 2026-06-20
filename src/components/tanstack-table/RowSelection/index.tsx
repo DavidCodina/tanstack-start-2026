@@ -2,12 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Button } from '../../Button'
 
 import data from '../data.json'
-import {
-  columns as cols
-  // manualColumns as cols
-  // groupedColumns,
-  // manualGroupedColumns
-} from './columns'
+import { columns as cols } from './columns'
 
 import { Table } from './Table'
 import type { TableAPI } from './Table'
@@ -68,7 +63,7 @@ const getData = async () => {
 //
 //////////////////////////////////////////////////////////////////////////
 
-export const ColumnSelectionExample1 = () => {
+export const RowSelectionExample1 = () => {
   /* ======================
        state  & refs
   ====================== */
@@ -91,7 +86,13 @@ export const ColumnSelectionExample1 = () => {
 
   const [columnVisibility, setColumnVisibility] = useState<
     Record<string, boolean>
-  >({ id: false }) // { select: false }
+  >({ table_row_select: false })
+
+  const [enableRowSelection, setEnableRowSelection] = useState(true)
+  //* New...
+  const [selection, setSelection] = useState<Record<string, boolean>[] | null>(
+    null
+  )
 
   /* ======================
          useEffect()
@@ -131,6 +132,36 @@ export const ColumnSelectionExample1 = () => {
   // }, [status])
 
   /* ======================
+      toggleRowSelect() 
+  ====================== */
+
+  const toggleRowSelect = () => {
+    setColumnVisibility((prev) => {
+      // The select property could be omitted, which means it is true,
+      // assuming onSelectionChange prop has been passed in, thereby
+      // enabling the feature.
+      if (prev.row_select === true) {
+        return {
+          ...prev,
+          row_select: false
+        }
+      }
+      return {
+        ...prev,
+        row_select: true
+      }
+    })
+  }
+
+  /* ======================
+         useEffect()
+  ====================== */
+
+  useEffect(() => {
+    console.log('Selected data:', selection)
+  }, [selection])
+
+  /* ======================
       renderControls()
   ====================== */
 
@@ -140,13 +171,43 @@ export const ColumnSelectionExample1 = () => {
         <Button
           className='min-w-[130px]'
           onClick={() => {
-            setColumnVisibility((prev) => {
-              const isId = prev.id !== false
-              return {
-                ...prev,
-                id: !isId
-              }
-            })
+            setEnableRowSelection((v) => !v)
+          }}
+          size='xs'
+          variant='cyan'
+        >
+          {enableRowSelection === false
+            ? 'Enable Row Selection'
+            : 'Disable Row Selection'}
+        </Button>
+
+        <Button
+          className='min-w-[130px]'
+          onClick={() => {
+            // In the case of toggling the select column, we do actually need to do it more carefully.
+            toggleRowSelect()
+          }}
+          size='xs'
+          variant='cyan'
+        >
+          {columnVisibility.row_select === false
+            ? 'Add Row Selection'
+            : 'Remove Row Selection'}
+        </Button>
+
+        <Button
+          className='min-w-[130px]'
+          onClick={() => {
+            // Suprisingly, you don't actually need to do this:
+            // setColumnVisibility((prev) => {
+            //   const isId = prev.id !== false
+            //   return { ...prev, id: !isId }
+            // })
+
+            // Simply change what you need to change.
+            // The reset seems to remain consistent.
+            const newId = !columnVisibility.id
+            setColumnVisibility({ id: newId })
           }}
           size='xs'
           variant='cyan'
@@ -231,6 +292,11 @@ export const ColumnSelectionExample1 = () => {
       {renderControls()}
 
       <Table
+        highlightSelectedRows={true}
+        enableRowSelection={enableRowSelection}
+        onSelectionChange={(selectedData: Record<any, any>[]) => {
+          setSelection(selectedData)
+        }}
         disabled={disabled}
         apiRef={apiRef}
         data={data}

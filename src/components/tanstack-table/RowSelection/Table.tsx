@@ -20,6 +20,8 @@ import { TableContainer } from './TableContainer'
 import { TableScrollContainer } from './TableScrollContainer'
 import { Pagination } from './Pagination'
 import { ColumnSelection } from './ColumnSelection'
+import { IndeterminateCheckbox } from './IndeterminateCheckbox'
+import { Checkbox } from './Checkbox'
 import { fuzzyFilter } from './filters'
 import { ColumnFilter } from './ColumnFilter'
 import { GlobalFilter } from './GlobalFilter'
@@ -120,6 +122,12 @@ export const Table = ({
 
   /* =================== */
 
+  onSelectionChange,
+  highlightSelectedRows = false,
+  enableRowSelection, // Don't set default here!
+
+  /* =================== */
+
   tableContainerProps = {},
   scrollContainerProps = {},
   tableProps = {},
@@ -186,6 +194,7 @@ export const Table = ({
   data = Array.isArray(data) ? data : []
 
   disabled = typeof disabled === 'boolean' ? disabled : false
+
   enableGlobalFilter =
     typeof enableGlobalFilter === 'boolean'
       ? enableGlobalFilter
@@ -200,6 +209,15 @@ export const Table = ({
         ? tableOptions.enableColumnFilters
         : true
 
+  // enableRowSelection defaults to false. Because many tables will
+  // not need this feature, it's best to make it opt-in.
+  enableRowSelection =
+    typeof enableRowSelection === 'boolean'
+      ? enableRowSelection
+      : typeof tableOptions.enableRowSelection === 'boolean'
+        ? tableOptions.enableRowSelection
+        : false
+
   /* ======================
         state & refs
   ====================== */
@@ -210,11 +228,10 @@ export const Table = ({
   )
   const [sorting, setSorting] = React.useState<SortingState>([])
 
-  // const [rowSelection, setRowSelection] = React.useState<Record<string, boolean>>({})
-
-  // const [columnOrder, setColumnOrder] = React.useState<ColumnOrderState>(() => {
-  //   return isStringArray(columnOrderProp) ? columnOrderProp : []
-  // })
+  // We could have an initialRowSelection prop that we pass in.
+  const [rowSelection, setRowSelection] = React.useState<
+    Record<string, boolean>
+  >({})
 
   // Initialize columnVisibility using columnVisibilityProp.
   // Otherwise default to {}. columnVisibility is always an object columnIds
@@ -228,7 +245,6 @@ export const Table = ({
   })
 
   const firstRenderRef = React.useRef(true)
-  // const onSelectionChangeRef = React.useRef<any>(onSelectionChange)
 
   /* ======================
         Derived State
@@ -243,7 +259,7 @@ export const Table = ({
   const hasFooter = firstColumn.hasOwnProperty('footer')
 
   const dataLength = data?.length || 0
-  //# If title is added, then also consider this here...
+
   const noControlsShown =
     !enableGlobalFilter && !enablePagination && !enableColumnSelection
 
@@ -286,6 +302,85 @@ export const Table = ({
     return columns
   }, [columns])
 
+  const colsPlusSelectable = React.useMemo(() => {
+    const selectableColumn: Column = {
+      // ⚠️ This id is being hardcoded. It's crucial that the consumer be aware
+      // that this is always the column id for this specific column.
+      id: 'row_select',
+
+      header: ({ table }) => {
+        return (
+          <IndeterminateCheckbox
+            aria-label={
+              table.getIsAllRowsSelected()
+                ? 'Deselect all rows'
+                : table.getIsSomeRowsSelected()
+                  ? 'Some rows selected — select all rows'
+                  : 'Select all rows'
+            }
+            disabled={disabled}
+            {...{
+              indeterminate: table.getIsSomeRowsSelected(),
+              checked: table.getIsAllRowsSelected(),
+              onChange: table.getToggleAllRowsSelectedHandler()
+            }}
+            variant={variant}
+          />
+        )
+      },
+
+      cell: ({ row }) => {
+        return (
+          <Checkbox
+            disabled={disabled}
+            {...{
+              checked: row.getIsSelected(),
+              onChange: row.getToggleSelectedHandler()
+            }}
+            aria-label={`${row.getIsSelected() ? 'Deselect' : 'Select'} row`}
+            variant={variant}
+          />
+        )
+      },
+
+      enableSorting: false
+    }
+
+    if (hasFooter) {
+      selectableColumn.footer = ({ table }) => (
+        <IndeterminateCheckbox
+          aria-label={
+            table.getIsAllRowsSelected()
+              ? 'Deselect all rows'
+              : table.getIsSomeRowsSelected()
+                ? 'Some rows selected — select all rows'
+                : 'Select all rows'
+          }
+          disabled={disabled}
+          {...{
+            indeterminate: table.getIsSomeRowsSelected(),
+            checked: table.getIsAllRowsSelected(),
+            onChange: table.getToggleAllRowsSelectedHandler()
+          }}
+          variant={variant}
+        />
+      )
+    }
+
+    // Initially was just doing  ...columns, but was getting this TypeScript error:
+    // Type 'LooseColumn[] | null' must have a '[Symbol.iterator]()' method that returns an iterator.
+    // The spread operator ... requires the value to be iterable. null is not iterable, so TypeScript
+    // complains when columns is typed as LooseColumn[] | null — even though you have an Array.isArray(columns) check earlier in the component, TypeScript doesn't narrow the type of columns inside the useMemo callback because that narrowing doesn't carry over into a separate closure.
+    return [selectableColumn, ...(columns ?? [])]
+  }, [
+    columns,
+    disabled,
+    hasFooter,
+    variant
+    //# rowSelectCheckboxClassName,
+    //# stringifiedRowSelectCheckboxStyle
+  ])
+
   /* ======================
     Table Initialization
   ====================== */
@@ -326,7 +421,13 @@ export const Table = ({
 
   const tableInstance = useReactTable({
     data: data,
-    columns: cols as Column[],
+
+    // Old: columns: cols as Column[],
+    // If you add an array in here, then it will cause an infinite rerender.
+    // This is why we memoize cols and colsPlusSelectable instead.
+    columns: enableRowSelection
+      ? (colsPlusSelectable as Column[])
+      : (cols as Column[]),
 
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -355,6 +456,7 @@ export const Table = ({
       // Which is why what you actually want to send back to the consumer is the custom columnVisibility state.
       setColumnVisibility(updater)
     },
+    onRowSelectionChange: setRowSelection,
     globalFilterFn: 'includesString', // 'fuzzy', // Apply fuzzy filter to the global filter (most common use case for fuzzy filter),
 
     // The type defs define this as: sortingFns?: Record<string, SortingFn<any>>
@@ -366,8 +468,8 @@ export const Table = ({
       columnFilters,
       globalFilter,
       sorting,
-      columnVisibility
-      // rowSelection,
+      columnVisibility,
+      rowSelection
       // columnOrder,
     },
 
@@ -376,6 +478,7 @@ export const Table = ({
 
     enableGlobalFilter: enableGlobalFilter,
     enableColumnFilters: enableColumnFilters,
+    enableRowSelection: enableRowSelection,
 
     defaultColumn: {
       ...defaultColumnSizing,
@@ -504,6 +607,48 @@ export const Table = ({
       setPageSize(pageSizeProp)
     }
   }, [dataLength, pageSizeProp, enablePagination, setPageSize])
+
+  /* ======================
+        useEffect()
+  ====================== */
+  // This useEffect() watches for changes to rowSelection, then calls onSelectionChange.
+
+  const onSelectionChangeEvent = React.useEffectEvent(
+    (selectedData: Record<any, any>[]) => {
+      onSelectionChange?.(selectedData)
+    }
+  )
+
+  React.useEffect(() => {
+    if (firstRenderRef.current === true) {
+      return
+    }
+
+    const flatRows = tableInstance.getSelectedRowModel().flatRows
+    const newSelectedData = flatRows.map((flatRow) => {
+      return flatRow.original
+    })
+
+    onSelectionChangeEvent(newSelectedData)
+  }, [tableInstance, rowSelection])
+
+  /* ======================
+        useEffect()
+  ====================== */
+  // This useEffect() will wipe the local rowSelection state.
+  // Notice, however, that we don't explicitly call setRowSelection({}).
+  // Instead, we call tableInstance.setRowSelection({}). This seems to
+  // be more idiomatic.
+
+  React.useEffect(() => {
+    if (firstRenderRef.current === true) {
+      return
+    }
+
+    if (enableRowSelection === false) {
+      tableInstance.setRowSelection({})
+    }
+  }, [enableRowSelection, tableInstance])
 
   /* ======================
     useEffect() for apiRef
@@ -765,27 +910,38 @@ export const Table = ({
         {tableInstance
           .getRowModel()
           .rows //.slice(0, 10) // Demo only!
-          .map((row) => (
-            <tr {...bodyRowProps} key={row.id}>
-              {row.getVisibleCells().map((cell) => (
-                <td
-                  {...bodyCellProps}
-                  key={cell.id}
-                  className={cn(
-                    bodyCellProps.className,
+          .map((row) => {
+            const isSelected = row.getIsSelected()
 
-                    disabled && 'text-(--table-disabled-color)'
-                  )}
-                  style={{
-                    width: enableGetSize ? cell.column.getSize() : undefined,
-                    ...bodyCellProps.style
-                  }}
-                >
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
-            </tr>
-          ))}
+            return (
+              <tr
+                {...bodyRowProps}
+                className={cn(
+                  bodyRowProps.className,
+                  isSelected && highlightSelectedRows && 'table-active'
+                )}
+                key={row.id}
+              >
+                {row.getVisibleCells().map((cell) => (
+                  <td
+                    {...bodyCellProps}
+                    key={cell.id}
+                    className={cn(
+                      bodyCellProps.className,
+
+                      disabled && 'text-(--table-disabled-color)'
+                    )}
+                    style={{
+                      width: enableGetSize ? cell.column.getSize() : undefined,
+                      ...bodyCellProps.style
+                    }}
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </tr>
+            )
+          })}
       </tbody>
     )
   }
@@ -901,7 +1057,7 @@ export const Table = ({
     }
 
     if (status === 'pending') {
-      // Todo: Render skeleton.
+      // Todo: Render Skeleton.
       return (
         <div className='text-primary my-6 text-center text-3xl leading-none font-black'>
           Loading Table...

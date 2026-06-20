@@ -36,6 +36,7 @@ export const Checkbox = ({
   disabled = false,
   onChange,
   style = {},
+  title,
   variant = 'primary',
   ...otherProps
 }: TableCheckboxProps) => {
@@ -96,6 +97,7 @@ export const Checkbox = ({
         }}
         style={style}
         tabIndex={disabled ? -1 : 0}
+        title={title}
       >
         {checked && (
           <Check

@@ -39,6 +39,7 @@ export const IndeterminateCheckbox = ({
   indeterminate,
   onChange,
   style = {},
+  title,
   variant = 'primary',
   ...otherProps
 }: IndeterminateCheckboxProps) => {
@@ -161,6 +162,7 @@ export const IndeterminateCheckbox = ({
         }}
         style={style}
         tabIndex={disabled ? -1 : 0}
+        title={title}
       >
         {renderIcon()}
       </div>
