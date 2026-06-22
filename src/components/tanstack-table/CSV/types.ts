@@ -43,13 +43,13 @@ export type ScrollContainerProps = React.ComponentProps<'div'>
 
 type TableElementProps = React.ComponentProps<'table'>
 
-type THeadProps = React.ComponentProps<'thead'>
-type TBodyProps = React.ComponentProps<'tbody'>
-type TFootProps = React.ComponentProps<'tfoot'>
-type TRProps = React.ComponentProps<'tr'>
+export type THeadProps = React.ComponentProps<'thead'>
+export type TBodyProps = React.ComponentProps<'tbody'>
+export type TFootProps = React.ComponentProps<'tfoot'>
+export type TRProps = React.ComponentProps<'tr'>
 
-type THProps = React.ComponentProps<'th'>
-type TDProps = React.ComponentProps<'td'>
+export type THProps = React.ComponentProps<'th'>
+export type TDProps = React.ComponentProps<'td'>
 
 // React.InputHTMLAttributes<HTMLInputElement>
 type InputProps = React.ComponentProps<'input'>

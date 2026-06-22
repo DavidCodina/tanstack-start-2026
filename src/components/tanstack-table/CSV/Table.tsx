@@ -7,17 +7,15 @@
 
 import * as React from 'react'
 import {
-  flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable
   // FilterFn,
-  // getFilteredRowModel,
   // InitialTableState,
 } from '@tanstack/react-table'
-import { AlertCircle, ArrowUpDown, MoveDown, MoveUp } from 'lucide-react'
+import { AlertCircle } from 'lucide-react'
 // import { RankingInfo } from '@tanstack/match-sorter-utils'
 
 import { Alert } from '../../Alert'
@@ -26,11 +24,14 @@ import { defaultColumnSizing, sortingFns } from './tableInstanceOptions'
 import { TableControls } from './TableControls'
 import { TableContainer } from './TableContainer'
 import { TableScrollContainer } from './TableScrollContainer'
+import { TableHeader } from './TableHeader'
+import { TableBody } from './TableBody'
+import { TableFooter } from './TableFooter'
 
 import { IndeterminateCheckbox } from './IndeterminateCheckbox'
 import { Checkbox } from './Checkbox'
 import { fuzzyFilter } from './filters'
-import { ColumnFilter } from './ColumnFilter'
+
 import { isBooleanObject, isStringArray } from './utils'
 
 import type {
@@ -753,267 +754,6 @@ export const Table = ({
   //# ...
 
   /* ======================
-    renderTableHeader()
-  ====================== */
-
-  const renderTableHeader = () => {
-    return (
-      <thead {...headProps}>
-        {tableInstance.getHeaderGroups().map((headerGroup) => (
-          <tr {...headRowProps} key={headerGroup.id}>
-            {headerGroup.headers.map((header) => {
-              const canSort = header.column.getCanSort()
-
-              const columnFilter = (
-                <ColumnFilter
-                  {...columnFilterProps}
-                  className={cn(
-                    {
-                      'mx-auto w-[calc(100%-4px)]': size === 'xs'
-                      // '': size === 'sm'
-                    },
-                    columnFilterProps.className
-                  )}
-                  column={header.column}
-                  disabled={disabled}
-                />
-              )
-
-              // The enableColumnFilter is a property that exists in Tanstack Table.
-              // However, by default it's true, which means you have to explicitly
-              // opt out of the filtering if you don't want it. Moreover, there seems
-              // to be no way to change the global default to false. I prefer to opt
-              // in to column filtering. We can accomplish this by using our own enableFilter
-              // variable here such that if it's not EXPLICITLY set to true, then we consider it false.
-              const enableFilter =
-                header?.column?.columnDef?.enableColumnFilter === true
-                  ? true
-                  : false
-
-              ///////////////////////////////////////////////////////////////////////////
-              //
-              // Note: The Nikita Dev tutorial did this at 8:15
-              //
-              //   return (
-              //     <th key={header.id} colSpan={header.colSpan}>
-              //       {header.column.columnDef.header}
-              //     </th>
-              //   )
-              //
-              // However, I get this error:
-              //
-              //   ❌ Type 'ColumnDefTemplate<HeaderContext<unknown, unknown>> | undefined' is not assignable to type 'ReactNode'.
-              //
-              // In fact, the above approach will work if you're using string header values and not functions:
-              //
-              //    ❌  header: 'ID',
-              //    ✅ header: () => <span>ID</span>
-              //
-              // However, as soon as one moves to the function syntax, the whole thing breaks
-              // As TypeScript was trying to tell us, it's better to just use header.placeHolder + flexRender,
-              // which is in fact the recommended approach for even a basic example:
-              //
-              //   https://tanstack.com/table/v8/docs/framework/react/examples/basic
-              //
-              // So... ANY TIME you think any of your column definitions might use the function version
-              // of header, cell, or footer, then you want to be using flexRender. In other words, just
-              // use flexRender within an <th> and <td> tags withing header the thead, tbody and tfoot.
-              //
-              ///////////////////////////////////////////////////////////////////////////
-
-              return (
-                <th
-                  {...headCellProps}
-                  className={cn('align-top', headCellProps.className)}
-                  key={header.id}
-                  colSpan={header.colSpan}
-                  ///////////////////////////////////////////////////////////////////////////
-                  //
-                  // getSize() helps normalize the column widths. Sometimes it works better than the
-                  // browser's algorithm, but sometimes not. It acts kind of like table-layout:fixed,
-                  // but still provides the ability to shrink and grow as needed.
-                  //
-                  // getSize() is a hint fed into the content-based sizing algorithm. The browser uses it
-                  // as a starting point but still measures actual cell content and will expand a column
-                  // beyond your specified width if content demands it (and can also shrink/redistribute
-                  // things if the table is constrained). That's the "normalizes but can still expand/contract"
-                  // behavior you described earlier — accurate.
-                  //
-                  // Use enableGetSize prop to opt in.
-                  //
-                  // Also, now that we have this implemented, we can set the `size` property for a given
-                  // column within our columns definition file.
-                  //
-                  ///////////////////////////////////////////////////////////////////////////
-
-                  style={{
-                    width: enableGetSize ? header.getSize() : undefined,
-                    ...headCellProps.style
-                  }}
-                >
-                  {header.isPlaceholder ? null : (
-                    <div
-                      className={cn(
-                        header.column.getCanSort()
-                          ? 'flex cursor-pointer items-center gap-2 select-none *:whitespace-nowrap'
-                          : 'flex items-center gap-2 *:whitespace-nowrap',
-                        disabled && 'pointer-events-none'
-                      )}
-                      onClick={
-                        disabled
-                          ? undefined
-                          : header.column.getToggleSortingHandler()
-                      }
-                      title={
-                        canSort
-                          ? header.column.getNextSortingOrder() === 'asc'
-                            ? 'Sort ascending'
-                            : header.column.getNextSortingOrder() === 'desc'
-                              ? 'Sort descending'
-                              : 'Clear sort'
-                          : undefined
-                      }
-                    >
-                      {flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-
-                      {{
-                        asc: <MoveUp className='ml-auto size-4' />, // asc: <> 🔼</>,
-                        desc: <MoveDown className='ml-auto size-4' /> // desc: <> 🔽</>
-                      }[header.column.getIsSorted() as string] ??
-                        (canSort ? (
-                          <ArrowUpDown className='ml-auto size-4' />
-                        ) : null)}
-                    </div>
-                  )}
-
-                  {/* Conditionally render a column filter input. */}
-                  {enableColumnFilters &&
-                  enableFilter &&
-                  header.column.getCanFilter() ? (
-                    <div>{columnFilter}</div>
-                  ) : null}
-                </th>
-              )
-            })}
-          </tr>
-        ))}
-      </thead>
-    )
-  }
-
-  /* ======================
-      renderTableBody()
-  ====================== */
-
-  const renderTableBody = () => {
-    // If data is an empty array when &&  status is neither
-    // 'pending' nor 'error', then show "No Data..."
-
-    if (Array.isArray(data) && data.length === 0) {
-      return (
-        <tbody {...bodyProps}>
-          <tr {...bodyRowProps}>
-            <td
-              colSpan={columns?.length || 1}
-              className={cn(
-                'py-8 text-center text-lg font-medium',
-                !disabled && variant === 'primary' && 'text-primary',
-                !disabled && variant === 'secondary' && 'text-secondary',
-                disabled && 'text-(--table-disabled-color)'
-              )}
-            >
-              No Data...
-            </td>
-          </tr>
-        </tbody>
-      )
-    }
-
-    return (
-      <tbody {...bodyProps}>
-        {tableInstance
-          .getRowModel()
-          .rows //.slice(0, 10) // Demo only!
-          .map((row) => {
-            const isSelected = row.getIsSelected()
-
-            return (
-              <tr
-                {...bodyRowProps}
-                className={cn(
-                  bodyRowProps.className,
-                  isSelected && highlightSelectedRows && 'table-active'
-                )}
-                key={row.id}
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <td
-                    {...bodyCellProps}
-                    key={cell.id}
-                    className={cn(
-                      bodyCellProps.className,
-
-                      disabled && 'text-(--table-disabled-color)'
-                    )}
-                    style={{
-                      width: enableGetSize ? cell.column.getSize() : undefined,
-                      ...bodyCellProps.style
-                    }}
-                  >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
-              </tr>
-            )
-          })}
-      </tbody>
-    )
-  }
-
-  /* ======================
-    renderTableFooter()
-  ====================== */
-
-  const renderTableFooter = () => {
-    // Return null when no footer is detected in the column definition, or
-    // when the showFooter prop is set to false.
-    if (!hasFooter || !showFooter) {
-      return null
-    }
-
-    return (
-      <tfoot {...footProps}>
-        {tableInstance.getFooterGroups().map((footerGroup) => (
-          <tr {...footRowProps} key={footerGroup.id}>
-            {footerGroup.headers.map((header) => (
-              <th
-                {...footCellProps}
-                key={header.id}
-                className={cn(footCellProps.className)}
-                colSpan={header.colSpan}
-                style={{
-                  width: enableGetSize ? header.getSize() : undefined,
-                  ...footCellProps.style
-                }}
-              >
-                {header.isPlaceholder
-                  ? null
-                  : flexRender(
-                      header.column.columnDef.footer,
-                      header.getContext()
-                    )}
-              </th>
-            ))}
-          </tr>
-        ))}
-      </tfoot>
-    )
-  }
-
-  /* ======================
         renderTable()
   ====================== */
   //# Test/Review the No Columns Selected! UI / logic.
@@ -1074,9 +814,40 @@ export const Table = ({
                 tableProps.className
               )}
             >
-              {renderTableHeader()}
-              {renderTableBody()}
-              {renderTableFooter()}
+              <TableHeader
+                columnFilterProps={columnFilterProps}
+                disabled={disabled}
+                enableColumnFilters={enableColumnFilters}
+                enableGetSize={enableGetSize}
+                headCellProps={headCellProps}
+                headProps={headProps}
+                headRowProps={headRowProps}
+                size={size}
+                tableInstance={tableInstance}
+              />
+
+              <TableBody
+                bodyCellProps={bodyCellProps}
+                bodyProps={bodyProps}
+                bodyRowProps={bodyRowProps}
+                columns={columns}
+                data={data}
+                disabled={disabled}
+                enableGetSize={enableGetSize}
+                highlightSelectedRows={highlightSelectedRows}
+                tableInstance={tableInstance}
+                variant={variant}
+              />
+
+              <TableFooter
+                enableGetSize={enableGetSize}
+                footCellProps={footCellProps}
+                footProps={footProps}
+                footRowProps={footRowProps}
+                hasFooter={hasFooter}
+                showFooter={showFooter}
+                tableInstance={tableInstance}
+              />
             </table>
           </TableScrollContainer>
         ) : (

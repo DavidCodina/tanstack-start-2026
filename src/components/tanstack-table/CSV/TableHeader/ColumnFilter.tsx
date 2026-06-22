@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
-import { DebouncedInput } from './DebouncedInput'
+import { DebouncedInput } from '../DebouncedInput'
 
-import type { ColumnFilterProps } from './types'
+import type { ColumnFilterProps } from '../types'
 
 import { cn } from '@/utils'
 
