@@ -5,7 +5,11 @@ import { ColumnSelection } from './ColumnSelection'
 
 import type { Table as TableInstance } from '@tanstack/react-table'
 
-import type { GlobalFilterProps, TableVariant } from '../types'
+import type {
+  ExportCSVButtonProps,
+  GlobalFilterProps,
+  TableVariant
+} from '../types'
 
 import { cn } from '@/utils'
 
@@ -33,6 +37,16 @@ type TableControlsProps = {
   showExportCSVButton: boolean
   csvExportFileName: string
   csvHeaders?: any[]
+  exportCSVButtonProps: Omit<
+    ExportCSVButtonProps,
+    | 'csvHeaders'
+    | 'data'
+    | 'disabled'
+    | 'fileName'
+    | 'showExportCSVButton'
+    | 'size'
+    | 'variant'
+  >
 
   /* =================== */
 
@@ -66,9 +80,10 @@ export const TableControls = ({
 
   /* =================== */
 
-  showExportCSVButton = true,
+  showExportCSVButton = false,
   csvExportFileName = '',
   csvHeaders,
+  exportCSVButtonProps = {},
 
   /* =================== */
 
@@ -79,10 +94,6 @@ export const TableControls = ({
   ====================== */
 
   const renderExportCSVButton = () => {
-    if (showExportCSVButton === false) {
-      return null
-    }
-
     // Get data
     const data = tableInstance.options?.data
 
@@ -100,12 +111,14 @@ export const TableControls = ({
 
     return (
       <ExportCSVButton
-        //# className={exportCSVButtonClassName || 'xx-table-export-csv-button'}
+        {...exportCSVButtonProps}
         csvHeaders={csvHeaders}
         data={csvData}
-        disabled={false}
+        disabled={disabled}
         fileName={csvExportFileName}
-        //# style={exportCSVButtonStyle}
+        variant={variant}
+        showExportCSVButton={showExportCSVButton}
+        size='sm'
       />
     )
   }

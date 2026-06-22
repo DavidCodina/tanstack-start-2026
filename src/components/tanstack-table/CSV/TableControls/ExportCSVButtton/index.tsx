@@ -1,10 +1,10 @@
-import { Fragment, useRef } from 'react'
+import { useRef } from 'react'
 // https://www.youtube.com/watch?v=c_pJCw8mLOE
 import { CSVLink } from 'react-csv'
-
-import { Button } from '../../../../Button'
+import { csvButtonVariants } from './csvButtonVariants'
 
 import type { ExportCSVButtonProps } from '../../types'
+import { cn } from '@/utils'
 
 /* ========================================================================
                               ExportCSVButton
@@ -16,7 +16,11 @@ export const ExportCSVButton = ({
   data,
   disabled = false,
   fileName = '',
-  style = {}
+  showExportCSVButton,
+  size,
+  style = {},
+  variant,
+  ...otherProps
 }: ExportCSVButtonProps) => {
   const csvLinkRef = useRef<any>(null)
 
@@ -24,8 +28,12 @@ export const ExportCSVButton = ({
           return
   ====================== */
 
+  if (showExportCSVButton === false) {
+    return null
+  }
+
   return (
-    <Fragment>
+    <>
       <CSVLink
         data={data}
         // If fileName is provided, but doesn't end in .csv, the package appends it.
@@ -39,21 +47,20 @@ export const ExportCSVButton = ({
         Hidden CSV Export Link
       </CSVLink>
 
-      <Button
-        className={className}
+      <button
+        {...otherProps}
+        className={cn(csvButtonVariants({ variant, size }), className)}
         disabled={disabled}
         onClick={() => {
           if (csvLinkRef?.current && csvLinkRef?.current?.link) {
             csvLinkRef.current.link.click()
           }
         }}
-        size='sm'
         style={style}
         type='button'
-        variant='primary'
       >
         Export To CSV
-      </Button>
-    </Fragment>
+      </button>
+    </>
   )
 }

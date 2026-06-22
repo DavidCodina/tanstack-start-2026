@@ -391,8 +391,6 @@ export const CSVExample1 = () => {
         columnFilterProps={{}}
         tableOptions={{}}
         showFooter={showFooter}
-        //! exportCSVButtonClassName=''
-        //! exportCSVButtonStyle={{}}
         showExportCSVButton={showExportCSVButton}
         csvExportFileName='my-csv-export'
         // https://github.com/react-csv/react-csv#nested-json-data
@@ -403,6 +401,11 @@ export const CSVExample1 = () => {
           { label: 'First Name', key: 'first_name' },
           { label: 'Last Name', key: 'last_name' }
         ]}
+        exportCSVButtonProps={
+          {
+            // className: 'outline-2 outline-dashed outline-pink-500'
+          }
+        }
 
         //# Test this
         // pageIndex={1}

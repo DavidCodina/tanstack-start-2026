@@ -147,9 +147,10 @@ export const Table = ({
 
   /* =================== */
 
-  showExportCSVButton = true,
+  showExportCSVButton = false,
   csvExportFileName = '',
-  csvHeaders
+  csvHeaders,
+  exportCSVButtonProps = {}
 
   /* =================== */
 
@@ -788,6 +789,7 @@ export const Table = ({
           showExportCSVButton={showExportCSVButton}
           csvExportFileName={csvExportFileName}
           csvHeaders={csvHeaders}
+          exportCSVButtonProps={exportCSVButtonProps}
           // ColumnSelection
           enableColumnSelection={enableColumnSelection}
         />

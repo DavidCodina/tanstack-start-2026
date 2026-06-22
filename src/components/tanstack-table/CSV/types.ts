@@ -26,7 +26,9 @@ import type {
   VisibilityState
 } from '@tanstack/react-table'
 
-import type { ButtonProps } from '../../Button'
+import type { VariantProps } from 'class-variance-authority'
+
+import type { csvButtonVariants } from './TableControls/ExportCSVButtton/csvButtonVariants'
 
 export type TableOptions = Options<Record<string, any>>
 export type TableAPI = TableInstance<Record<string, any>>
@@ -85,11 +87,13 @@ export type ColumnSelectionProps = React.ComponentProps<'div'> & {
   variant?: TableVariant
 }
 
-export type ExportCSVButtonProps = ButtonProps & {
-  csvHeaders?: any[] // https://github.com/react-csv/react-csv#nested-json-data
-  data: Record<any, any>[]
-  fileName?: string
-}
+export type ExportCSVButtonProps = React.ComponentProps<'button'> &
+  VariantProps<typeof csvButtonVariants> & {
+    csvHeaders?: any[] // https://github.com/react-csv/react-csv#nested-json-data
+    data: Record<any, any>[]
+    fileName: string
+    showExportCSVButton: boolean
+  }
 
 /* ========================================================================
 
@@ -193,10 +197,21 @@ export type TableProps = {
   columnFilterProps?: Omit<ColumnFilterProps, 'column'>
 
   /* =================== */
+
   /** Defaults to exported-data.csv */
   csvExportFileName?: string
   /** Passing in csvHeaders allows one to limit what fields are exported.
    * It also allows one to relabel the properties when being exported. */
   csvHeaders?: any[]
   showExportCSVButton?: boolean
+  exportCSVButtonProps?: Omit<
+    ExportCSVButtonProps,
+    | 'csvHeaders'
+    | 'data'
+    | 'disabled'
+    | 'fileName'
+    | 'showExportCSVButton'
+    | 'size'
+    | 'variant'
+  >
 }
