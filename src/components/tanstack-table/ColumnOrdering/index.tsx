@@ -62,9 +62,9 @@ const getData = async () => {
 //
 //////////////////////////////////////////////////////////////////////////
 
-export const RowSelectionExample1 = () => {
+export const ColumnOrderingExample1 = () => {
   /* ======================
-       state  & refs
+       state & refs
   ====================== */
 
   // apiRef.current will hold the value of the TableInstance, which can be useful
@@ -92,7 +92,46 @@ export const RowSelectionExample1 = () => {
     null
   )
 
+  const [columnOrder, setColumnOrder] = useState<string[]>([])
+
   const [variant, runVariantCycle] = useCycle(undefined, 'primary', 'secondary')
+
+  /* ======================
+      toggleRowSelect() 
+  ====================== */
+
+  const toggleRowSelect = () => {
+    setColumnVisibility((prev) => {
+      // The select property could be omitted, which means it is true,
+      // assuming onSelectionChange prop has been passed in, thereby
+      // enabling the feature.
+      if (prev.row_select === true) {
+        return {
+          ...prev,
+          row_select: false
+        }
+      }
+      return {
+        ...prev,
+        row_select: true
+      }
+    })
+  }
+
+  /* ======================
+     toggleColumnOrder() 
+  ====================== */
+
+  const toggleColumnOrder = () => {
+    if (columnOrder.length === 0) {
+      // An arbitrary ordering for demo purposes.
+      // Unknown elements are ignored. Unlisted elements fallback
+      // to their default order at the end of the list.
+      setColumnOrder(['row_select', 'id', 'age', 'abc123', 'email'])
+    } else {
+      setColumnOrder([])
+    }
+  }
 
   /* ======================
          useEffect()
@@ -126,40 +165,18 @@ export const RowSelectionExample1 = () => {
          useEffect()
   ====================== */
 
-  // useEffect(() => {
-  //   if (!apiRef.current) return
-  //   console.log(apiRef.current)
-  // }, [status])
-
-  /* ======================
-      toggleRowSelect() 
-  ====================== */
-
-  const toggleRowSelect = () => {
-    setColumnVisibility((prev) => {
-      // The select property could be omitted, which means it is true,
-      // assuming onSelectionChange prop has been passed in, thereby
-      // enabling the feature.
-      if (prev.row_select === true) {
-        return {
-          ...prev,
-          row_select: false
-        }
-      }
-      return {
-        ...prev,
-        row_select: true
-      }
-    })
-  }
+  useEffect(() => {
+    console.log('Selected data:', selection)
+  }, [selection])
 
   /* ======================
          useEffect()
   ====================== */
 
-  useEffect(() => {
-    console.log('Selected data:', selection)
-  }, [selection])
+  // useEffect(() => {
+  //   if (!apiRef.current) return
+  //   console.log(apiRef.current)
+  // }, [status])
 
   /* ======================
       renderControls()
@@ -233,6 +250,18 @@ export const RowSelectionExample1 = () => {
 
         <Button
           onClick={() => {
+            toggleColumnOrder()
+          }}
+          size='xs'
+          variant='cyan'
+        >
+          {columnOrder.length !== 0
+            ? 'Custom Column Order'
+            : 'Default Column Order'}
+        </Button>
+
+        <Button
+          onClick={() => {
             setShowControls((v) => !v)
           }}
           size='xs'
@@ -301,6 +330,12 @@ export const RowSelectionExample1 = () => {
         apiRef={apiRef}
         data={data}
         columns={columns}
+        // columnOrder is an optional prop that allows the consumer to
+        // dynamically modify the default order of the columns. It works
+        // on mount, and anytime thereafter. columnOrder is never set from
+        // within, so there's no need to have a callback prop like
+        // to update the external state.
+        columnOrder={columnOrder}
         enableColumnSelection={enableColumns}
         // columnVisibility is an optional prop that allows the consumer to
         // dynamically modify the default visibility of the columns. It works
@@ -343,13 +378,12 @@ export const RowSelectionExample1 = () => {
         globalFilterProps={{}}
         columnFilterProps={{}}
         tableOptions={{}}
-        //# Test this
         showFooter={showFooter}
         //# Test this
         // pageIndex={1}
         // pageSize={5}
 
-        //# Test this
+        //# Implement and test this and/or remove.
         // title={titleInfo?.title}
         // subtitle={titleInfo?.subtitle}
         // titleContainerClassName=''

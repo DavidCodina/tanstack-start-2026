@@ -1,6 +1,9 @@
+import * as React from 'react'
 import { createFileRoute /* , useRouter */ } from '@tanstack/react-router'
 import { Page, PageContainer } from '@/components'
-import { RowSelectionExample1 } from '@/components/tanstack-table/RowSelection'
+// import { ColumnOrderingExample1 } from '@/components/tanstack-table/ColumnOrdering'
+// import { RowSelectionExample1 } from '@/components/tanstack-table/RowSelection'
+import { CSVExample1 } from '@/components/tanstack-table/CSV'
 
 // import { KitchenSinkExample } from '@/components/tanstack-table/KitcheSinkExample'
 export const Route = createFileRoute('/')({ component: PageHome })
@@ -62,7 +65,8 @@ function PageHome() {
           _HOME
         </h1>
 
-        <RowSelectionExample1 />
+        {/* <RowSelectionExample1 /> */}
+        <CSVExample1 />
         {/* <KitchenSinkExample /> */}
       </PageContainer>
     </Page>
