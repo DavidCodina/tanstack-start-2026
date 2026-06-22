@@ -36,6 +36,13 @@ ${DISABLED_MIXIN}
 export const csvButtonVariants = cva(baseClasses, {
   variants: {
     variant: {
+      default: `
+      bg-transparent text-muted-foreground border 
+      hover:bg-primary hover:text-white hover:border-primary
+      focus-visible:ring-border/50
+      ${ACTIVE_SCALE_MIXIN}
+      `,
+
       primary: `
       bg-transparent text-primary border border-primary
       hover:bg-primary hover:text-white
@@ -61,7 +68,7 @@ export const csvButtonVariants = cva(baseClasses, {
   },
 
   defaultVariants: {
-    variant: 'primary',
+    variant: 'default',
     size: 'md'
   }
 })
