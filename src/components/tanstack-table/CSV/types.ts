@@ -26,6 +26,8 @@ import type {
   VisibilityState
 } from '@tanstack/react-table'
 
+import type { ButtonProps } from '../../Button'
+
 export type TableOptions = Options<Record<string, any>>
 export type TableAPI = TableInstance<Record<string, any>>
 
@@ -81,6 +83,12 @@ export type ColumnSelectionProps = React.ComponentProps<'div'> & {
   enableColumnSelection: boolean | undefined
   tableInstance: TableInstance<Record<string, any>>
   variant?: TableVariant
+}
+
+export type ExportCSVButtonProps = ButtonProps & {
+  csvHeaders?: any[] // https://github.com/react-csv/react-csv#nested-json-data
+  data: Record<any, any>[]
+  fileName?: string
 }
 
 /* ========================================================================

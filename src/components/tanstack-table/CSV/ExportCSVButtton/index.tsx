@@ -1,21 +1,14 @@
-// Third-party imports
 import { Fragment, useRef } from 'react'
 // https://www.youtube.com/watch?v=c_pJCw8mLOE
 import { CSVLink } from 'react-csv'
-import './index.css'
+
+import { Button } from '../../../Button'
+
+import type { ExportCSVButtonProps } from '../types'
 
 /* ========================================================================
                               ExportCSVButton
 ======================================================================== */
-
-interface IExportCSVButton {
-  className?: string
-  csvHeaders?: any[] // https://github.com/react-csv/react-csv#nested-json-data
-  data: Record<any, any>[]
-  disabled?: boolean
-  fileName?: string
-  style?: React.CSSProperties
-}
 
 export const ExportCSVButton = ({
   className = '',
@@ -24,7 +17,7 @@ export const ExportCSVButton = ({
   disabled = false,
   fileName = '',
   style = {}
-}: IExportCSVButton) => {
+}: ExportCSVButtonProps) => {
   const csvLinkRef = useRef<any>(null)
 
   /* ======================
@@ -46,7 +39,7 @@ export const ExportCSVButton = ({
         Hidden CSV Export Link
       </CSVLink>
 
-      <button
+      <Button
         className={className}
         disabled={disabled}
         onClick={() => {
@@ -54,11 +47,13 @@ export const ExportCSVButton = ({
             csvLinkRef.current.link.click()
           }
         }}
+        size='sm'
         style={style}
         type='button'
+        variant='primary'
       >
         Export To CSV
-      </button>
+      </Button>
     </Fragment>
   )
 }
