@@ -1,8 +1,8 @@
 import * as React from 'react'
-import { IndeterminateCheckbox } from '../IndeterminateCheckbox'
-import { Checkbox } from '../Checkbox'
+import { IndeterminateCheckbox } from '../../IndeterminateCheckbox'
+import { Checkbox } from '../../Checkbox'
 
-import type { ColumnSelectionProps } from '../types'
+import type { ColumnSelectionProps } from '../../types'
 
 import { cn } from '@/utils'
 

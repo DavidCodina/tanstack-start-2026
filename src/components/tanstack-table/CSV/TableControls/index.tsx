@@ -1,97 +1,79 @@
-import { GlobalFilter } from '../GlobalFilter'
-import { Pagination } from '../Pagination'
-import { ExportCSVButton } from '../ExportCSVButtton'
-import { ColumnSelection } from '../ColumnSelection'
+import { GlobalFilter } from './GlobalFilter'
+import { Pagination } from './Pagination'
+import { ExportCSVButton } from './ExportCSVButtton'
+import { ColumnSelection } from './ColumnSelection'
 
 import type { Table as TableInstance } from '@tanstack/react-table'
 
-import type {
-  ColumnFilterProps,
-  GlobalFilterProps,
-  TableVariant
-} from '../types'
+import type { GlobalFilterProps, TableVariant } from '../types'
 
 import { cn } from '@/utils'
 
-type ControlsProps = {
-  tableInstance: TableInstance<Record<string, any>>
-  disabled?: boolean
-  variant?: TableVariant
-
-  size?: 'xs' | 'sm'
-
-  showControls: boolean
+type TableControlsProps = {
+  disabled: boolean
   noControlsShown: boolean
+  showControls: boolean
+  size: 'xs' | 'sm' | undefined
+  tableInstance: TableInstance<Record<string, any>>
+  variant: TableVariant | undefined
 
   /* =================== */
 
-  enableColumnSelection?: boolean
-
-  /* =================== */
-
-  globalFilterProps: GlobalFilterProps
   enableGlobalFilter: boolean
-
-  /* =================== */
-
-  columnFilterProps?: Omit<ColumnFilterProps, 'column'>
+  globalFilterProps: GlobalFilterProps
 
   /* =================== */
 
   enablePagination: boolean
-  pageIndex?: number
   pageSize: number
   pageSizes?: number[]
 
   /* =================== */
 
-  csvExportFileName?: string
+  showExportCSVButton: boolean
+  csvExportFileName: string
   csvHeaders?: any[]
-  showExportCSVButton?: boolean
+
+  /* =================== */
+
+  enableColumnSelection: boolean
 }
 
 /* ========================================================================
 
 ======================================================================== */
+//# Some kind of props for Pagination component.
+//# Some kind of props for ColumnSelection component.
 
-export const Controls = ({
+export const TableControls = ({
   disabled = false,
-
-  enableColumnSelection = true,
-
   size,
-
   variant,
+  showControls = true,
+  noControlsShown = false,
+  tableInstance,
 
   /* =================== */
 
-  globalFilterProps, // Don't set default here!
   enableGlobalFilter, // Don't set default here!
-  // columnFilterProps = {},
-
-  // //# Some kind of props for Pagination component.
-  // //# Some kind of props for ColumnSelection component.
+  globalFilterProps, // Don't set default here!
 
   /* =================== */
 
   enablePagination = true,
   pageSize, // pageSize: pageSizeProp = 10,
-  // pageIndex = 0,
   pageSizes = [10, 20, 30, 40, 50], // Note: pageSize will also added to the page size <select> during the mapping process.
 
   /* =================== */
-
-  showControls = true,
-  noControlsShown = false,
-
-  // /* =================== */
 
   showExportCSVButton = true,
   csvExportFileName = '',
   csvHeaders,
 
-  tableInstance
-}: ControlsProps) => {
+  /* =================== */
+
+  enableColumnSelection = true
+}: TableControlsProps) => {
   /* ======================
     renderExportCSVButton()
   ====================== */

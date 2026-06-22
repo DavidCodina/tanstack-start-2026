@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { Check, Minus } from 'lucide-react'
 
-import type { TableVariant } from './types'
+import type { TableVariant } from '../types'
 
 import { cn } from '@/utils'
 

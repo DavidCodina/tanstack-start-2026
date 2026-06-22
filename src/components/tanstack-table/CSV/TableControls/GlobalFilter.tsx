@@ -1,6 +1,6 @@
-import { DebouncedInput } from './DebouncedInput'
+import { DebouncedInput } from '../DebouncedInput'
 
-import type { GlobalFilterProps } from './types'
+import type { GlobalFilterProps } from '../types'
 
 import { cn } from '@/utils'
 

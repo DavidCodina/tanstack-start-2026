@@ -2,9 +2,9 @@ import { Fragment, useRef } from 'react'
 // https://www.youtube.com/watch?v=c_pJCw8mLOE
 import { CSVLink } from 'react-csv'
 
-import { Button } from '../../../Button'
+import { Button } from '../../../../Button'
 
-import type { ExportCSVButtonProps } from '../types'
+import type { ExportCSVButtonProps } from '../../types'
 
 /* ========================================================================
                               ExportCSVButton

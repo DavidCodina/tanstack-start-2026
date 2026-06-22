@@ -1,3 +1,10 @@
+//# At this point, I'm satisfied with the features.
+//# The next step is to move some of this logic into their own components.
+
+//# Work on TableControls
+//# Improve CSV button styling and should connect to theme.
+//# Expose props for various parts of TableControls.
+
 import * as React from 'react'
 import {
   flexRender,
@@ -16,16 +23,15 @@ import { AlertCircle, ArrowUpDown, MoveDown, MoveUp } from 'lucide-react'
 import { Alert } from '../../Alert'
 import { defaultColumnSizing, sortingFns } from './tableInstanceOptions'
 
+import { TableControls } from './TableControls'
 import { TableContainer } from './TableContainer'
 import { TableScrollContainer } from './TableScrollContainer'
-import { Pagination } from './Pagination'
-import { ColumnSelection } from './ColumnSelection'
+
 import { IndeterminateCheckbox } from './IndeterminateCheckbox'
 import { Checkbox } from './Checkbox'
 import { fuzzyFilter } from './filters'
 import { ColumnFilter } from './ColumnFilter'
-import { GlobalFilter } from './GlobalFilter'
-import { ExportCSVButton } from './ExportCSVButtton'
+import { isBooleanObject, isStringArray } from './utils'
 
 import type {
   ColumnFiltersState,
@@ -41,36 +47,6 @@ import { cn } from '@/utils'
 // The shadcn-table class does this: background-color: var(--table-bg),
 // which itself refers to --color-card
 const tableBaseClasses = `shadcn-table`
-
-function isStringArray(arg: any): arg is string[] {
-  if (!Array.isArray(arg)) {
-    return false
-  }
-  return arg.every((item: any) => typeof item === 'string')
-}
-
-/* ======================
-        State & Refs
-  ====================== */
-
-function isBooleanObject(arg: any): arg is Record<string, boolean> {
-  if (typeof arg !== 'object' || arg === null) {
-    return false
-  }
-
-  for (const key in arg) {
-    if (!arg.hasOwnProperty(key)) {
-      continue // Skip inherited properties
-    }
-
-    const value = arg[key]
-    if (typeof value !== 'boolean') {
-      return false
-    }
-  }
-
-  return true
-}
 
 /* ========================================================================
 
@@ -160,15 +136,12 @@ export const Table = ({
   globalFilterProps = {},
   columnFilterProps = {},
 
-  //# Some kind of props for Pagination component.
-  //# Some kind of props for ColumnSelection component.
-
   /* =================== */
   // TanStack table configuration props.
 
   pageIndex = 0,
   pageSize: pageSizeProp = 10,
-  pageSizes = [10, 20, 30, 40, 50], // Note: pageSize will also added to the page size <select> during the mapping process.
+  pageSizes,
   showControls = true,
 
   /* =================== */
@@ -780,91 +753,6 @@ export const Table = ({
   //# ...
 
   /* ======================
-    renderExportCSVButton()
-  ====================== */
-
-  const renderExportCSVButton = () => {
-    if (showExportCSVButton === false) {
-      return null
-    }
-
-    // Get data
-    const data = tableInstance.options?.data
-
-    // Get selected data
-    const flatRows = tableInstance.getSelectedRowModel().flatRows
-    const selectedData = flatRows.map((flatRow) => {
-      return flatRow.original
-    })
-
-    const isSelectedData =
-      Array.isArray(selectedData) && selectedData.length > 0
-
-    // Set data to selectedData if it exists. Otherwise, default to entire dataset.
-    const csvData = isSelectedData ? selectedData : data
-
-    return (
-      <ExportCSVButton
-        //# className={exportCSVButtonClassName || 'xx-table-export-csv-button'}
-        csvHeaders={csvHeaders}
-        data={csvData}
-        disabled={false}
-        fileName={csvExportFileName}
-        //# style={exportCSVButtonStyle}
-      />
-    )
-  }
-
-  /* ======================
-      renderControls()
-  ====================== */
-  //# Test responsiveness against different viewport sizes.
-
-  const renderControls = () => {
-    if (!showControls || noControlsShown) return null
-
-    return (
-      <section className='bg-card flex flex-col gap-3 border-b border-(--table-border-color) p-3'>
-        <div className={cn('flex flex-wrap items-start justify-center gap-3')}>
-          <GlobalFilter
-            {...globalFilterProps}
-            className={cn(
-              {
-                'text-xs': size === 'xs',
-                'text-sm': size === 'sm'
-              },
-              globalFilterProps.className
-            )}
-            globalFilter={globalFilter}
-            setGlobalFilter={setGlobalFilter}
-            disabled={disabled}
-            enableGlobalFilter={enableGlobalFilter}
-          />
-
-          {enablePagination && (
-            <Pagination
-              disabled={disabled}
-              pageSize={pageSizeProp}
-              pageSizes={pageSizes}
-              tableInstance={tableInstance}
-              variant={variant}
-            />
-          )}
-
-          {renderExportCSVButton()}
-        </div>
-
-        <ColumnSelection
-          disabled={disabled}
-          enableColumnSelection={enableColumnSelection}
-          tableInstance={tableInstance}
-          variant={variant}
-        />
-      </section>
-    )
-  }
-
-  /* ======================
     renderTableHeader()
   ====================== */
 
@@ -1137,7 +1025,32 @@ export const Table = ({
         disabled={disabled}
         variant={variant}
       >
-        {renderControls()}
+        <TableControls
+          // General
+          disabled={disabled}
+          noControlsShown={noControlsShown}
+          showControls={showControls}
+          size={size}
+          tableInstance={tableInstance}
+          variant={variant}
+          // GlobalFilter
+          enableGlobalFilter={enableGlobalFilter}
+          globalFilterProps={{
+            ...globalFilterProps,
+            globalFilter,
+            setGlobalFilter
+          }}
+          // Pagination
+          enablePagination={enablePagination}
+          pageSize={pageSizeProp}
+          pageSizes={pageSizes}
+          // ExportCSVButton
+          showExportCSVButton={showExportCSVButton}
+          csvExportFileName={csvExportFileName}
+          csvHeaders={csvHeaders}
+          // ColumnSelection
+          enableColumnSelection={enableColumnSelection}
+        />
 
         {atLeastOneVisibleColumn ? (
           <TableScrollContainer {...scrollContainerProps}>
