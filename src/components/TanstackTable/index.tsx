@@ -88,7 +88,9 @@ export const TanStackTable = ({
   columns,
   data,
   disabled = false,
-  enableGetSize = false,
+
+  enableGetSize, // Don't set default here!
+  enableResizing, // Don't set default here!
   flush = true,
   hover = false,
   showControls = true,
@@ -181,6 +183,23 @@ export const TanStackTable = ({
       ? enableRowSelection
       : typeof tableOptions.enableRowSelection === 'boolean'
         ? tableOptions.enableRowSelection
+        : false
+
+  enableResizing =
+    typeof enableResizing === 'boolean'
+      ? enableResizing
+      : typeof tableOptions.defaultColumn?.enableResizing === 'boolean'
+        ? tableOptions.defaultColumn.enableResizing
+        : false
+
+  // enableGetSize must be true for column resizing to work.
+  // Otherwise, if enableGetSize is specified use that, or
+  // fall back to a default of false.
+  enableGetSize =
+    enableResizing === true
+      ? true
+      : typeof enableGetSize === 'boolean'
+        ? enableGetSize
         : false
 
   /* ======================
@@ -304,6 +323,12 @@ export const TanStackTable = ({
       // ⚠️ This id is being hardcoded. It's crucial that the consumer be
       // aware that this is ALWAYS the column id for this specific column.
       id: 'row_select',
+      // For some reason this won't go all the way down to 25.
+      // It seems like there's some kind of internal operation, that prevents size/minSize/maxSize
+      // from going below a certain width based on size of the the content within.
+      size: 25,
+
+      // enableResizing: false,
 
       header: ({ table }) => {
         return (
@@ -345,24 +370,26 @@ export const TanStackTable = ({
     }
 
     if (hasFooter) {
-      selectableColumn.footer = ({ table }) => (
-        <IndeterminateCheckbox
-          aria-label={
-            table.getIsAllRowsSelected()
-              ? 'Deselect all rows'
-              : table.getIsSomeRowsSelected()
-                ? 'Some rows selected — select all rows'
-                : 'Select all rows'
-          }
-          disabled={disabled}
-          {...{
-            indeterminate: table.getIsSomeRowsSelected(),
-            checked: table.getIsAllRowsSelected(),
-            onChange: table.getToggleAllRowsSelectedHandler()
-          }}
-          variant={variant}
-        />
-      )
+      selectableColumn.footer = ({ table }) => {
+        return (
+          <IndeterminateCheckbox
+            aria-label={
+              table.getIsAllRowsSelected()
+                ? 'Deselect all rows'
+                : table.getIsSomeRowsSelected()
+                  ? 'Some rows selected — select all rows'
+                  : 'Select all rows'
+            }
+            disabled={disabled}
+            {...{
+              indeterminate: table.getIsSomeRowsSelected(),
+              checked: table.getIsAllRowsSelected(),
+              onChange: table.getToggleAllRowsSelectedHandler()
+            }}
+            variant={variant}
+          />
+        )
+      }
     }
 
     // Initially was just doing  ...columns, but was getting this TypeScript error:
@@ -426,6 +453,8 @@ export const TanStackTable = ({
       ? (colsPlusSelectable as Column[])
       : (cols as Column[]),
 
+    columnResizeMode: 'onChange',
+
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -480,7 +509,11 @@ export const TanStackTable = ({
 
     defaultColumn: {
       ...defaultColumnSizing,
-      ...tableOptions?.defaultColumn
+      ...tableOptions?.defaultColumn,
+      // This is harcoded to true because it's set only once during initialization.
+      // The actual enableResizing prop is only used to show/hide the resizer,
+      // overwrite enableGetSize, and set styles on <table>.
+      enableResizing: true
       // We may choose to do this in production for all tables.
       // sortUndefined: 'last'
     },
@@ -780,11 +813,26 @@ export const TanStackTable = ({
                 disabled && 'shadcn-table-disabled',
                 tableProps.className
               )}
+              style={{
+                ...tableProps.style,
+
+                ...(enableResizing === true
+                  ? {
+                      // This sets the table's total width to the sum of all column sizes.
+                      // However, if TableContainer has full page width, then the actual <table>
+                      // columns may not fill up the enire horizontal width within TableContainer.
+                      // To mitigate, this it's important to set minWidth: '100%' as well.
+                      width: tableInstance.getCenterTotalSize(),
+                      minWidth: '100%'
+                    }
+                  : {})
+              }}
             >
               <TableHeader
                 columnFilterProps={columnFilterProps}
                 disabled={disabled}
                 enableColumnFilters={enableColumnFilters}
+                enableResizing={enableResizing}
                 enableGetSize={enableGetSize}
                 headCellProps={headCellProps}
                 headProps={headProps}

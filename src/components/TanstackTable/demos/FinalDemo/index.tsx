@@ -2,9 +2,9 @@ import { useEffect, useRef, useState } from 'react'
 import { Button } from '../../../Button'
 
 import data from '../data.json'
+import { TanStackTable } from '../../'
 import { columns as cols } from './columns'
 
-import { TanStackTable } from '../../'
 import type { TanStackTableAPI } from '../../'
 
 import { useCycle } from '@/hooks'
@@ -77,6 +77,7 @@ export const FinalDemo = () => {
   >('pending')
 
   const [enableGlobalFilter, setEnableGlobalFilter] = useState(true)
+  const [enableColumnFilters, setEnableColumnFilters] = useState(true)
   const [enablePagination, setEnablePagination] = useState(true)
   const [enableColumns, setEnableColumns] = useState(true)
   const [showControls, setShowControls] = useState(true)
@@ -96,6 +97,8 @@ export const FinalDemo = () => {
 
   const [variant, runVariantCycle] = useCycle(undefined, 'primary', 'secondary')
 
+  const [enableGetSize, setEnableGetSize] = useState(false)
+  const [enableResizing, setEnableResizing] = useState(false)
   const [showExportCSVButton, setShowExportCSVButton] = useState(true)
 
   /* ======================
@@ -279,8 +282,23 @@ export const FinalDemo = () => {
           size='xs'
           variant='cyan'
         >
-          {enableGlobalFilter ? 'Disable Filter' : 'Enable Filter'}
+          {enableGlobalFilter
+            ? 'Disable Global Filter'
+            : 'Enable Global Filter'}
         </Button>
+
+        <Button
+          onClick={() => {
+            setEnableColumnFilters((v) => !v)
+          }}
+          size='xs'
+          variant='cyan'
+        >
+          {enableColumnFilters
+            ? 'Disable Column Filters'
+            : 'Enable Column Filters'}
+        </Button>
+
         <Button
           onClick={() => {
             setEnablePagination((v) => !v)
@@ -298,7 +316,27 @@ export const FinalDemo = () => {
           size='xs'
           variant='cyan'
         >
-          {enableColumns ? 'Disable Columns' : 'Enable Columns'}
+          {enableColumns ? 'Disable Column Select' : 'Enable Column Selects'}
+        </Button>
+
+        <Button
+          onClick={() => {
+            setEnableGetSize((v) => !v)
+          }}
+          size='xs'
+          variant='cyan'
+        >
+          {enableGetSize ? 'Disable Get Size' : 'Enable Get Size'}
+        </Button>
+
+        <Button
+          onClick={() => {
+            setEnableResizing((v) => !v)
+          }}
+          size='xs'
+          variant='cyan'
+        >
+          {enableResizing ? 'Disable Resizing' : 'Enable Resizing'}
         </Button>
 
         <Button
@@ -370,12 +408,14 @@ export const FinalDemo = () => {
         variant={variant}
         enableGlobalFilter={enableGlobalFilter}
         enablePagination={enablePagination}
-        // enableColumnFilters={false}
-        // enableGetSize
+        enableColumnFilters={enableColumnFilters}
+        enableGetSize={enableGetSize}
         showControls={showControls}
         tableContainerProps={{
-          className: 'mx-auto max-w-[1000px] shadow'
+          //` max-w-[1000px]
+          className: 'mx-auto  shadow'
         }}
+        enableResizing={enableResizing}
         scrollContainerProps={{}}
         tableProps={{}}
         headProps={{}}

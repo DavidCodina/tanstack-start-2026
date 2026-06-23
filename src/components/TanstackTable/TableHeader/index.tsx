@@ -12,6 +12,7 @@ export type TableHeaderProps = {
   disabled: boolean
   enableColumnFilters: boolean
   enableGetSize: boolean
+  enableResizing: boolean
   headCellProps: THProps
   headProps: THeadProps
   headRowProps: TRProps
@@ -27,6 +28,7 @@ export const TableHeader = ({
   columnFilterProps,
   disabled,
   enableColumnFilters,
+  enableResizing,
   enableGetSize,
   headCellProps,
   headProps,
@@ -105,7 +107,10 @@ export const TableHeader = ({
             return (
               <th
                 {...headCellProps}
-                className={cn('align-top', headCellProps.className)}
+                className={cn(
+                  'group relative align-top',
+                  headCellProps.className
+                )}
                 key={header.id}
                 colSpan={header.colSpan}
                 ///////////////////////////////////////////////////////////////////////////
@@ -176,6 +181,21 @@ export const TableHeader = ({
                 header.column.getCanFilter() ? (
                   <div>{columnFilter}</div>
                 ) : null}
+
+                {/* Conditionally render a column resizer. */}
+                {enableResizing === true &&
+                  !disabled &&
+                  header.column.getCanResize() && (
+                    <div
+                      onMouseDown={header.getResizeHandler()}
+                      onTouchStart={header.getResizeHandler()}
+                      className={`absolute top-0.5 -right-0.5 h-[calc(100%-4px)] w-1 cursor-col-resize touch-none rounded opacity-0 transition-colors group-hover:opacity-100 ${
+                        header.column.getIsResizing()
+                          ? 'bg-green-500 opacity-100'
+                          : 'bg-primary'
+                      }`}
+                    />
+                  )}
               </th>
             )
           })}

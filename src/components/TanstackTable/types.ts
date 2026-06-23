@@ -207,6 +207,10 @@ export type TableProps = {
 
   /* =================== */
 
+  enableResizing?: boolean
+
+  /* =================== */
+
   /** Defaults to exported-data.csv */
   csvExportFileName?: string
   /** Passing in csvHeaders allows one to limit what fields are exported.
