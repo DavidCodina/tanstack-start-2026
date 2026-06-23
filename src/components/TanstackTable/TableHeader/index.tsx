@@ -2,7 +2,7 @@ import { flexRender } from '@tanstack/react-table'
 import { ArrowUpDown, MoveDown, MoveUp } from 'lucide-react'
 import { ColumnFilter } from './ColumnFilter'
 
-import type { Table as TableInstance } from '@tanstack/react-table'
+import type { Header, Table as TableInstance } from '@tanstack/react-table'
 import type { ColumnFilterProps, THProps, THeadProps, TRProps } from '../types'
 
 import { cn } from '@/utils'
@@ -13,6 +13,7 @@ export type TableHeaderProps = {
   enableColumnFilters: boolean
   enableGetSize: boolean
   enableResizing: boolean
+  enableSorting: boolean
   headCellProps: THProps
   headProps: THeadProps
   headRowProps: TRProps
@@ -28,14 +29,37 @@ export const TableHeader = ({
   columnFilterProps,
   disabled,
   enableColumnFilters,
-  enableResizing,
   enableGetSize,
+  enableResizing,
+  enableSorting,
   headCellProps,
   headProps,
   headRowProps,
   size,
   tableInstance
 }: TableHeaderProps) => {
+  /* ======================
+      renderSortIcons()
+  ====================== */
+
+  const renderSortIcons = ({
+    header,
+    canSort
+  }: {
+    header: Header<Record<string, any>, unknown>
+    canSort: boolean
+  }) => {
+    if (!enableSorting) return null
+
+    return (
+      {
+        asc: <MoveUp className='ml-auto size-4' />, // asc: <> 🔼</>,
+        desc: <MoveDown className='ml-auto size-4' /> // desc: <> 🔽</>
+      }[header.column.getIsSorted() as string] ??
+      (canSort ? <ArrowUpDown className='ml-auto size-4' /> : null)
+    )
+  }
+
   /* ======================
           return 
   ====================== */
@@ -146,7 +170,7 @@ export const TableHeader = ({
                       disabled && 'pointer-events-none'
                     )}
                     onClick={
-                      disabled
+                      disabled || !enableSorting
                         ? undefined
                         : header.column.getToggleSortingHandler()
                     }
@@ -165,13 +189,7 @@ export const TableHeader = ({
                       header.getContext()
                     )}
 
-                    {{
-                      asc: <MoveUp className='ml-auto size-4' />, // asc: <> 🔼</>,
-                      desc: <MoveDown className='ml-auto size-4' /> // desc: <> 🔽</>
-                    }[header.column.getIsSorted() as string] ??
-                      (canSort ? (
-                        <ArrowUpDown className='ml-auto size-4' />
-                      ) : null)}
+                    {renderSortIcons({ header, canSort })}
                   </div>
                 )}
 

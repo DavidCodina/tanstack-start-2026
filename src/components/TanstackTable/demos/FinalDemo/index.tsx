@@ -98,6 +98,7 @@ export const FinalDemo = () => {
   const [variant, runVariantCycle] = useCycle(undefined, 'primary', 'secondary')
 
   const [enableGetSize, setEnableGetSize] = useState(false)
+  const [enableSorting, setEnableSorting] = useState(true)
   const [enableResizing, setEnableResizing] = useState(false)
   const [showExportCSVButton, setShowExportCSVButton] = useState(true)
 
@@ -225,6 +226,16 @@ export const FinalDemo = () => {
             : variant === 'secondary'
               ? 'Secondary Variant'
               : 'Default Variant'}
+        </Button>
+
+        <Button
+          onClick={() => {
+            setEnableSorting((v) => !v)
+          }}
+          size='xs'
+          variant='cyan'
+        >
+          {enableSorting === true ? 'Disable Sorting' : 'Enable Sorting'}
         </Button>
 
         <Button
@@ -412,10 +423,10 @@ export const FinalDemo = () => {
         enableGetSize={enableGetSize}
         showControls={showControls}
         tableContainerProps={{
-          //` max-w-[1000px]
-          className: 'mx-auto  shadow'
+          className: 'mx-auto max-w-[1000px] shadow'
         }}
         enableResizing={enableResizing}
+        enableSorting={enableSorting}
         scrollContainerProps={{}}
         tableProps={{}}
         headProps={{}}

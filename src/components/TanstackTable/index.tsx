@@ -91,6 +91,7 @@ export const TanStackTable = ({
 
   enableGetSize, // Don't set default here!
   enableResizing, // Don't set default here!
+
   flush = true,
   hover = false,
   showControls = true,
@@ -116,6 +117,10 @@ export const TanStackTable = ({
   footProps = {},
   footRowProps = {},
   footCellProps = {},
+
+  /* =================== */
+
+  enableSorting = true,
 
   /* =================== */
 
@@ -832,8 +837,9 @@ export const TanStackTable = ({
                 columnFilterProps={columnFilterProps}
                 disabled={disabled}
                 enableColumnFilters={enableColumnFilters}
-                enableResizing={enableResizing}
                 enableGetSize={enableGetSize}
+                enableResizing={enableResizing}
+                enableSorting={enableSorting}
                 headCellProps={headCellProps}
                 headProps={headProps}
                 headRowProps={headRowProps}

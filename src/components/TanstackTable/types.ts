@@ -173,6 +173,10 @@ export type TableProps = {
 
   /* =================== */
 
+  enableSorting?: boolean
+
+  /* =================== */
+
   enableGlobalFilter?: boolean
   globalFilterProps?: Omit<
     GlobalFilterProps,
