@@ -1,5 +1,6 @@
 import { createFileRoute /* , useRouter */ } from '@tanstack/react-router'
 import { Page, PageContainer } from '@/components'
+import { FinalDemo } from '@/components/TanStackTable/demos/FinalDemo'
 
 export const Route = createFileRoute('/')({ component: PageHome })
 
@@ -59,6 +60,8 @@ function PageHome() {
         >
           _HOME
         </h1>
+
+        <FinalDemo />
       </PageContainer>
     </Page>
   )

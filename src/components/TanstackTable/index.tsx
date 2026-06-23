@@ -81,7 +81,7 @@ const tableBaseClasses = `shadcn-table`
 //
 ///////////////////////////////////////////////////////////////////////////
 
-export const Table = ({
+export const TanStackTable = ({
   apiRef,
   bordered = false,
   borderless = false,
@@ -881,4 +881,9 @@ export const Table = ({
   return renderContent()
 }
 
-export type { Column, TableProps, TableAPI, TableOptions }
+export type {
+  Column as TanStackColumn,
+  TableProps as TanStackTableProps,
+  TableAPI as TanStackTableAPI,
+  TableOptions as TanStackTableOptions
+}
