@@ -54,9 +54,12 @@ type UpdateData = (arg: UpdateDatdaArg) => void
 //# In that case, we may want a custom component just for booleans,
 //# or we may need some additional logic here.
 
-//# Overall this seems to be working well. However, the next step is to fine-tune the CSS/Tailwind styles
+//# Next step: fine-tune the CSS/Tailwind styles.
 
-//# The v0 demo also had an "Add Row" feature.
+//# The v0 demo also had an "Add Row" feature...
+
+//# Ultimately, it may make more sense to have a separate component for the <select>.
+//# That would then allow us to then extend props for the input/select.
 
 export const EditableCell = ({
   className = '',

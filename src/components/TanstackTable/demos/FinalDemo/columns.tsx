@@ -3,7 +3,7 @@ import { format } from 'date-fns'
 // https://tanstack.com/table/v8/docs/guide/column-defs
 
 import { createColumnHelper } from '@tanstack/react-table'
-//` import { EditableCell } from '../../EditableCell'
+import { EditableCell } from '../../EditableCell'
 
 // Rather than being overly confident that all properties will exist on each Person
 // it's much safer to make everything optional ? so that we don't inadvertently
@@ -48,10 +48,10 @@ export const columns = [
   }),
 
   columnHelper.accessor('first_name', {
-    cell: (ctx) => ctx.getValue(),
+    //cell: (ctx) => ctx.getValue(),
     // When implementing EditableCell, make sure to pass setData prop to the TanStackTable instance.
     // Additionally, set the optional meta.editableCellType here as needed.
-    //` cell: EditableCell,
+    cell: EditableCell,
     header: () => <span>First Name</span>,
     footer: (ctx) => ctx.column.id,
     sortUndefined: 'last', // Force undefined values to the end
@@ -187,10 +187,11 @@ export const columns = [
   ),
 
   columnHelper.accessor('country', {
+    // cell: (ctx) => ctx.getValue(),
     // When implementing EditableCell, make sure to pass setData prop to the TanStackTable instance.
     // Additionally, set the optional meta.editableCellType and selectOptions as needed.
-    //` cell: EditableCell,
-    cell: (ctx) => ctx.getValue(),
+    cell: EditableCell,
+
     header: () => <span>Country</span>,
     footer: (ctx) => ctx.column.id,
     sortUndefined: 'last',
@@ -223,12 +224,14 @@ export const columns = [
   }),
 
   columnHelper.accessor('age', {
-    cell: (ctx) => {
-      const value = ctx.getValue() // type number
-      return value
-    },
+    // cell: (ctx) => {
+    //   const value = ctx.getValue() // type number
+    //   return value
+    // },
 
-    //` cell: (ctx) => { return <EditableCell {...ctx} /> },
+    cell: (ctx) => {
+      return <EditableCell {...ctx} />
+    },
 
     header: () => <span>Age</span>,
     footer: (ctx) => ctx.column.id,
