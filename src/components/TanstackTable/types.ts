@@ -130,6 +130,7 @@ export type TableProps = {
   enableGetSize?: boolean
   flush?: boolean
   hover?: boolean
+  setData?: React.Dispatch<React.SetStateAction<Record<string, any>[] | null>>
   showControls?: boolean
   showFooter?: boolean
   size?: 'xs' | 'sm'
@@ -138,6 +139,7 @@ export type TableProps = {
   stripedColumns?: boolean
   tableOptions?: Omit<
     TableOptions,
+    | 'autoResetPageIndex'
     | 'columns'
     | 'data'
     | 'getCoreRowModel'

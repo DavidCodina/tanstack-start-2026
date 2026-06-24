@@ -179,6 +179,14 @@ export const FinalDemo = () => {
          useEffect()
   ====================== */
 
+  useEffect(() => {
+    console.log('\nThe data has changed:', data)
+  }, [data])
+
+  /* ======================
+         useEffect()
+  ====================== */
+
   // useEffect(() => {
   //   if (!apiRef.current) return
   //   console.log(apiRef.current)
@@ -382,6 +390,7 @@ export const FinalDemo = () => {
       {renderControls()}
 
       <TanStackTable
+        setData={setData} // Pass this when you have editable cells.
         highlightSelectedRows={true}
         enableRowSelection={enableRowSelection}
         onSelectionChange={(selectedData: Record<any, any>[]) => {

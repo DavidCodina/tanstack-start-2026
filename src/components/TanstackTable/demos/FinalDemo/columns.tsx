@@ -3,6 +3,7 @@ import { format } from 'date-fns'
 // https://tanstack.com/table/v8/docs/guide/column-defs
 
 import { createColumnHelper } from '@tanstack/react-table'
+//` import { EditableCell } from '../../EditableCell'
 
 // Rather than being overly confident that all properties will exist on each Person
 // it's much safer to make everything optional ? so that we don't inadvertently
@@ -48,6 +49,9 @@ export const columns = [
 
   columnHelper.accessor('first_name', {
     cell: (ctx) => ctx.getValue(),
+    // When implementing EditableCell, make sure to pass setData prop to the TanStackTable instance.
+    // Additionally, set the optional meta.editableCellType here as needed.
+    //` cell: EditableCell,
     header: () => <span>First Name</span>,
     footer: (ctx) => ctx.column.id,
     sortUndefined: 'last', // Force undefined values to the end
@@ -183,11 +187,23 @@ export const columns = [
   ),
 
   columnHelper.accessor('country', {
+    // When implementing EditableCell, make sure to pass setData prop to the TanStackTable instance.
+    // Additionally, set the optional meta.editableCellType and selectOptions as needed.
+    //` cell: EditableCell,
     cell: (ctx) => ctx.getValue(),
     header: () => <span>Country</span>,
     footer: (ctx) => ctx.column.id,
     sortUndefined: 'last',
-    meta: { label: 'Country' }
+    meta: {
+      label: 'Country',
+      editableCellType: 'select',
+
+      selectOptions: [
+        { label: 'United States', value: 'United States' },
+        { label: 'Canada', value: 'Canada' },
+        { label: 'Mexico', value: 'Mexico' }
+      ]
+    }
   }),
 
   columnHelper.accessor('phone', {
@@ -207,7 +223,13 @@ export const columns = [
   }),
 
   columnHelper.accessor('age', {
-    cell: (ctx) => ctx.getValue(),
+    cell: (ctx) => {
+      const value = ctx.getValue() // type number
+      return value
+    },
+
+    //` cell: (ctx) => { return <EditableCell {...ctx} /> },
+
     header: () => <span>Age</span>,
     footer: (ctx) => ctx.column.id,
     sortUndefined: 'last',
@@ -276,7 +298,11 @@ export const columns = [
     //   const valueAsString = value.toString()
     //   return valueAsString.includes(filterValue)
     // }
-    meta: { label: 'Age' }
+    meta: {
+      label: 'Age',
+      // This is used by the EditableCell component to conditionally set the field type.
+      editableCellType: 'number'
+    }
   }),
 
   // By coincidence, 'false' comes before 'true' when sorting alphabetically.

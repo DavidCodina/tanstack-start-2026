@@ -29,6 +29,7 @@ import { Checkbox } from './Checkbox'
 import { fuzzyFilter } from './filters'
 
 import { isBooleanObject, isStringArray } from './utils'
+import { useSkipResetPageIndex } from './hooks'
 
 import type {
   ColumnFiltersState,
@@ -88,12 +89,11 @@ export const TanStackTable = ({
   columns,
   data,
   disabled = false,
-
   enableGetSize, // Don't set default here!
   enableResizing, // Don't set default here!
-
   flush = true,
   hover = false,
+  setData, // Pass this prop whenever your columns.tsx has editable cells.
   showControls = true,
   showFooter = true,
   size,
@@ -210,6 +210,8 @@ export const TanStackTable = ({
   /* ======================
         State & Refs
   ====================== */
+
+  const [autoResetPageIndex, skipAutoResetPageIndex] = useSkipResetPageIndex()
 
   const [globalFilter, setGlobalFilter] = React.useState('')
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -449,6 +451,45 @@ export const TanStackTable = ({
   }
 
   const tableInstance = useReactTable({
+    // If set to true, pagination will be reset to the first page when page-altering state changes eg. data is updated, filters change, grouping changes, etc.
+    autoResetPageIndex, //* New...
+    meta: {
+      ...tableOptions.meta,
+
+      //* New...
+      updateData: ({
+        rowIndex,
+        columnId,
+        value
+      }: {
+        rowIndex: number
+        columnId: string | number
+        value: any
+      }) => {
+        if (typeof setData !== 'function') return
+
+        skipAutoResetPageIndex()
+
+        setData((prev) => {
+          if (!Array.isArray(prev)) {
+            return prev
+          }
+
+          return prev.map((row, index) => {
+            const isCurrentRow = index === rowIndex
+
+            if (!isCurrentRow) return row
+
+            return {
+              //...prev[rowIndex]
+              ...row,
+              [columnId]: value
+            }
+          })
+        })
+      }
+    },
+
     data: data,
 
     // Old: columns: cols as Column[],
