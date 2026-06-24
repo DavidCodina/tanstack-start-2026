@@ -99,7 +99,7 @@ export const FinalDemo = () => {
 
   const [enableGetSize, setEnableGetSize] = useState(false)
   const [enableSorting, setEnableSorting] = useState(true)
-  const [enableResizing, setEnableResizing] = useState(false)
+  const [enableResizing, setEnableResizing] = useState(true)
   const [showExportCSVButton, setShowExportCSVButton] = useState(true)
 
   /* ======================

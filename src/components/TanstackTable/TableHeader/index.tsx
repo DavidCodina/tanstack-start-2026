@@ -3,7 +3,13 @@ import { ArrowUpDown, MoveDown, MoveUp } from 'lucide-react'
 import { ColumnFilter } from './ColumnFilter'
 
 import type { Header, Table as TableInstance } from '@tanstack/react-table'
-import type { ColumnFilterProps, THProps, THeadProps, TRProps } from '../types'
+import type {
+  ColumnFilterProps,
+  THProps,
+  THeadProps,
+  TRProps,
+  TableVariant
+} from '../types'
 
 import { cn } from '@/utils'
 
@@ -19,6 +25,7 @@ export type TableHeaderProps = {
   headRowProps: TRProps
   size?: 'xs' | 'sm' | undefined
   tableInstance: TableInstance<Record<string, any>>
+  variant?: TableVariant
 }
 
 /* ========================================================================
@@ -36,7 +43,8 @@ export const TableHeader = ({
   headProps,
   headRowProps,
   size,
-  tableInstance
+  tableInstance,
+  variant
 }: TableHeaderProps) => {
   /* ======================
       renderSortIcons()
@@ -57,6 +65,37 @@ export const TableHeader = ({
         desc: <MoveDown className='ml-auto size-4' /> // desc: <> 🔽</>
       }[header.column.getIsSorted() as string] ??
       (canSort ? <ArrowUpDown className='ml-auto size-4' /> : null)
+    )
+  }
+
+  /* ======================
+      renderResizer()
+  ====================== */
+
+  const renderResizer = ({
+    header
+  }: {
+    header: Header<Record<string, any>, unknown>
+  }) => {
+    const bgColor = variant === 'secondary' ? 'bg-secondary' : 'bg-primary'
+
+    if (
+      disabled === true ||
+      enableResizing !== true ||
+      !header.column.getCanResize()
+    ) {
+      return null
+    }
+
+    return (
+      <div
+        onMouseDown={header.getResizeHandler()}
+        onTouchStart={header.getResizeHandler()}
+        className={cn(
+          'absolute top-0.5 -right-0.5 h-[calc(100%-4px)] w-1 cursor-col-resize touch-none rounded opacity-0 transition-colors group-hover:opacity-100',
+          header.column.getIsResizing() ? 'bg-green-500 opacity-100' : bgColor
+        )}
+      />
     )
   }
 
@@ -200,20 +239,7 @@ export const TableHeader = ({
                   <div>{columnFilter}</div>
                 ) : null}
 
-                {/* Conditionally render a column resizer. */}
-                {enableResizing === true &&
-                  !disabled &&
-                  header.column.getCanResize() && (
-                    <div
-                      onMouseDown={header.getResizeHandler()}
-                      onTouchStart={header.getResizeHandler()}
-                      className={`absolute top-0.5 -right-0.5 h-[calc(100%-4px)] w-1 cursor-col-resize touch-none rounded opacity-0 transition-colors group-hover:opacity-100 ${
-                        header.column.getIsResizing()
-                          ? 'bg-green-500 opacity-100'
-                          : 'bg-primary'
-                      }`}
-                    />
-                  )}
+                {renderResizer({ header })}
               </th>
             )
           })}

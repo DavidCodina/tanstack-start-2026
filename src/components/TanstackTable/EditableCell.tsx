@@ -49,7 +49,6 @@ type UpdateData = (arg: UpdateDatdaArg) => void
 /* ========================================================================
 
 ======================================================================== */
-
 //# This EditableCell may still be somewhat naive.
 //# What if the underlying value was a boolean?
 //# In that case, we may want a custom component just for booleans,

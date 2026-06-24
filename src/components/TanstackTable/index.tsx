@@ -886,6 +886,7 @@ export const TanStackTable = ({
                 headRowProps={headRowProps}
                 size={size}
                 tableInstance={tableInstance}
+                variant={variant}
               />
 
               <TableBody
