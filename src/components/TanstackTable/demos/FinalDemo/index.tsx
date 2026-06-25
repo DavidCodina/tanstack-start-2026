@@ -458,7 +458,7 @@ export const FinalDemo = () => {
         enableGetSize={enableGetSize}
         showControls={showControls}
         tableContainerProps={{
-          className: 'mx-auto shadow' //` max-w-[1000px]
+          className: 'mx-auto max-w-[1000px] shadow'
         }}
         enableResizing={enableResizing}
         enableSorting={enableSorting}

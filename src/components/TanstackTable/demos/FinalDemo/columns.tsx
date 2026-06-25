@@ -202,7 +202,9 @@ export const columns = [
           // className='outline-2 outline-sky-500 outline-dashed'
           context={ctx}
         >
-          <option value='United States'>United States</option>
+          <option value='United States'>
+            United States - Bla bla bla abc123
+          </option>
           <option value='Canada'>Canada</option>
           <option value='Mexico'>Mexico</option>
         </SelectCell>

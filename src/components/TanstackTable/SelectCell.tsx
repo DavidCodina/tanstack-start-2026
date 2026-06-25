@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { ChevronDown } from 'lucide-react'
 
 import type { CellContext } from '@tanstack/react-table'
 import { cn } from '@/utils'
@@ -21,12 +22,14 @@ disabled:opacity-65
 
 // Don't set text-base here. Instead, let the input inherit the size from the table.
 const baseClasses = `
-flex bg-card
+appearance-none block bg-card
 w-full min-w-[150px]
-px-[0.5em] py-[0.25em]
+pl-[0.5em] pr-[1.25em] py-[0.25em]
 leading-[1.5] font-normal
 border border-(--table-border-color) outline-none
 rounded-[0.375em]
+cursor-pointer
+text-ellipsis overflow-hidden
 ${FIELD_BOX_SHADOW_MIXIN}
 ${FIELD_FOCUS_MIXIN}
 ${FIELD_DISABLED_MIXIN}
@@ -47,9 +50,6 @@ type UpdateData = (arg: UpdateDatdaArg) => void
 /* ========================================================================
 
 ======================================================================== */
-//# Next step: fine-tune the CSS/Tailwind styles.
-//# Review styles in the select in the Pagination and update styles
-//# If you need access to the variant, you can use tableMeta.variant.
 
 export const SelectCell = ({
   children,
@@ -123,26 +123,37 @@ export const SelectCell = ({
   }
 
   return (
-    <select
-      {...otherProps}
-      className={cn(baseClasses, className)}
-      disabled={disabled}
-      onChange={(e) => {
-        const newValue = e.target.value
+    <div className='relative'>
+      <select
+        {...otherProps}
+        className={cn(baseClasses, className)}
+        disabled={disabled}
+        onChange={(e) => {
+          const newValue = e.target.value
 
-        setValue(newValue)
+          setValue(newValue)
 
-        if (typeof updateData === 'function') {
-          updateData({
-            rowIndex: row.index,
-            columnId: column.id,
-            value: newValue
-          })
-        }
-      }}
-      value={value as string}
-    >
-      {children}
-    </select>
+          if (typeof updateData === 'function') {
+            updateData({
+              rowIndex: row.index,
+              columnId: column.id,
+              value: newValue
+            })
+          }
+        }}
+        value={value as string}
+      >
+        {children}
+      </select>
+
+      <div className='pointer-events-none absolute top-0 right-1 flex h-full items-center'>
+        <ChevronDown
+          className={cn(
+            'size-[1.25em] text-(--table-border-color)',
+            disabled && 'text-(--table-border-color) opacity-65'
+          )}
+        />
+      </div>
+    </div>
   )
 }

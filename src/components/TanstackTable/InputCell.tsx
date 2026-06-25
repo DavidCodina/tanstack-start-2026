@@ -27,6 +27,7 @@ px-[0.5em] py-[0.25em]
 leading-[1.5] font-normal
 border border-(--table-border-color) outline-none
 rounded-[0.375em]
+text-ellipsis overflow-hidden
 placeholder:text-muted-foreground
 ${FIELD_BOX_SHADOW_MIXIN}
 ${FIELD_FOCUS_MIXIN}
