@@ -58,10 +58,16 @@ export const SelectCell = ({
   ...otherProps
 }: SelectCellProps) => {
   const { column, getValue, row, table } = context
-  const tableValue = getValue()
+
+  // Mitigate possible errors resulting from a null value, or any other value
+  // that is not string | number. In such cases, use '' instead.
+  const allowedTypes = ['string', 'number']
+  let tableValue = getValue()
+  if (!allowedTypes.includes(typeof tableValue)) {
+    tableValue = ''
+  }
 
   const tableMeta = table.options.meta
-
   // const columnMeta = column.columnDef.meta
 
   // The updateData() function is hardcoded in the useReactTable options.
@@ -109,6 +115,7 @@ export const SelectCell = ({
          useEffect()
   ====================== */
   // Ensure local state is in sync with outer table state.
+  // This kind of seems redundant, but it's a good failsafe.
 
   React.useEffect(() => {
     setValue(tableValue)
@@ -130,6 +137,13 @@ export const SelectCell = ({
         disabled={disabled}
         onChange={(e) => {
           const newValue = e.target.value
+          const isStringOrNumber =
+            typeof newValue === 'number' || typeof newValue === 'string'
+
+          if (!isStringOrNumber) {
+            setValue(tableValue)
+            return
+          }
 
           setValue(newValue)
 
@@ -141,7 +155,7 @@ export const SelectCell = ({
             })
           }
         }}
-        value={value as string}
+        value={value}
       >
         {children}
       </select>

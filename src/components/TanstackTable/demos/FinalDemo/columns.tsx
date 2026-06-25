@@ -11,7 +11,7 @@ import { InputCell, SelectCell } from '../../'
 type Person = {
   id?: number
   first_name?: string
-  last_name?: string
+  last_name?: string | null
   email?: string
   date_of_birth?: string
   age?: number
@@ -67,7 +67,11 @@ export const columns = [
   }),
 
   columnHelper.accessor('last_name', {
-    cell: (ctx) => ctx.getValue(),
+    cell: (ctx) => {
+      const value = ctx.getValue()
+
+      return value
+    },
     header: () => <span>Last Name</span>,
     footer: (ctx) => ctx.column.id,
     sortUndefined: 'last',
@@ -246,7 +250,7 @@ export const columns = [
         <InputCell
           // className='outline-2 outline-lime-500 outline-dashed'
           context={ctx}
-          type='text'
+          type='number'
         />
       )
     },

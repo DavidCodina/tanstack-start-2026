@@ -34,7 +34,6 @@ ${FIELD_FOCUS_MIXIN}
 ${FIELD_DISABLED_MIXIN}
 `
 
-//# What actually happens if the initial value is null?
 type InputCellProps = Omit<React.ComponentProps<'input'>, 'type'> & {
   context: CellContext<any, string | number | undefined>
 
@@ -55,10 +54,17 @@ type UpdateData = (arg: UpdateDatdaArg) => void
 /* ========================================================================
 
 ======================================================================== */
-//# This EditableCell may still be somewhat naive.
+// ⚠️ What if the value is a string, but the string is a number like "$123.45"?
+// In that case, we may want to build a more custom InputCell to carefully
+// handle what kinds of values are allowed.
+
 //# What if the underlying value was a boolean?
-//# In that case, we may want a custom component just for booleans,
-//# or we may need some additional logic here.
+//# Let's build radios that look like buttons and have values
+//# of 'true'/'false', but when selected the actual value they set is true/false.
+//# Build a prototype, then feed it into v0 to improve.
+
+//# Alternatively, have a single button that toggles between true/false.
+//# Call it EditableBooleanCell.
 
 //# The v0 demo also had an "Add Row" feature...
 
@@ -69,7 +75,27 @@ export const InputCell = ({
   ...otherProps
 }: InputCellProps) => {
   const { column, getValue, row, table } = context
-  const tableValue = getValue()
+  const allowedTypes = ['string', 'number']
+
+  ///////////////////////////////////////////////////////////////////////////
+  //
+  // Mitigate possible errors resulting from a null value, or any other value
+  // that is not string | number.
+  //
+  //   ❌ The `value` prop on `input` should not be null. Consider using an empty
+  //   string to clear the component or `undefined` for uncontrolled components.
+  //
+  // In such cases, use undefined instead. However, it's also important to not actually
+  // pass that value to updateData()
+  //
+  ///////////////////////////////////////////////////////////////////////////
+
+  let tableValue = getValue()
+
+  if (!allowedTypes.includes(typeof tableValue)) {
+    // Don't set to undefined. While that's better than null, it still causes issues for type="number".
+    tableValue = ''
+  }
 
   const tableMeta = table.options.meta
   // const columnMeta = column.columnDef.meta
@@ -121,24 +147,17 @@ export const InputCell = ({
   ====================== */
 
   const handleBlur = () => {
-    if (isValidRef.current === false) {
-      const oldValue = getValue()
-      setValue(oldValue)
-      return
+    if (
+      (type === 'number' && typeof value !== 'number') ||
+      (type === 'text' && typeof value !== 'string')
+    ) {
+      isValidRef.current = false
     }
 
-    //# Think about how you'd want to transform values.
-    //# This is a good start, but we'd want some kind of meta property
-    //# to opt into transformations, or actually have a transformation method on meta.
-    // const transformedValue = (() => {
-    //   if (value === 'true') {
-    //     return true
-    //   }
-    //   if (value === 'false') {
-    //     return false
-    //   }
-    //   return value
-    // })()
+    if (isValidRef.current === false) {
+      setValue(tableValue)
+      return
+    }
 
     if (typeof updateData === 'function') {
       updateData({
@@ -153,6 +172,7 @@ export const InputCell = ({
          useEffect()
   ====================== */
   // Ensure local state is in sync with outer table state.
+  // This kind of seems redundant, but it's a good failsafe.
 
   React.useEffect(() => {
     setValue(tableValue)
@@ -180,8 +200,7 @@ export const InputCell = ({
 
         if (
           type === 'number' &&
-          typeof newValue === 'number' &&
-          isNaN(newValue)
+          (typeof newValue !== 'number' || isNaN(newValue))
         ) {
           isValidRef.current = false
 
