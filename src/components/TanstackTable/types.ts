@@ -28,7 +28,8 @@ import type {
 
 import type { VariantProps } from 'class-variance-authority'
 
-import type { csvButtonVariants } from './TableControls/ExportCSVButtton/csvButtonVariants'
+import type { csvButtonVariants } from './TableControls/ExportCSVButton/csvButtonVariants'
+import type { editableButtonVariants } from './TableControls/EditableButton/editableButtonVariants'
 
 export type TableOptions = Options<Record<string, any>>
 export type TableAPI = TableInstance<Record<string, any>>
@@ -93,6 +94,14 @@ export type ExportCSVButtonProps = React.ComponentProps<'button'> &
     data: Record<any, any>[]
     fileName: string
     showExportCSVButton: boolean
+  }
+
+export type EditableButtonProps = React.ComponentProps<'button'> &
+  VariantProps<typeof editableButtonVariants> & {
+    editable: boolean
+    setEditable: React.Dispatch<React.SetStateAction<boolean>>
+    showEditingButton: boolean
+    isIcon: boolean
   }
 
 /* ========================================================================

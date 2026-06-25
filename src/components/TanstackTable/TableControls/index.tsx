@@ -1,7 +1,7 @@
-import { Button } from '../../Button'
 import { GlobalFilter } from './GlobalFilter'
 import { Pagination } from './Pagination'
-import { ExportCSVButton } from './ExportCSVButtton'
+import { ExportCSVButton } from './ExportCSVButton'
+import { EditableButton } from './EditableButton'
 import { ColumnSelection } from './ColumnSelection'
 
 import type { Table as TableInstance } from '@tanstack/react-table'
@@ -129,9 +129,9 @@ export const TableControls = ({
         data={csvData}
         disabled={disabled}
         fileName={csvExportFileName}
-        variant={variant}
         showExportCSVButton={showExportCSVButton}
-        size='sm'
+        size='sm' //# Should this be hardcoded?
+        variant={variant}
       />
     )
   }
@@ -139,19 +139,29 @@ export const TableControls = ({
   /* ======================
     renderEditableButton()
   ====================== */
-  //# This is an MVP. Move to separate component and use edit/pencil icon.
-  //# It should hook into disabled and theme states.
 
   const renderEditableButton = () => {
     if (showEditingButton !== true) return null
+    // return (
+    //   <Button
+    //     onClick={() => {
+    //       setEditable((v) => !v)
+    //     }}
+    //   >
+    //     {editable ? 'Done Editing' : 'Edit'}
+    //   </Button>
+    // )
+
     return (
-      <Button
-        onClick={() => {
-          setEditable((v) => !v)
-        }}
-      >
-        {editable ? 'Done Editing' : 'Edit'}
-      </Button>
+      <EditableButton
+        disabled={disabled}
+        editable={editable}
+        isIcon={true}
+        showEditingButton={showEditingButton}
+        setEditable={setEditable}
+        size='sm' //# Should this be hardcoded?
+        variant={variant}
+      />
     )
   }
 
