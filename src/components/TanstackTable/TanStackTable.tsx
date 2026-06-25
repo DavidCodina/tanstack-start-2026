@@ -451,12 +451,13 @@ export const TanStackTable = ({
   }
 
   const tableInstance = useReactTable({
-    // If set to true, pagination will be reset to the first page when page-altering state changes eg. data is updated, filters change, grouping changes, etc.
-    autoResetPageIndex, //* New...
+    // If set to true, pagination will be reset to the first page when page-altering
+    // state changes eg. data is updated, filters change, grouping changes, etc.
+    autoResetPageIndex,
     meta: {
+      variant: variant,
       ...tableOptions.meta,
 
-      //* New...
       updateData: ({
         rowIndex,
         columnId,

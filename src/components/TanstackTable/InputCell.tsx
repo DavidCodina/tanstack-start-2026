@@ -63,9 +63,6 @@ type UpdateData = (arg: UpdateDatdaArg) => void
 
 //# The v0 demo also had an "Add Row" feature...
 
-//# Ultimately, it may make more sense to have a separate component for the <select>.
-//# That would then allow us to then extend props for the input/select.
-
 export const InputCell = ({
   className = '',
   context,

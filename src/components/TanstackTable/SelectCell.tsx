@@ -43,6 +43,9 @@ type UpdateData = (arg: UpdateDatdaArg) => void
 /* ========================================================================
 
 ======================================================================== */
+//# Next step: fine-tune the CSS/Tailwind styles.
+//# Review styles in the select in the Pagination and update styles
+//# If you need access to the variant, you can use tableMeta.variant.
 
 export const SelectCell = ({
   children,
@@ -54,6 +57,7 @@ export const SelectCell = ({
   const tableValue = getValue()
 
   const tableMeta = table.options.meta
+
   // const columnMeta = column.columnDef.meta
 
   // The updateData() function is hardcoded in the useReactTable options.
@@ -62,6 +66,9 @@ export const SelectCell = ({
     tableMeta && 'updateData' in tableMeta
       ? (tableMeta.updateData as UpdateData)
       : undefined
+
+  const _variant =
+    tableMeta && 'variant' in tableMeta ? tableMeta.variant : undefined
 
   /* ======================
       state & refs
