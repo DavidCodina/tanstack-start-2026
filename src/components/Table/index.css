@@ -60,7 +60,7 @@ Tailwind plugin. */
   border-color: var(--table-border-color);
   box-sizing: border-box;
   caption-side: bottom;
-  font-size: var(--text-sm);
+  font-size: var(--text-md);
   margin: 0px;
   position: relative;
   vertical-align: top;

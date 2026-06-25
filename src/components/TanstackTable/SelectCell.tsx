@@ -19,10 +19,14 @@ disabled:placeholder:text-(--table-disabled-color)
 disabled:opacity-65
 `
 
+// Don't set text-base here. Instead, let the input inherit the size from the table.
 const baseClasses = `
-border bg-card
+flex bg-card
 w-full min-w-[150px]
-rounded-md border px-2 py-1 text-sm outline-none 
+px-[0.5em] py-[0.25em]
+leading-[1.5] font-normal
+border border-(--table-border-color) outline-none
+rounded-[0.375em]
 ${FIELD_BOX_SHADOW_MIXIN}
 ${FIELD_FOCUS_MIXIN}
 ${FIELD_DISABLED_MIXIN}
@@ -67,8 +71,33 @@ export const SelectCell = ({
       ? (tableMeta.updateData as UpdateData)
       : undefined
 
-  const _variant =
-    tableMeta && 'variant' in tableMeta ? tableMeta.variant : undefined
+  ///////////////////////////////////////////////////////////////////////////
+  //
+  // There's actually no need for variant or size. Why? Because the Tailwind styles use --table-border-color,
+  // which itself hooks into the current theme color. Additionally, size is derived entirely from the inherited
+  // font size.
+  //
+  // const _variant = tableMeta && 'variant' in tableMeta && typeof tableMeta.variant === 'string' ? tableMeta.variant : undefined
+  // const _size = tableMeta && 'size' in tableMeta && typeof tableMeta.size === 'string' ? tableMeta.size : undefined
+  //
+  ///////////////////////////////////////////////////////////////////////////
+
+  const disabled =
+    tableMeta &&
+    'disabled' in tableMeta &&
+    typeof tableMeta.disabled === 'boolean'
+      ? tableMeta.disabled
+      : false
+
+  // Following the initial value of editable state in the main TanStackTable component.
+  // it makes the most sense to default to false. However, the default here should never
+  // actually get used, because in fact there's always a value for tableMeta.editable.
+  const editable =
+    tableMeta &&
+    'editable' in tableMeta &&
+    typeof tableMeta.editable === 'boolean'
+      ? tableMeta.editable
+      : false
 
   /* ======================
       state & refs
@@ -89,11 +118,15 @@ export const SelectCell = ({
           return
   ====================== */
 
+  if (editable !== true) {
+    return tableValue
+  }
+
   return (
     <select
       {...otherProps}
       className={cn(baseClasses, className)}
-      value={value as string}
+      disabled={disabled}
       onChange={(e) => {
         const newValue = e.target.value
 
@@ -107,6 +140,7 @@ export const SelectCell = ({
           })
         }
       }}
+      value={value as string}
     >
       {children}
     </select>

@@ -19,14 +19,14 @@ disabled:placeholder:text-(--table-disabled-color)
 disabled:opacity-65
 `
 
-// Use flex-1 and not w-full // ???
+// Don't set text-base here. Instead, let the input inherit the size from the table.
 const baseClasses = `
-flex flex-1 bg-card
-min-w-[180px]
+flex bg-card
+w-full min-w-[180px]
 px-[0.5em] py-[0.25em]
-text-base leading-[1.5] font-normal
-rounded-[0.375em]
+leading-[1.5] font-normal
 border border-(--table-border-color) outline-none
+rounded-[0.375em]
 placeholder:text-muted-foreground
 ${FIELD_BOX_SHADOW_MIXIN}
 ${FIELD_FOCUS_MIXIN}
@@ -59,8 +59,6 @@ type UpdateData = (arg: UpdateDatdaArg) => void
 //# In that case, we may want a custom component just for booleans,
 //# or we may need some additional logic here.
 
-//# Next step: fine-tune the CSS/Tailwind styles.
-
 //# The v0 demo also had an "Add Row" feature...
 
 export const InputCell = ({
@@ -81,6 +79,34 @@ export const InputCell = ({
     tableMeta && 'updateData' in tableMeta
       ? (tableMeta.updateData as UpdateData)
       : undefined
+
+  ///////////////////////////////////////////////////////////////////////////
+  //
+  // There's actually no need for variant or size. Why? Because the Tailwind styles use --table-border-color,
+  // which itself hooks into the current theme color. Additionally, size is derived entirely from the inherited
+  // font size.
+  //
+  // const _variant = tableMeta && 'variant' in tableMeta && typeof tableMeta.variant === 'string' ? tableMeta.variant : undefined
+  // const _size = tableMeta && 'size' in tableMeta && typeof tableMeta.size === 'string' ? tableMeta.size : undefined
+  //
+  ///////////////////////////////////////////////////////////////////////////
+
+  const disabled =
+    tableMeta &&
+    'disabled' in tableMeta &&
+    typeof tableMeta.disabled === 'boolean'
+      ? tableMeta.disabled
+      : false
+
+  // Following the initial value of editable state in the main TanStackTable component.
+  // it makes the most sense to default to false. However, the default here should never
+  // actually get used, because in fact there's always a value for tableMeta.editable.
+  const editable =
+    tableMeta &&
+    'editable' in tableMeta &&
+    typeof tableMeta.editable === 'boolean'
+      ? tableMeta.editable
+      : false
 
   /* ======================
       state & refs
@@ -135,10 +161,15 @@ export const InputCell = ({
           return
   ====================== */
 
+  if (editable !== true) {
+    return tableValue
+  }
+
   return (
     <input
       {...otherProps}
       className={cn(baseClasses, className)}
+      disabled={disabled}
       onBlur={handleBlur}
       onChange={(e) => {
         isValidRef.current = true

@@ -80,8 +80,7 @@ export const FinalDemo = () => {
   const [enableColumnFilters, setEnableColumnFilters] = useState(true)
   const [enablePagination, setEnablePagination] = useState(true)
   const [enableColumns, setEnableColumns] = useState(true)
-  const [showControls, setShowControls] = useState(true)
-  const [showFooter, setShowFooter] = useState(true)
+
   const [disabled, setDisabled] = useState(false)
 
   const [columnVisibility, setColumnVisibility] = useState<
@@ -96,11 +95,16 @@ export const FinalDemo = () => {
   const [columnOrder, setColumnOrder] = useState<string[]>([])
 
   const [variant, runVariantCycle] = useCycle(undefined, 'primary', 'secondary')
+  const [size, runSizeCycle] = useCycle(undefined, 'xs', 'sm')
 
   const [enableGetSize, setEnableGetSize] = useState(false)
   const [enableSorting, setEnableSorting] = useState(true)
   const [enableResizing, setEnableResizing] = useState(true)
-  const [showExportCSVButton, setShowExportCSVButton] = useState(true)
+
+  const [showControls, setShowControls] = useState(true)
+  const [showEditingButton, setShowEditingButton] = useState(false)
+  const [showExportCSVButton, setShowExportCSVButton] = useState(false)
+  const [showFooter, setShowFooter] = useState(true)
 
   /* ======================
       toggleRowSelect() 
@@ -237,6 +241,18 @@ export const FinalDemo = () => {
         </Button>
 
         <Button
+          onClick={() => runSizeCycle(undefined)}
+          size='xs'
+          variant='cyan'
+        >
+          {size === 'xs'
+            ? 'Extra Small'
+            : variant === 'sm'
+              ? 'Small'
+              : 'Default Size'}
+        </Button>
+
+        <Button
           onClick={() => {
             setEnableSorting((v) => !v)
           }}
@@ -360,22 +376,32 @@ export const FinalDemo = () => {
 
         <Button
           onClick={() => {
-            setShowFooter((v) => !v)
-          }}
-          size='xs'
-          variant='cyan'
-        >
-          {showFooter ? 'Hide Footer' : 'Show Footer'}
-        </Button>
-
-        <Button
-          onClick={() => {
             setShowExportCSVButton((v) => !v)
           }}
           size='xs'
           variant='cyan'
         >
           {showExportCSVButton ? 'Hide CSV' : 'Show CSV'}
+        </Button>
+
+        <Button
+          onClick={() => {
+            setShowEditingButton((v) => !v)
+          }}
+          size='xs'
+          variant='cyan'
+        >
+          {showEditingButton ? 'Hide Editing Button' : 'Show Editing Button'}
+        </Button>
+
+        <Button
+          onClick={() => {
+            setShowFooter((v) => !v)
+          }}
+          size='xs'
+          variant='cyan'
+        >
+          {showFooter ? 'Hide Footer' : 'Show Footer'}
         </Button>
       </div>
     )
@@ -424,7 +450,7 @@ export const FinalDemo = () => {
         hover
         // borderless
         bordered
-        size='sm'
+        size={size}
         variant={variant}
         enableGlobalFilter={enableGlobalFilter}
         enablePagination={enablePagination}
@@ -432,7 +458,7 @@ export const FinalDemo = () => {
         enableGetSize={enableGetSize}
         showControls={showControls}
         tableContainerProps={{
-          className: 'mx-auto max-w-[1000px] shadow'
+          className: 'mx-auto shadow' //` max-w-[1000px]
         }}
         enableResizing={enableResizing}
         enableSorting={enableSorting}
@@ -466,6 +492,8 @@ export const FinalDemo = () => {
             // className: 'outline-2 outline-dashed outline-pink-500'
           }
         }
+        // defaultEditable={false}
+        showEditingButton={showEditingButton}
 
         //# Test this
         // pageIndex={1}

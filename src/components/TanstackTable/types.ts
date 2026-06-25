@@ -233,4 +233,13 @@ export type TableProps = {
     | 'size'
     | 'variant'
   >
+
+  /* =================== */
+
+  /** Opt into showing thte edit button in TableConrols. Defaults to false. Then the button must be
+   * clicked to actually set editable to true, thereby showing ediable cells as defined by columns.
+   */
+  showEditingButton?: boolean
+  /** Set whether or not editable cells like InputCell and SelectCell are in an initial editable state. This defaults to false. */
+  defaultEditable?: boolean
 }

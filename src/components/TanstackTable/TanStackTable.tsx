@@ -158,7 +158,12 @@ export const TanStackTable = ({
   csvExportFileName = '',
   csvHeaders,
   showExportCSVButton = false,
-  exportCSVButtonProps = {}
+  exportCSVButtonProps = {},
+
+  /* =================== */
+
+  defaultEditable = false,
+  showEditingButton = false
 }: TableProps) => {
   // It's possible that columns and/or data  might be null or undefined
   // on mount. This could potentially break some of the logic here.
@@ -210,6 +215,8 @@ export const TanStackTable = ({
   /* ======================
         State & Refs
   ====================== */
+
+  const [editable, setEditable] = React.useState(defaultEditable)
 
   const [autoResetPageIndex, skipAutoResetPageIndex] = useSkipResetPageIndex()
 
@@ -455,7 +462,13 @@ export const TanStackTable = ({
     // state changes eg. data is updated, filters change, grouping changes, etc.
     autoResetPageIndex,
     meta: {
+      // For most components we can prop drill, but for components like
+      // InputCell, SelectCell, it makes more sense to pass them through meta.
+      disabled: disabled,
+      editable: editable,
+      size: size,
       variant: variant,
+
       ...tableOptions.meta,
 
       updateData: ({
@@ -814,7 +827,10 @@ export const TanStackTable = ({
         <TableControls
           // General
           disabled={disabled}
+          editable={editable}
+          showEditingButton={showEditingButton}
           noControlsShown={noControlsShown}
+          setEditable={setEditable}
           showControls={showControls}
           size={size}
           tableInstance={tableInstance}
