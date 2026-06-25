@@ -3,7 +3,7 @@ import { format } from 'date-fns'
 // https://tanstack.com/table/v8/docs/guide/column-defs
 
 import { createColumnHelper } from '@tanstack/react-table'
-import { EditableCell } from '../../EditableCell'
+import { InputCell, SelectCell } from '../../'
 
 // Rather than being overly confident that all properties will exist on each Person
 // it's much safer to make everything optional ? so that we don't inadvertently
@@ -48,10 +48,17 @@ export const columns = [
   }),
 
   columnHelper.accessor('first_name', {
-    //cell: (ctx) => ctx.getValue(),
-    // When implementing EditableCell, make sure to pass setData prop to the TanStackTable instance.
-    // Additionally, set the optional meta.editableCellType here as needed.
-    cell: EditableCell,
+    // cell: (ctx) => ctx.getValue(),
+    // When implementing InputCell, make sure to pass setData prop to the TanStackTable instance.
+    cell: (ctx) => {
+      return (
+        <InputCell
+          // className='outline-2 outline-pink-500 outline-dashed'
+          context={ctx}
+          type='text'
+        />
+      )
+    },
     header: () => <span>First Name</span>,
     footer: (ctx) => ctx.column.id,
     sortUndefined: 'last', // Force undefined values to the end
@@ -188,22 +195,25 @@ export const columns = [
 
   columnHelper.accessor('country', {
     // cell: (ctx) => ctx.getValue(),
-    // When implementing EditableCell, make sure to pass setData prop to the TanStackTable instance.
-    // Additionally, set the optional meta.editableCellType and selectOptions as needed.
-    cell: EditableCell,
+
+    cell: (ctx) => {
+      return (
+        <SelectCell
+          // className='outline-2 outline-sky-500 outline-dashed'
+          context={ctx}
+        >
+          <option value='United States'>United States</option>
+          <option value='Canada'>Canada</option>
+          <option value='Mexico'>Mexico</option>
+        </SelectCell>
+      )
+    },
 
     header: () => <span>Country</span>,
     footer: (ctx) => ctx.column.id,
     sortUndefined: 'last',
     meta: {
-      label: 'Country',
-      editableCellType: 'select',
-
-      selectOptions: [
-        { label: 'United States', value: 'United States' },
-        { label: 'Canada', value: 'Canada' },
-        { label: 'Mexico', value: 'Mexico' }
-      ]
+      label: 'Country'
     }
   }),
 
@@ -230,7 +240,13 @@ export const columns = [
     // },
 
     cell: (ctx) => {
-      return <EditableCell {...ctx} />
+      return (
+        <InputCell
+          // className='outline-2 outline-lime-500 outline-dashed'
+          context={ctx}
+          type='text'
+        />
+      )
     },
 
     header: () => <span>Age</span>,
@@ -302,9 +318,7 @@ export const columns = [
     //   return valueAsString.includes(filterValue)
     // }
     meta: {
-      label: 'Age',
-      // This is used by the EditableCell component to conditionally set the field type.
-      editableCellType: 'number'
+      label: 'Age'
     }
   }),
 
