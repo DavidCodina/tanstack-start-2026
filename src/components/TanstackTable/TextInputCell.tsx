@@ -60,21 +60,11 @@ type UpdateData = (arg: UpdateDataArg) => void
 // In that case, we may want to build a more custom InputCell to carefully
 // handle what kinds of values are allowed.
 
-//# What if the underlying value was a boolean?
-//# Let's build radios that look like buttons and have values
-//# of 'true'/'false', but when selected the actual value they set is true/false.
-//# Build a prototype, then feed it into v0 to improve.
-
-//# Alternatively, have a single button that toggles between true/false.
-//# Call it EditableBooleanCell.
-
 //# What if we need additional validation?
 
 //# What if we need a date picker?
 
-//# The v0 demo also had an "Add Row" feature...
-
-//# Additionally, we may want to be able to delete an entire row.
+//# What about deleting rows, or even adding rows?
 //# https://www.youtube.com/watch?v=Pt3-5aPu1pE
 
 export const TextInputCell = ({

@@ -3,7 +3,7 @@ import { format } from 'date-fns'
 // https://tanstack.com/table/v8/docs/guide/column-defs
 
 import { createColumnHelper } from '@tanstack/react-table'
-import { NumberInputCell, SelectCell, TextInputCell } from '../../'
+import { BooleanCell, NumberInputCell, SelectCell, TextInputCell } from '../../'
 
 // Rather than being overly confident that all properties will exist on each Person
 // it's much safer to make everything optional ? so that we don't inadvertently
@@ -319,17 +319,29 @@ export const columns = [
   // For that reaon, the default sorting algorithm will still work as expected here.
   // Thus, unlike ISO date formatting, booleans do not need to implement:
   // sortingFn: 'sortByRawValue' as any
-  columnHelper.accessor(
-    (row) => {
-      const value = row.is_cool
-      return typeof value === 'boolean' ? value.toString() : '-'
+
+  // columnHelper.accessor(
+  //   (row) => {
+  //     const value = row.is_cool
+  //     return typeof value === 'boolean' ? value.toString() : '-'
+  //   },
+  //   {
+  //     id: 'is_cool',
+  //     header: () => <span>Is Cool</span>,
+  //     footer: (ctx) => ctx.column.id,
+  //     enableColumnFilter: true,
+  //     meta: { label: 'Is Cool' }
+  //   }
+  // )
+
+  columnHelper.accessor('is_cool', {
+    // cell: (ctx) => ctx.getValue(),
+    cell: (ctx) => {
+      return <BooleanCell context={ctx} />
     },
-    {
-      id: 'is_cool',
-      header: () => <span>Is Cool</span>,
-      footer: (ctx) => ctx.column.id,
-      enableColumnFilter: true,
-      meta: { label: 'Is Cool' }
-    }
-  )
+    header: () => <span>Is Cool</span>,
+    footer: (ctx) => ctx.column.id,
+    enableColumnFilter: true,
+    meta: { label: 'Is Cool' }
+  })
 ]

@@ -5,6 +5,7 @@ export * from './TanStackTable'
 export * from './TextInputCell'
 export * from './NumberInputCell'
 export * from './SelectCell'
+export * from './BooleanCell'
 
 export type {
   Column as TanStackColumn,

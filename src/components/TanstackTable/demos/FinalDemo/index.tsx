@@ -494,10 +494,8 @@ export const FinalDemo = () => {
         }
         // defaultEditable={false}
         showEditingButton={showEditingButton}
-
-        //# Test this
-        // pageIndex={1}
-        // pageSize={5}
+        pageIndex={0}
+        pageSize={7}
 
         //# Implement and test this and/or remove.
         // title={titleInfo?.title}
