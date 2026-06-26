@@ -42,6 +42,8 @@ type UnknownValueType = unknown
 
 type NumberInputCellProps = Omit<React.ComponentProps<'input'>, 'type'> & {
   context: CellContext<any, UnknownValueType>
+  noDecimal?: boolean
+  noNegative?: boolean
 }
 
 type UpdateDataArg = {
@@ -56,14 +58,17 @@ type UpdateData = (arg: UpdateDataArg) => void
 /* ========================================================================
 
 ======================================================================== */
-//# Further restrict NumberInputCell to allow only digits, '.', and '-'
-//# In other words, omit all special characters that type="number" sometimes allows.
 
 export const NumberInputCell = ({
   className = '',
   context,
+  noDecimal = false,
+  noNegative = false,
   onBlur,
   onChange,
+  onKeyDown,
+  onPaste,
+  step,
   ...otherProps
 }: NumberInputCellProps) => {
   const { column, getValue, row, table } = context
@@ -107,6 +112,8 @@ export const NumberInputCell = ({
     typeof tableMeta.editable === 'boolean'
       ? tableMeta.editable
       : false
+
+  step = typeof step !== 'undefined' ? step : noDecimal === true ? 1 : undefined
 
   /* ======================
       state & refs
@@ -204,12 +211,15 @@ export const NumberInputCell = ({
       className={cn(baseClasses, className)}
       disabled={disabled}
       onBlur={(e) => {
-        handleBlur()
         onBlur?.(e)
+        handleBlur()
       }}
       onChange={(e) => {
-        const newValue = e.target.valueAsNumber
         onChange?.(e)
+        // Note: values like 2E+2 actually output here as 200.
+        // However, the actual value in the input will still be 2E+2.
+        // For this reason, onKeyDown + onPaste reject special characters.
+        let newValue = e.target.valueAsNumber
 
         if (typeof newValue !== 'number' || isNaN(newValue)) {
           // Note: handleBlur() will spot ''. Then it will reset to
@@ -218,8 +228,42 @@ export const NumberInputCell = ({
           return
         }
 
+        if (noDecimal && !Number.isInteger(newValue)) {
+          newValue = Math.trunc(newValue)
+        }
+
+        if (noNegative && newValue < 0) {
+          newValue = 0
+        }
+
         setValue(newValue)
       }}
+      onKeyDown={(e) => {
+        onKeyDown?.(e)
+        // Prevent special characters.
+        if (e.key === 'e' || e.key === 'E' || e.key === '+') {
+          e.preventDefault()
+          return
+        }
+
+        if (noDecimal && e.key === '.') {
+          e.preventDefault()
+          return
+        }
+        if (noNegative && e.key === '-') {
+          e.preventDefault()
+          return
+        }
+      }}
+      onPaste={(e) => {
+        onPaste?.(e)
+        // Reject pasted values with special characters.
+        const pasted = e.clipboardData.getData('text')
+        if (/[eE+]/.test(pasted)) {
+          e.preventDefault()
+        }
+      }}
+      step={step}
       type='number'
       value={alwaysStringOrNumber}
     />

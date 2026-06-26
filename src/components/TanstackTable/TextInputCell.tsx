@@ -74,6 +74,9 @@ type UpdateData = (arg: UpdateDataArg) => void
 
 //# The v0 demo also had an "Add Row" feature...
 
+//# Additionally, we may want to be able to delete an entire row.
+//# https://www.youtube.com/watch?v=Pt3-5aPu1pE
+
 export const TextInputCell = ({
   className = '',
   context,

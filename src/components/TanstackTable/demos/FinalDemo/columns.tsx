@@ -238,7 +238,7 @@ export const columns = [
     // },
 
     cell: (ctx) => {
-      return <NumberInputCell context={ctx} />
+      return <NumberInputCell context={ctx} noNegative noDecimal />
     },
 
     header: () => <span>Age</span>,
