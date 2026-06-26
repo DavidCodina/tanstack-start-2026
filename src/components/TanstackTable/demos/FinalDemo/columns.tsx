@@ -3,7 +3,7 @@ import { format } from 'date-fns'
 // https://tanstack.com/table/v8/docs/guide/column-defs
 
 import { createColumnHelper } from '@tanstack/react-table'
-import { InputCell, SelectCell } from '../../'
+import { NumberInputCell, SelectCell, TextInputCell } from '../../'
 
 // Rather than being overly confident that all properties will exist on each Person
 // it's much safer to make everything optional ? so that we don't inadvertently
@@ -51,13 +51,7 @@ export const columns = [
     // cell: (ctx) => ctx.getValue(),
     // When implementing InputCell, make sure to pass setData prop to the TanStackTable instance.
     cell: (ctx) => {
-      return (
-        <InputCell
-          // className='outline-2 outline-pink-500 outline-dashed'
-          context={ctx}
-          type='text'
-        />
-      )
+      return <TextInputCell context={ctx} />
     },
     header: () => <span>First Name</span>,
     footer: (ctx) => ctx.column.id,
@@ -206,9 +200,7 @@ export const columns = [
           // className='outline-2 outline-sky-500 outline-dashed'
           context={ctx}
         >
-          <option value='United States'>
-            United States - Bla bla bla abc123
-          </option>
+          <option value='United States'>United States</option>
           <option value='Canada'>Canada</option>
           <option value='Mexico'>Mexico</option>
         </SelectCell>
@@ -246,13 +238,7 @@ export const columns = [
     // },
 
     cell: (ctx) => {
-      return (
-        <InputCell
-          // className='outline-2 outline-lime-500 outline-dashed'
-          context={ctx}
-          type='number'
-        />
-      )
+      return <NumberInputCell context={ctx} />
     },
 
     header: () => <span>Age</span>,

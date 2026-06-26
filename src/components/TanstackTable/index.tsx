@@ -2,7 +2,8 @@ import type { Column, TableAPI, TableOptions, TableProps } from './types'
 
 export * from './TanStackTable'
 
-export * from './InputCell'
+export * from './TextInputCell'
+export * from './NumberInputCell'
 export * from './SelectCell'
 
 export type {

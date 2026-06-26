@@ -477,8 +477,8 @@ export const TanStackTable = ({
         value
       }: {
         rowIndex: number
-        columnId: string | number
-        value: any
+        columnId: string
+        value: unknown
       }) => {
         if (typeof setData !== 'function') return
 

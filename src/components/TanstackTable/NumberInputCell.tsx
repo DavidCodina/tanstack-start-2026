@@ -1,6 +1,8 @@
 import * as React from 'react'
+import { isRenderable } from './utils'
 
 import type { CellContext } from '@tanstack/react-table'
+
 import { cn } from '@/utils'
 
 const FIELD_BOX_SHADOW_MIXIN = `shadow-xs`
@@ -34,68 +36,39 @@ ${FIELD_FOCUS_MIXIN}
 ${FIELD_DISABLED_MIXIN}
 `
 
-type InputCellProps = Omit<React.ComponentProps<'input'>, 'type'> & {
-  context: CellContext<any, string | number | undefined>
+// Ideally, the value would be a number, but what if it was undefined or
+// even null? It's best to type it as unknown and treat it cautiously.
+type UnknownValueType = unknown
 
-  /** Passing the specific type is crucial not just for the input attribute, but it also dictates
-   * how the value is derived and validated internally. For this reason, it's required.
-   */
-  type: 'text' | 'number'
+type NumberInputCellProps = Omit<React.ComponentProps<'input'>, 'type'> & {
+  context: CellContext<any, UnknownValueType>
 }
 
-type UpdateDatdaArg = {
+type UpdateDataArg = {
   rowIndex: number
-  columnId: string | number
-  value: any
+  columnId: string
+  // For TextInputCell this is string, for NumberInputCell it's number.
+  value: number
 }
 
-type UpdateData = (arg: UpdateDatdaArg) => void
+type UpdateData = (arg: UpdateDataArg) => void
 
 /* ========================================================================
 
 ======================================================================== */
-// ⚠️ What if the value is a string, but the string is a number like "$123.45"?
-// In that case, we may want to build a more custom InputCell to carefully
-// handle what kinds of values are allowed.
+//# Further restrict NumberInputCell to allow only digits, '.', and '-'
+//# In other words, omit all special characters that type="number" sometimes allows.
 
-//# What if the underlying value was a boolean?
-//# Let's build radios that look like buttons and have values
-//# of 'true'/'false', but when selected the actual value they set is true/false.
-//# Build a prototype, then feed it into v0 to improve.
-
-//# Alternatively, have a single button that toggles between true/false.
-//# Call it EditableBooleanCell.
-
-//# The v0 demo also had an "Add Row" feature...
-
-export const InputCell = ({
+export const NumberInputCell = ({
   className = '',
   context,
-  type = 'text',
+  onBlur,
+  onChange,
   ...otherProps
-}: InputCellProps) => {
+}: NumberInputCellProps) => {
   const { column, getValue, row, table } = context
-  const allowedTypes = ['string', 'number']
 
-  ///////////////////////////////////////////////////////////////////////////
-  //
-  // Mitigate possible errors resulting from a null value, or any other value
-  // that is not string | number.
-  //
-  //   ❌ The `value` prop on `input` should not be null. Consider using an empty
-  //   string to clear the component or `undefined` for uncontrolled components.
-  //
-  // In such cases, use undefined instead. However, it's also important to not actually
-  // pass that value to updateData()
-  //
-  ///////////////////////////////////////////////////////////////////////////
-
-  let tableValue = getValue()
-
-  if (!allowedTypes.includes(typeof tableValue)) {
-    // Don't set to undefined. While that's better than null, it still causes issues for type="number".
-    tableValue = ''
-  }
+  const tableValue = getValue()
 
   const tableMeta = table.options.meta
   // const columnMeta = column.columnDef.meta
@@ -139,22 +112,49 @@ export const InputCell = ({
       state & refs
   ====================== */
 
-  const isValidRef = React.useRef(true)
-  const [value, setValue] = React.useState(tableValue)
+  const [value, setValue] = React.useState<UnknownValueType>(() => {
+    // const isNumber = typeof tableValue === 'number' && !isNaN(tableValue)
+    // if (!isNumber && process.env.NODE_ENV === 'development') {
+    //   console.warn('NumberInputCell initialized `value` state with a non-number value.')
+    // }
+    return tableValue
+  })
+
+  ///////////////////////////////////////////////////////////////////////////
+  //
+  // The `alwaysStringOrNumber` is passed to input's value prop to mitigate potential
+  // errors/warnings when value ends up being something unexpected. For example:
+  //
+  //   ❌ The `value` prop on `input` should not be null. Consider using an empty
+  //   string to clear the component or `undefined` for uncontrolled components.
+  //
+  // However, the actual local state `value` is still allowed to be anything,
+  // though we sincerely hope it's a number.
+  //
+  ///////////////////////////////////////////////////////////////////////////
+  const alwaysStringOrNumber =
+    typeof value === 'string' || (typeof value === 'number' && !isNaN(value))
+      ? value
+      : ''
 
   /* ======================
         handleBlur()
   ====================== */
+  ///////////////////////////////////////////////////////////////////////////
+  //
+  // The actual call to updateData() happens on blur. Here again, we check
+  // the actual local state value to see if it's of type number. If it's not
+  // then reset `value` state to the current tableValue then return early,
+  // prior to calling updateData().
+  //
+  // Note: the initial tableValue itself could still be an invalid type, but
+  // ultimately that's okay. The critical concern here is that we don't call
+  // updateData() with an invalid value type.
+  //
+  ///////////////////////////////////////////////////////////////////////////
 
   const handleBlur = () => {
-    if (
-      (type === 'number' && typeof value !== 'number') ||
-      (type === 'text' && typeof value !== 'string')
-    ) {
-      isValidRef.current = false
-    }
-
-    if (isValidRef.current === false) {
+    if (typeof value !== 'number') {
       setValue(tableValue)
       return
     }
@@ -181,8 +181,20 @@ export const InputCell = ({
   /* ======================
           return
   ====================== */
+  ///////////////////////////////////////////////////////////////////////////
+  //
+  // Rather than typing UnknownValueType as React.ReactNode, we can assert React.ReactNode here.
+  // Why is this necessary? If TypeScript sees the value as unknown, it will complain when
+  // one attempts to consume the component in columns.tsx file:
+  //
+  //   ❌ NumberInputCell cannot be used as a JSX component... unknown is not a valid JSX element type.
+  //
+  // That said, prefer isRenderable() over type assertion of: `as React.ReactNode`
+  //
+  ///////////////////////////////////////////////////////////////////////////
 
   if (editable !== true) {
+    if (!isRenderable(tableValue)) return null
     return tableValue
   }
 
@@ -191,27 +203,25 @@ export const InputCell = ({
       {...otherProps}
       className={cn(baseClasses, className)}
       disabled={disabled}
-      onBlur={handleBlur}
+      onBlur={(e) => {
+        handleBlur()
+        onBlur?.(e)
+      }}
       onChange={(e) => {
-        isValidRef.current = true
+        const newValue = e.target.valueAsNumber
+        onChange?.(e)
 
-        const newValue =
-          type === 'number' ? e.target.valueAsNumber : e.target.value
-
-        if (
-          type === 'number' &&
-          (typeof newValue !== 'number' || isNaN(newValue))
-        ) {
-          isValidRef.current = false
-
+        if (typeof newValue !== 'number' || isNaN(newValue)) {
+          // Note: handleBlur() will spot ''. Then it will reset to
+          // tableValue, opting out of updateData(). This is the way.
           setValue('')
           return
         }
 
         setValue(newValue)
       }}
-      type={type}
-      value={value}
+      type='number'
+      value={alwaysStringOrNumber}
     />
   )
 }

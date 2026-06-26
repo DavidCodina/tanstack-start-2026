@@ -41,7 +41,7 @@ type SelectCellProps = React.ComponentProps<'select'> & {
 
 type UpdateDatdaArg = {
   rowIndex: number
-  columnId: string | number
+  columnId: string
   value: any
 }
 
