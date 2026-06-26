@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { ChevronDown } from 'lucide-react'
+import { isRenderable } from './utils'
 
 import type { CellContext } from '@tanstack/react-table'
 import { cn } from '@/utils'
@@ -35,14 +36,16 @@ ${FIELD_FOCUS_MIXIN}
 ${FIELD_DISABLED_MIXIN}
 `
 
+type UnknownValueType = unknown
+
 type SelectCellProps = React.ComponentProps<'select'> & {
-  context: CellContext<any, string | number | undefined>
+  context: CellContext<any, UnknownValueType>
 }
 
 type UpdateDatdaArg = {
   rowIndex: number
   columnId: string
-  value: any
+  value: string
 }
 
 type UpdateData = (arg: UpdateDatdaArg) => void
@@ -59,13 +62,7 @@ export const SelectCell = ({
 }: SelectCellProps) => {
   const { column, getValue, row, table } = context
 
-  // Mitigate possible errors resulting from a null value, or any other value
-  // that is not string | number. In such cases, use '' instead.
-  const allowedTypes = ['string', 'number']
-  let tableValue = getValue()
-  if (!allowedTypes.includes(typeof tableValue)) {
-    tableValue = ''
-  }
+  const tableValue = getValue()
 
   const tableMeta = table.options.meta
   // const columnMeta = column.columnDef.meta
@@ -109,7 +106,12 @@ export const SelectCell = ({
       state & refs
   ====================== */
 
-  const [value, setValue] = React.useState(tableValue)
+  const [value, setValue] = React.useState<UnknownValueType>(tableValue)
+
+  const alwaysStringOrNumber =
+    typeof value === 'string' || (typeof value === 'number' && !isNaN(value))
+      ? value
+      : ''
 
   /* ======================
          useEffect()
@@ -126,6 +128,7 @@ export const SelectCell = ({
   ====================== */
 
   if (editable !== true) {
+    if (!isRenderable(tableValue)) return null
     return tableValue
   }
 
@@ -137,14 +140,16 @@ export const SelectCell = ({
         disabled={disabled}
         onChange={(e) => {
           const newValue = e.target.value
-          const isStringOrNumber =
-            typeof newValue === 'number' || typeof newValue === 'string'
 
-          if (!isStringOrNumber) {
+          // Even though <select> can technically accept string | number, the
+          // e.target.value is always coerced to a string. This is probably overly
+          // defensive, but also doesn't hurt.
+          if (typeof newValue !== 'string') {
             setValue(tableValue)
             return
           }
 
+          // Otherwise...
           setValue(newValue)
 
           if (typeof updateData === 'function') {
@@ -155,7 +160,7 @@ export const SelectCell = ({
             })
           }
         }}
-        value={value}
+        value={alwaysStringOrNumber}
       >
         {children}
       </select>

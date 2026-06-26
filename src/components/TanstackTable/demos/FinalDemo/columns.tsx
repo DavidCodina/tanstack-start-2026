@@ -195,11 +195,11 @@ export const columns = [
     // cell: (ctx) => ctx.getValue(),
 
     cell: (ctx) => {
+      // Note: Even though <option>'s value can be a number, it's always coerced to a string.
+      // by the time it is acccessed as e.target. value. For this reason, SelectCell should
+      // ONLY be used in conjunction with columns that expect string values.
       return (
-        <SelectCell
-          // className='outline-2 outline-sky-500 outline-dashed'
-          context={ctx}
-        >
+        <SelectCell context={ctx}>
           <option value='United States'>United States</option>
           <option value='Canada'>Canada</option>
           <option value='Mexico'>Mexico</option>
