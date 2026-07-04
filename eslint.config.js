@@ -172,6 +172,22 @@ export default [
             react
     ====================== */
 
+      ///////////////////////////////////////////////////////////////////////////
+      //
+      // Allow Base UI render's callback version to work without errors/warnings:
+      //
+      //   render={(props, _state) => {
+      //     return (
+      //       <section {...props}>
+      //         {props.children}         <-- 'children' is missing in props validation
+      //         I'm the actual children
+      //       </section>
+      //     )
+      //   }}
+      //
+      ///////////////////////////////////////////////////////////////////////////
+      'react/prop-types': 'off',
+
       'react/react-in-jsx-scope': 'off', // Not needed for React 17+
 
       'react/no-children-prop': 'off',
@@ -236,7 +252,9 @@ export default [
           Testing Library
       ====================== */
 
-      'testing-library/no-debugging-utils': 'off'
+      'testing-library/no-debugging-utils': 'off',
+
+      'testing-library/render-result-naming-convention': 'off'
     }
   },
   ...storybook.configs['flat/recommended']
