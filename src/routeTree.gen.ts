@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as TestRouteRouteImport } from './routes/test/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TestIndexRouteImport } from './routes/test/index'
+import { Route as LoginIndexRouteImport } from './routes/login/index'
 import { Route as AboutIndexRouteImport } from './routes/about/index'
 import { Route as TestNoLayoutRouteImport } from './routes/test_/no-layout'
 import { Route as TestIdRouteImport } from './routes/test/$id'
@@ -54,6 +55,11 @@ const TestIndexRoute = TestIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => TestRouteRoute,
+} as any)
+const LoginIndexRoute = LoginIndexRouteImport.update({
+  id: '/login/',
+  path: '/login/',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AboutIndexRoute = AboutIndexRouteImport.update({
   id: '/about/',
@@ -201,6 +207,7 @@ export interface FileRoutesByFullPath {
   '/test/$id': typeof TestIdRouteWithChildren
   '/test/no-layout': typeof TestNoLayoutRoute
   '/about/': typeof AboutIndexRoute
+  '/login/': typeof LoginIndexRoute
   '/test/': typeof TestIndexRoute
   '/api/names': typeof demoApiNamesRoute
   '/optional/{-$id}': typeof demoOptionalChar123IdChar125Route
@@ -232,6 +239,7 @@ export interface FileRoutesByTo {
   '/test/$id': typeof TestIdRouteWithChildren
   '/test/no-layout': typeof TestNoLayoutRoute
   '/about': typeof AboutIndexRoute
+  '/login': typeof LoginIndexRoute
   '/test': typeof TestIndexRoute
   '/api/names': typeof demoApiNamesRoute
   '/optional/{-$id}': typeof demoOptionalChar123IdChar125Route
@@ -265,6 +273,7 @@ export interface FileRoutesById {
   '/test/$id': typeof TestIdRouteWithChildren
   '/test_/no-layout': typeof TestNoLayoutRoute
   '/about/': typeof AboutIndexRoute
+  '/login/': typeof LoginIndexRoute
   '/test/': typeof TestIndexRoute
   '/(demo)/api/names': typeof demoApiNamesRoute
   '/(demo)/optional/{-$id}': typeof demoOptionalChar123IdChar125Route
@@ -299,6 +308,7 @@ export interface FileRouteTypes {
     | '/test/$id'
     | '/test/no-layout'
     | '/about/'
+    | '/login/'
     | '/test/'
     | '/api/names'
     | '/optional/{-$id}'
@@ -330,6 +340,7 @@ export interface FileRouteTypes {
     | '/test/$id'
     | '/test/no-layout'
     | '/about'
+    | '/login'
     | '/test'
     | '/api/names'
     | '/optional/{-$id}'
@@ -362,6 +373,7 @@ export interface FileRouteTypes {
     | '/test/$id'
     | '/test_/no-layout'
     | '/about/'
+    | '/login/'
     | '/test/'
     | '/(demo)/api/names'
     | '/(demo)/optional/{-$id}'
@@ -394,6 +406,7 @@ export interface RootRouteChildren {
   TestRouteRoute: typeof TestRouteRouteWithChildren
   TestNoLayoutRoute: typeof TestNoLayoutRoute
   AboutIndexRoute: typeof AboutIndexRoute
+  LoginIndexRoute: typeof LoginIndexRoute
   demoApiNamesRoute: typeof demoApiNamesRoute
   demoOptionalChar123IdChar125Route: typeof demoOptionalChar123IdChar125Route
   demoStartApiRequestRoute: typeof demoStartApiRequestRoute
@@ -440,6 +453,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/test/'
       preLoaderRoute: typeof TestIndexRouteImport
       parentRoute: typeof TestRouteRoute
+    }
+    '/login/': {
+      id: '/login/'
+      path: '/login'
+      fullPath: '/login/'
+      preLoaderRoute: typeof LoginIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/about/': {
       id: '/about/'
@@ -665,6 +685,7 @@ const rootRouteChildren: RootRouteChildren = {
   TestRouteRoute: TestRouteRouteWithChildren,
   TestNoLayoutRoute: TestNoLayoutRoute,
   AboutIndexRoute: AboutIndexRoute,
+  LoginIndexRoute: LoginIndexRoute,
   demoApiNamesRoute: demoApiNamesRoute,
   demoOptionalChar123IdChar125Route: demoOptionalChar123IdChar125Route,
   demoStartApiRequestRoute: demoStartApiRequestRoute,

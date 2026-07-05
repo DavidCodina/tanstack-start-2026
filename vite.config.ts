@@ -2,7 +2,8 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { configDefaults, defineConfig } from 'vitest/config'
 import viteReact from '@vitejs/plugin-react'
-import viteTsConfigPaths from 'vite-tsconfig-paths'
+
+import viteTsConfigPaths from 'vite-tsconfig-paths' // ❌
 import { devtools } from '@tanstack/devtools-vite'
 import { tanstackStart } from '@tanstack/react-start/plugin/vite'
 import tailwindcss from '@tailwindcss/vite'
@@ -28,13 +29,15 @@ const isVitest = process.env.VITEST ? true : false
 ======================================================================== */
 
 const config = defineConfig({
+  //# resolve: { tsconfigPaths: true },
   plugins: [
     devtools(),
-    // nitro(),
-    // this is the plugin that enables path aliases
-    viteTsConfigPaths({
-      projects: ['./tsconfig.json']
-    }),
+
+    // nitro(/*{ rollupConfig: { external: [/^@sentry\//] } } */),
+
+    // Vite 8 added native tsconfig path support: TypeScript path alias resolution
+    // can now be enabled by setting resolve.tsconfigPaths to true, without any extra plugins,
+    viteTsConfigPaths({ projects: ['./tsconfig.json'] }), // ❌
     tailwindcss(),
     ///////////////////////////////////////////////////////////////////////////
     //

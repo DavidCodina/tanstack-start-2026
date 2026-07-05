@@ -3,6 +3,7 @@ import { inferAdditionalFields } from 'better-auth/client/plugins'
 // import { stripeClient } from '@better-auth/stripe/client'
 
 import type { auth } from './auth'
+
 /* ========================================================================
 
 ======================================================================== */
