@@ -17,7 +17,6 @@ import { Route as TestNoLayoutRouteImport } from './routes/test_/no-layout'
 import { Route as TestIdRouteImport } from './routes/test/$id'
 import { Route as TestNestedIndexRouteImport } from './routes/test/nested/index'
 import { Route as ApiTqTodosIndexRouteImport } from './routes/api/tq-todos/index'
-import { Route as demoUsersIndexRouteImport } from './routes/(demo)/users/index'
 import { Route as demoTodos2IndexRouteImport } from './routes/(demo)/todos2/index'
 import { Route as demoTodosIndexRouteImport } from './routes/(demo)/todos/index'
 import { Route as demoTanstackQueryIndexRouteImport } from './routes/(demo)/tanstack-query/index'
@@ -27,7 +26,7 @@ import { Route as demoClientPaginationIndexRouteImport } from './routes/(demo)/c
 import { Route as demoAwaitWithCatchIndexRouteImport } from './routes/(demo)/await-with-catch/index'
 import { Route as TestIdBonusRouteImport } from './routes/test/$id.bonus'
 import { Route as ApiTqTodosIdRouteImport } from './routes/api/tq-todos/$id'
-import { Route as demoUsersIdRouteImport } from './routes/(demo)/users/$id'
+import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as demoTodos2IdRouteImport } from './routes/(demo)/todos2/$id'
 import { Route as demoTodosIdRouteImport } from './routes/(demo)/todos/$id'
 import { Route as demoTanstackQueryIdRouteImport } from './routes/(demo)/tanstack-query/$id'
@@ -81,11 +80,6 @@ const ApiTqTodosIndexRoute = ApiTqTodosIndexRouteImport.update({
   path: '/api/tq-todos/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const demoUsersIndexRoute = demoUsersIndexRouteImport.update({
-  id: '/(demo)/users/',
-  path: '/users/',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const demoTodos2IndexRoute = demoTodos2IndexRouteImport.update({
   id: '/(demo)/todos2/',
   path: '/todos2/',
@@ -133,9 +127,9 @@ const ApiTqTodosIdRoute = ApiTqTodosIdRouteImport.update({
   path: '/api/tq-todos/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
-const demoUsersIdRoute = demoUsersIdRouteImport.update({
-  id: '/(demo)/users/$id',
-  path: '/users/$id',
+const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
+  id: '/api/auth/$',
+  path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
 const demoTodos2IdRoute = demoTodos2IdRouteImport.update({
@@ -214,7 +208,7 @@ export interface FileRoutesByFullPath {
   '/tanstack-query/$id': typeof demoTanstackQueryIdRoute
   '/todos/$id': typeof demoTodosIdRoute
   '/todos2/$id': typeof demoTodos2IdRoute
-  '/users/$id': typeof demoUsersIdRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/tq-todos/$id': typeof ApiTqTodosIdRoute
   '/test/$id/bonus': typeof TestIdBonusRoute
   '/await-with-catch/': typeof demoAwaitWithCatchIndexRoute
@@ -224,7 +218,6 @@ export interface FileRoutesByFullPath {
   '/tanstack-query/': typeof demoTanstackQueryIndexRoute
   '/todos/': typeof demoTodosIndexRoute
   '/todos2/': typeof demoTodos2IndexRoute
-  '/users/': typeof demoUsersIndexRoute
   '/api/tq-todos/': typeof ApiTqTodosIndexRoute
   '/test/nested/': typeof TestNestedIndexRoute
   '/catch-all/$id/$': typeof demoCatchAllIdSplatRoute
@@ -246,7 +239,7 @@ export interface FileRoutesByTo {
   '/tanstack-query/$id': typeof demoTanstackQueryIdRoute
   '/todos/$id': typeof demoTodosIdRoute
   '/todos2/$id': typeof demoTodos2IdRoute
-  '/users/$id': typeof demoUsersIdRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/tq-todos/$id': typeof ApiTqTodosIdRoute
   '/test/$id/bonus': typeof TestIdBonusRoute
   '/await-with-catch': typeof demoAwaitWithCatchIndexRoute
@@ -256,7 +249,6 @@ export interface FileRoutesByTo {
   '/tanstack-query': typeof demoTanstackQueryIndexRoute
   '/todos': typeof demoTodosIndexRoute
   '/todos2': typeof demoTodos2IndexRoute
-  '/users': typeof demoUsersIndexRoute
   '/api/tq-todos': typeof ApiTqTodosIndexRoute
   '/test/nested': typeof TestNestedIndexRoute
   '/catch-all/$id/$': typeof demoCatchAllIdSplatRoute
@@ -280,7 +272,7 @@ export interface FileRoutesById {
   '/(demo)/tanstack-query/$id': typeof demoTanstackQueryIdRoute
   '/(demo)/todos/$id': typeof demoTodosIdRoute
   '/(demo)/todos2/$id': typeof demoTodos2IdRoute
-  '/(demo)/users/$id': typeof demoUsersIdRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/tq-todos/$id': typeof ApiTqTodosIdRoute
   '/test/$id/bonus': typeof TestIdBonusRoute
   '/(demo)/await-with-catch/': typeof demoAwaitWithCatchIndexRoute
@@ -290,7 +282,6 @@ export interface FileRoutesById {
   '/(demo)/tanstack-query/': typeof demoTanstackQueryIndexRoute
   '/(demo)/todos/': typeof demoTodosIndexRoute
   '/(demo)/todos2/': typeof demoTodos2IndexRoute
-  '/(demo)/users/': typeof demoUsersIndexRoute
   '/api/tq-todos/': typeof ApiTqTodosIndexRoute
   '/test/nested/': typeof TestNestedIndexRoute
   '/(demo)/catch-all/$id/$': typeof demoCatchAllIdSplatRoute
@@ -315,7 +306,7 @@ export interface FileRouteTypes {
     | '/tanstack-query/$id'
     | '/todos/$id'
     | '/todos2/$id'
-    | '/users/$id'
+    | '/api/auth/$'
     | '/api/tq-todos/$id'
     | '/test/$id/bonus'
     | '/await-with-catch/'
@@ -325,7 +316,6 @@ export interface FileRouteTypes {
     | '/tanstack-query/'
     | '/todos/'
     | '/todos2/'
-    | '/users/'
     | '/api/tq-todos/'
     | '/test/nested/'
     | '/catch-all/$id/$'
@@ -347,7 +337,7 @@ export interface FileRouteTypes {
     | '/tanstack-query/$id'
     | '/todos/$id'
     | '/todos2/$id'
-    | '/users/$id'
+    | '/api/auth/$'
     | '/api/tq-todos/$id'
     | '/test/$id/bonus'
     | '/await-with-catch'
@@ -357,7 +347,6 @@ export interface FileRouteTypes {
     | '/tanstack-query'
     | '/todos'
     | '/todos2'
-    | '/users'
     | '/api/tq-todos'
     | '/test/nested'
     | '/catch-all/$id/$'
@@ -380,7 +369,7 @@ export interface FileRouteTypes {
     | '/(demo)/tanstack-query/$id'
     | '/(demo)/todos/$id'
     | '/(demo)/todos2/$id'
-    | '/(demo)/users/$id'
+    | '/api/auth/$'
     | '/api/tq-todos/$id'
     | '/test/$id/bonus'
     | '/(demo)/await-with-catch/'
@@ -390,7 +379,6 @@ export interface FileRouteTypes {
     | '/(demo)/tanstack-query/'
     | '/(demo)/todos/'
     | '/(demo)/todos2/'
-    | '/(demo)/users/'
     | '/api/tq-todos/'
     | '/test/nested/'
     | '/(demo)/catch-all/$id/$'
@@ -412,7 +400,7 @@ export interface RootRouteChildren {
   demoTanstackQueryIdRoute: typeof demoTanstackQueryIdRoute
   demoTodosIdRoute: typeof demoTodosIdRoute
   demoTodos2IdRoute: typeof demoTodos2IdRoute
-  demoUsersIdRoute: typeof demoUsersIdRoute
+  ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiTqTodosIdRoute: typeof ApiTqTodosIdRoute
   demoAwaitWithCatchIndexRoute: typeof demoAwaitWithCatchIndexRoute
   demoClientPaginationIndexRoute: typeof demoClientPaginationIndexRoute
@@ -421,7 +409,6 @@ export interface RootRouteChildren {
   demoTanstackQueryIndexRoute: typeof demoTanstackQueryIndexRoute
   demoTodosIndexRoute: typeof demoTodosIndexRoute
   demoTodos2IndexRoute: typeof demoTodos2IndexRoute
-  demoUsersIndexRoute: typeof demoUsersIndexRoute
   ApiTqTodosIndexRoute: typeof ApiTqTodosIndexRoute
   demoCatchAllIdSplatRoute: typeof demoCatchAllIdSplatRoute
   demoStartSsrDataOnlyRoute: typeof demoStartSsrDataOnlyRoute
@@ -489,13 +476,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiTqTodosIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/(demo)/users/': {
-      id: '/(demo)/users/'
-      path: '/users'
-      fullPath: '/users/'
-      preLoaderRoute: typeof demoUsersIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/(demo)/todos2/': {
       id: '/(demo)/todos2/'
       path: '/todos2'
@@ -559,11 +539,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiTqTodosIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/(demo)/users/$id': {
-      id: '/(demo)/users/$id'
-      path: '/users/$id'
-      fullPath: '/users/$id'
-      preLoaderRoute: typeof demoUsersIdRouteImport
+    '/api/auth/$': {
+      id: '/api/auth/$'
+      path: '/api/auth/$'
+      fullPath: '/api/auth/$'
+      preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(demo)/todos2/$id': {
@@ -691,7 +671,7 @@ const rootRouteChildren: RootRouteChildren = {
   demoTanstackQueryIdRoute: demoTanstackQueryIdRoute,
   demoTodosIdRoute: demoTodosIdRoute,
   demoTodos2IdRoute: demoTodos2IdRoute,
-  demoUsersIdRoute: demoUsersIdRoute,
+  ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiTqTodosIdRoute: ApiTqTodosIdRoute,
   demoAwaitWithCatchIndexRoute: demoAwaitWithCatchIndexRoute,
   demoClientPaginationIndexRoute: demoClientPaginationIndexRoute,
@@ -700,7 +680,6 @@ const rootRouteChildren: RootRouteChildren = {
   demoTanstackQueryIndexRoute: demoTanstackQueryIndexRoute,
   demoTodosIndexRoute: demoTodosIndexRoute,
   demoTodos2IndexRoute: demoTodos2IndexRoute,
-  demoUsersIndexRoute: demoUsersIndexRoute,
   ApiTqTodosIndexRoute: ApiTqTodosIndexRoute,
   demoCatchAllIdSplatRoute: demoCatchAllIdSplatRoute,
   demoStartSsrDataOnlyRoute: demoStartSsrDataOnlyRoute,

@@ -1,13 +1,16 @@
 import { betterAuth } from 'better-auth'
+import { tanstackStartCookies } from 'better-auth/tanstack-start'
 // import { APIError, createAuthMiddleware } from 'better-auth/api'
 import { drizzleAdapter } from '@better-auth/drizzle-adapter'
 import { db } from '@/db'
 
+import * as schema from '@/db/schema'
 // type StatusCode = ConstructorParameters<typeof APIError>[0]
 
 /* ========================================================================
 
 ======================================================================== */
+// https://better-auth.com/docs/installation
 // https://better-auth.com/docs/integrations/tanstack
 // https://better-auth.com/docs/adapters/drizzle
 // https://www.better-auth.com/docs/concepts/cli
@@ -16,6 +19,16 @@ export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: 'pg'
   }),
+
+  schema: {
+    ...schema,
+    user: schema.UserTable,
+    session: schema.SessionTable,
+    account: schema.AccountTable,
+    verification: schema.VerificationTable
+  },
+
+  plugins: [tanstackStartCookies()], // make sure this is the last plugin in the array
 
   // WDS touches on rate limiting at 35:20. This is disabled in development, and enabled in production.
   // However, Next.js is serverless and the rate limiting logic is normally stored in memory, so
