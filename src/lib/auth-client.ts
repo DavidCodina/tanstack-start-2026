@@ -23,6 +23,7 @@ import type { auth } from './auth'
 
 export const authClient = createAuthClient({
   // baseURL: process.env.VITE_BASE_URL ?? "http://localhost:3000",
+
   plugins: [
     // stripeClient({ ... }),
 

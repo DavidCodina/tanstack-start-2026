@@ -1,13 +1,16 @@
 import { createFileRoute /* , useRouter */ } from '@tanstack/react-router'
+import { RegisterForm } from './-components/RegisterForm'
 import { Page, PageContainer } from '@/components'
 
-export const Route = createFileRoute('/login/')({ component: PageLogin })
+export const Route = createFileRoute('/(auth)/register/')({
+  component: PageRegister
+})
 
 /* ========================================================================
 
 ======================================================================== */
 
-function PageLogin() {
+function PageRegister() {
   /* ======================
           return
   ====================== */
@@ -23,8 +26,10 @@ function PageLogin() {
             letterSpacing: '2vw'
           }}
         >
-          _LOGIN
+          _REGISTER
         </h1>
+
+        <RegisterForm />
       </PageContainer>
     </Page>
   )

@@ -14,4 +14,4 @@ export const authRoutes = [
 export const ADMIN_PREFIX = '/admin'
 
 /** The default redirect path after logging in. */
-export const DEFAULT_LOGIN_REDIRECT = '/' // '/user', '/settings', etc
+export const DEFAULT_LOGIN_REDIRECT = '/user' // '/settings', etc

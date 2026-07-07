@@ -35,8 +35,16 @@ const config = defineConfig({
 
     // nitro(/*{ rollupConfig: { external: [/^@sentry\//] } } */),
 
+    ///////////////////////////////////////////////////////////////////////////
+    //
     // Vite 8 added native tsconfig path support: TypeScript path alias resolution
     // can now be enabled by setting resolve.tsconfigPaths to true, without any extra plugins,
+    //
+    //  The plugin "vite-tsconfig-paths" is detected. Vite now supports tsconfig paths resolution
+    //  natively via the resolve.tsconfigPaths option. You can remove the plugin and set
+    //  resolve.tsconfigPaths: true in your Vite config instead.
+    //
+    ///////////////////////////////////////////////////////////////////////////
     viteTsConfigPaths({ projects: ['./tsconfig.json'] }), // ❌
     tailwindcss(),
     ///////////////////////////////////////////////////////////////////////////

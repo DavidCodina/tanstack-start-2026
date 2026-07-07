@@ -8,7 +8,14 @@ import {
   Zap
 } from 'lucide-react'
 
-export const Route = createFileRoute('/about/')({ component: PageAbout })
+export const Route = createFileRoute('/about/')({
+  component: PageAbout
+
+  // beforeLoad: (param) => {
+  //   const { context } = param
+  //   console.log(`beforeLoad context from '/about'`, context)
+  // }
+})
 
 /* ======================
         features

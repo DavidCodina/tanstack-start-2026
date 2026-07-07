@@ -17,16 +17,15 @@ import * as schema from '@/db/schema'
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
-    provider: 'pg'
+    provider: 'pg',
+    schema: {
+      ...schema,
+      user: schema.UserTable,
+      session: schema.SessionTable,
+      account: schema.AccountTable,
+      verification: schema.VerificationTable
+    }
   }),
-
-  schema: {
-    ...schema,
-    user: schema.UserTable,
-    session: schema.SessionTable,
-    account: schema.AccountTable,
-    verification: schema.VerificationTable
-  },
 
   plugins: [tanstackStartCookies()], // make sure this is the last plugin in the array
 
@@ -42,23 +41,23 @@ export const auth = betterAuth({
     // https://better-auth.com/docs/concepts/users-accounts#delete-user
     deleteUser: {
       enabled: true
-    }
+    },
 
-    // additionalFields: {
-    //   ///////////////////////////////////////////////////////////////////////////
-    //   //
-    //   // Note: BETTER-AUTH also provides plugins for more sophisticated access control.
-    //   // See here for more info:
-    //   //
-    //   //   - better-auth.com/docs/plugins/admin
-    //   //   - better-auth.com/docs/plugins/organization
-    //   //
-    //   ///////////////////////////////////////////////////////////////////////////
-    //   role: {
-    //     type: 'string',
-    //     input: false
-    //   }
-    // }
+    additionalFields: {
+      ///////////////////////////////////////////////////////////////////////////
+      //
+      // Note: BETTER-AUTH also provides plugins for more sophisticated access control.
+      // See here for more info:
+      //
+      //   - better-auth.com/docs/plugins/admin
+      //   - better-auth.com/docs/plugins/organization
+      //
+      ///////////////////////////////////////////////////////////////////////////
+      role: {
+        type: 'string',
+        input: false
+      }
+    }
   },
 
   // https://www.better-auth.com/docs/concepts/session-management#session-caching
@@ -77,7 +76,7 @@ export const auth = betterAuth({
     }
   },
 
-  // trustedOrigins: ...
+  // trustedOrigins: ... // ???
 
   // https://www.better-auth.com/docs/authentication/email-password
   // https://www.better-auth.com/docs/reference/options#emailandpassword

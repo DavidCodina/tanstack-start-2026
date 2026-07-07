@@ -11,8 +11,8 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TestRouteRouteImport } from './routes/test/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as UserIndexRouteImport } from './routes/user/index'
 import { Route as TestIndexRouteImport } from './routes/test/index'
-import { Route as LoginIndexRouteImport } from './routes/login/index'
 import { Route as AboutIndexRouteImport } from './routes/about/index'
 import { Route as TestNoLayoutRouteImport } from './routes/test_/no-layout'
 import { Route as TestIdRouteImport } from './routes/test/$id'
@@ -25,6 +25,8 @@ import { Route as demoSuspenseIndexRouteImport } from './routes/(demo)/suspense/
 import { Route as demoServerPaginationIndexRouteImport } from './routes/(demo)/server-pagination/index'
 import { Route as demoClientPaginationIndexRouteImport } from './routes/(demo)/client-pagination/index'
 import { Route as demoAwaitWithCatchIndexRouteImport } from './routes/(demo)/await-with-catch/index'
+import { Route as authRegisterIndexRouteImport } from './routes/(auth)/register/index'
+import { Route as authLoginIndexRouteImport } from './routes/(auth)/login/index'
 import { Route as TestIdBonusRouteImport } from './routes/test/$id.bonus'
 import { Route as ApiTqTodosIdRouteImport } from './routes/api/tq-todos/$id'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
@@ -51,15 +53,15 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UserIndexRoute = UserIndexRouteImport.update({
+  id: '/user/',
+  path: '/user/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TestIndexRoute = TestIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => TestRouteRoute,
-} as any)
-const LoginIndexRoute = LoginIndexRouteImport.update({
-  id: '/login/',
-  path: '/login/',
-  getParentRoute: () => rootRouteImport,
 } as any)
 const AboutIndexRoute = AboutIndexRouteImport.update({
   id: '/about/',
@@ -121,6 +123,16 @@ const demoClientPaginationIndexRoute =
 const demoAwaitWithCatchIndexRoute = demoAwaitWithCatchIndexRouteImport.update({
   id: '/(demo)/await-with-catch/',
   path: '/await-with-catch/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const authRegisterIndexRoute = authRegisterIndexRouteImport.update({
+  id: '/(auth)/register/',
+  path: '/register/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const authLoginIndexRoute = authLoginIndexRouteImport.update({
+  id: '/(auth)/login/',
+  path: '/login/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TestIdBonusRoute = TestIdBonusRouteImport.update({
@@ -207,8 +219,8 @@ export interface FileRoutesByFullPath {
   '/test/$id': typeof TestIdRouteWithChildren
   '/test/no-layout': typeof TestNoLayoutRoute
   '/about/': typeof AboutIndexRoute
-  '/login/': typeof LoginIndexRoute
   '/test/': typeof TestIndexRoute
+  '/user/': typeof UserIndexRoute
   '/api/names': typeof demoApiNamesRoute
   '/optional/{-$id}': typeof demoOptionalChar123IdChar125Route
   '/start/api-request': typeof demoStartApiRequestRoute
@@ -218,6 +230,8 @@ export interface FileRoutesByFullPath {
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/tq-todos/$id': typeof ApiTqTodosIdRoute
   '/test/$id/bonus': typeof TestIdBonusRoute
+  '/login/': typeof authLoginIndexRoute
+  '/register/': typeof authRegisterIndexRoute
   '/await-with-catch/': typeof demoAwaitWithCatchIndexRoute
   '/client-pagination/': typeof demoClientPaginationIndexRoute
   '/server-pagination/': typeof demoServerPaginationIndexRoute
@@ -239,8 +253,8 @@ export interface FileRoutesByTo {
   '/test/$id': typeof TestIdRouteWithChildren
   '/test/no-layout': typeof TestNoLayoutRoute
   '/about': typeof AboutIndexRoute
-  '/login': typeof LoginIndexRoute
   '/test': typeof TestIndexRoute
+  '/user': typeof UserIndexRoute
   '/api/names': typeof demoApiNamesRoute
   '/optional/{-$id}': typeof demoOptionalChar123IdChar125Route
   '/start/api-request': typeof demoStartApiRequestRoute
@@ -250,6 +264,8 @@ export interface FileRoutesByTo {
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/tq-todos/$id': typeof ApiTqTodosIdRoute
   '/test/$id/bonus': typeof TestIdBonusRoute
+  '/login': typeof authLoginIndexRoute
+  '/register': typeof authRegisterIndexRoute
   '/await-with-catch': typeof demoAwaitWithCatchIndexRoute
   '/client-pagination': typeof demoClientPaginationIndexRoute
   '/server-pagination': typeof demoServerPaginationIndexRoute
@@ -273,8 +289,8 @@ export interface FileRoutesById {
   '/test/$id': typeof TestIdRouteWithChildren
   '/test_/no-layout': typeof TestNoLayoutRoute
   '/about/': typeof AboutIndexRoute
-  '/login/': typeof LoginIndexRoute
   '/test/': typeof TestIndexRoute
+  '/user/': typeof UserIndexRoute
   '/(demo)/api/names': typeof demoApiNamesRoute
   '/(demo)/optional/{-$id}': typeof demoOptionalChar123IdChar125Route
   '/(demo)/start/api-request': typeof demoStartApiRequestRoute
@@ -284,6 +300,8 @@ export interface FileRoutesById {
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/tq-todos/$id': typeof ApiTqTodosIdRoute
   '/test/$id/bonus': typeof TestIdBonusRoute
+  '/(auth)/login/': typeof authLoginIndexRoute
+  '/(auth)/register/': typeof authRegisterIndexRoute
   '/(demo)/await-with-catch/': typeof demoAwaitWithCatchIndexRoute
   '/(demo)/client-pagination/': typeof demoClientPaginationIndexRoute
   '/(demo)/server-pagination/': typeof demoServerPaginationIndexRoute
@@ -308,8 +326,8 @@ export interface FileRouteTypes {
     | '/test/$id'
     | '/test/no-layout'
     | '/about/'
-    | '/login/'
     | '/test/'
+    | '/user/'
     | '/api/names'
     | '/optional/{-$id}'
     | '/start/api-request'
@@ -319,6 +337,8 @@ export interface FileRouteTypes {
     | '/api/auth/$'
     | '/api/tq-todos/$id'
     | '/test/$id/bonus'
+    | '/login/'
+    | '/register/'
     | '/await-with-catch/'
     | '/client-pagination/'
     | '/server-pagination/'
@@ -340,8 +360,8 @@ export interface FileRouteTypes {
     | '/test/$id'
     | '/test/no-layout'
     | '/about'
-    | '/login'
     | '/test'
+    | '/user'
     | '/api/names'
     | '/optional/{-$id}'
     | '/start/api-request'
@@ -351,6 +371,8 @@ export interface FileRouteTypes {
     | '/api/auth/$'
     | '/api/tq-todos/$id'
     | '/test/$id/bonus'
+    | '/login'
+    | '/register'
     | '/await-with-catch'
     | '/client-pagination'
     | '/server-pagination'
@@ -373,8 +395,8 @@ export interface FileRouteTypes {
     | '/test/$id'
     | '/test_/no-layout'
     | '/about/'
-    | '/login/'
     | '/test/'
+    | '/user/'
     | '/(demo)/api/names'
     | '/(demo)/optional/{-$id}'
     | '/(demo)/start/api-request'
@@ -384,6 +406,8 @@ export interface FileRouteTypes {
     | '/api/auth/$'
     | '/api/tq-todos/$id'
     | '/test/$id/bonus'
+    | '/(auth)/login/'
+    | '/(auth)/register/'
     | '/(demo)/await-with-catch/'
     | '/(demo)/client-pagination/'
     | '/(demo)/server-pagination/'
@@ -406,7 +430,7 @@ export interface RootRouteChildren {
   TestRouteRoute: typeof TestRouteRouteWithChildren
   TestNoLayoutRoute: typeof TestNoLayoutRoute
   AboutIndexRoute: typeof AboutIndexRoute
-  LoginIndexRoute: typeof LoginIndexRoute
+  UserIndexRoute: typeof UserIndexRoute
   demoApiNamesRoute: typeof demoApiNamesRoute
   demoOptionalChar123IdChar125Route: typeof demoOptionalChar123IdChar125Route
   demoStartApiRequestRoute: typeof demoStartApiRequestRoute
@@ -415,6 +439,8 @@ export interface RootRouteChildren {
   demoTodos2IdRoute: typeof demoTodos2IdRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiTqTodosIdRoute: typeof ApiTqTodosIdRoute
+  authLoginIndexRoute: typeof authLoginIndexRoute
+  authRegisterIndexRoute: typeof authRegisterIndexRoute
   demoAwaitWithCatchIndexRoute: typeof demoAwaitWithCatchIndexRoute
   demoClientPaginationIndexRoute: typeof demoClientPaginationIndexRoute
   demoServerPaginationIndexRoute: typeof demoServerPaginationIndexRoute
@@ -447,19 +473,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/user/': {
+      id: '/user/'
+      path: '/user'
+      fullPath: '/user/'
+      preLoaderRoute: typeof UserIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/test/': {
       id: '/test/'
       path: '/'
       fullPath: '/test/'
       preLoaderRoute: typeof TestIndexRouteImport
       parentRoute: typeof TestRouteRoute
-    }
-    '/login/': {
-      id: '/login/'
-      path: '/login'
-      fullPath: '/login/'
-      preLoaderRoute: typeof LoginIndexRouteImport
-      parentRoute: typeof rootRouteImport
     }
     '/about/': {
       id: '/about/'
@@ -543,6 +569,20 @@ declare module '@tanstack/react-router' {
       path: '/await-with-catch'
       fullPath: '/await-with-catch/'
       preLoaderRoute: typeof demoAwaitWithCatchIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(auth)/register/': {
+      id: '/(auth)/register/'
+      path: '/register'
+      fullPath: '/register/'
+      preLoaderRoute: typeof authRegisterIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(auth)/login/': {
+      id: '/(auth)/login/'
+      path: '/login'
+      fullPath: '/login/'
+      preLoaderRoute: typeof authLoginIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/test/$id/bonus': {
@@ -685,7 +725,7 @@ const rootRouteChildren: RootRouteChildren = {
   TestRouteRoute: TestRouteRouteWithChildren,
   TestNoLayoutRoute: TestNoLayoutRoute,
   AboutIndexRoute: AboutIndexRoute,
-  LoginIndexRoute: LoginIndexRoute,
+  UserIndexRoute: UserIndexRoute,
   demoApiNamesRoute: demoApiNamesRoute,
   demoOptionalChar123IdChar125Route: demoOptionalChar123IdChar125Route,
   demoStartApiRequestRoute: demoStartApiRequestRoute,
@@ -694,6 +734,8 @@ const rootRouteChildren: RootRouteChildren = {
   demoTodos2IdRoute: demoTodos2IdRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiTqTodosIdRoute: ApiTqTodosIdRoute,
+  authLoginIndexRoute: authLoginIndexRoute,
+  authRegisterIndexRoute: authRegisterIndexRoute,
   demoAwaitWithCatchIndexRoute: demoAwaitWithCatchIndexRoute,
   demoClientPaginationIndexRoute: demoClientPaginationIndexRoute,
   demoServerPaginationIndexRoute: demoServerPaginationIndexRoute,

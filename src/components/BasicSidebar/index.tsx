@@ -1,11 +1,14 @@
-import { Link } from '@tanstack/react-router'
+import { Link, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
+import { toast } from 'sonner'
 import {
   ChevronDown,
   ChevronRight,
   FlaskConical,
   Home,
   Info,
+  LogIn,
+  LogOut,
   Menu,
   Network,
   SquareFunction,
@@ -13,6 +16,7 @@ import {
   X
 } from 'lucide-react'
 import { ThemeToggle } from '@/components/ThemeToggle'
+import { authClient } from '@/lib/auth-client'
 import { cn } from '@/utils'
 
 /* ========================================================================
@@ -20,11 +24,95 @@ import { cn } from '@/utils'
 ======================================================================== */
 
 export const BasicSidebar = () => {
+  const navigate = useNavigate()
+
   const [isOpen, setIsOpen] = useState(false)
 
   const [groupedExpanded, setGroupedExpanded] = useState<
     Record<string, boolean>
   >({})
+
+  /* ======================
+    handleServerLogout()
+  ====================== */
+  //* New.............................................
+
+  // const _handleServerLogout = async () => {
+  //   try {
+  //     const { /* code, */ data, message, success } = await logout()
+
+  //     if (success !== true) {
+  //       const errorMessage = typeof message === 'string' ? message : 'Unable to log out.'
+  //       toast.error(errorMessage, {
+  //         // duration: Infinity
+  //       })
+  //       console.log('\nError from logout() server action')
+  //       console.log(message)
+  //       return
+  //     }
+  //     toast.success('Log out success.')
+  //     console.log('\ndata from logout() server action')
+  //     console.log(data)
+  //   } catch (_err) {
+  //     toast.error('Unable to log out.')
+  //   }
+  // }
+
+  /* ======================
+    handleClientLogout()
+  ====================== */
+  //* New.............................................
+
+  const handleClientLogout = async () => {
+    //^ const searchParams = new URLSearchParams(window.location.search)
+    // Used to condiationally opt-out of callbackUrl in middleware.
+    //^ searchParams.set('logout', 'true')
+    // Use replaceState to update the URL without adding to the history stack
+    //^ window.history.replaceState(null, '', `?${searchParams.toString()}`)
+
+    try {
+      const { /* data, */ error } = await authClient.signOut({
+        //# Test that fetchOptions actually imply that signOut
+        //# was good/bad and not just the fetch.
+        //# On the other hand, the successContext/errorContext are not typed well.
+        fetchOptions: {
+          onSuccess: (_successContext) => {
+            navigate({
+              to: '/login'
+            })
+          },
+          onError: (_errorContext) => {
+            // ...
+          }
+        }
+      })
+
+      //# Switch to using the onSuccess and onError callbacks.
+      // data and error are a discriminated union.
+      if (error) {
+        const errorMessage =
+          typeof error.message === 'string'
+            ? error.message
+            : 'Unable to log out.'
+        toast.error(errorMessage, {
+          // duration: Infinity
+        })
+        // console.log('\nError from authClient.signOut()')
+        // console.log(error)
+        return
+      }
+
+      // Otherwise... (i.e., if data)
+      toast.success('Log out success.')
+
+      // console.log('\ndata from authClient.signOut()')
+      // console.log(data)
+    } catch (_err) {
+      // console.log('\nError from authClient.signOut()')
+      // console.log(err)
+      toast.error('Unable to log out.')
+    }
+  }
 
   /* ======================
     renderSideMenuHeader()
@@ -267,6 +355,35 @@ export const BasicSidebar = () => {
         )}
 
         {/* Demo Links End */}
+
+        {/* 
+            //# This is temporary... Eventually, they will be wrapped in SignedOut/SignedIn
+            */}
+
+        <Link
+          to='/login'
+          onClick={() => setIsOpen(false)}
+          className={linkClassName}
+          activeProps={{
+            className: activeClassName
+          }}
+        >
+          <LogIn size={20} />
+          <span className='font-medium'>Sign In</span>
+        </Link>
+
+        <button
+          onClick={() => {
+            handleClientLogout()
+            setIsOpen(false)
+          }}
+          className={linkClassName}
+          style={{ width: '100%' }}
+          type='button'
+        >
+          <LogOut />
+          <span className='font-medium'>Sign Out</span>
+        </button>
       </nav>
     )
   }

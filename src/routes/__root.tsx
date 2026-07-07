@@ -157,6 +157,9 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       }
     }
 
+    // session.context will then be available through beforeLoad
+    // and loader within any given page route.
+    // beforeLoad: (param) => { const { context } = param }
     return { session }
   },
 
