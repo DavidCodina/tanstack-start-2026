@@ -13,6 +13,8 @@ import {
   Network,
   SquareFunction,
   StickyNote,
+  UserCog,
+  UserIcon,
   X
 } from 'lucide-react'
 import { ThemeToggle } from '@/components/ThemeToggle'
@@ -357,8 +359,32 @@ export const BasicSidebar = () => {
         {/* Demo Links End */}
 
         {/* 
-            //# This is temporary... Eventually, they will be wrapped in SignedOut/SignedIn
-            */}
+        //# This is temporary... Eventually, they will be wrapped in SignedOut/SignedIn
+        */}
+
+        <Link
+          to='/user'
+          onClick={() => setIsOpen(false)}
+          className={linkClassName}
+          activeProps={{
+            className: activeClassName
+          }}
+        >
+          <UserIcon size={20} />
+          <span className='font-medium'>User</span>
+        </Link>
+
+        <Link
+          to='/admin'
+          onClick={() => setIsOpen(false)}
+          className={linkClassName}
+          activeProps={{
+            className: activeClassName
+          }}
+        >
+          <UserCog size={20} />
+          <span className='font-medium'>Admin</span>
+        </Link>
 
         <Link
           to='/login'

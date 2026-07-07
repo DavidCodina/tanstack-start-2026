@@ -62,6 +62,7 @@ export const RegisterForm = () => {
         //     name: name,
         //     email,
         //     password
+        //     // I believe that this callback URL is only used when email verification is enabled.
         //     callbackURL: '/login?verified=true'
         //   })
         //

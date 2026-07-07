@@ -157,6 +157,7 @@ export const register = createServerFn({
           // browser tab will open the application. On the other hand, if you're not using
           // email verification, it's preferable to programmatically navigate to the login page
           // on success.
+          // I believe that this callback URL is only used when email verification is enabled.
           callbackURL: '/login?verified=true'
           // image?: string | undefined;
           // rememberMe?: boolean | undefined;

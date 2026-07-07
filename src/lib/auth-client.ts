@@ -22,6 +22,8 @@ import type { auth } from './auth'
 ///////////////////////////////////////////////////////////////////////////
 
 export const authClient = createAuthClient({
+  // If your client and server are on the same URL
+  // you shouldn't need to pass baseURL at all.
   // baseURL: process.env.VITE_BASE_URL ?? "http://localhost:3000",
 
   plugins: [

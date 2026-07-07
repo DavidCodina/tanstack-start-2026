@@ -14,6 +14,13 @@ export const Route = createFileRoute('/about/')({
   // beforeLoad: (param) => {
   //   const { context } = param
   //   console.log(`beforeLoad context from '/about'`, context)
+  // },
+
+  // loader: async (param) => {
+  //   const { context } = param
+  //   const { session } = context
+  //   // The access with:  const loaderData = Route.useLoaderData()
+  //   return session
   // }
 })
 

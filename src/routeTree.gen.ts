@@ -13,11 +13,14 @@ import { Route as TestRouteRouteImport } from './routes/test/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as UserIndexRouteImport } from './routes/user/index'
 import { Route as TestIndexRouteImport } from './routes/test/index'
+import { Route as ForbiddenIndexRouteImport } from './routes/forbidden/index'
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AboutIndexRouteImport } from './routes/about/index'
 import { Route as TestNoLayoutRouteImport } from './routes/test_/no-layout'
 import { Route as TestIdRouteImport } from './routes/test/$id'
 import { Route as TestNestedIndexRouteImport } from './routes/test/nested/index'
 import { Route as ApiTqTodosIndexRouteImport } from './routes/api/tq-todos/index'
+import { Route as AdminNestedIndexRouteImport } from './routes/admin/nested/index'
 import { Route as demoTodos2IndexRouteImport } from './routes/(demo)/todos2/index'
 import { Route as demoTodosIndexRouteImport } from './routes/(demo)/todos/index'
 import { Route as demoTanstackQueryIndexRouteImport } from './routes/(demo)/tanstack-query/index'
@@ -63,6 +66,16 @@ const TestIndexRoute = TestIndexRouteImport.update({
   path: '/',
   getParentRoute: () => TestRouteRoute,
 } as any)
+const ForbiddenIndexRoute = ForbiddenIndexRouteImport.update({
+  id: '/forbidden/',
+  path: '/forbidden/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AboutIndexRoute = AboutIndexRouteImport.update({
   id: '/about/',
   path: '/about/',
@@ -86,6 +99,11 @@ const TestNestedIndexRoute = TestNestedIndexRouteImport.update({
 const ApiTqTodosIndexRoute = ApiTqTodosIndexRouteImport.update({
   id: '/api/tq-todos/',
   path: '/api/tq-todos/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminNestedIndexRoute = AdminNestedIndexRouteImport.update({
+  id: '/admin/nested/',
+  path: '/admin/nested/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const demoTodos2IndexRoute = demoTodos2IndexRouteImport.update({
@@ -219,6 +237,8 @@ export interface FileRoutesByFullPath {
   '/test/$id': typeof TestIdRouteWithChildren
   '/test/no-layout': typeof TestNoLayoutRoute
   '/about/': typeof AboutIndexRoute
+  '/admin/': typeof AdminIndexRoute
+  '/forbidden/': typeof ForbiddenIndexRoute
   '/test/': typeof TestIndexRoute
   '/user/': typeof UserIndexRoute
   '/api/names': typeof demoApiNamesRoute
@@ -239,6 +259,7 @@ export interface FileRoutesByFullPath {
   '/tanstack-query/': typeof demoTanstackQueryIndexRoute
   '/todos/': typeof demoTodosIndexRoute
   '/todos2/': typeof demoTodos2IndexRoute
+  '/admin/nested/': typeof AdminNestedIndexRoute
   '/api/tq-todos/': typeof ApiTqTodosIndexRoute
   '/test/nested/': typeof TestNestedIndexRoute
   '/catch-all/$id/$': typeof demoCatchAllIdSplatRoute
@@ -253,6 +274,8 @@ export interface FileRoutesByTo {
   '/test/$id': typeof TestIdRouteWithChildren
   '/test/no-layout': typeof TestNoLayoutRoute
   '/about': typeof AboutIndexRoute
+  '/admin': typeof AdminIndexRoute
+  '/forbidden': typeof ForbiddenIndexRoute
   '/test': typeof TestIndexRoute
   '/user': typeof UserIndexRoute
   '/api/names': typeof demoApiNamesRoute
@@ -273,6 +296,7 @@ export interface FileRoutesByTo {
   '/tanstack-query': typeof demoTanstackQueryIndexRoute
   '/todos': typeof demoTodosIndexRoute
   '/todos2': typeof demoTodos2IndexRoute
+  '/admin/nested': typeof AdminNestedIndexRoute
   '/api/tq-todos': typeof ApiTqTodosIndexRoute
   '/test/nested': typeof TestNestedIndexRoute
   '/catch-all/$id/$': typeof demoCatchAllIdSplatRoute
@@ -289,6 +313,8 @@ export interface FileRoutesById {
   '/test/$id': typeof TestIdRouteWithChildren
   '/test_/no-layout': typeof TestNoLayoutRoute
   '/about/': typeof AboutIndexRoute
+  '/admin/': typeof AdminIndexRoute
+  '/forbidden/': typeof ForbiddenIndexRoute
   '/test/': typeof TestIndexRoute
   '/user/': typeof UserIndexRoute
   '/(demo)/api/names': typeof demoApiNamesRoute
@@ -309,6 +335,7 @@ export interface FileRoutesById {
   '/(demo)/tanstack-query/': typeof demoTanstackQueryIndexRoute
   '/(demo)/todos/': typeof demoTodosIndexRoute
   '/(demo)/todos2/': typeof demoTodos2IndexRoute
+  '/admin/nested/': typeof AdminNestedIndexRoute
   '/api/tq-todos/': typeof ApiTqTodosIndexRoute
   '/test/nested/': typeof TestNestedIndexRoute
   '/(demo)/catch-all/$id/$': typeof demoCatchAllIdSplatRoute
@@ -326,6 +353,8 @@ export interface FileRouteTypes {
     | '/test/$id'
     | '/test/no-layout'
     | '/about/'
+    | '/admin/'
+    | '/forbidden/'
     | '/test/'
     | '/user/'
     | '/api/names'
@@ -346,6 +375,7 @@ export interface FileRouteTypes {
     | '/tanstack-query/'
     | '/todos/'
     | '/todos2/'
+    | '/admin/nested/'
     | '/api/tq-todos/'
     | '/test/nested/'
     | '/catch-all/$id/$'
@@ -360,6 +390,8 @@ export interface FileRouteTypes {
     | '/test/$id'
     | '/test/no-layout'
     | '/about'
+    | '/admin'
+    | '/forbidden'
     | '/test'
     | '/user'
     | '/api/names'
@@ -380,6 +412,7 @@ export interface FileRouteTypes {
     | '/tanstack-query'
     | '/todos'
     | '/todos2'
+    | '/admin/nested'
     | '/api/tq-todos'
     | '/test/nested'
     | '/catch-all/$id/$'
@@ -395,6 +428,8 @@ export interface FileRouteTypes {
     | '/test/$id'
     | '/test_/no-layout'
     | '/about/'
+    | '/admin/'
+    | '/forbidden/'
     | '/test/'
     | '/user/'
     | '/(demo)/api/names'
@@ -415,6 +450,7 @@ export interface FileRouteTypes {
     | '/(demo)/tanstack-query/'
     | '/(demo)/todos/'
     | '/(demo)/todos2/'
+    | '/admin/nested/'
     | '/api/tq-todos/'
     | '/test/nested/'
     | '/(demo)/catch-all/$id/$'
@@ -430,6 +466,8 @@ export interface RootRouteChildren {
   TestRouteRoute: typeof TestRouteRouteWithChildren
   TestNoLayoutRoute: typeof TestNoLayoutRoute
   AboutIndexRoute: typeof AboutIndexRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+  ForbiddenIndexRoute: typeof ForbiddenIndexRoute
   UserIndexRoute: typeof UserIndexRoute
   demoApiNamesRoute: typeof demoApiNamesRoute
   demoOptionalChar123IdChar125Route: typeof demoOptionalChar123IdChar125Route
@@ -448,6 +486,7 @@ export interface RootRouteChildren {
   demoTanstackQueryIndexRoute: typeof demoTanstackQueryIndexRoute
   demoTodosIndexRoute: typeof demoTodosIndexRoute
   demoTodos2IndexRoute: typeof demoTodos2IndexRoute
+  AdminNestedIndexRoute: typeof AdminNestedIndexRoute
   ApiTqTodosIndexRoute: typeof ApiTqTodosIndexRoute
   demoCatchAllIdSplatRoute: typeof demoCatchAllIdSplatRoute
   demoStartSsrDataOnlyRoute: typeof demoStartSsrDataOnlyRoute
@@ -487,6 +526,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TestIndexRouteImport
       parentRoute: typeof TestRouteRoute
     }
+    '/forbidden/': {
+      id: '/forbidden/'
+      path: '/forbidden'
+      fullPath: '/forbidden/'
+      preLoaderRoute: typeof ForbiddenIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about/': {
       id: '/about/'
       path: '/about'
@@ -520,6 +573,13 @@ declare module '@tanstack/react-router' {
       path: '/api/tq-todos'
       fullPath: '/api/tq-todos/'
       preLoaderRoute: typeof ApiTqTodosIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/nested/': {
+      id: '/admin/nested/'
+      path: '/admin/nested'
+      fullPath: '/admin/nested/'
+      preLoaderRoute: typeof AdminNestedIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(demo)/todos2/': {
@@ -725,6 +785,8 @@ const rootRouteChildren: RootRouteChildren = {
   TestRouteRoute: TestRouteRouteWithChildren,
   TestNoLayoutRoute: TestNoLayoutRoute,
   AboutIndexRoute: AboutIndexRoute,
+  AdminIndexRoute: AdminIndexRoute,
+  ForbiddenIndexRoute: ForbiddenIndexRoute,
   UserIndexRoute: UserIndexRoute,
   demoApiNamesRoute: demoApiNamesRoute,
   demoOptionalChar123IdChar125Route: demoOptionalChar123IdChar125Route,
@@ -743,6 +805,7 @@ const rootRouteChildren: RootRouteChildren = {
   demoTanstackQueryIndexRoute: demoTanstackQueryIndexRoute,
   demoTodosIndexRoute: demoTodosIndexRoute,
   demoTodos2IndexRoute: demoTodos2IndexRoute,
+  AdminNestedIndexRoute: AdminNestedIndexRoute,
   ApiTqTodosIndexRoute: ApiTqTodosIndexRoute,
   demoCatchAllIdSplatRoute: demoCatchAllIdSplatRoute,
   demoStartSsrDataOnlyRoute: demoStartSsrDataOnlyRoute,

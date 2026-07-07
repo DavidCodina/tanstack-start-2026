@@ -1,9 +1,13 @@
-// This is an example of a type that can be used as a client/server contract for API calls.
-
+import type { SUPPORTED_OAUTH_PROVIDERS } from '@/lib/constants'
+import type { auth } from '@/lib/auth'
 import type { UserTable } from '@/db/schema'
 import type { UseQueryResult } from '@tanstack/react-query'
 import type { FileRouteTypes } from '@/routeTree.gen'
 import type { CustomError, codes } from '@/utils'
+
+/* ========================================================================
+
+======================================================================== */
 
 export type FileRoute = FileRouteTypes['to']
 
@@ -53,10 +57,42 @@ export type Todo = {
 /* ======================
 
 ====================== */
+///////////////////////////////////////////////////////////////////////////
+//
+// better-auth exports their own User and Session types, but
+// they're the default versions (i.e., not inferred):
+//
+//  import { User, Session } from 'better-auth'
+//
+// Coding in Flow tutorial does something similar at 38:40.
+//
+///////////////////////////////////////////////////////////////////////////
 
-export type User = typeof UserTable.$inferSelect
+export type InferredSession = typeof auth.$Infer.Session
+export type Session = InferredSession['session']
 
-export type SafeUser = Omit<User, 'password'>
+///////////////////////////////////////////////////////////////////////////
+//
+// Note: One could also infer the User type directly from the Drizzle schema.
+//
+//   export type User = typeof UserTable.$inferSelect
+//
+// However, they are largely the same with one exception.
+// The Drizzle version knows the exact types of the UserRoleEnum,
+// While InferredSession['user'] only types it as string.
+// Currently, that seems okay, and since 99% of the time we'll be
+// betting user off of the session it makes more sense to use this version.
+//
+///////////////////////////////////////////////////////////////////////////
+
+export type User = InferredSession['user']
+
+// Currently, there's no need to do this because in Better Auth the password
+// is not stored on the user record. However, this may still be useful in the
+// future if other sensitive fields are added to the UserTable.
+// export type SafeUser = Omit<User, 'password'>
+
+export type SupportedOAuthProvider = (typeof SUPPORTED_OAUTH_PROVIDERS)[number]
 
 // UserTable.$inferInsert gets you pretty close,
 // but we actually want to nail it down further.

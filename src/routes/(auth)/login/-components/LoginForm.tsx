@@ -153,6 +153,7 @@ const LoginForm = () => {
             //# rememberMe determines if the user remains logged in after they close the website
             //# Test it out, and decide whether you want it to be true | false.
             //# Also test cross-tab compatibility.
+            // See Coding In Flow tutorial at 24:15: https://www.youtube.com/watch?v=w5Emwt3nuV0&t=15s
             // rememberMe: false
           },
           {

@@ -23,7 +23,7 @@ import {
 } from '@/components'
 import { Providers } from '@/contexts'
 
-import { getSession } from '@/lib/auth.functions'
+import { getServerSession } from '@/utils'
 
 import {
   ADMIN_PREFIX,
@@ -96,7 +96,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 
     const isAdminRoute = pathname.startsWith(ADMIN_PREFIX)
 
-    const session = await getSession()
+    const session = await getServerSession()
     const isLoggedIn = !!session
 
     if (isAuthRoute) {
@@ -152,14 +152,29 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
           : ''
       if (role.toLowerCase() !== 'admin') {
         throw redirect({
-          to: '/' //# Still need to make this page: '/forbidden'
+          to: '/forbidden'
         })
       }
     }
 
-    // session.context will then be available through beforeLoad
-    // and loader within any given page route.
-    // beforeLoad: (param) => { const { context } = param }
+    ///////////////////////////////////////////////////////////////////////////
+    //
+    // The session will then be available in beforeLoad and loader
+    // within any given page route.
+    //
+    //   beforeLoad: (param) => {
+    //     const { context } = param
+    //     const { session } = context
+    //   }
+    //
+    //   loader: async (param) => {
+    //     const { context } = param
+    //     const { session } = context
+    //     return { session }
+    //   }
+    //
+    ///////////////////////////////////////////////////////////////////////////
+
     return { session }
   },
 

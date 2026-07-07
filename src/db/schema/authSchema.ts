@@ -69,6 +69,8 @@ export const UserTable = pgTable('users', {
 })
 
 // Use this within a db.select to specify safe user fields.
+// Note: This was originally created to protect against expoosing the password field.
+// However, in Better Auth, the password is not even stored on the user record.
 export const safeUserFields = {
   id: UserTable.id,
   name: UserTable.name,

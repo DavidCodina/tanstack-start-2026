@@ -31,7 +31,7 @@ export const auth = betterAuth({
 
   // WDS touches on rate limiting at 35:20. This is disabled in development, and enabled in production.
   // However, Next.js is serverless and the rate limiting logic is normally stored in memory, so
-  // it woulnd't work in serverless environments. The solution is to change the rateLimit.storage to
+  // it wouldn't work in serverless environments. The solution is to change the rateLimit.storage to
   // be "database". But that actual solution proposed by WDS is to use Arcjet.
   // rateLimit: {},
 
@@ -55,17 +55,24 @@ export const auth = betterAuth({
       ///////////////////////////////////////////////////////////////////////////
       role: {
         type: 'string',
-        input: false
+        input: false // Prevents users from setting their own role.
       }
     }
   },
 
+  ///////////////////////////////////////////////////////////////////////////
+  //
   // https://www.better-auth.com/docs/concepts/session-management#session-caching
   // https://www.better-auth.com/docs/reference/options#session
   // WDS at 14:15 ( https://www.youtube.com/watch?v=WPiqNDapQrk ) demonstrates
   // how to cache a session. This is something worth exploring.
   // If a session is revoked or expires, the cookie will be invalidated
-
+  //
+  // See also Coding In Flow at 28:25: https://www.youtube.com/watch?v=w5Emwt3nuV0&t=15s
+  // There he talks about how session expiration works.
+  // https://better-auth.com/docs/concepts/session-management#session-expiration
+  //
+  ///////////////////////////////////////////////////////////////////////////
   session: {},
 
   // Note: account linking is enabled by default in Better Auth, and OAuth providers like Google and GitHub are trusted by default.
@@ -108,6 +115,5 @@ export const auth = betterAuth({
   //     clientId: process.env.LINKEDIN_CLIENT_ID as string,
   //     clientSecret: process.env.LINKEDIN_CLIENT_SECRET as string
   //   }
-
-  // plugins: [],
+  // }
 })
