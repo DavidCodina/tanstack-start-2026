@@ -14,7 +14,11 @@ const resend = new Resend(process.env.RESEND_API_KEY!)
 
 ======================================================================== */
 
-export const sendVerificationEmail = async ({ email: _email, name, url }: SendVerificationEmailArg) => {
+export const sendVerificationEmail = async ({
+  email: _email,
+  name,
+  url
+}: SendVerificationEmailArg) => {
   ///////////////////////////////////////////////////////////////////////////
   //
   // It seems that there's no direct way to change the URL from within auth.ts, so you just need to

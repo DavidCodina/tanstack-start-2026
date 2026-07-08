@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { Link, useNavigate, useSearch } from '@tanstack/react-router'
+
 import { toast } from 'sonner'
 
 import { GitHub } from './GitHub'
@@ -21,22 +22,27 @@ const LoginForm = () => {
   const searchParams = useSearch({ strict: false })
 
   //# What happens if your callackUrl has search params of its own?
-  const callbackUrl = searchParams.callbackUrl as string
+  const { callbackUrl, verified } = searchParams as {
+    callbackUrl: string
+    verified: string
+  }
 
   const [email, setEmail] = React.useState('')
   const [password, setPassword] = React.useState('')
   const [emailLoginPending, startEmailLoginTransition] = React.useTransition()
 
+  //! Temporary...............................
+  console.log(searchParams)
   /* ======================
 
   ====================== */
+  //* New...............................
 
-  //# React.useEffect(() => {
-  //#   const verified = searchParams.get('verified')
-  //#   if (verified === 'true') {
-  //#     toast.success('Email verification successful!')
-  //#   }
-  //# }, []) // eslint-disable-line
+  React.useEffect(() => {
+    if (verified === 'true') {
+      toast.success('Email verification successful!')
+    }
+  }, []) // eslint-disable-line
 
   /* ======================
 

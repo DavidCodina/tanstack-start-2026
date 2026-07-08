@@ -102,7 +102,10 @@ const hr = {
 //
 ///////////////////////////////////////////////////////////////////////////
 
-export const VerifyEmailTemplate = ({ name, url }: VerificationEmailTemplateProps) => {
+export const VerifyEmailTemplate = ({
+  name,
+  url
+}: VerificationEmailTemplateProps) => {
   return (
     <Html>
       <Head />
@@ -112,8 +115,8 @@ export const VerifyEmailTemplate = ({ name, url }: VerificationEmailTemplateProp
           <Heading style={heading}>Hi {name}!</Heading>
           <Section style={buttonContainer}></Section>
           <Text style={paragraph}>
-            Please click the button below to verify your email address and complete your initial registration or
-            subsequent email change.
+            Please click the button below to verify your email address and
+            complete your initial registration or subsequent email change.
           </Text>
           <Hr style={hr} />
 

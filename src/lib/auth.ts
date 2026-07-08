@@ -2,6 +2,7 @@ import { betterAuth } from 'better-auth'
 import { tanstackStartCookies } from 'better-auth/tanstack-start'
 // import { APIError, createAuthMiddleware } from 'better-auth/api'
 import { drizzleAdapter } from '@better-auth/drizzle-adapter'
+import { sendVerificationEmail } from './sendVerificationEmail'
 import { db } from '@/db'
 
 import * as schema from '@/db/schema'
@@ -91,7 +92,55 @@ export const auth = betterAuth({
     enabled: true,
     autoSignIn: false,
     maxPasswordLength: 128,
-    minPasswordLength: 5
+    minPasswordLength: 5,
+
+    // If you try to log in with an unverified email, you'll get an "Email not verified" error.
+    // {message: 'Email not verified', code: 'EMAIL_NOT_VERIFIED', status: 403, statusText: 'FORBIDDEN'}
+    requireEmailVerification: true
+    // sendResetPassword: async (parameter, _request) => {
+    //   const { user, url /*, token */ } = parameter
+    //   await sendResetPasswordEmail({
+    //     email: user.email,
+    //     name: user.name,
+    //     url
+    //   })
+    // }
+  },
+
+  emailVerification: {
+    //  autoSignInAfterVerification: true,
+
+    ///////////////////////////////////////////////////////////////////////////
+    //
+    // By default, this is undefined.
+    //
+    // ❌ sendOnSignUp: true,
+    //
+    // However, the feature seems to work fine without it.
+    // The `requireEmailVerification: true` is already triggering it. According to AI (???),
+    //
+    //   sendOnSignUp targets OAuth provider signups, not credential signups. When a user registers
+    //   via Google, GitHub, etc., Better Auth won't send a verification email by default — because
+    //   the assumption is the OAuth provider already vouched for the email. Setting sendOnSignUp: true
+    //   overrides this and fires your sendVerificationEmail handler for those OAuth users too.
+    //
+    // For now, I'm content with no email verification for OAuth signups.
+    //
+    ///////////////////////////////////////////////////////////////////////////
+    // ❌ sendOnSignUp: true,
+
+    sendVerificationEmail: async (parameter, _request) => {
+      const { user, url, token: _token } = parameter
+
+      // https://better-auth.com/docs/authentication/email-password#email-verification
+      // ⚠️ Avoid awaiting the email sending to prevent timing attacks.
+      // On serverless platforms, use waitUntil or similar to ensure the email is sent.
+      sendVerificationEmail({
+        email: user.email,
+        name: user.name,
+        url
+      })
+    }
   }
 
   // https://www.better-auth.com/docs/concepts/oauth
