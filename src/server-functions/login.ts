@@ -58,6 +58,14 @@ type RequestData = {
 // set the cookie here at 3:45: https://www.youtube.com/watch?v=f13cO4CxlUQ
 // However, he reached out to Better Auth, and even they told him to prefer using the client-side approach.
 //
+// Note: I don't think setting this in auth.s fixes the issue:
+//
+//   plugins: [tanstackStartCookies()],
+//
+// We can test it out, but I suspect that the client/server sync issue will still exist.
+// In other words, I believe that even if you login using this server function, the session
+// data from authClient.useSession() will likely not exist.
+//
 ///////////////////////////////////////////////////////////////////////////
 
 export const login = createServerFn({

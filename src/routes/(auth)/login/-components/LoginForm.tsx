@@ -162,6 +162,9 @@ const LoginForm = () => {
             // rememberMe: false
           },
           {
+            // Can be used for setting loading states if one wasn't using a transition.
+            // onRequest: (ctx) => {},
+            // onResponse: (ctx) => {},
             // onSuccess: (ctx) => {
             //   const { data, request, response } = ctx
             // },
