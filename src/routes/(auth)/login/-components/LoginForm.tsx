@@ -23,23 +23,22 @@ const LoginForm = () => {
 
   //# What happens if your callackUrl has search params of its own?
   const { callbackUrl, verified } = searchParams as {
-    callbackUrl: string
-    verified: string
+    callbackUrl?: string
+    // In Next.js the value would be a string, but in TanStack Start,
+    // the searchParams automatically coerces the value to a boolean.
+    verified?: boolean | string
   }
 
   const [email, setEmail] = React.useState('')
   const [password, setPassword] = React.useState('')
   const [emailLoginPending, startEmailLoginTransition] = React.useTransition()
 
-  //! Temporary...............................
-  console.log(searchParams)
   /* ======================
 
   ====================== */
-  //* New...............................
 
   React.useEffect(() => {
-    if (verified === 'true') {
+    if (verified === true || verified === 'true') {
       toast.success('Email verification successful!')
     }
   }, []) // eslint-disable-line

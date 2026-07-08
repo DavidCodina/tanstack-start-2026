@@ -1,4 +1,4 @@
-import { relations /* , sql */ } from 'drizzle-orm'
+import { relations, sql } from 'drizzle-orm'
 import {
   boolean,
   index,
@@ -16,7 +16,63 @@ import {
 export const UserRoleEnum = pgEnum('userRole', ['USER', 'ADMIN'])
 
 export const UserTable = pgTable('users', {
-  id: text('id').primaryKey(),
+  ///////////////////////////////////////////////////////////////////////////
+  //
+  // Generally in Drizzle/PostgreSQL, I would do this for an id:
+  //
+  //   id: uuid('id').primaryKey().defaultRandom(),
+  //
+  // However, Better Auth seems to prefer:
+  //
+  //   id: text('id').primaryKey()
+  //
+  // This is unusual - No serial(), no uuid()! In practice, the actual
+  // values end up looking like this: CRc7xbm9f3i7UMLZDTszOeE4oFF5Rw7v,
+  // which doesn't look like a uuid, but is some kind of custom unique id.
+  //
+  // Presumably, Better Auth doesn't know that we're using PostgreSQL, so it
+  // may opt for this approach as a general solution. In other words, Better Auth
+  // is database-agnostic. It supports Postgres, MySQL, SQLite, MongoDB, and others
+  // through adapters, and not all of those have a native UUID column type.
+  //
+  //   By default, Better Auth generates random 32-character alphanumeric strings,
+  //   not standard UUIDs. It's not RFC 4122 shaped at all. So z.uuid() (which
+  //   checks for the standard 8-4-4-4-12 hex format with hyphens) would fail.
+  //
+  //   It is a custom in-house generator, not nanoid/cuid2/ulid off the shelf.
+  //   Better Auth ships its own generateId() utility
+  //   (importable from @better-auth/core/utils/id) that produces a 32-character
+  //   random string by default.
+  //
+  // https://github.com/better-auth/better-auth/discussions/6880
+  // https://github.com/better-auth/better-auth/issues/1497
+  //
+  // The good news: it's configurable. In your Better Auth config you can set:
+  //
+  //   advanced: {
+  //     database: {
+  //       generateId: 'uuid'
+  //       // Or do this with no change to table schema.
+  //       // Note: there's no meaningful qualitative difference in uuid generated.
+  //       // Both produce standard UUID v4 values (RFC 4122)
+  //       // generateId: () => crypto.randomUUID()
+  //     }
+  //   }
+  //
+  // ⚠️ Gotcha:
+  // If you use generateId: 'uuid', then you may need to update the id column
+  // for all Better Auth tables as follows (especially if using PostgreSQL):
+  //
+  //  ❌ id: text('id').primaryKey()
+  //  ✅ id: text('id').primaryKey().default(sql`gen_random_uuid()`),
+  //  Or:
+  //  ✅ id: uuid('id').primaryKey().defaultRandom()
+  //
+  ///////////////////////////////////////////////////////////////////////////
+  // ❌ id: text('id').primaryKey(),
+  id: text('id')
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   name: text('name').notNull(),
   ///////////////////////////////////////////////////////////////////////////
   //
@@ -99,7 +155,10 @@ export const safeUserColumns = {
 export const SessionTable = pgTable(
   'sessions',
   {
-    id: text('id').primaryKey(),
+    // ❌  id: text('id').primaryKey(),
+    id: text('id')
+      .primaryKey()
+      .default(sql`gen_random_uuid()`),
     expiresAt: timestamp('expires_at').notNull(),
     token: text('token').notNull().unique(),
     createdAt: timestamp('created_at').defaultNow().notNull(),
@@ -122,7 +181,10 @@ export const SessionTable = pgTable(
 export const AccountTable = pgTable(
   'accounts',
   {
-    id: text('id').primaryKey(),
+    // ❌  id: text('id').primaryKey(),
+    id: text('id')
+      .primaryKey()
+      .default(sql`gen_random_uuid()`),
     accountId: text('account_id').notNull(),
     providerId: text('provider_id').notNull(),
     userId: text('user_id')
@@ -150,7 +212,10 @@ export const AccountTable = pgTable(
 export const VerificationTable = pgTable(
   'verifications',
   {
-    id: text('id').primaryKey(),
+    // ❌  id: text('id').primaryKey(),
+    id: text('id')
+      .primaryKey()
+      .default(sql`gen_random_uuid()`),
     identifier: text('identifier').notNull(),
     value: text('value').notNull(),
     expiresAt: timestamp('expires_at').notNull(),

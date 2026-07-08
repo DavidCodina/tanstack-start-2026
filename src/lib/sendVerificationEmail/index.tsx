@@ -8,7 +8,7 @@ type SendVerificationEmailArg = {
   url: string
 }
 
-const resend = new Resend(process.env.RESEND_API_KEY!)
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 /* ========================================================================
 
@@ -60,8 +60,8 @@ export const sendVerificationEmail = async ({
       // This is all demonstrated in the Brett Westwood tutorial at 40:20: https://www.youtube.com/watch?v=-qJ4-H00e0g
       //
       ///////////////////////////////////////////////////////////////////////////
-      from: 'onboarding@resend.dev', // In production use domain email.
-      to: ['delivered@resend.dev'], // In production use the actual email.
+      from: 'onboarding@resend.dev', // ⚠️ In production use domain email.
+      to: ['delivered@resend.dev'], // ⚠️ In production use the actual email.
       subject: 'Email Verification',
       react: <VerifyEmailTemplate name={name} url={url} />
     })

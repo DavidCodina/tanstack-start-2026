@@ -141,28 +141,46 @@ export const auth = betterAuth({
         url
       })
     }
-  }
+  },
 
   // https://www.better-auth.com/docs/concepts/oauth
 
-  // socialProviders: {
-  //   google: {
-  //     clientId: process.env.GOOGLE_CLIENT_ID as string,
-  //     clientSecret: process.env.GOOGLE_CLIENT_SECRET as string
-  //   },
+  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string
+    },
 
-  //   // https://better-auth.com/docs/authentication/github
-  //   github: {
-  //     clientId: process.env.GITHUB_CLIENT_ID as string,
-  //     clientSecret: process.env.GITHUB_CLIENT_SECRET as string
-  //     // WDS at 1:53:30
-  //     // mapProfileToUser: (_profile) => { return {} }
-  //   },
-  //   // https://better-auth.com/docs/authentication/linkedin
-  //   // https://www.linkedin.com/developers/apps
-  //   linkedin: {
-  //     clientId: process.env.LINKEDIN_CLIENT_ID as string,
-  //     clientSecret: process.env.LINKEDIN_CLIENT_SECRET as string
-  //   }
-  // }
+    // https://better-auth.com/docs/authentication/github
+    github: {
+      clientId: process.env.GITHUB_CLIENT_ID as string,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET as string
+      // WDS at 1:53:30
+      // mapProfileToUser: (_profile) => { return {} }
+    },
+    // https://better-auth.com/docs/authentication/linkedin
+    // https://www.linkedin.com/developers/apps
+    linkedin: {
+      clientId: process.env.LINKEDIN_CLIENT_ID as string,
+      clientSecret: process.env.LINKEDIN_CLIENT_SECRET as string
+    }
+  },
+
+  advanced: {
+    database: {
+      ///////////////////////////////////////////////////////////////////////////
+      //
+      // Note: If you use generateId: 'uuid', then you may need to update the id column
+      // for all Better Auth tables as follows:
+      //
+      //  ❌ id: text('id').primaryKey()
+      //  ✅ id: text('id').primaryKey().default(sql`gen_random_uuid()`),
+      //
+      // Or switch the column type entirely to uuid('id').primaryKey().defaultRandom().
+      //
+      ///////////////////////////////////////////////////////////////////////////
+      generateId: 'uuid'
+      // generateId: () => crypto.randomUUID()
+    }
+  }
 })
