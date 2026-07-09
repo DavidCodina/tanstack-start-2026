@@ -3,6 +3,7 @@ import { tanstackStartCookies } from 'better-auth/tanstack-start'
 // import { APIError, createAuthMiddleware } from 'better-auth/api'
 import { drizzleAdapter } from '@better-auth/drizzle-adapter'
 import { sendVerificationEmail } from './sendVerificationEmail'
+import { sendResetPasswordEmail } from './sendResetPasswordEmail'
 import { db } from '@/db'
 
 import * as schema from '@/db/schema'
@@ -94,17 +95,26 @@ export const auth = betterAuth({
     maxPasswordLength: 128,
     minPasswordLength: 5,
 
+    //# Review Coding In Flow hooks section at 1:19:00 for custom password validation:
+    //# https://www.youtube.com/watch?v=w5Emwt3nuV0
+
     // If you try to log in with an unverified email, you'll get an "Email not verified" error.
     // {message: 'Email not verified', code: 'EMAIL_NOT_VERIFIED', status: 403, statusText: 'FORBIDDEN'}
-    requireEmailVerification: true
-    // sendResetPassword: async (parameter, _request) => {
-    //   const { user, url /*, token */ } = parameter
-    //   await sendResetPasswordEmail({
-    //     email: user.email,
-    //     name: user.name,
-    //     url
-    //   })
-    // }
+    requireEmailVerification: true,
+    // https://better-auth.com/docs/authentication/email-password#request-password-reset
+    sendResetPassword: async (parameter, _request) => {
+      const { user, url /*, token */ } = parameter
+      await sendResetPasswordEmail({
+        email: user.email,
+        name: user.name,
+        url
+      })
+    }
+
+    //# Consider doing something with this.
+    //# onPasswordReset: async ({ user }, request) => {
+    //#   console.log(`Password for user ${user.email} has been reset.`)
+    //# }
   },
 
   emailVerification: {

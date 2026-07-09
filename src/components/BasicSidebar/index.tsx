@@ -17,7 +17,7 @@ import {
   UserIcon,
   X
 } from 'lucide-react'
-import { ThemeToggle } from '@/components/ThemeToggle'
+import { AdminOnly, SignedIn, SignedOut, ThemeToggle } from '@/components'
 import { authClient } from '@/lib/auth-client'
 import { cn } from '@/utils'
 
@@ -362,54 +362,60 @@ export const BasicSidebar = () => {
         //# This is temporary... Eventually, they will be wrapped in SignedOut/SignedIn
         */}
 
-        <Link
-          to='/user'
-          onClick={() => setIsOpen(false)}
-          className={linkClassName}
-          activeProps={{
-            className: activeClassName
-          }}
-        >
-          <UserIcon size={20} />
-          <span className='font-medium'>User</span>
-        </Link>
+        <SignedIn>
+          <Link
+            to='/user'
+            onClick={() => setIsOpen(false)}
+            className={linkClassName}
+            activeProps={{
+              className: activeClassName
+            }}
+          >
+            <UserIcon size={20} />
+            <span className='font-medium'>User</span>
+          </Link>
 
-        <Link
-          to='/admin'
-          onClick={() => setIsOpen(false)}
-          className={linkClassName}
-          activeProps={{
-            className: activeClassName
-          }}
-        >
-          <UserCog size={20} />
-          <span className='font-medium'>Admin</span>
-        </Link>
+          <button
+            onClick={() => {
+              handleClientLogout()
+              setIsOpen(false)
+            }}
+            className={linkClassName}
+            style={{ width: '100%' }}
+            type='button'
+          >
+            <LogOut />
+            <span className='font-medium'>Sign Out</span>
+          </button>
+        </SignedIn>
 
-        <Link
-          to='/login'
-          onClick={() => setIsOpen(false)}
-          className={linkClassName}
-          activeProps={{
-            className: activeClassName
-          }}
-        >
-          <LogIn size={20} />
-          <span className='font-medium'>Sign In</span>
-        </Link>
+        <AdminOnly>
+          <Link
+            to='/admin'
+            onClick={() => setIsOpen(false)}
+            className={linkClassName}
+            activeProps={{
+              className: activeClassName
+            }}
+          >
+            <UserCog size={20} />
+            <span className='font-medium'>Admin</span>
+          </Link>
+        </AdminOnly>
 
-        <button
-          onClick={() => {
-            handleClientLogout()
-            setIsOpen(false)
-          }}
-          className={linkClassName}
-          style={{ width: '100%' }}
-          type='button'
-        >
-          <LogOut />
-          <span className='font-medium'>Sign Out</span>
-        </button>
+        <SignedOut>
+          <Link
+            to='/login'
+            onClick={() => setIsOpen(false)}
+            className={linkClassName}
+            activeProps={{
+              className: activeClassName
+            }}
+          >
+            <LogIn size={20} />
+            <span className='font-medium'>Sign In</span>
+          </Link>
+        </SignedOut>
       </nav>
     )
   }

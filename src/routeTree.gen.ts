@@ -28,8 +28,10 @@ import { Route as demoSuspenseIndexRouteImport } from './routes/(demo)/suspense/
 import { Route as demoServerPaginationIndexRouteImport } from './routes/(demo)/server-pagination/index'
 import { Route as demoClientPaginationIndexRouteImport } from './routes/(demo)/client-pagination/index'
 import { Route as demoAwaitWithCatchIndexRouteImport } from './routes/(demo)/await-with-catch/index'
+import { Route as authResetPasswordIndexRouteImport } from './routes/(auth)/reset-password/index'
 import { Route as authRegisterIndexRouteImport } from './routes/(auth)/register/index'
 import { Route as authLoginIndexRouteImport } from './routes/(auth)/login/index'
+import { Route as authForgotPasswordIndexRouteImport } from './routes/(auth)/forgot-password/index'
 import { Route as TestIdBonusRouteImport } from './routes/test/$id.bonus'
 import { Route as ApiTqTodosIdRouteImport } from './routes/api/tq-todos/$id'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
@@ -143,6 +145,11 @@ const demoAwaitWithCatchIndexRoute = demoAwaitWithCatchIndexRouteImport.update({
   path: '/await-with-catch/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const authResetPasswordIndexRoute = authResetPasswordIndexRouteImport.update({
+  id: '/(auth)/reset-password/',
+  path: '/reset-password/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const authRegisterIndexRoute = authRegisterIndexRouteImport.update({
   id: '/(auth)/register/',
   path: '/register/',
@@ -151,6 +158,11 @@ const authRegisterIndexRoute = authRegisterIndexRouteImport.update({
 const authLoginIndexRoute = authLoginIndexRouteImport.update({
   id: '/(auth)/login/',
   path: '/login/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const authForgotPasswordIndexRoute = authForgotPasswordIndexRouteImport.update({
+  id: '/(auth)/forgot-password/',
+  path: '/forgot-password/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TestIdBonusRoute = TestIdBonusRouteImport.update({
@@ -250,8 +262,10 @@ export interface FileRoutesByFullPath {
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/tq-todos/$id': typeof ApiTqTodosIdRoute
   '/test/$id/bonus': typeof TestIdBonusRoute
+  '/forgot-password/': typeof authForgotPasswordIndexRoute
   '/login/': typeof authLoginIndexRoute
   '/register/': typeof authRegisterIndexRoute
+  '/reset-password/': typeof authResetPasswordIndexRoute
   '/await-with-catch/': typeof demoAwaitWithCatchIndexRoute
   '/client-pagination/': typeof demoClientPaginationIndexRoute
   '/server-pagination/': typeof demoServerPaginationIndexRoute
@@ -287,8 +301,10 @@ export interface FileRoutesByTo {
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/tq-todos/$id': typeof ApiTqTodosIdRoute
   '/test/$id/bonus': typeof TestIdBonusRoute
+  '/forgot-password': typeof authForgotPasswordIndexRoute
   '/login': typeof authLoginIndexRoute
   '/register': typeof authRegisterIndexRoute
+  '/reset-password': typeof authResetPasswordIndexRoute
   '/await-with-catch': typeof demoAwaitWithCatchIndexRoute
   '/client-pagination': typeof demoClientPaginationIndexRoute
   '/server-pagination': typeof demoServerPaginationIndexRoute
@@ -326,8 +342,10 @@ export interface FileRoutesById {
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/tq-todos/$id': typeof ApiTqTodosIdRoute
   '/test/$id/bonus': typeof TestIdBonusRoute
+  '/(auth)/forgot-password/': typeof authForgotPasswordIndexRoute
   '/(auth)/login/': typeof authLoginIndexRoute
   '/(auth)/register/': typeof authRegisterIndexRoute
+  '/(auth)/reset-password/': typeof authResetPasswordIndexRoute
   '/(demo)/await-with-catch/': typeof demoAwaitWithCatchIndexRoute
   '/(demo)/client-pagination/': typeof demoClientPaginationIndexRoute
   '/(demo)/server-pagination/': typeof demoServerPaginationIndexRoute
@@ -366,8 +384,10 @@ export interface FileRouteTypes {
     | '/api/auth/$'
     | '/api/tq-todos/$id'
     | '/test/$id/bonus'
+    | '/forgot-password/'
     | '/login/'
     | '/register/'
+    | '/reset-password/'
     | '/await-with-catch/'
     | '/client-pagination/'
     | '/server-pagination/'
@@ -403,8 +423,10 @@ export interface FileRouteTypes {
     | '/api/auth/$'
     | '/api/tq-todos/$id'
     | '/test/$id/bonus'
+    | '/forgot-password'
     | '/login'
     | '/register'
+    | '/reset-password'
     | '/await-with-catch'
     | '/client-pagination'
     | '/server-pagination'
@@ -441,8 +463,10 @@ export interface FileRouteTypes {
     | '/api/auth/$'
     | '/api/tq-todos/$id'
     | '/test/$id/bonus'
+    | '/(auth)/forgot-password/'
     | '/(auth)/login/'
     | '/(auth)/register/'
+    | '/(auth)/reset-password/'
     | '/(demo)/await-with-catch/'
     | '/(demo)/client-pagination/'
     | '/(demo)/server-pagination/'
@@ -477,8 +501,10 @@ export interface RootRouteChildren {
   demoTodos2IdRoute: typeof demoTodos2IdRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiTqTodosIdRoute: typeof ApiTqTodosIdRoute
+  authForgotPasswordIndexRoute: typeof authForgotPasswordIndexRoute
   authLoginIndexRoute: typeof authLoginIndexRoute
   authRegisterIndexRoute: typeof authRegisterIndexRoute
+  authResetPasswordIndexRoute: typeof authResetPasswordIndexRoute
   demoAwaitWithCatchIndexRoute: typeof demoAwaitWithCatchIndexRoute
   demoClientPaginationIndexRoute: typeof demoClientPaginationIndexRoute
   demoServerPaginationIndexRoute: typeof demoServerPaginationIndexRoute
@@ -631,6 +657,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof demoAwaitWithCatchIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(auth)/reset-password/': {
+      id: '/(auth)/reset-password/'
+      path: '/reset-password'
+      fullPath: '/reset-password/'
+      preLoaderRoute: typeof authResetPasswordIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/(auth)/register/': {
       id: '/(auth)/register/'
       path: '/register'
@@ -643,6 +676,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login/'
       preLoaderRoute: typeof authLoginIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(auth)/forgot-password/': {
+      id: '/(auth)/forgot-password/'
+      path: '/forgot-password'
+      fullPath: '/forgot-password/'
+      preLoaderRoute: typeof authForgotPasswordIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/test/$id/bonus': {
@@ -796,8 +836,10 @@ const rootRouteChildren: RootRouteChildren = {
   demoTodos2IdRoute: demoTodos2IdRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiTqTodosIdRoute: ApiTqTodosIdRoute,
+  authForgotPasswordIndexRoute: authForgotPasswordIndexRoute,
   authLoginIndexRoute: authLoginIndexRoute,
   authRegisterIndexRoute: authRegisterIndexRoute,
+  authResetPasswordIndexRoute: authResetPasswordIndexRoute,
   demoAwaitWithCatchIndexRoute: demoAwaitWithCatchIndexRoute,
   demoClientPaginationIndexRoute: demoClientPaginationIndexRoute,
   demoServerPaginationIndexRoute: demoServerPaginationIndexRoute,

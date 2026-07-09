@@ -382,15 +382,15 @@ const LoginForm = () => {
         </Link>
       </div>
 
-      {/* <div className='text-muted-foreground text-center text-sm'>
+      <div className='text-muted-foreground text-center text-sm'>
         <Link
           className='text-primary font-medium underline'
-          to={'/forgot-password'} 
+          to={'/forgot-password'}
           // target='_self'
         >
           Forgot Password?
         </Link>
-      </div> */}
+      </div>
     </>
   )
 }
