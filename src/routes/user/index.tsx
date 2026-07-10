@@ -40,10 +40,8 @@ function PageUser() {
           _USER
         </h1>
 
-        {/*
         <ServerSession />
-        <ClientSession /> 
-        */}
+        <ClientSession />
 
         <div className='mx-auto max-w-[800px] space-y-6'>
           <Profile />

@@ -159,6 +159,8 @@ export const auth = betterAuth({
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string
+      // See WDS at 1:53:45: https://www.youtube.com/watch?v=WPiqNDapQrk
+      // mapProfileToUser: (_profile) => { return {} }
     },
 
     // https://better-auth.com/docs/authentication/github

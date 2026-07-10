@@ -55,6 +55,7 @@ export const UpdatePasswordForm = ({
     setPending(true)
 
     try {
+      console.log('Calling authClient.changePassword...')
       // https://better-auth.com/docs/authentication/email-password#update-password
       const { data, error } = await authClient.changePassword({
         currentPassword,

@@ -2,8 +2,8 @@
 
 import * as React from 'react'
 import { toast } from 'sonner'
+import { useRouter } from '@tanstack/react-router'
 import { authClient } from '@/lib/auth-client'
-
 // import { z } from 'zod'
 
 import { Button } from '@/components'
@@ -32,6 +32,8 @@ export const UpdateUserForm = ({
   currentName = '',
   ...otherProps
 }: UpdateUserFormProps) => {
+  const router = useRouter()
+
   const [name, setName] = React.useState(() => {
     if (currentName && typeof currentName === 'string') {
       return currentName
@@ -69,7 +71,11 @@ export const UpdateUserForm = ({
       ///////////////////////////////////////////////////////////////////////////
       const { data, error } = await authClient.updateUser({
         name: name
+
+        //# Programming with Atiq at 1:28:55 uses upload thing:
+        //# https://www.youtube.com/watch?v=roHoUhdiae4
         //# image
+        // fetchOptions: {}
       })
 
       if (error) {
@@ -78,25 +84,22 @@ export const UpdateUserForm = ({
       }
 
       if (data) {
-        // data will merely be { status: true }
+        // At this point, data will merely be { status: true }
         toast.success('User updated.')
 
         ///////////////////////////////////////////////////////////////////////////
         //
-        // No need to call router.refresh() here since we're using authClient.useSession()
-        // and not getServerSession(). Note: calling authClient.updateUser() seems to trigger
-        // a refresh of the authClient.useSession() component that invokes it.
+        // Note: calling authClient.updateUser() will trigger a refresh of session from
+        // the authClient.useSession(). However, if the current page is displaying user
+        // data derived from a server session, then one must call router.invalidate() to
+        // refreh the page and prevent stale data from being displayed.
         //
-        // If the user was originally derived from a server session, then it might make sense
-        // to call router.refresh() here. That said, router.refresh() would retrigger all
-        // API calls in page.tsx and nested server components. As such, it's not very precise,
-        // and could lead to poor UX.
-        //
-        // The current implementation originally just left the state as is. However, a better
-        // approach implements a useEffect() to watch for changes to user.
+        // The current implementation originally just left the state as is. However,
+        // a better approach implements a useEffect() to watch for changes to user.
         //
         ///////////////////////////////////////////////////////////////////////////
-        // ❌ router.refresh()
+        router.invalidate()
+
         return
       }
     } catch (_err) {

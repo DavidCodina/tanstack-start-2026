@@ -1,4 +1,4 @@
-export const publicRoutes = ['/', '/test', '/forbidden'] //` '/about'
+export const publicRoutes = ['/', '/test', '/forbidden']
 
 /** An array of routes that are used for authentication
  * If user tries to access them while authenticated, they
