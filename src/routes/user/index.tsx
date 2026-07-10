@@ -3,6 +3,7 @@ import { ServerSession } from './-components/ServerSession'
 import { ClientSession } from './-components/ClientSession'
 
 import { Profile } from './-components/Profile'
+import { SessionManagement } from './-components/SessionManagement'
 import { Page, PageContainer } from '@/components'
 
 export const Route = createFileRoute('/user/')({
@@ -40,16 +41,16 @@ function PageUser() {
           _USER
         </h1>
 
-        <ServerSession />
-        <ClientSession />
-
         <div className='mx-auto max-w-[800px] space-y-6'>
           <Profile />
 
-          {/* <SessionManagement /> */}
+          <SessionManagement />
 
           {/* <DeleteUserButton /> */}
         </div>
+
+        <ServerSession />
+        <ClientSession />
       </PageContainer>
     </Page>
   )

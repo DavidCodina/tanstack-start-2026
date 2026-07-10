@@ -1,5 +1,4 @@
 import * as React from 'react'
-//! import dynamic from 'next/dynamic'
 
 import { UpdateUserForm } from './UpdateUserForm'
 import { UpdateEmailForm } from './UpdateEmailForm'
@@ -20,12 +19,13 @@ type UserAccountsState = GetUserAccountsResponseBody['data']
 
 ======================================================================== */
 // Coding in Flow at 1:42:30 : https://www.youtube.com/watch?v=w5Emwt3nuV0
+// WDS at 1:554:15: https://www.youtube.com/watch?v=WPiqNDapQrk
 
 export const Profile = () => {
   const [userAccounts, setUserAccounts] =
     React.useState<UserAccountsState>(null)
 
-  const [userAccountsLoading, setUserAccountsLoading] = React.useState(true)
+  const [accountsLoading, setAccountsLoading] = React.useState(true)
 
   const hasCredentialsAccount =
     Array.isArray(userAccounts) &&
@@ -41,9 +41,10 @@ export const Profile = () => {
   /* ======================
          useEffect()
   ====================== */
+  //# If you do it like this, then you need some way to refresh it later...
 
   React.useEffect(() => {
-    setUserAccountsLoading(true) // eslint-disable-line
+    setAccountsLoading(true) // eslint-disable-line
     getUserAccounts()
       .then((result) => {
         const { data } = result
@@ -54,7 +55,7 @@ export const Profile = () => {
       })
       .catch((err) => err)
       .finally(() => {
-        setUserAccountsLoading(false)
+        setAccountsLoading(false)
       })
   }, [])
 
@@ -69,7 +70,7 @@ export const Profile = () => {
   //# But what does adding a password actually do?
 
   const renderPasswordUI = () => {
-    if (userAccountsLoading) return null
+    if (accountsLoading) return null
 
     if (hasCredentialsAccount) {
       return <UpdatePasswordForm />
@@ -91,7 +92,7 @@ export const Profile = () => {
       )
     }
 
-    if (isPending || userAccountsLoading) {
+    if (isPending || accountsLoading) {
       // Todo: Add loading UI.
       return (
         <div className='text-primary my-12 text-center text-4xl font-black'>
