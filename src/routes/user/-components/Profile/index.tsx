@@ -42,6 +42,7 @@ export const Profile = () => {
          useEffect()
   ====================== */
   //# If you do it like this, then you need some way to refresh it later...
+  //# See SessionManagement component.
 
   React.useEffect(() => {
     setAccountsLoading(true) // eslint-disable-line
@@ -57,7 +58,7 @@ export const Profile = () => {
       .finally(() => {
         setAccountsLoading(false)
       })
-  }, [])
+  }, []) //# Probably needs  to be given data.session as a dependency.
 
   /* ======================
       renderPasswordUI()

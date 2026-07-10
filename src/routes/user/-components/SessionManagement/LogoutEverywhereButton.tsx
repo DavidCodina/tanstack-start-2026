@@ -70,6 +70,7 @@ export const LogoutEverywhereButton = ({
       className={cn('flex w-full', className)}
       loading={pending}
       onClick={handleLogoutEverywhere}
+      size='sm'
       variant='warning'
     >
       {pending ? 'Logging Out...' : 'Log Out Everywhere'}

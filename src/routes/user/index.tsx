@@ -2,7 +2,7 @@ import { createFileRoute /* , useRouter */ } from '@tanstack/react-router'
 import { ServerSession } from './-components/ServerSession'
 import { ClientSession } from './-components/ClientSession'
 
-import { Profile } from './-components/Profile'
+// import { Profile } from './-components/Profile'
 import { SessionManagement } from './-components/SessionManagement'
 import { Page, PageContainer } from '@/components'
 
@@ -41,8 +41,8 @@ function PageUser() {
           _USER
         </h1>
 
-        <div className='mx-auto max-w-[800px] space-y-6'>
-          <Profile />
+        <div className='mx-auto mb-6 max-w-[800px] space-y-6'>
+          {/* <Profile /> */}
 
           <SessionManagement />
 

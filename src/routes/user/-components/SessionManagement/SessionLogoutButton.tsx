@@ -1,5 +1,4 @@
 import * as React from 'react'
-import { useRouter } from '@tanstack/react-router'
 import { Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { authClient } from '@/lib/auth-client'
@@ -19,7 +18,6 @@ export const SessionLogoutButton = ({
   sessionToken = '',
   ...otherProps
 }: SessionLogoutButtonProps) => {
-  const router = useRouter()
   const [pending, setPending] = React.useState(false)
 
   /* ======================
@@ -46,11 +44,6 @@ export const SessionLogoutButton = ({
 
       if (data) {
         toast.success(`Session revoked: ${sessionToken}`)
-        // In this case the sessions were obtained through the server-side API in
-        // the parent component by using getUserSessions() server function.
-        // That data is now stale. In order to get fresh sessions data, refresh the page
-        //# Test behavior with/without this.
-        router.invalidate()
         return
       }
     } catch (_err) {

@@ -1,4 +1,7 @@
 import * as React from 'react'
+
+// import { useLoaderData } from '@tanstack/react-router'
+
 import { SessionLogoutButton } from './SessionLogoutButton'
 import { LogoutEverywhereButton } from './LogoutEverywhereButton'
 import { getUserSessions } from './getUserSessions'
@@ -35,14 +38,12 @@ export const SessionManagement = () => {
   const { data, isPending /* error, isRefetching, refetch */ } = value
   const session = data?.session
   const currentSessionToken = session?.token
-
   const [sessions, setSessions] = React.useState<UserSessionsState>(null)
   const [sessionsLoading, setSessionsLoading] = React.useState(true)
 
   /* ======================
         useEffect()
   ====================== */
-  //# If you do it like this, then you need some way to refresh it later...
 
   React.useEffect(() => {
     setSessionsLoading(true) // eslint-disable-line
@@ -58,7 +59,14 @@ export const SessionManagement = () => {
       .finally(() => {
         setSessionsLoading(false)
       })
-  }, [])
+
+    // ⚠️ Gotcha: session MUST be part of the dependency array. This way
+    // when SessionLogoutButton calls authClient.revokeSession() the actual
+    // session.session will have changed and consequently trigger a new request.
+    // Note: if this session were obtained through the sever-side API, then it's
+    // likely that we would also need to call router.invalidate() from within
+    // the SessionLogoutButton component.
+  }, [session])
 
   /* ======================
           return
