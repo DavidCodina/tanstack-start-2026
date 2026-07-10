@@ -58,6 +58,10 @@ export const auth = betterAuth({
       role: {
         type: 'string',
         input: false // Prevents users from setting their own role.
+      },
+      // This informs methods like authClient.updateUser({ }), etc.
+      isCool: {
+        type: 'boolean'
       }
     }
   },

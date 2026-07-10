@@ -70,7 +70,8 @@ export const UpdateUserForm = ({
       //
       ///////////////////////////////////////////////////////////////////////////
       const { data, error } = await authClient.updateUser({
-        name: name
+        name: name,
+        isCool: true
 
         //# Programming with Atiq at 1:28:55 uses upload thing:
         //# https://www.youtube.com/watch?v=roHoUhdiae4

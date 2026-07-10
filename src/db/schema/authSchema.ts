@@ -116,6 +116,12 @@ export const UserTable = pgTable('users', {
   //
   ///////////////////////////////////////////////////////////////////////////
   role: UserRoleEnum('role').default('USER').notNull(),
+
+  // Here is a second custom field on the user record.
+  // In auth.ts, we do additionalFields.isCool: {type: 'boolean' }
+  // Then in UpdateUserForm we can create a form field to allow the
+  // user to update it.
+  isCool: boolean('is_cool').default(false).notNull(),
   image: text('image'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at')
