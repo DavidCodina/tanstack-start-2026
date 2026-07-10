@@ -119,8 +119,8 @@ export const UserTable = pgTable('users', {
 
   // Here is a second custom field on the user record.
   // In auth.ts, we do additionalFields.isCool: {type: 'boolean' }
-  // Then in UpdateUserForm we can create a form field to allow the
-  // user to update it.
+  // Then in src/routes/user/-components/Profile/UpdateUserForm
+  // we can create a form field to allow the user to update it.
   isCool: boolean('is_cool').default(false).notNull(),
   image: text('image'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
@@ -139,6 +139,7 @@ export const safeUserFields = {
   email: UserTable.email,
   image: UserTable.image,
   role: UserTable.role,
+  isCool: UserTable.isCool,
   createdAt: UserTable.createdAt,
   updatedAt: UserTable.updatedAt
 }
@@ -150,6 +151,7 @@ export const safeUserColumns = {
   email: true,
   image: true,
   role: true,
+  isCool: true,
   createdAt: true,
   updatedAt: true
 }

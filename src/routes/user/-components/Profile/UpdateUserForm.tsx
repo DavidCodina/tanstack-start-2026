@@ -26,7 +26,8 @@ type UpdateUserFormProps = React.ComponentProps<'form'> & {
 ======================================================================== */
 // Coding in Flow at 1:42:30 : https://www.youtube.com/watch?v=w5Emwt3nuV0
 // https://github.com/codinginflow/better-auth-tutorial/blob/final-project/src/app/(main)/profile/profile-details-form.tsx
-
+//
+// WDS at 2:02:00 : https://www.youtube.com/watch?v=WPiqNDapQrk
 export const UpdateUserForm = ({
   className = '',
   currentName = '',
@@ -70,8 +71,8 @@ export const UpdateUserForm = ({
       //
       ///////////////////////////////////////////////////////////////////////////
       const { data, error } = await authClient.updateUser({
-        name: name,
-        isCool: true
+        name: name
+        // isCool: true
 
         //# Programming with Atiq at 1:28:55 uses upload thing:
         //# https://www.youtube.com/watch?v=roHoUhdiae4

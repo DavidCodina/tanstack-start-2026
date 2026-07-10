@@ -22,13 +22,25 @@ type UpdateEmailFormProps = React.ComponentProps<'form'> & {
 /* ========================================================================
 
 ======================================================================== */
+///////////////////////////////////////////////////////////////////////////
+//
 // ✅ Coding in Flow at 1:47:30 : https://www.youtube.com/watch?v=w5Emwt3nuV0
 // ✅ WDS at 2:02:45            : https://www.youtube.com/watch?v=WPiqNDapQrk
+//    Instead of having multiple separate forms, Kyle combines logic for
+//    UpdateUserForm and UpdateEmailForm into a single form that makes multiple
+//    API calls within the submit handler. However, in that case he preemptively
+//    ensures that he never call authClient.changeEmail(), if it's still the
+//    current email.
+//
 // https://better-auth.com/docs/concepts/users-accounts#change-email
+//
+///////////////////////////////////////////////////////////////////////////
 
 //# Here we 100% need to have a confirm email field.
 //# Otherwise, there's an increased risk that the user will inadvertently
 //# update the email to the WRONG email and then get locked out.
+
+//# Test what happens if we try to assign an email that already exists on another user.
 
 export const UpdateEmailForm = ({
   className = '',
@@ -67,8 +79,6 @@ export const UpdateEmailForm = ({
     setPending(true)
 
     try {
-      //# Test what happens if one tries to update an email to an existing email.
-
       // This works against OAuth or credential signups. Changing email
       // for a user with an Oath account does not break the login flow.
       const { data, error } = await authClient.changeEmail({
@@ -77,12 +87,39 @@ export const UpdateEmailForm = ({
       })
 
       if (error) {
+        ///////////////////////////////////////////////////////////////////////////
+        //
+        // If the newEmail is submitted and it matches the current email, then an
+        // error will occur:
+        // {message: 'Email is the same', status: 400, statusText: 'BAD_REQUEST'}
+        //
+        // Note: If a user attempts to submit a newEmail that already exists on another user,
+        // it will not error out, and instead silently do nothing (i.e., no verification email sent).
+        // This is a deliberate anti-enumeration measure on behalf of Better Auth.
+        //
+        //   https://better-auth.com/docs/authentication/email-password#email-enumeration-protection
+        //   the /change-email endpoint no longer reveals whether the target email is already registered
+        //   — it always returns a success response.
+        //
+        // Returning an erro when the email belongs to another user would let an attacker probe the users
+        // table by trying changeEmail with a list of guessed addresses and watching for the error.
+        // That's a classic email-enumeration vulnerability. So instead, Better Auth swallows it silently:
+        // no error, no verification email sent, but the client sees a "successful" response. This mirrors
+        // the same pattern they use on sign-up when requireEmailVerification is on — the sign-up endpoint
+        // prevents email enumeration by returning the same 200 response whether the email is already registered
+        // or not, following OWASP authentication best practices.
+        //
+        ///////////////////////////////////////////////////////////////////////////
         toast.error('Unable to send email verification.')
         return
       }
 
       if (data) {
-        toast.success('Email verification sent.')
+        // The trade-off for the security measure above is that we can't rely on the API
+        // response to tell the user "that email is taken."
+        toast.success(
+          "If this email isn't already associated with an account, we've sent a confirmation link to it."
+        )
         return
       }
     } catch (_err) {

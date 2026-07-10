@@ -43,6 +43,57 @@ export const auth = betterAuth({
     // https://better-auth.com/docs/concepts/users-accounts#delete-user
     deleteUser: {
       enabled: true
+
+      //# https://better-auth.com/docs/concepts/users-accounts#adding-verification-before-deletion
+      //# For added security, you’ll likely want to confirm the user’s intent before deleting their account.
+      // sendDeleteAccountVerification:
+    },
+
+    // https://better-auth.com/docs/concepts/users-accounts#change-email
+    // WDS at 2:02:30
+    // Coding In Flow at 1:49:30
+    changeEmail: {
+      enabled: true
+
+      ///////////////////////////////////////////////////////////////////////////
+      //
+      // https://better-auth.com/docs/concepts/users-accounts#change-email
+      // Coding in Flow at 1:47:30 : https://www.youtube.com/watch?v=w5Emwt3nuV0
+      // WDS at 2:02:45            : https://www.youtube.com/watch?v=WPiqNDapQrk
+      //
+      // By default, when a user requests to change their email, a verification email is sent to
+      // the new email address.
+      //
+      //    const { data, error } = await authClient.changeEmail({ newEmail, callbackURL: '/' })
+      //
+      // The email is only updated after the user verifies the new email. This occurs through
+      // the emailVerification implementation already set up in the registration flow.
+      //
+      /////////////////////////
+      //
+      // Confirming with Current Email:
+      //
+      // https://better-auth.com/docs/concepts/users-accounts#confirming-with-current-email
+      // For added security, you can require users to confirm the change via their current
+      // email before the verification email is sent to the new address.
+      //
+      // To do this, provide the sendChangeEmailConfirmation function. In Coding In Flow tutorial
+      // at 1:50:20, he says he doesn't really know what the best approach is. Currently, I'm
+      // using the less secure approach where the email verification goes to the NEW email. The
+      // problem with the more secure approach of sending it to the old email
+      // (i.e. sendChangeEmailConfirmation) is that in many cases, a user may be trying to change
+      // their email on this app because they no longer have access to their old email account.
+      //
+      ///////////////////////////////////////////////////////////////////////////
+
+      // sendChangeEmailConfirmation: async (parameter, _request) => {
+      //   const { user, newEmail, url /* , token */ } = parameter
+      //   // https://better-auth.com/docs/concepts/users-accounts#change-email
+      //   // ⚠️ Avoid awaiting the email sending to prevent timing attacks.
+      //   // On serverless platforms, use waitUntil or similar to ensure the email is sent.
+      //
+      //   // Send the email to the new email address...
+      // }
     },
 
     additionalFields: {
@@ -57,11 +108,18 @@ export const auth = betterAuth({
       ///////////////////////////////////////////////////////////////////////////
       role: {
         type: 'string',
-        input: false // Prevents users from setting their own role.
+        // Prevents users from setting their own role. Won't show up in
+        //type hinting for methods like authClient.updateUser({ }), and
+        // presumably won't even allow it if you tried.
+        input: false
       },
       // This informs methods like authClient.updateUser({ }), etc.
       isCool: {
-        type: 'boolean'
+        type: 'boolean',
+        // By default, each additional field is treated as required input unless you tell Better Auth otherwise.
+        // Better Auth will not implicitly infer that it's optional from the schema. Thus set required:false.
+        // Otherwise, auth.api.signUpEmail() will complain if you don't provide it.
+        required: false
       }
     }
   },
@@ -143,6 +201,8 @@ export const auth = betterAuth({
     ///////////////////////////////////////////////////////////////////////////
     // ❌ sendOnSignUp: true,
 
+    // This is used by Better Auth when the user first registers.
+    // However, it's also used if the app calls authClient.changeEmail({ ... })
     sendVerificationEmail: async (parameter, _request) => {
       const { user, url, token: _token } = parameter
 

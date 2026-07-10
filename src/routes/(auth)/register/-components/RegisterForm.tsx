@@ -89,7 +89,9 @@ export const RegisterForm = () => {
         })
 
         if (res.success === true) {
-          toast.success('Registration success! Confirmation email sent.')
+          toast.success(
+            "Registration success! If this email isn't already associated with an account, we've sent a confirmation link to it."
+          )
           // toast.success('Registration success!')
           // Because we're using requireEmailVerification: true, we can instead
           // use the callbackURL in the Better Auth signUp function. It won't redirect

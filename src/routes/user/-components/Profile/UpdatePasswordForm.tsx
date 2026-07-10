@@ -55,14 +55,14 @@ export const UpdatePasswordForm = ({
     setPending(true)
 
     try {
-      console.log('Calling authClient.changePassword...')
       // https://better-auth.com/docs/authentication/email-password#update-password
       const { data, error } = await authClient.changePassword({
         currentPassword,
         newPassword,
         // When true, the user will be logged out of their other sessions.
         // This is a good idea for security because changing a password is
-        // often done to prevent a security breach.
+        // often done to prevent a security breach. WDS makes this a checkbox
+        // that the user can opt into. However, I've hardcoded it here for now.
         revokeOtherSessions: true
       })
 
@@ -76,7 +76,8 @@ export const UpdatePasswordForm = ({
         //   {
         //     message: 'Credential account not found',
         //     code: 'CREDENTIAL_ACCOUNT_NOT_FOUND',
-        //     status: 400, statusText: 'BAD_REQUEST'
+        //     status: 400,
+        //     statusText: 'BAD_REQUEST'
         //   }
         //
         ///////////////////////////////////////////////////////////////////////////
