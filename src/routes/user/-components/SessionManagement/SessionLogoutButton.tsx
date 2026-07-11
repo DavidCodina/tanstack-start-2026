@@ -32,7 +32,16 @@ export const SessionLogoutButton = ({
     setPending(true)
 
     try {
+      ///////////////////////////////////////////////////////////////////////////
+      //
       // https://better-auth.com/docs/concepts/session-management#revoke-session
+      // Note: If you wanted to revoke all other sessions (i.e., all but the current one),
+      // you could do the this:  authClient.revokeOtherSessions()
+      //
+      // Note: if you're caching sessions, then revoking a session may not take effect
+      // until the cached time expires.
+      //
+      ///////////////////////////////////////////////////////////////////////////
       const { data, error } = await authClient.revokeSession({
         token: sessionToken
       })

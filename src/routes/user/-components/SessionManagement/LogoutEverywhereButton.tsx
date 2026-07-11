@@ -34,7 +34,14 @@ export const LogoutEverywhereButton = ({
     setPending(true)
 
     try {
+      ///////////////////////////////////////////////////////////////////////////
+      //
       // https://better-auth.com/docs/concepts/session-management#revoke-all-sessions
+      //
+      // Note: if you're caching sessions, then revoking a session may not take effect
+      // until the cached time expires.
+      //
+      ///////////////////////////////////////////////////////////////////////////
       const { data, error } = await authClient.revokeSessions()
 
       if (error) {

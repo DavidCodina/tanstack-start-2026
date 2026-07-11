@@ -282,7 +282,7 @@ const LoginForm = () => {
         noValidate
       >
         <div
-          className='flex justify-center gap-6 bg-white px-4 py-2'
+          className='bg-card flex justify-center gap-6 border-b px-4 py-2'
           style={{ boxShadow: '0px 1px 3px rgba(0,0,0,0.25)' }}
         >
           <button

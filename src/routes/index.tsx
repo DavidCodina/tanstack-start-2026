@@ -1,6 +1,6 @@
 import { createFileRoute /* , useRouter */ } from '@tanstack/react-router'
+
 import { Page, PageContainer } from '@/components'
-// import { ProtectedServerFunctionDemo } from '@/components/ProtectedServerFunctionDemo'
 
 export const Route = createFileRoute('/')({ component: PageHome })
 

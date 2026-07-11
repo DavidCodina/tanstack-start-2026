@@ -2,8 +2,10 @@ import { createFileRoute /* , useRouter */ } from '@tanstack/react-router'
 import { ServerSession } from './-components/ServerSession'
 import { ClientSession } from './-components/ClientSession'
 
-// import { Profile } from './-components/Profile'
+import { LinkAccounts } from './-components/LinkAccounts'
+import { Profile } from './-components/Profile'
 import { SessionManagement } from './-components/SessionManagement'
+import { DeleteUserButton } from './-components/DeleteUserButton'
 import { Page, PageContainer } from '@/components'
 
 export const Route = createFileRoute('/user/')({
@@ -41,12 +43,14 @@ function PageUser() {
           _USER
         </h1>
 
+        <LinkAccounts />
+
         <div className='mx-auto mb-6 max-w-[800px] space-y-6'>
-          {/* <Profile /> */}
+          <Profile />
 
           <SessionManagement />
 
-          {/* <DeleteUserButton /> */}
+          <DeleteUserButton />
         </div>
 
         <ServerSession />

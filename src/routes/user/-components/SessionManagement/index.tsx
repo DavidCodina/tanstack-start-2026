@@ -31,13 +31,20 @@ type UserSessionsState = GetUserSessionsResponseBody['data']
 //     .catch((err) => err)
 //   }, [])
 //
+// Alternatively, we could make the call to getUserSessions() from within
+// the pages's loader function
+//
 ///////////////////////////////////////////////////////////////////////////
 
 export const SessionManagement = () => {
   const value = authClient.useSession()
-  const { data, isPending /* error, isRefetching, refetch */ } = value
+  const {
+    data,
+    isPending: currentSessionPending /* error, isRefetching, refetch */
+  } = value
   const session = data?.session
   const currentSessionToken = session?.token
+
   const [sessions, setSessions] = React.useState<UserSessionsState>(null)
   const [sessionsLoading, setSessionsLoading] = React.useState(true)
 
@@ -72,7 +79,7 @@ export const SessionManagement = () => {
           return
   ====================== */
 
-  if (isPending || sessionsLoading) {
+  if (currentSessionPending || sessionsLoading) {
     // Todo: Add loading UI.
     return (
       <div className='text-primary my-12 text-center text-4xl font-black'>
