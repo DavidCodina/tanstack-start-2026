@@ -37,6 +37,7 @@ import { authClient } from '@/lib/auth-client'
 export const LinkAccounts = () => {
   const [loadingAccounts, setLoadingAccounts] = React.useState(true)
   const [accounts, setAccounts] = React.useState<Account[] | null>(null)
+
   const credentialAccount = accounts?.find(
     (account) => account.providerId === 'credential'
   )
@@ -50,6 +51,7 @@ export const LinkAccounts = () => {
   /* ======================
         useEffect()
   ====================== */
+  //# Test this assumption.
   // This useEffect() reruns after a new social account is linked. Why? Because the
   // page itself remounts when the app redirects back to '/user'.
 
