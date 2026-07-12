@@ -1,9 +1,18 @@
+import * as React from 'react'
 import { createFileRoute /* , useRouter */ } from '@tanstack/react-router'
+import { z } from 'zod'
+import { toast } from 'sonner'
+
 import { RegisterForm } from './-components/RegisterForm'
 import { Page, PageContainer } from '@/components'
 
+const SearchParamsSchema = z.object({
+  account_deleted: z.boolean().optional()
+})
+
 export const Route = createFileRoute('/(auth)/register/')({
-  component: PageRegister
+  component: PageRegister,
+  validateSearch: SearchParamsSchema
 })
 
 /* ========================================================================
@@ -11,6 +20,24 @@ export const Route = createFileRoute('/(auth)/register/')({
 ======================================================================== */
 
 function PageRegister() {
+  const searchParams = Route.useSearch()
+  const { account_deleted } = searchParams
+
+  /* ======================
+        useEffect()
+  ====================== */
+
+  React.useEffect(() => {
+    if (account_deleted === true) {
+      toast.success(
+        'Your account has been deleted. Please ensure all other tabs/windows are closed for this application.',
+        {
+          duration: Infinity
+        }
+      )
+    }
+  }, [account_deleted])
+
   /* ======================
           return
   ====================== */

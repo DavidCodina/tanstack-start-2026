@@ -52,7 +52,13 @@ type SetPasswordFormProps = {
 // couldn't they just link their own OAuth account, then unlink the original accounts
 // from the actual user? Yes!
 //
-// Generally speaking, I have serious reservations about account linking...
+// Generally speaking, I have serious reservations about account linking... Conceptually, this feels dangerous to me. In practice,
+// if someone got a hold of our session, couldn't they link their own OAuth account, then unlink all
+// of the other accounts? This would result in a full takeover and lock out.
+//
+// ⚠️ This is a real and well-known vulnerability pattern, not just paranoia. It's sometimes called a
+// "parasitic account linking" attack, and it's exactly the scenario you'd get with allowDifferentEmails: true
+// combined with session-based linking.
 //
 ///////////////////////////////////////////////////////////////////////////
 

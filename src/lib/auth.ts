@@ -4,6 +4,7 @@ import { tanstackStartCookies } from 'better-auth/tanstack-start'
 import { drizzleAdapter } from '@better-auth/drizzle-adapter'
 import { sendVerificationEmail } from './sendVerificationEmail'
 import { sendResetPasswordEmail } from './sendResetPasswordEmail'
+import { sendDeleteAccountVerification } from './sendDeleteAccountVerification'
 import { db } from '@/db'
 
 import * as schema from '@/db/schema'
@@ -42,11 +43,22 @@ export const auth = betterAuth({
   user: {
     // https://better-auth.com/docs/concepts/users-accounts#delete-user
     deleteUser: {
-      enabled: true
+      enabled: true,
 
-      //# https://better-auth.com/docs/concepts/users-accounts#adding-verification-before-deletion
-      //# For added security, you’ll likely want to confirm the user’s intent before deleting their account.
-      // sendDeleteAccountVerification:
+      // https://better-auth.com/docs/concepts/users-accounts#adding-verification-before-deletion
+      // For added security, you’ll likely want to confirm the user’s intent before deleting their account.
+      sendDeleteAccountVerification: async (parameter, _request) => {
+        const {
+          // token, // The verification token  (can be used to generate custom URL)
+          user, // The user object
+          url // The auto-generated URL for deletion
+        } = parameter
+        await sendDeleteAccountVerification({
+          email: user.email,
+          name: user.name,
+          url
+        })
+      }
     },
 
     // https://better-auth.com/docs/concepts/users-accounts#change-email
@@ -146,9 +158,67 @@ export const auth = betterAuth({
     accountLinking: {
       // enabled: true, // Default is true
 
+      ///////////////////////////////////////////////////////////////////////////
+      //
       // If you want your users to be able to link a social account with a different email
       // address than the user, or if you want to use a provider that does not return email addresses,
       // you will need to enable this in the account linking settings.
+      //
+      // ⚠️ By default, Better Auth blocks linking when the OAuth provider's email doesn't match the account's existing email
+      // - to prevent accidental cross-account linking or account takeover, Better Auth blocks the link when emails do not align.
+      // That check is your safety net: it means an attacker can only auto-link a provider if they already control the exact
+      // email on the account (which is a much smaller attack surface).
+      //
+      // allowDifferentEmails: true removes that net entirely — by default, an OAuth account can only be linked if the
+      // OAuth provider's email matches the user's current email; setting allowDifferentEmails: true removes this
+      // constraint, and this applies to both the automatic linking flow and the manual /link-social endpoint.
+      //
+      // And critically, linking is a session-authorized action, not a re-authenticated one — POST /link-social ...
+      // verifies it, fetches user info, checks linking constraints, then calls internalAdapter.createAccount().
+      // There's no password re-entry or fresh-login requirement baked in. So your attack chain is accurate:
+      //
+      //   1. Attacker gets a live session (XSS, stolen cookie, session fixation — doesn't matter how).
+      //
+      //   2. Attacker hits linkSocial with their own Google/GitHub account. Since allowDifferentEmails is on,
+      //      the email mismatch check that would normally block this is disabled.
+      //
+      //   3. Attacker unlinks the victim's real providers/credentials.
+      //
+      //   4. Now the attacker's own OAuth identity is a permanent, legitimate credential on the victim's user.id.
+      //   Even if the original hijacked session expires or the victim rotates their password, the attacker just
+      //   signs in normally with their own Google account — full persistent takeover, no ongoing exploit needed.
+      //
+      // Allowing this significantly increases vulnerability to a "parasitic account linking" attack. You probably
+      // do not want to do this in production apps.
+      //
+      // One nuance worth knowing: the user's email and emailVerified are never changed on a link, so linking a provider
+      // can't rebind the account's identity — the profile's email field stays intact. But that's cold comfort,
+      // because the attacker doesn't need to change the email; they just need a working sign-in method into that
+      // account, and unlinking the others is enough to lock the real owner out.
+      //
+      // What I'd do about it
+      //
+      // - Don't use allowDifferentEmails: true unless you actually need it. If it's there just to support one provider that doesn't return verified emails, consider scoping the trust more narrowly rather than a blanket global flag.
+      //
+      // - Require step-up auth for link/unlink. Gate both actions behind a recent/fresh session check
+      //   (e.g., re-enter password or re-verify OAuth within the last N minutes) rather than trusting
+      //   any live session. You can enforce this with a before hook on the link-social and unlink-account routes.
+      //
+      // - Notify on every link/unlink. Email the account's verified address whenever a provider is added
+      //   or removed, with a "wasn't you? secure your account" link that revokes all sessions. This is
+      //   your real backstop against session hijacking, since the victim can react even if the attacker c
+      //   ompletes step 3 above.
+      //
+      // - Block removing the last usable auth method unless a new one has been added and the notification/step-up
+      //   window has passed — don't let link-then-immediately-unlink happen in one uninterrupted flow.
+      //
+      // - Revoke other sessions on link/unlink. Forces the legitimate user to re-authenticate, which both
+      //   surfaces the change and limits blast radius.
+      //
+      // - Treat account-linking pages the way you'd treat a password-change page from a security posture
+      //   - it's an identity-critical surface, so it deserves reauth, logging, and alerting even though it feels like "just settings."
+      //
+      ///////////////////////////////////////////////////////////////////////////
       allowDifferentEmails: true
 
       // If you want the newly linked accounts to update the user information,

@@ -44,6 +44,7 @@ export const LinkAccounts = () => {
 
   const linkedSocialAccounts =
     accounts?.filter((account) => account.providerId !== 'credential') ?? []
+
   const unlinkedSocialAccounts = SUPPORTED_OAUTH_PROVIDERS.filter(
     (provider) => !linkedSocialAccounts.some((a) => a.providerId === provider)
   )
@@ -51,9 +52,22 @@ export const LinkAccounts = () => {
   /* ======================
         useEffect()
   ====================== */
-  //# Test this assumption.
+  ///////////////////////////////////////////////////////////////////////////
+  //
   // This useEffect() reruns after a new social account is linked. Why? Because the
-  // page itself remounts when the app redirects back to '/user'.
+  // page itself remounts when the app redirects back to '/user'. This happens in
+  // LinkSocialButton here:
+  //
+  //   const { data, error } = await authClient.linkSocial({
+  //     provider: provider,
+  //     callbackURL: '/user' // Callback URL after linking completes - defaults to '/'
+  //   })
+  //
+  // In order to update the UI after an account is unlinked, we call similar logic
+  // in the onSuccess of UnlinkButton. However, in that case, the page is not
+  // actually remounted.
+  //
+  ///////////////////////////////////////////////////////////////////////////
 
   React.useEffect(() => {
     setLoadingAccounts(true) // eslint-disable-line
@@ -86,6 +100,8 @@ export const LinkAccounts = () => {
   /* ======================
     renderLinkedAccounts()
   ====================== */
+  // For each linked account, render an UnlinkButton
+  // instance to allow user to unlink from that account.
 
   const renderLinkedAccounts = () => {
     return (
@@ -118,7 +134,8 @@ export const LinkAccounts = () => {
                   .catch((_err) => {})
                   .finally(() => {})
               }}
-              providerString={'credential'}
+              providerIdString={credentialAccount.providerId as 'credential'}
+              accountIdString={credentialAccount.accountId}
             />
           )}
           {linkedSocialAccounts.map((account) => {
@@ -144,7 +161,9 @@ export const LinkAccounts = () => {
                     .catch((_err) => {})
                     .finally(() => {})
                 }}
-                providerString={account.providerId as SupportedOAuthProvider}
+
+                accountIdString={account.accountId}
+                providerIdString={account.providerId as SupportedOAuthProvider}
               />
             )
           })}
@@ -156,6 +175,8 @@ export const LinkAccounts = () => {
   /* ======================
   renderUnlinkedSocialAccounts()
   ====================== */
+  // For each unlinked socialaccount, render a LinkSocialButton
+  // instance to allow user to create that account and link to it.
 
   const renderUnlinkedSocialAccounts = () => {
     if (
@@ -191,6 +212,8 @@ export const LinkAccounts = () => {
   /* ======================
   renderLinkCredentialsForm()
   ====================== */
+  // If credential account is unlinked, render UI to allow
+  // the user to create a credential account and link to it.
 
   const renderLinkCredentialsForm = () => {
     if (loadingAccounts || credentialAccount) {
@@ -235,30 +258,26 @@ export const LinkAccounts = () => {
   }
 
   /* ======================
-      renderContent() 
-  ====================== */
-
-  const renderContent = () => {
-    if (loadingAccounts) {
-      return (
-        <div className='text-primary my-12 text-center text-4xl font-black'>
-          Loading...
-        </div>
-      )
-    }
-
-    return (
-      <section className='mb-6 space-y-6'>
-        {renderLinkedAccounts()}
-        {renderUnlinkedSocialAccounts()}
-        {renderLinkCredentialsForm()}
-      </section>
-    )
-  }
-
-  /* ======================
           return
   ====================== */
 
-  return renderContent()
+  if (loadingAccounts) {
+    return (
+      <div className='text-primary my-12 text-center text-4xl font-black'>
+        Loading...
+      </div>
+    )
+  }
+
+  return (
+    <div className='mx-auto mb-6 max-w-[800px]'>
+      <h2 className='text-primary mb-1 text-4xl font-black'>Account Linking</h2>
+
+      <div className='bg-card space-y-6 rounded-lg border p-4'>
+        {renderLinkedAccounts()}
+        {renderUnlinkedSocialAccounts()}
+        {renderLinkCredentialsForm()}
+      </div>
+    </div>
+  )
 }

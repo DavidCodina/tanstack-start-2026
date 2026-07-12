@@ -1,7 +1,5 @@
-'use client'
-
 import * as React from 'react'
-import { useNavigate } from '@tanstack/react-router'
+// import { useNavigate } from '@tanstack/react-router'
 import { TriangleAlert } from 'lucide-react'
 import { toast } from 'sonner'
 import { authClient } from '@/lib/auth-client'
@@ -15,13 +13,13 @@ type DeleteUserButtonProps = React.ComponentProps<typeof Button>
 
 ======================================================================== */
 // WDS at 2:35:30 : https://www.youtube.com/watch?v=WPiqNDapQrk
-// Todo: Add a confirmation step to this. In auth.ts do implement: sendDeleteAccountVerification
 
 export const DeleteUserButton = ({
   className = '',
   ...otherProps
 }: DeleteUserButtonProps) => {
-  const navigate = useNavigate()
+  // const navigate = useNavigate()
+
   const [pending, setPending] = React.useState(false)
 
   /* ======================
@@ -44,8 +42,14 @@ export const DeleteUserButton = ({
 
     try {
       // https://better-auth.com/docs/concepts/users-accounts#delete-user
+      // In auth.ts, this must be set:
+      // user: { deleteUser: { enabled: true } }
       const { data, error } = await authClient.deleteUser({
-        // This is only used when sendDeleteAccountVerification is implemented in auth.ts
+        // callbackURL is only used when sendDeleteAccountVerification is implemented in auth.ts
+        // In such cases, there's no need for the commented-out navigate() logic below.
+        // The account_deleted=true search param can be used within the '/register' page on
+        // mount (i.e., useEffect) to trigger a toast notification to inform the user of success
+        // and remind them to close all other tabs/windows.
         callbackURL: '/register?account_deleted=true'
       })
 
@@ -58,19 +62,24 @@ export const DeleteUserButton = ({
 
       if (data) {
         // {success: true, message: 'User deleted'}
-        toast.success('Account deleted')
+        // toast.success('Account deleted')
+        toast.success('Delete account verification email sent.')
 
-        navigate({
-          to: '/register',
-          search: {
-            // Not currently being used on register page for anything.
-            account_deleted: true
-          }
-        })
+        ///////////////////////////////////////////////////////////////////////////
+        //
+        // No need for this logic if Better Auth is using sendDeleteAccountVerification flow.
+        //
+        //   navigate({
+        //     to: '/register',
+        //     search: { account_deleted: true }
+        //   })
+        //
+        ///////////////////////////////////////////////////////////////////////////
+
         return
       }
     } catch (_err) {
-      toast.error('Unable to delete account.')
+      toast.error('Unable to initiate account deletion process.')
     } finally {
       setPending(false)
     }
