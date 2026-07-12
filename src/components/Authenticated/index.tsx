@@ -43,9 +43,64 @@ type AuthenticatedProps = {
 // apps it would still be more idiomatic to use that page route's beforeLoad function to
 // do a server-side authentication check.
 //
-// Ultimately, even the use of Authenticated is not a perfect solution. The real
-// security boundary has to live wherever the protected data actually comes from. For
-// this reason, all sensitive data (i.e., API data) must have its own data access layer.
+// Ultimately, even the use of Authenticated is not a perfect solution. Any and all
+// route-level or component-level protections are just for UX. Real security boundaries
+// must also exist wherever the protected data actually comes from (e.g., API routes, server functions).
+// For this reason, all sensitive data must have its own data access layer.
+//
+/////////////////////////
+//
+// Ranking The Three Layers
+//
+// 1. A check inside the actual server function / API route that returns the data
+//   (the real boundary). This is the only one that can't be bypassed, because it
+//   runs on infrastructure the attacker doesn't control, and it gates the data, not just the UI.
+//
+// 2. beforeLoad calling getServerSession. On the initial hard navigation, this is genuine server-side
+//    enforcement before any HTML is sent — real, but only for that request. On client-side (SPA) navigations
+//    it re-runs in the browser, so from that point on it's routing/UX behavior, not a boundary.
+//
+// 3. <Authenticated>. This is weaker than both of the above, for a reason worth calling out explicitly:
+//    it has zero server-side execution, ever. authClient.useSession() is a client hook backed by client-side
+//    state (your nanostore observation). Even when this component happens to render during an SSR pass, the
+//    "check" it's performing isn't a trust check against a request — it's reading whatever the client store
+//    already has, which on first server render is typically empty/pending anyway. So unlike beforeLoad,
+//    there's no version of this component's execution that anyone should treat as authoritative.
+//    It's UI-only, 100% of the time.
+//
+/////////////////////////
+//
+// The more important gap: rendering vs. fetching
+//
+// There's a second reason <Authenticated> is weaker that's easy to miss: it only controls what gets rendered
+// into the DOM, not what data got fetched to produce it.
+//
+// If a route's loader already fetched sensitive data before <Authenticated> even mounts, that data is sitting
+// in the client's memory/network tab regardless of whether this component decides to render children or return null.
+// Wrapping a component in <Authenticated> doesn't stop the fetch — it just decides whether to display the result.
+// So this component is only a legitimate tool for hiding UI (nav links, a "Settings" button, etc.), never for
+// protecting data that's already been loaded elsewhere. If you're relying on it to keep something secret rather
+// than just visually tidy, that's the bypass that matters most here — no header-spoofing or clever attack
+// required, just: the data already left the server.
+//
+/////////////////////////
+//
+// Regarding previous comment that "page/component-level protection is more secure than middleware-level protection"
+//
+// Worth tightening this line in your comment, because it's true in the Next.js CVE context but easy to over-generalize.
+// In that context, "page-level" usually means checking auth inside getServerSideProps / a Server Component / the route
+// handler itself — i.e., still server-side code, just not living in the separate middleware.ts interceptor that had
+// the skip-header bug. It doesn't mean client component checks are more secure — a client-only check like <Authenticated>
+// is actually the weakest of the three, weaker than middleware normally is, since middleware at least runs server-side
+// per request outside of that one CVE.
+//
+// So I'd revise that sentence to something like:
+//
+//   Page-level or component-level protection implemented on the server (e.g., checking session in a loader, Server Component,
+//   or route handler) avoids the specific class of bug where a shared middleware layer can be tricked into skipping itself.
+//   <Authenticated> here is not that — it's a pure client-side UI gate, useful for hiding UI elements from unauthenticated
+//   users, but it provides no data protection and no enforcement guarantee whatsoever.
+//
 //
 ///////////////////////////////////////////////////////////////////////////
 
