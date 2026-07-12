@@ -47,9 +47,7 @@ function PageUser() {
 
         <div className='mx-auto mb-6 max-w-[800px] space-y-6'>
           <Profile />
-
           <SessionManagement />
-
           <DeleteUserButton />
         </div>
 

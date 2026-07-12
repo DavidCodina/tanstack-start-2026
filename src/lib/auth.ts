@@ -148,8 +148,13 @@ export const auth = betterAuth({
   // There he talks about how session expiration works.
   // https://better-auth.com/docs/concepts/session-management#session-expiration
   //
+  //
+  //
   ///////////////////////////////////////////////////////////////////////////
-  session: {},
+  session: {
+    //# Test this to see what happens after 15s.
+    // expiresIn: 7 * 24 * 60 * 60 // 7 days
+  },
 
   // Note: account linking is enabled by default in Better Auth, and OAuth providers like Google and GitHub are trusted by default.
   // Thus, explicitly enabling it and setting trustedProviders: ['google', 'github'] isn't doing anything new.

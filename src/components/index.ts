@@ -39,6 +39,7 @@ export * from './Title'
 export * from './SignedIn'
 export * from './SignedOut'
 export * from './AdminOnly'
+export * from './Authenticated'
 
 // Getting document not defined error.
 // dexport * from './RTE'

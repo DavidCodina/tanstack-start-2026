@@ -68,7 +68,6 @@ export const Profile = () => {
   // <UpdatePasswordForm />, use hasCredentialsAccount to conditionally render
   // a <CreatePasswordButton />. WDS does something similar at 2:07:55
   // https://www.youtube.com/watch?v=WPiqNDapQrk
-  //# But what does adding a password actually do?
 
   const renderPasswordUI = () => {
     if (accountsLoading) return null
