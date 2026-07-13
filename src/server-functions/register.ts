@@ -1,21 +1,58 @@
 import { createServerFn } from '@tanstack/react-start'
 import { eq, sql } from 'drizzle-orm'
+import { z } from 'zod'
+
 import { APIError } from 'better-auth/api'
+
+import type { ResponsePromise } from '@/types'
+
 import { db } from '@/db'
-import { UserTable, safeUserFields } from '@/db/schema'
-
-// import type { Code, ResponsePromise } from '@/types'
+import { UserTable } from '@/db/schema'
 import { auth } from '@/lib/auth'
-import { codes } from '@/utils'
+import { codes, formatZodErrors } from '@/utils'
 
-type RequestData = {
-  // firstName: string
-  // lastName: string
+/* ======================
+     
+====================== */
+
+const PasswordSchema = z
+  .string()
+  .min(1, { error: 'Password is required' })
+  .min(8, { error: 'Password must be at least 8 characters long' })
+  // Matches "anything that isn't a letter or digit"
+  .regex(/[a-zA-Z]/, {
+    message: 'Password must contain at least one letter'
+  })
+  .regex(/[0-9]/, { message: 'Password must contain at least one number' })
+  // Matches "anything that isn't a letter or digit"
+  .regex(/[^a-zA-Z0-9]/, {
+    message: 'Password must contain at least one special character.'
+  })
+
+/* ======================
+        Types
+====================== */
+///////////////////////////////////////////////////////////////////////////
+//
+// Previously inferred from getRegisterSchema() function:
+//
+//   type RegisterSchemaType = ReturnType<typeof getRegisterSchema>
+//   type RegisterSchemaInput = z.infer<RegisterSchemaType>
+//
+// But that's no longer possible becasue the function MUST be inside
+// of the server function because of the server-side db logic.
+//
+///////////////////////////////////////////////////////////////////////////
+
+type RegisterSchemaInput = {
   name: string
   email: string
   password: string
   confirmPassword: string
 }
+
+type Data = null
+type RegisterResponsePromise = ResponsePromise<Data>
 
 /* ========================================================================
 
@@ -24,108 +61,135 @@ type RequestData = {
 export const register = createServerFn({
   method: 'POST'
 })
-  .inputValidator((input: RequestData) => input)
+  .inputValidator((input: RegisterSchemaInput) => input)
 
-  .handler(async (ctx) => {
+  .handler(async (ctx): RegisterResponsePromise => {
     // await sleep(1000)
     const { data } = ctx
-    const { name, email, password, confirmPassword } = data
+
+    const dataPassword =
+      data && typeof data === 'object' && 'password' in data
+        ? data.password
+        : undefined
+
+    /* ======================
+        getRegisterSchema()
+    ====================== */
+    // This can't be defined at the top level of the file. It needs to be
+    // inside of the createServerFn because it has logic that runs on the server.
+
+    const getRegisterSchema = (password: unknown) => {
+      const RegisterSchema = z.object({
+        name: z.string(),
+        email: z
+
+          // Could also use z.regex()
+          // const regex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
+          .email()
+
+          .refine(
+            async (email) => {
+              ///////////////////////////////////////////////////////////////////////////
+              //
+              // ⚠️ Case Sensitivity: https://www.prisma.io/docs/orm/prisma-client/queries/case-sensitivity
+              //
+              // Note: if email is 'DAVID@example.com' but 'david@example.com' alread exists, Prisma will
+              // throw a PrismaClientKnownRequestError because the uniqueness constraint will have failed.
+              // In other words, uniqueness is not case insensitive. Similarly, when querying for a user by
+              // email it will also be case insensitive by default.
+              //
+              // Apparently, Prisma queries are case-insensitive by default.
+              // While Prisma's query language itself is case-sensitive by default, the underlying database
+              // and its configuration can sometimes lead to case-insensitive behavior for certain operations.
+              // Thus if you did this in MySQL workbench:
+              //
+              //   SELECT * from users WHERE email = "DAVID@example.com";
+              //
+              // You would likely get back the record with email 'david@example.com'.
+              // In the case of MySQL, the case sensitivity of string comparisons is determined by the collation
+              // of the column. Collation is a set of rules that define how character data is sorted and compared.
+              //
+              // While we can rely on that default behavior, it's still a good practice to explicitly specify
+              // case-insensitivity at the level of Prisma. That said, findUnique() doesn't support the `mode`
+              // option, so you'll need to use findFirst() instead.
+              //
+              //  const existingUser = await prisma.user.findUnique({ where: { email }  })
+              //
+              ///////////////////////////////////////////////////////////////////////////
+
+              const [existingUser] = await db
+                .select({ id: UserTable.id })
+                .from(UserTable)
+
+                .where(eq(sql`lower(${UserTable.email})`, email.toLowerCase()))
+                .limit(1)
+
+              return !existingUser
+            },
+
+            // 'Invalid email address' is the same as the default
+            // error message for .email()
+            { error: 'Invalid email address' }
+          ),
+
+        password: PasswordSchema,
+        confirmPassword: z.string().refine(
+          (value) => {
+            return value === password
+          },
+          {
+            error: 'The passwords must match. (Server)'
+          }
+        )
+      })
+
+      ///////////////////////////////////////////////////////////////////////////
+      //
+      // ⚠️ Gotcha: Having .refine() on the outside of the z.object() seems
+      // like a good idea because it allows you to access both values.password
+      // and values.confirmPassword. However, it will short-circuit
+      // if there are any errors in z.object().
+      //
+      //   .refine((values) => values.password === values.confirmPassword, {
+      //     message: 'Passwords do not match.',
+      //     path: ['confirmPassword'] // attaches the error to this field
+      //   })
+      //
+      // Solution: wrap the Zod schema in a functon and pass it the password from the
+      // outside, or create a secondary schema just for the password confirmation.
+      //
+      ///////////////////////////////////////////////////////////////////////////
+
+      return RegisterSchema
+    }
 
     try {
-      // await sleep(1500)
       /* ======================
             Validation
       ====================== */
+      // Inside try/catch because RegisterSchema makes a DB call.
 
-      const formErrors: Record<string, string> = {}
+      const RegisterSchema = getRegisterSchema(dataPassword)
+      const validationResult = await RegisterSchema.safeParseAsync(data)
 
-      if (!name || (typeof name === 'string' && name.trim() === '')) {
-        formErrors.firstName = 'A full name is required. (Server)'
-      }
+      if (!validationResult.success) {
+        const errors = formatZodErrors(validationResult.error)
 
-      // if (!firstName || (typeof firstName === 'string' && firstName.trim() === '')) {
-      //   formErrors.firstName = 'A first name is required. (Server)'
-      // }
-
-      // if (!lastName || (typeof lastName === 'string' && lastName.trim() === '')) {
-      //   formErrors.lastName = 'A last name is required. (Server)'
-      // }
-
-      const regex =
-        /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
-
-      if (!email || (typeof email === 'string' && email.trim() === '')) {
-        formErrors.email = 'An email is required. (Server)'
-      } else if (!regex.test(email)) {
-        formErrors.email = 'A valid email is required. (Server)'
-      } else {
-        ///////////////////////////////////////////////////////////////////////////
-        //
-        // ⚠️ Case Sensitivity: https://www.prisma.io/docs/orm/prisma-client/queries/case-sensitivity
-        //
-        // Note: if email is 'DAVID@example.com' but 'david@example.com' alread exists, Prisma will
-        // throw a PrismaClientKnownRequestError because the uniqueness constraint will have failed.
-        // In other words, uniqueness is not case insensitive. Similarly, when querying for a user by
-        // email it will also be case insensitive by default.
-        //
-        // Apparently, Prisma queries are case-insensitive by default.
-        // While Prisma's query language itself is case-sensitive by default, the underlying database
-        // and its configuration can sometimes lead to case-insensitive behavior for certain operations.
-        // Thus if you did this in MySQL workbench:
-        //
-        //   SELECT * from users WHERE email = "DAVID@example.com";
-        //
-        // You would likely get back the record with email 'david@example.com'.
-        // In the case of MySQL, the case sensitivity of string comparisons is determined by the collation
-        // of the column. Collation is a set of rules that define how character data is sorted and compared.
-        //
-        // While we can rely on that default behavior, it's still a good practice to explicitly specify
-        // case-insensitivity at the level of Prisma. That said, findUnique() doesn't support the `mode`
-        // option, so you'll need to use findFirst() instead.
-        //
-        //  const existingUser = await prisma.user.findUnique({ where: { email }  })
-        //
-        ///////////////////////////////////////////////////////////////////////////
-
-        const [existingUser] = await db
-          .select(safeUserFields)
-          .from(UserTable)
-          // Note: BetterAuth will also normalize to lowercase when registering users.
-          .where(eq(sql`lower(${UserTable.email})`, email.toLowerCase()))
-          .limit(1)
-
-        if (existingUser) {
-          // ❌ formErrors.email = 'A user with that email already exists. (Server)' // 409 Conflict error
-          formErrors.email = 'Invalid email.'
-        }
-      }
-
-      if (typeof password !== 'string' || password.trim().length < 5) {
-        formErrors.password =
-          'A password must be at least 5 characters. (Server)'
-      }
-
-      if (!confirmPassword || typeof confirmPassword !== 'string') {
-        formErrors.confirmPassword =
-          'The confirm password field is required. (Server)'
-      } else if (password !== confirmPassword) {
-        formErrors.confirmPassword = 'The passwords must match. (Server)'
-      }
-
-      if (Object.keys(formErrors).length > 0) {
         return {
-          code: 'BAD_REQUEST',
+          code: codes.BAD_REQUEST,
           data: null,
-          errors: formErrors,
-          message: 'The form data is invalid.',
+          errors: errors,
+          message: 'The data failed validation.',
           success: false
         }
       }
 
+      // Always use sanitized data from Zod.
+      const { name, email, password } = validationResult.data
+
       /* ======================
             Create User
       ====================== */
-
       ///////////////////////////////////////////////////////////////////////////
       //
       // The result will be an object that looks like this:

@@ -34,7 +34,7 @@ export const RegisterForm = () => {
   ) => {
     e.preventDefault()
 
-    //# Add better validation here...
+    //# Add validation here that mirrors what is actually in register.ts server function.
 
     //   if (
     //     !firstName ||

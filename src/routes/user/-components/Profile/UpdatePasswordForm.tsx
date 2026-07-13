@@ -44,6 +44,55 @@ export const UpdatePasswordForm = ({
     e.preventDefault()
 
     //# Add better validation here, including password confirmation match.
+    //# The basic password schema is as follows. On top of that,
+    // const PasswordSchema = z
+    //   .string()
+    //   .min(1, { error: 'Password is required' })
+    //   .min(8, { error: 'Password must be at least 8 characters long' })
+    //   .regex(/[a-zA-Z]/, {
+    //     message: 'Password must contain at least one letter'
+    //   })
+    //   .regex(/[0-9]/, { message: 'Password must contain at least one number' })
+    //   // Matches "anything that isn't a letter or digit"
+    //   .regex(/[^a-zA-Z0-9]/, {
+    //     message: 'Password must contain at least one special character.'
+    //   })
+
+    //# On top of that, there should be logic for checking if the passwords match similar to this:
+    // const getLinkCredentialsSchema = (password: unknown) => {
+    //   const LinkCredentialsSchema = z.object({
+    //     password: z.string().min(5, {
+    //       message: 'A password must be at least 5 characters. (Server)'
+    //     }),
+    //     confirmPassword: z.string().refine(
+    //       (value) => {
+    //         return value === password
+    //       },
+    //       {
+    //         error: 'The passwords must match. (Server)'
+    //       }
+    //     )
+    //   })
+    //   ///////////////////////////////////////////////////////////////////////////
+    //   //
+    //   // ⚠️ Gotcha: Having .refine() on the outside of the z.object() seems
+    //   // like a good idea because it allows you to access both values.password
+    //   // and values.confirmPassword. However, it will short-circuit
+    //   // if there are any errors in z.object().
+    //   //
+    //   //   .refine((values) => values.password === values.confirmPassword, {
+    //   //     message: 'Passwords do not match.',
+    //   //     path: ['confirmPassword'] // attaches the error to this field
+    //   //   })
+    //   //
+    //   // Solution: wrap the Zod schema in a functon and pass it the password from the
+    //   // outside, or create a secondary schema just for the password confirmation.
+    //   //
+    //   ///////////////////////////////////////////////////////////////////////////
+
+    //   return LinkCredentialsSchema
+    // }
+
     if (!newPassword || !currentPassword || newPassword.length < 8) {
       setPending(false)
       setCurrentPassword('')
@@ -80,8 +129,13 @@ export const UpdatePasswordForm = ({
         //     statusText: 'BAD_REQUEST'
         //   }
         //
+        // An error here could also be due to any custom logic we have in auth.ts
+        // for hooks.before + '/change-password'.
+        //
         ///////////////////////////////////////////////////////////////////////////
 
+        //! Temporary...
+        console.log('error from UpdatePasswordForm', error)
         toast.error('Unable to update password.')
         return
       }

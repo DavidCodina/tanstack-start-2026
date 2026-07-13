@@ -5,12 +5,25 @@ import {
   createAuthMiddleware /*, isAPIError */
 } from 'better-auth/api'
 import { drizzleAdapter } from '@better-auth/drizzle-adapter'
+import { z } from 'zod'
+
 import { sendVerificationEmail } from './sendVerificationEmail'
 import { sendResetPasswordEmail } from './sendResetPasswordEmail'
 import { sendDeleteAccountVerification } from './sendDeleteAccountVerification'
 import { db } from '@/db'
 
 import * as schema from '@/db/schema'
+
+const PasswordSchema = z
+  .string()
+  .min(1, { error: 'Password is required' })
+  .min(8, { error: 'Password must be at least 8 characters long' })
+  .regex(/[a-zA-Z]/, { message: 'Password must contain at least one letter' })
+  .regex(/[0-9]/, { message: 'Password must contain at least one number' })
+  // Matches "anything that isn't a letter or digit"
+  .regex(/[^a-zA-Z0-9]/, {
+    message: 'Password must contain at least one special character.'
+  })
 
 /* ========================================================================
 
@@ -260,7 +273,7 @@ export const auth = betterAuth({
     enabled: true,
     autoSignIn: false,
     maxPasswordLength: 128,
-    minPasswordLength: 5,
+    // minPasswordLength: 5,
 
     // If you try to log in with an unverified email, you'll get an "Email not verified" error.
     // {message: 'Email not verified', code: 'EMAIL_NOT_VERIFIED', status: 403, statusText: 'FORBIDDEN'}
@@ -376,13 +389,13 @@ export const auth = betterAuth({
     before: createAuthMiddleware(
       // https://better-auth.com/docs/concepts/hooks#ctx
       async (ctx) => {
-        console.log({
-          path: ctx.path,
-          body: ctx.body,
-          session: ctx.context.session,
-          newSession: ctx.context.newSession
-          // context: ctx.context
-        })
+        // console.log({
+        //   path: ctx.path,
+        //   body: ctx.body,
+        //   session: ctx.context.session,
+        //   newSession: ctx.context.newSession
+        //   // context: ctx.context
+        // })
 
         ///////////////////////////////////////////////////////////////////////////
         //
@@ -429,11 +442,56 @@ export const auth = betterAuth({
             // getting a little hacky. Thus, it's not greate for itemized form errors, etc.
             // However, in most cases, we don't want that anyways.
             //
+            /////////////////////////
+            //
+            // The following APIerror is checked within the catch block of register.ts as follows:
+            //
+            //   if (err instanceof APIError) {
+            //     if (err.body?.code === 'EMAIL_BLACKLISTED') {
+            //       return { code: err.body.code, data: null, message: 'The email is blacklisted.', success: false }
+            //     }
+            //   }
+            //
             ///////////////////////////////////////////////////////////////////////////
 
             throw new APIError('BAD_REQUEST', {
               code: 'EMAIL_BLACKLISTED',
               message: 'This email is blacklisted.'
+            })
+          }
+        }
+
+        ///////////////////////////////////////////////////////////////////////////
+        //
+        // Suppose we wanted to enforce password validation rules when a user
+        // submits a password. Currently, we're using a server function for when a
+        // user registers, so we can handle the initial validation there.
+        //
+        // However, we also have an UpdatePasswordForm and ResetPasswordForm that allow
+        // the user to modify their current password using the authClient. In those cases,
+        //  we need some way to intercept and enforce password validation.
+        //
+        // Needless to say Zod validation for RegisterForm, UpdatePaswordForm, ResetPasswordForm,
+        // and the register server function should all have fidelity.
+        //
+        ///////////////////////////////////////////////////////////////////////////
+        if (
+          ctx.path === '/sign-up/email' ||
+          ctx.path === '/reset-password' ||
+          ctx.path === '/change-password' // i.e., authClient.changePassword()
+        ) {
+          const password = ctx.body.password || ctx.body.newPassword
+
+          const { /* data, */ error } = PasswordSchema.safeParse(password)
+
+          if (error) {
+            // Obviously, 'PASSWORD_INVALID' is not very descriptive. This error
+            // is intended to be a failsafe to prevent an invalid password, but
+            // ultimately, the client-side code should be performing similar validation
+            // preemptively, that actually provides valuable feedback to the user.
+            throw new APIError('BAD_REQUEST', {
+              code: 'PASSWORD_INVALID',
+              message: 'The password is invalid.'
             })
           }
         }

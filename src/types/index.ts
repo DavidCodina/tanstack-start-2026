@@ -105,13 +105,14 @@ export type CreateUserData = Omit<
 
 ///////////////////////////////////////////////////////////////////////////
 //
-// GiraffeReactor at 1:53:30 does this:
+// GiraffeReactor does this at 1:53:30:
 // https://www.youtube.com/watch?v=N4meIif7Jtc
 //
 // BetterAuthErrorCode is an example of the error found on the error.body?.code property of
 // instances of APIError. However, even though there are known auth.$ERROR_CODES, the actual
 // type of error.body?.code on the APIError is: string | undefined;
 // Presumably, this was loosely typed to allow for developers to add their own error codes
+// - like our custom "EMAIL_BLACKLISTED" code.
 //
 // "ACCOUNT_NOT_FOUND", "ASYNC_VALIDATION_NOT_SUPPORTED", "BODY_MUST_BE_AN_OBJECT",
 // "CALLBACK_URL_REQUIRED", "CHANGE_EMAIL_DISABLED", "CREDENTIAL_ACCOUNT_NOT_FOUND",
@@ -120,22 +121,10 @@ export type CreateUserData = Omit<
 // "FAILED_TO_CREATE_VERIFICATION", "FAILED_TO_GET_SESSION", "FAILED_TO_GET_USER_INFO",
 // "FAILED_TO_UNLINK_LAST_ACCOUNT", "FAILED_TO_UPDATE_USER", ...
 //
+///////////////////////////////////////////////////////////////////////////
 
-export type BetterAuthErrorCode = keyof typeof auth.$ERROR_CODES
-// const code1: BetterAuthErrorCode = ""
-
-// const test = (error: APIError) => {
-//   const code = error.body?.code
-
-//   // if (
-//   //   error instanceof APIError &&
-//   //   error.body &&
-//   //   typeof error.body.code === 'string'
-//   // ) {
-//   //   if (error.body.code === "") {
-//   //   }
-//   // }
-// }
+export type BetterAuthErrorCode =
+  keyof typeof auth.$ERROR_CODES | 'EMAIL_BLACKLISTED' | 'PASSWORD_INVALID'
 
 ///////////////////////////////////////////////////////////////////////////
 //
