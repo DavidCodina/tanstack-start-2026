@@ -178,7 +178,7 @@ export const register = createServerFn({
       if (err instanceof APIError) {
         ///////////////////////////////////////////////////////////////////////////
         //
-        // Checking here might be useful especially if you're using hooks
+        // Checking for instanceof APIError is especially if you're using hooks
         // in auth.ts to throw a custom error. For example:
         //
         //   hooks: {
@@ -186,7 +186,7 @@ export const register = createServerFn({
         //       if (ctx.path === '/sign-up/email') {
         //         if (ctx.body.email === 'david@example.com') {
         //           throw new APIError('BAD_REQUEST', {
-        //             code: 'EMAIL_BLACKLISTED', // type string
+        //             code: 'EMAIL_BLACKLISTED',
         //             message: 'This email is blacklisted.'
         //           })
         //         }
@@ -194,16 +194,18 @@ export const register = createServerFn({
         //     })
         //   }
         //
-        // Then return our own custom logic here based on that. That said, since we're
-        // already on the server, we actually don't need a hook for blacklisting, validation, etc.
+        // Then respond accordingly. That said, since we're already on the server, we actually
+        // don't need a hook for blacklisting, validation, etc.
         //
         ///////////////////////////////////////////////////////////////////////////
 
-        return {
-          code: 'EMAIL_BLACKLISTED',
-          data: null,
-          message: 'The email is blacklisted.',
-          success: false
+        if (err.body?.code === 'EMAIL_BLACKLISTED') {
+          return {
+            code: err.body.code,
+            data: null,
+            message: 'The email is blacklisted.',
+            success: false
+          }
         }
       }
 

@@ -106,9 +106,7 @@ export const RegisterForm = () => {
         }
 
         if (res.code === 'EMAIL_BLACKLISTED') {
-          toast.error('This email is blacklisted.', {
-            // duration: Infinity
-          })
+          toast.error('This email is blacklisted.', { duration: Infinity })
           return
         }
 

@@ -5,6 +5,8 @@ import type { UseQueryResult } from '@tanstack/react-query'
 import type { FileRouteTypes } from '@/routeTree.gen'
 import type { CustomError, codes } from '@/utils'
 
+import type { APIError } from 'better-auth/api'
+
 /* ========================================================================
 
 ======================================================================== */
@@ -100,3 +102,67 @@ export type CreateUserData = Omit<
   typeof UserTable.$inferInsert,
   'id' | 'createdAt' | 'updatedAt' | 'role'
 >
+
+///////////////////////////////////////////////////////////////////////////
+//
+// GiraffeReactor at 1:53:30 does this:
+// https://www.youtube.com/watch?v=N4meIif7Jtc
+//
+// BetterAuthErrorCode is an example of the error found on the error.body?.code property of
+// instances of APIError. However, even though there are known auth.$ERROR_CODES, the actual
+// type of error.body?.code on the APIError is: string | undefined;
+// Presumably, this was loosely typed to allow for developers to add their own error codes
+//
+// "ACCOUNT_NOT_FOUND", "ASYNC_VALIDATION_NOT_SUPPORTED", "BODY_MUST_BE_AN_OBJECT",
+// "CALLBACK_URL_REQUIRED", "CHANGE_EMAIL_DISABLED", "CREDENTIAL_ACCOUNT_NOT_FOUND",
+// "CROSS_SITE_NAVIGATION_LOGIN_BLOCKED", "EMAIL_ALREADY_VERIFIED", "EMAIL_CAN_NOT_BE_UPDATED",
+// "EMAIL_MISMATCH", "EMAIL_NOT_VERIFIED", "FAILED_TO_CREATE_SESSION", "FAILED_TO_CREATE_USER",
+// "FAILED_TO_CREATE_VERIFICATION", "FAILED_TO_GET_SESSION", "FAILED_TO_GET_USER_INFO",
+// "FAILED_TO_UNLINK_LAST_ACCOUNT", "FAILED_TO_UPDATE_USER", ...
+//
+
+export type BetterAuthErrorCode = keyof typeof auth.$ERROR_CODES
+// const code1: BetterAuthErrorCode = ""
+
+// const test = (error: APIError) => {
+//   const code = error.body?.code
+
+//   // if (
+//   //   error instanceof APIError &&
+//   //   error.body &&
+//   //   typeof error.body.code === 'string'
+//   // ) {
+//   //   if (error.body.code === "") {
+//   //   }
+//   // }
+// }
+
+///////////////////////////////////////////////////////////////////////////
+//
+// BetterAuthStatusCode is an example of the error code that can be passed into APIError constructor:
+//
+//   throw new APIError('USER_ALREADY_EXISTS', {
+//     code: 'EMAIL_BLACKLISTED',
+//     message: 'This email is blacklisted.'
+//   })
+//
+// It also shows up as the error.status on instances of APIError:
+//
+//   if (error instanceof APIError) {
+//     if (error.status === 'ACCEPTED') {
+//     }
+//   }
+//
+// "ACCEPTED", "BAD_GATEWAY", "BAD_REQUEST", "CONFLICT", "CREATED", "EXPECTATION_FAILED", "FAILED_DEPENDENCY",
+// "FORBIDDEN", "FOUND", "GATEWAY_TIMEOUT", "GONE", "HTTP_VERSION_NOT_SUPPORTED", "I'M_A_TEAPOT", "INSUFFICIENT_STORAGE",
+// "INTERNAL_SERVER_ERROR", "LENGTH_REQUIRED", "LOCKED", "LOOP_DETECTED", "METHOD_NOT_ALLOWED", "MISDIRECTED_REQUEST",
+// "MOVED_PERMANENTLY", "MULTIPLE_CHOICES", "NETWORK_AUTHENTICATION_REQUIRED", "NOT_ACCEPTABLE", "NOT_EXTENDED",
+// "NOT_FOUND", "NOT_IMPLEMENTED", "NOT_MODIFIED", "NO_CONTENT", "OK", "PAYLOAD_TOO_LARGE", "PAYMENT_REQUIRED",
+// "PRECONDITION_FAILED", "PRECONDITION_REQUIRED", "PROXY_AUTHENTICATION_REQUIRED", "RANGE_NOT_SATISFIABLE",
+// "REQUEST_HEADER_FIELDS_TOO_LARGE", "REQUEST_TIMEOUT", "SEE_OTHER", "SERVICE_UNAVAILABLE", "TEMPORARY_REDIRECT",
+// "TOO_EARLY", "TOO_MANY_REQUESTS", "UNAUTHORIZED", "UNAVAILABLE_FOR_LEGAL_REASONS", "UNPROCESSABLE_ENTITY",
+// "UNSUPPORTED_MEDIA_TYPE", "UPGRADE_REQUIRED", "URI_TOO_LONG", "VARIANT_ALSO_NEGOTIATES"
+//
+///////////////////////////////////////////////////////////////////////////
+
+export type BetterAuthStatusCode = ConstructorParameters<typeof APIError>[0]

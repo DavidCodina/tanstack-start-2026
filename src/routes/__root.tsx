@@ -96,6 +96,28 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 
     const isAdminRoute = pathname.startsWith(ADMIN_PREFIX)
 
+    ///////////////////////////////////////////////////////////////////////////
+    //
+    // Less secure alternative:
+    //
+    //   const sessionCookie = getSessionCookie(request);
+    //   const isLoggedIn = !!sessionCookie
+    //
+    // getSessionCookie() just verifies the cookie's HMAC signature; it never touches the database.
+    // Trade-off: Cookie-only checks are faster (no database query) but it costs you is staleness:
+    // if you revoke a session, ban a user, or force a logout server-side, a getSessionCookie() check
+    // has no way to know that — it'll happily accept the cookie until it expires naturally.
+    // Better Auth's own docs are blunt about this — they literally flag getSessionCookie() with a
+    //
+    //   THIS IS NOT SECURE!
+    //
+    // comment and say it should only be used for optimistic redirects (UX), never as the actual authorization
+    // check, precisely because it can't detect revocation.
+    //
+    // The performance gain is minimal compared to the security risk for most applications.
+    // To offset the constant DB queries, one can use session.cookieCache in auth.ts.
+    //
+    ///////////////////////////////////////////////////////////////////////////
     const session = await getServerSession()
     const isLoggedIn = !!session
 

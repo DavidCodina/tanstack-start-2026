@@ -1,6 +1,9 @@
 import { betterAuth } from 'better-auth'
 import { tanstackStartCookies } from 'better-auth/tanstack-start'
-// import { APIError, createAuthMiddleware } from 'better-auth/api'
+import {
+  APIError,
+  createAuthMiddleware /*, isAPIError */
+} from 'better-auth/api'
 import { drizzleAdapter } from '@better-auth/drizzle-adapter'
 import { sendVerificationEmail } from './sendVerificationEmail'
 import { sendResetPasswordEmail } from './sendResetPasswordEmail'
@@ -8,7 +11,6 @@ import { sendDeleteAccountVerification } from './sendDeleteAccountVerification'
 import { db } from '@/db'
 
 import * as schema from '@/db/schema'
-// type StatusCode = ConstructorParameters<typeof APIError>[0]
 
 /* ========================================================================
 
@@ -154,6 +156,10 @@ export const auth = betterAuth({
   session: {
     //# Test this to see what happens after 15s.
     // expiresIn: 7 * 24 * 60 * 60 // 7 days
+    // cookieCache: {
+    //   enabled: true,
+    //   maxAge: 60 * 2 // e.g. 2 minutes
+    // }
   },
 
   // Note: account linking is enabled by default in Better Auth, and OAuth providers like Google and GitHub are trusted by default.
@@ -256,9 +262,6 @@ export const auth = betterAuth({
     maxPasswordLength: 128,
     minPasswordLength: 5,
 
-    //# Review Coding In Flow hooks section at 1:19:00 for custom password validation:
-    //# https://www.youtube.com/watch?v=w5Emwt3nuV0
-
     // If you try to log in with an unverified email, you'll get an "Email not verified" error.
     // {message: 'Email not verified', code: 'EMAIL_NOT_VERIFIED', status: 403, statusText: 'FORBIDDEN'}
     requireEmailVerification: true,
@@ -339,6 +342,103 @@ export const auth = betterAuth({
       clientId: process.env.LINKEDIN_CLIENT_ID as string,
       clientSecret: process.env.LINKEDIN_CLIENT_SECRET as string
     }
+  },
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  // https://better-auth.com/docs/concepts/hooks
+  // The before hook can be used for blacklisting, server-side validation, etc.
+
+  // ✅ Coding In Flow at 1:19:00 : https://www.youtube.com/watch?v=w5Emwt3nuV0
+  //
+  // ✅  WDS at 1:41:00           : https://www.youtube.com/watch?v=WPiqNDapQrk
+  //     He uses `after` to send a welcom email after the user signs up.
+  //
+  // ✅ TomDoesTech at 8:15      : https://www.youtube.com/watch?v=RKqHrE0KyeE
+  //    He also gives a welcome email example.
+  //
+  // ❎ GiraffeReactor at 1:58:00 : https://www.youtube.com/watch?v=N4meIif7Jtc
+  //
+  // ❎ Syntax at 11:40, 13:15 uses a hook for part of password reset.
+  // ❎ Syntax at 15:40,
+  //
+  ///////////////////////////////////////////////////////////////////////////
+  hooks: {
+    ///////////////////////////////////////////////////////////////////////////
+    //
+    // Path for email registration: '/sign-up/email',
+    // Path for email login Path:   '/sign-in/email'
+    // Path for sign out:           '/sign-out'
+    // Path social sign in:         '/sign-in/social'
+    // Check body.provider for 'google', 'github', etc.
+    //
+    ///////////////////////////////////////////////////////////////////////////
+    before: createAuthMiddleware(
+      // https://better-auth.com/docs/concepts/hooks#ctx
+      async (ctx) => {
+        console.log({
+          path: ctx.path,
+          body: ctx.body,
+          session: ctx.context.session,
+          newSession: ctx.context.newSession
+          // context: ctx.context
+        })
+
+        ///////////////////////////////////////////////////////////////////////////
+        //
+        // Returning nothing (or just return) → the hook is observation-only, and the request continues as normal.
+        // If you want to modify the return, then return { context: { ... } } as follows:
+        //
+        // if (ctx.path === '/sign-up/email') {
+        //   return {
+        //     context: {
+        //       ...ctx,
+        //       body: {
+        //         ...ctx.body,
+        //         name: 'John Doe'
+        //       }
+        //     }
+        //   }
+        // }
+        //
+        ///////////////////////////////////////////////////////////////////////////
+
+        if (ctx.path === '/sign-up/email') {
+          if (ctx.body.email === 'blacklisted@example.com') {
+            ///////////////////////////////////////////////////////////////////////////
+            //
+            // https://better-auth.com/docs/concepts/hooks#json-responses
+            // Using ctx.json() doesn't quite work how you may expect.
+            //
+            //   return ctx.json(
+            //     { code: 'BLACKLISTED_EMAIL', data: null,  message: 'This email is blacklisted.', success: false }
+            //   )
+            //
+            // If you use this on client:
+            //
+            //  const { data, error } = await authClient.signUp.email( ... )
+            //
+            // Then the return object will be a serialized string on the data property.
+            // Conversely, when you use this on the server:
+            //
+            //    const result = await auth.api.signUpEmail( ... )
+            //
+            // The result will be the expected object - instead of { token, user }
+            // While this approach works well enough for simple use cases, it still
+            // doesn't allow you to send back more complex objects without things
+            // getting a little hacky. Thus, it's not greate for itemized form errors, etc.
+            // However, in most cases, we don't want that anyways.
+            //
+            ///////////////////////////////////////////////////////////////////////////
+
+            throw new APIError('BAD_REQUEST', {
+              code: 'EMAIL_BLACKLISTED',
+              message: 'This email is blacklisted.'
+            })
+          }
+        }
+      }
+    )
   },
 
   advanced: {
