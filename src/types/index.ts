@@ -124,7 +124,11 @@ export type CreateUserData = Omit<
 ///////////////////////////////////////////////////////////////////////////
 
 export type BetterAuthErrorCode =
-  keyof typeof auth.$ERROR_CODES | 'EMAIL_BLACKLISTED' | 'PASSWORD_INVALID'
+  | keyof typeof auth.$ERROR_CODES
+  | 'EMAIL_BLACKLISTED'
+  | 'PASSWORD_INVALID'
+  | 'LOGIN_FAILED'
+  | 'REGISTRATION_FAILED'
 
 ///////////////////////////////////////////////////////////////////////////
 //

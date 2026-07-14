@@ -8,7 +8,10 @@ import type { ResponsePromise } from '@/types'
 import { db } from '@/db'
 import { UserTable } from '@/db/schema'
 import { auth } from '@/lib/auth'
-import { codes, formatZodErrors } from '@/utils'
+import {
+  codes
+  // formatZodErrors
+} from '@/utils'
 
 /* ======================
       Zod Schema
@@ -125,8 +128,7 @@ export const register = createServerFn({
               return !existingUser
             },
 
-            // 'Invalid email address' is the same as the default
-            // error message for .email()
+            // 'Invalid email address' is the same as the default error message for .email()
             { error: 'Invalid email address' }
           ),
 
@@ -178,12 +180,17 @@ export const register = createServerFn({
       const validationResult = await RegisterSchema.safeParseAsync(data)
 
       if (!validationResult.success) {
-        const errors = formatZodErrors(validationResult.error)
+        // ❌ const errors = formatZodErrors(validationResult.error)
 
         return {
-          code: codes.BAD_REQUEST,
+          code: codes.REGISTRATION_FAILED,
           data: null,
-          errors: errors,
+          // Even sending back the errors here is exposing too much information.
+          // At this point, the end user doesn't need to know anything except that
+          // it didn't work. Otherwise, a malicious user could infer WHAT didn't work
+          // simply by looking at which errors were returned, regardless of what the
+          // specific message says.
+          // ❌ errors: errors,
           message: 'The data failed validation.',
           success: false
         }

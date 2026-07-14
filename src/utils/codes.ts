@@ -18,8 +18,11 @@ export const codes = {
 
   FORM_ERRORS: 'FORM_ERRORS',
 
-  /** Use this as an opaque error code for all failed login attempts. */
-  INVALID_CREDENTIALS: 'INVALID_CREDENTIALS',
+  LOGIN_FAILED: 'LOGIN_FAILED', // Previously: INVALID_CREDENTIALS: 'INVALID_CREDENTIALS',
+
+  REGISTRATION_FAILED: 'REGISTRATION_FAILED',
+
+  VALIDATION_ERROR: 'VALIDATION_ERROR',
 
   /** Use this when authentication fails. */
   UNAUTHORIZED: 'UNAUTHORIZED',

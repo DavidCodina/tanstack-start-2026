@@ -2,7 +2,8 @@ import { betterAuth } from 'better-auth'
 import { tanstackStartCookies } from 'better-auth/tanstack-start'
 import {
   APIError,
-  createAuthMiddleware /*, isAPIError */
+  createAuthMiddleware
+  // isAPIError
 } from 'better-auth/api'
 import { drizzleAdapter } from '@better-auth/drizzle-adapter'
 import { z } from 'zod'
@@ -18,7 +19,10 @@ const PasswordSchema = z
   .string()
   .min(1, { error: 'Password is required' })
   .min(8, { error: 'Password must be at least 8 characters long' })
-  .regex(/[a-zA-Z]/, { message: 'Password must contain at least one letter' })
+  // Matches "anything that isn't a letter or digit"
+  .regex(/[a-zA-Z]/, {
+    message: 'Password must contain at least one letter'
+  })
   .regex(/[0-9]/, { message: 'Password must contain at least one number' })
   // Matches "anything that isn't a letter or digit"
   .regex(/[^a-zA-Z0-9]/, {
@@ -471,8 +475,16 @@ export const auth = betterAuth({
         // the user to modify their current password using the authClient. In those cases,
         //  we need some way to intercept and enforce password validation.
         //
-        // Needless to say, there should be fidelity in Zod validation between RegisterForm,
-        // UpdatePaswordForm, ResetPasswordForm, and the register server function.
+        // Needless to say, there should be fidelity in Zod validation here and between
+        // RegisterForm, UpdatePaswordForm, ResetPasswordForm, and the register server function.
+        //
+        /////////////////////////
+        //
+        // Is It Redundant?
+        //
+        // No. It's actually necessary as an added layer of validation to prevent anyone
+        // who might try to circumvent the normal channels by calling the Better Auth API
+        // endpoints directly.
         //
         ///////////////////////////////////////////////////////////////////////////
         if (

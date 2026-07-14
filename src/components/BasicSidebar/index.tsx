@@ -15,6 +15,7 @@ import {
   StickyNote,
   UserCog,
   UserIcon,
+  UserPlus,
   X
 } from 'lucide-react'
 import { AdminOnly, SignedIn, SignedOut, ThemeToggle } from '@/components'
@@ -414,6 +415,18 @@ export const BasicSidebar = () => {
           >
             <LogIn size={20} />
             <span className='font-medium'>Sign In</span>
+          </Link>
+
+          <Link
+            to='/register'
+            onClick={() => setIsOpen(false)}
+            className={linkClassName}
+            activeProps={{
+              className: activeClassName
+            }}
+          >
+            <UserPlus size={20} />
+            <span className='font-medium'>Sign Up</span>
           </Link>
         </SignedOut>
       </nav>
