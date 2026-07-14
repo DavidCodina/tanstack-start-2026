@@ -12,7 +12,7 @@ import { auth } from '@/lib/auth'
 import { codes, formatZodErrors } from '@/utils'
 
 /* ======================
-     
+      Zod Schema
 ====================== */
 
 const PasswordSchema = z
@@ -80,13 +80,12 @@ export const register = createServerFn({
 
     const getRegisterSchema = (password: unknown) => {
       const RegisterSchema = z.object({
-        name: z.string(),
+        name: z.string().min(1, { error: 'Name is required' }),
         email: z
 
           // Could also use z.regex()
           // const regex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
           .email()
-
           .refine(
             async (email) => {
               ///////////////////////////////////////////////////////////////////////////
@@ -133,14 +132,19 @@ export const register = createServerFn({
           ),
 
         password: PasswordSchema,
-        confirmPassword: z.string().refine(
-          (value) => {
-            return value === password
-          },
-          {
-            error: 'The passwords must match. (Server)'
-          }
-        )
+        confirmPassword: z
+          .string()
+          .min(8, {
+            error: 'Must be at least 8 characters long'
+          })
+          .refine(
+            (value) => {
+              return value === password
+            },
+            {
+              error: 'The passwords must match. (Server)'
+            }
+          )
       })
 
       ///////////////////////////////////////////////////////////////////////////

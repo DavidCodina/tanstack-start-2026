@@ -471,8 +471,8 @@ export const auth = betterAuth({
         // the user to modify their current password using the authClient. In those cases,
         //  we need some way to intercept and enforce password validation.
         //
-        // Needless to say Zod validation for RegisterForm, UpdatePaswordForm, ResetPasswordForm,
-        // and the register server function should all have fidelity.
+        // Needless to say, there should be fidelity in Zod validation between RegisterForm,
+        // UpdatePaswordForm, ResetPasswordForm, and the register server function.
         //
         ///////////////////////////////////////////////////////////////////////////
         if (
