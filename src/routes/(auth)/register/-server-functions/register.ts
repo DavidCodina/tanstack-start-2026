@@ -1,7 +1,6 @@
 import { createServerFn } from '@tanstack/react-start'
 import { eq, sql } from 'drizzle-orm'
 import { z } from 'zod'
-
 import { APIError } from 'better-auth/api'
 
 import type { ResponsePromise } from '@/types'
@@ -151,8 +150,8 @@ export const register = createServerFn({
       //
       // ⚠️ Gotcha: Having .refine() on the outside of the z.object() seems
       // like a good idea because it allows you to access both values.password
-      // and values.confirmPassword. However, it will short-circuit
-      // if there are any errors in z.object().
+      // and values.confirmPassword. However, it will short-circuit if there
+      // are any errors in z.object().
       //
       //   .refine((values) => values.password === values.confirmPassword, {
       //     message: 'Passwords do not match.',
@@ -160,7 +159,9 @@ export const register = createServerFn({
       //   })
       //
       // Solution: wrap the Zod schema in a functon and pass it the password from the
-      // outside, or create a secondary schema just for the password confirmation.
+      // outside. Then use .refine() directly on the confirmPassword Zod validation definition.
+      //
+      // Alternatively, create a secondary schema just for the password confirmation.
       //
       ///////////////////////////////////////////////////////////////////////////
 
