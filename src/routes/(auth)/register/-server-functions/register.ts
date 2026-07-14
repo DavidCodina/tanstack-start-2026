@@ -191,7 +191,7 @@ export const register = createServerFn({
           // simply by looking at which errors were returned, regardless of what the
           // specific message says.
           // ❌ errors: errors,
-          message: 'The data failed validation.',
+          message: 'Registration failed.',
           success: false
         }
       }

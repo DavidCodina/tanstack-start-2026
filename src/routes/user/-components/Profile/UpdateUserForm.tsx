@@ -127,48 +127,51 @@ export const UpdateUserForm = ({
   ====================== */
 
   return (
-    <form
-      {...otherProps}
-      onSubmit={(e) => e.preventDefault()}
-      className={cn(
-        'bg-card space-y-4 rounded-lg border p-4 shadow',
-        className
-      )}
-      noValidate
-    >
-      <Input
-        fieldRootProps={{}}
+    <>
+      <h2 className='text-primary mb-1 text-4xl font-black'>Update User</h2>
+      <form
+        {...otherProps}
+        onSubmit={(e) => e.preventDefault()}
+        className={cn(
+          'bg-card space-y-4 rounded-lg border p-4 shadow',
+          className
+        )}
+        noValidate
+      >
+        <Input
+          fieldRootProps={{}}
 
-        inputProps={{
-          fieldSize: 'sm',
-          name: 'fullName',
-          type: 'text',
-          onValueChange: (newValue) => {
-            setName(newValue)
-          },
-          placeholder: 'Full Name...',
-          value: name
-        }}
+          inputProps={{
+            fieldSize: 'sm',
+            name: 'fullName',
+            type: 'text',
+            onValueChange: (newValue) => {
+              setName(newValue)
+            },
+            placeholder: 'Full Name...',
+            value: name
+          }}
 
-        fieldLabelProps={{
-          children: 'Full Name',
-          labelRequired: true
-        }}
-      />
+          fieldLabelProps={{
+            children: 'Full Name',
+            labelRequired: true
+          }}
+        />
 
-      {/* 
+        {/* 
       //# Add image logic here...
        */}
 
-      <Button
-        className='flex w-full'
-        loading={pending}
-        onClick={handleUpdateUser}
-        size='sm'
-        type='button'
-      >
-        {pending ? 'Saving...' : 'Save Changes'}
-      </Button>
-    </form>
+        <Button
+          className='flex w-full'
+          loading={pending}
+          onClick={handleUpdateUser}
+          size='sm'
+          type='button'
+        >
+          {pending ? 'Saving...' : 'Save Changes'}
+        </Button>
+      </form>
+    </>
   )
 }

@@ -1,25 +1,64 @@
-'use client'
-
 import * as React from 'react'
 import { toast } from 'sonner'
+import { Form } from '@base-ui/react/form'
+import { z } from 'zod'
+import { TriangleAlert } from 'lucide-react'
+
 import { authClient } from '@/lib/auth-client'
-
-// import { z } from 'zod'
-
 import { Button } from '@/components'
 import { Input } from '@/components/Input'
-import { cn } from '@/utils'
+import { cn, formatZodErrors } from '@/utils'
 
+//! This is wrong!
 type UpdatePasswordFormProps = React.ComponentProps<'form'>
 
-// const updatePasswordSchema = z.object({
-//   currentPassword: z
-//     .string()
-//     .min(1, { message: "Current password is required" }),
-//   newPassword: passwordSchema,
-// });
+/* ======================
+      Zod Schema
+====================== */
 
-// type UpdatePasswordValues = z.infer<typeof updatePasswordSchema>;
+const NewPasswordSchema = z
+  .string()
+  .min(1, { error: 'Password is required' })
+  .min(8, { error: 'Password must be at least 8 characters long' })
+  // Matches "anything that isn't a letter or digit"
+  .regex(/[a-zA-Z]/, {
+    message: 'Password must contain at least one letter'
+  })
+  .regex(/[0-9]/, { message: 'Password must contain at least one number' })
+  // Matches "anything that isn't a letter or digit"
+  .regex(/[^a-zA-Z0-9]/, {
+    message: 'Password must contain at least one special character.'
+  })
+
+const getConfirmNewPasswordSchema = (newPassword: unknown) => {
+  const ConfirmNewPasswordSchema = z
+    .string()
+    .min(8, {
+      error: 'Must be at least 8 characters long'
+    })
+    .refine(
+      (value) => {
+        return value === newPassword
+      },
+      { error: 'The passwords must match.' }
+    )
+  return ConfirmNewPasswordSchema
+}
+
+const getFormSchema = (newPassword: unknown) => {
+  const FormSchema = z.object({
+    currentPassword: z.string().min(1, { error: 'Password is required' }),
+    newPassword: NewPasswordSchema,
+    confirmNewPassword: getConfirmNewPasswordSchema(newPassword)
+  })
+  return FormSchema
+}
+
+type FormSchemaType = ReturnType<typeof getFormSchema>
+type ZodData = z.infer<FormSchemaType>
+// type LooseFormErrors = Record<string, string>
+// type FormErrors = { [K in keyof ZodData]?: string; }
+type FormErrors = Partial<Record<keyof ZodData, string>>
 
 /* ========================================================================
 
@@ -29,91 +68,155 @@ export const UpdatePasswordForm = ({
   className = '',
   ...otherProps
 }: UpdatePasswordFormProps) => {
-  const [currentPassword, setCurrentPassword] = React.useState('')
-  const [newPassword, setNewPassword] = React.useState('')
-  const [confirmNewPassword, setConfirmNewPassword] = React.useState('')
-  const [pending, setPending] = React.useState(false)
-
   /* ======================
-
+        state & refs
   ====================== */
 
-  const handleUpdatePassword = async (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ) => {
-    e.preventDefault()
+  const actionsRef = React.useRef<Form.Actions>(null)
+  const formRef = React.useRef<HTMLFormElement>(null)
 
-    //# Add better validation here, including password confirmation match.
-    //# The basic password schema is as follows. On top of that,
-    // const PasswordSchema = z
-    //   .string()
-    //   .min(1, { error: 'Password is required' })
-    //   .min(8, { error: 'Password must be at least 8 characters long' })
-    //   .regex(/[a-zA-Z]/, {
-    //     message: 'Password must contain at least one letter'
-    //   })
-    //   .regex(/[0-9]/, { message: 'Password must contain at least one number' })
-    //   // Matches "anything that isn't a letter or digit"
-    //   .regex(/[^a-zA-Z0-9]/, {
-    //     message: 'Password must contain at least one special character.'
-    //   })
+  const [currentPassword, setCurrentPassword] = React.useState('')
+  const [currentPasswordTouched, setCurrentPasswordTouched] =
+    React.useState(false)
 
-    //# On top of that, there should be logic for checking if the passwords match similar to this:
-    // const getLinkCredentialsSchema = (password: unknown) => {
-    //   const LinkCredentialsSchema = z.object({
-    //     password: z.string().min(5, {
-    //       message: 'A password must be at least 5 characters. (Server)'
-    //     }),
-    //     confirmPassword: z.string().refine(
-    //       (value) => {
-    //         return value === password
-    //       },
-    //       {
-    //         error: 'The passwords must match. (Server)'
-    //       }
-    //     )
-    //   })
-    //   ///////////////////////////////////////////////////////////////////////////
-    //   //
-    //   // ⚠️ Gotcha: Having .refine() on the outside of the z.object() seems
-    //   // like a good idea because it allows you to access both values.password
-    //   // and values.confirmPassword. However, it will short-circuit
-    //   // if there are any errors in z.object().
-    //   //
-    //   //   .refine((values) => values.password === values.confirmPassword, {
-    //   //     message: 'Passwords do not match.',
-    //   //     path: ['confirmPassword'] // attaches the error to this field
-    //   //   })
-    //   //
-    //   // Solution: wrap the Zod schema in a functon and pass it the password from the
-    //   // outside, or create a secondary schema just for the password confirmation.
-    //   //
-    //   ///////////////////////////////////////////////////////////////////////////
+  const [newPassword, setNewPassword] = React.useState('')
+  const [newPasswordTouched, setNewPasswordTouched] = React.useState(false)
 
-    //   return LinkCredentialsSchema
-    // }
+  const [confirmNewPassword, setConfirmNewPassword] = React.useState('')
+  const [confirmNewPasswordTouched, setConfirmNewPasswordTouched] =
+    React.useState(false)
 
-    if (!newPassword || !currentPassword || newPassword.length < 8) {
-      setPending(false)
-      setCurrentPassword('')
-      setNewPassword('')
-      setConfirmNewPassword('')
+  const [errors, setErrors] = React.useState<FormErrors>({})
+
+  const isErrors = Object.values(errors).some((value) => !!value)
+
+  const [formPending, setFormPending] = React.useState(false)
+
+  ///////////////////////////////////////////////////////////////////////////
+  //
+  // Calling setErrors({}) and setting each field's state value to '' is not enough
+  // to reset the form. The main issue with Base UI is that it never really resets
+  // the field control to its initial state because internally it uses the Constraint Validation API.
+  // The consequence is that even if you clear all errors, you'll still have a data-valid attribute
+  // on the input, rather than nothing. One solution to this is to reset the key prop on <Form />
+  // to completely remount the Form and all children.
+  //
+  ///////////////////////////////////////////////////////////////////////////
+  const [resetKey, setResetKey] = React.useState(0)
+
+  const FormSchema = getFormSchema(newPassword)
+
+  /* ======================
+  validateCurrentPassword()
+  ====================== */
+
+  const validateCurrentPassword = (value?: string) => {
+    value = typeof value === 'string' ? value : currentPassword
+    const validationResult = FormSchema.shape.currentPassword.safeParse(value)
+
+    if (validationResult.success === false) {
+      const error = validationResult.error.issues[0]?.message
+      if (typeof error === 'string') {
+        setErrors((prev) => {
+          const newErrors: FormErrors = {
+            ...prev,
+            currentPassword: error
+          }
+          return newErrors
+        })
+      }
       return
     }
 
-    setPending(true)
+    setErrors((prev) => {
+      const newErrors: FormErrors = { ...prev }
+      delete newErrors.currentPassword
+      return newErrors
+    })
+  }
+
+  /* ======================
+    validateNewPassword()
+  ====================== */
+
+  const validateNewPassword = (value?: string) => {
+    value = typeof value === 'string' ? value : newPassword
+    const validationResult = FormSchema.shape.newPassword.safeParse(value)
+
+    if (validationResult.success === false) {
+      const error = validationResult.error.issues[0]?.message
+      if (typeof error === 'string') {
+        setErrors((prev) => {
+          const newErrors: FormErrors = {
+            ...prev,
+            newPassword: error
+          }
+          return newErrors
+        })
+      }
+      return
+    }
+
+    setErrors((prev) => {
+      const newErrors: FormErrors = { ...prev }
+      delete newErrors.newPassword
+      return newErrors
+    })
+  }
+
+  /* ======================
+  validateConfirmNewPassword()
+  ====================== */
+
+  const validateConfirmNewPassword = (value?: string, newPass?: string) => {
+    value = typeof value === 'string' ? value : confirmNewPassword
+    newPass = typeof newPass === 'string' ? newPass : newPassword
+
+    const FreshConfirmNewPasswordSchema = getConfirmNewPasswordSchema(newPass)
+    const validationResult = FreshConfirmNewPasswordSchema.safeParse(value)
+
+    if (validationResult.success === false) {
+      const error = validationResult.error.issues[0]?.message
+      if (typeof error === 'string') {
+        setErrors((prev) => {
+          const newErrors: FormErrors = {
+            ...prev,
+            confirmNewPassword: error
+          }
+          return newErrors
+        })
+      }
+      return
+    }
+
+    setErrors((prev) => {
+      const newErrors: FormErrors = { ...prev }
+      delete newErrors.confirmNewPassword
+      return newErrors
+    })
+  }
+
+  /* ======================
+        handleSubmit()
+  ====================== */
+
+  const handleSubmit = async (zodData: ZodData) => {
+    setFormPending(true)
 
     try {
       // https://better-auth.com/docs/authentication/email-password#update-password
-      const { data, error } = await authClient.changePassword({
-        currentPassword,
-        newPassword,
+      const result = await authClient.changePassword({
+        currentPassword: zodData.currentPassword,
+        newPassword: zodData.newPassword,
+
         // When true, the user will be logged out of their other sessions.
         // This is a good idea for security because changing a password is
         // often done to prevent a security breach. WDS makes this a checkbox
         // that the user can opt into. However, I've hardcoded it here for now.
         revokeOtherSessions: true
       })
+
+      const { data, error } = result
 
       if (error) {
         ///////////////////////////////////////////////////////////////////////////
@@ -129,13 +232,35 @@ export const UpdatePasswordForm = ({
         //     statusText: 'BAD_REQUEST'
         //   }
         //
+        /////////////////////////
+        //
+        // If the user submits the wrong value for currentPassword, result.error will be:
+        //
+        //   {
+        //     code: 'INVALID_PASSWORD',
+        //     message: "Invalid password",
+        //     status: 400,
+        //     statusText: 'BAD_REQUEST'
+        //   }
+        //
+        /////////////////////////
+        //
         // An error here could also be due to any custom logic we have in auth.ts
-        // for hooks.before + '/change-password'.
+        // for hooks.before + '/change-password'. There the APIError instance has
+        // been intentionally crafted to output the exact same kind of result.error:
+        //
+        //   throw new APIError('BAD_REQUEST', {
+        //     code: 'INVALID_PASSWORD',
+        //     message: 'Invalid password'
+        //   })
+        //
+        // Note: The custom logic in hooks.before will likely never result in an error
+        // because we have very similar Zod logic here, which preemptively causes the
+        // flow to return early. The hooks.before logic would generally only throw an
+        // APIError if some user was trying to call '/change-password' DIRECTLY.
         //
         ///////////////////////////////////////////////////////////////////////////
 
-        //! Temporary...
-        console.log('error from UpdatePasswordForm', error)
         toast.error('Unable to update password.')
         return
       }
@@ -147,10 +272,12 @@ export const UpdatePasswordForm = ({
     } catch (_err) {
       toast.error('Unable to update password.')
     } finally {
-      setPending(false)
+      setFormPending(false)
       setCurrentPassword('')
       setNewPassword('')
       setConfirmNewPassword('')
+      setErrors({})
+      setResetKey((v) => v + 1)
     }
   }
 
@@ -159,98 +286,168 @@ export const UpdatePasswordForm = ({
   ====================== */
 
   return (
-    <form
-      {...otherProps}
-      onSubmit={(e) => e.preventDefault()}
-      className={cn(
-        'bg-card space-y-4 rounded-lg border p-4 shadow',
-        className
-      )}
-      noValidate
-    >
-      <Input
-        fieldRootProps={{}}
+    <>
+      <h2 className='text-primary mb-1 text-4xl font-black'>Update Password</h2>
+      <Form
+        {...otherProps}
+        actionsRef={actionsRef}
+        className={cn(
+          'bg-card space-y-4 rounded-lg border p-4 shadow',
+          className
+        )}
+        errors={errors}
+        key={resetKey}
+        noValidate
+        onFormSubmit={async (_formValues, _eventDetails) => {
+          // Validation...
+          const {
+            data: zodData,
+            error: zodError,
+            success: zodSuccess
+          } = await FormSchema.safeParseAsync({
+            currentPassword,
+            newPassword,
+            confirmNewPassword
+          })
 
-        inputProps={{
-          autoCapitalize: 'none',
-          // Browsers often ignore ❌ autoComplete='off'. Even with
-          // 'new-password', Chrome still auto completes values.
-          autoComplete: 'new-password',
-          autoCorrect: 'off',
-          spellCheck: false,
-          fieldSize: 'sm',
-          name: 'current_password',
-          type: 'password',
-          onValueChange: (newValue) => {
-            setCurrentPassword(newValue)
-          },
-          placeholder: 'Current Password...',
-          value: currentPassword
+          if (!zodSuccess) {
+            const formattedZodErrors = formatZodErrors(zodError)
+            setErrors(formattedZodErrors)
+            return
+          }
+
+          // Submission...
+          handleSubmit(zodData)
         }}
 
-        fieldLabelProps={{
-          children: 'Password',
-          labelRequired: true
-        }}
-      />
-
-      <Input
-        fieldRootProps={{}}
-
-        inputProps={{
-          autoCapitalize: 'none',
-          autoComplete: 'new-password',
-          autoCorrect: 'off',
-          spellCheck: false,
-          fieldSize: 'sm',
-          name: 'new_password',
-          type: 'password',
-          onValueChange: (newValue) => {
-            setNewPassword(newValue)
-          },
-          placeholder: 'New Password...',
-          value: newPassword
-        }}
-
-        fieldLabelProps={{
-          children: 'New Password',
-          labelRequired: true
-        }}
-      />
-
-      <Input
-        fieldRootProps={{}}
-
-        inputProps={{
-          autoCapitalize: 'none',
-          autoComplete: 'new-password',
-          autoCorrect: 'off',
-          spellCheck: false,
-          fieldSize: 'sm',
-          name: 'confirm_new_password',
-          type: 'password',
-          onValueChange: (newValue) => {
-            setConfirmNewPassword(newValue)
-          },
-          placeholder: 'Confirm New Password...',
-          value: confirmNewPassword
-        }}
-
-        fieldLabelProps={{
-          children: 'Confirm New Password',
-          labelRequired: true
-        }}
-      />
-
-      <Button
-        className='flex w-full'
-        loading={pending}
-        onClick={handleUpdatePassword}
-        size='sm'
-        type='button'
+        // I don't think this is necessary if we're using onFormSubmit.
+        onSubmit={(e) => e.preventDefault()}
+        ref={formRef}
+        validationMode='onBlur'
       >
-        {pending ? 'Saving...' : 'Save Changes'}
-      </Button>
-    </form>
+        <Input
+          fieldRootProps={{}}
+
+          inputProps={{
+            autoCapitalize: 'none',
+            // Browsers often ignore ❌ autoComplete='off'. Even with
+            // 'new-password', Chrome still auto completes values.
+            autoComplete: 'new-password',
+            autoCorrect: 'off',
+            spellCheck: false,
+            fieldSize: 'sm',
+            name: 'currentPassword',
+            onBlur: (e) => {
+              const value = e.target.value
+              setCurrentPasswordTouched(true)
+              validateCurrentPassword(value)
+            },
+
+            onValueChange: (newValue) => {
+              setCurrentPassword(newValue)
+              if (currentPasswordTouched) {
+                validateCurrentPassword(newValue)
+              }
+            },
+            placeholder: 'Current Password...',
+            type: 'password',
+            value: currentPassword
+          }}
+
+          fieldLabelProps={{
+            children: 'Password',
+            labelRequired: true
+          }}
+        />
+
+        <Input
+          fieldRootProps={{}}
+
+          inputProps={{
+            autoCapitalize: 'none',
+            autoComplete: 'new-password',
+            autoCorrect: 'off',
+            spellCheck: false,
+            fieldSize: 'sm',
+            name: 'newPassword',
+            onBlur: (e) => {
+              const value = e.target.value
+              setNewPasswordTouched(true)
+              validateNewPassword(value)
+            },
+            onValueChange: (newValue) => {
+              setNewPassword(newValue)
+              if (newPasswordTouched) {
+                validateNewPassword(newValue)
+              }
+
+              // ⚠️ Gotcha: confirmNewPassword validation also needs to run after every time newPassword changes.
+              if (confirmNewPasswordTouched) {
+                validateConfirmNewPassword(undefined, newValue)
+              }
+            },
+            placeholder: 'New Password...',
+            type: 'password',
+            value: newPassword
+          }}
+
+          fieldLabelProps={{
+            children: 'New Password',
+            labelRequired: true
+          }}
+        />
+
+        <Input
+          fieldRootProps={{}}
+
+          inputProps={{
+            autoCapitalize: 'none',
+            autoComplete: 'new-password',
+            autoCorrect: 'off',
+            spellCheck: false,
+            fieldSize: 'sm',
+            name: 'confirmNewPassword',
+            onBlur: (e) => {
+              const value = e.target.value
+              setConfirmNewPasswordTouched(true)
+              validateConfirmNewPassword(value)
+            },
+            onValueChange: (newValue) => {
+              setConfirmNewPassword(newValue)
+              if (confirmNewPasswordTouched) {
+                validateConfirmNewPassword(newValue)
+              }
+            },
+            placeholder: 'Confirm New Password...',
+            type: 'password',
+            value: confirmNewPassword
+          }}
+
+          fieldLabelProps={{
+            children: 'Confirm New Password',
+            labelRequired: true
+          }}
+        />
+
+        <Button
+          className='flex w-full'
+          disabled={isErrors}
+          loading={formPending}
+          size='sm'
+          type='submit'
+          variant={isErrors ? 'destructive' : 'primary'}
+        >
+          {isErrors ? (
+            <>
+              <TriangleAlert /> Please Correct Errors...
+            </>
+          ) : formPending ? (
+            'Saving...'
+          ) : (
+            'Save Changes'
+          )}
+        </Button>
+      </Form>
+    </>
   )
 }

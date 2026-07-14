@@ -62,6 +62,9 @@ export const ForgotPasswordForm = () => {
         )
 
         if (error) {
+          console.log('error from ForgotPasswordForm', error)
+
+          //! Don't do this in production!
           const errorMessage =
             typeof error.message === 'string'
               ? error.message

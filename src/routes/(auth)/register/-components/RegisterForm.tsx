@@ -1,4 +1,4 @@
-import React, { useState, useTransition } from 'react'
+import * as React from 'react'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { Form } from '@base-ui/react/form'
 import { toast } from 'sonner'
@@ -28,39 +28,39 @@ const PasswordSchema = z
     message: 'Password must contain at least one special character.'
   })
 
+const getConfirmPasswordSchema = (password: unknown) => {
+  const ConfirmPasswordSchema = z
+    .string()
+    .min(8, {
+      error: 'Must be at least 8 characters long'
+    })
+    .refine(
+      (value) => {
+        return value === password
+      },
+      {
+        error: 'The passwords must match.'
+      }
+    )
+
+  return ConfirmPasswordSchema
+}
+
 const getFormSchema = (password: unknown) => {
   const FormSchema = z.object({
     name: z.string().min(1, { error: 'A name is required' }),
     email: z.email(),
     password: PasswordSchema,
-    confirmPassword: z
-      .string()
-      .min(8, {
-        error: 'Must be at least 8 characters long'
-      })
-      .refine(
-        (value) => {
-          return value === password
-        },
-        {
-          error: 'The passwords must match.'
-        }
-      )
+    confirmPassword: getConfirmPasswordSchema(password)
   })
-
   return FormSchema
 }
 
-// type FormSchemaType = ReturnType<typeof getFormSchema>
-
+type FormSchemaType = ReturnType<typeof getFormSchema>
+type ZodData = z.infer<FormSchemaType>
 // type LooseFormErrors = Record<string, string>
-
-type FormErrors = {
-  name?: string
-  email?: string
-  password?: string
-  confirmPassword?: string
-}
+// type FormErrors = { [K in keyof ZodData]?: string; }
+type FormErrors = Partial<Record<keyof ZodData, string>>
 
 /* ========================================================================
 
@@ -97,23 +97,23 @@ export const RegisterForm = () => {
   const actionsRef = React.useRef<Form.Actions>(null)
   const formRef = React.useRef<HTMLFormElement>(null)
 
-  const [name, setName] = useState('')
-  const [nameTouched, setNameTouched] = useState(false)
+  const [name, setName] = React.useState('')
+  const [nameTouched, setNameTouched] = React.useState(false)
 
-  const [email, setEmail] = useState('')
-  const [emailTouched, setEmailTouched] = useState(false)
+  const [email, setEmail] = React.useState('')
+  const [emailTouched, setEmailTouched] = React.useState(false)
 
-  const [password, setPassword] = useState('')
-  const [passwordTouched, setPasswordTouched] = useState(false)
+  const [password, setPassword] = React.useState('')
+  const [passwordTouched, setPasswordTouched] = React.useState(false)
 
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const [confirmPasswordTouched, setConfirmPasswordTouched] = useState(false)
+  const [confirmPassword, setConfirmPassword] = React.useState('')
+  const [confirmPasswordTouched, setConfirmPasswordTouched] =
+    React.useState(false)
 
   const [errors, setErrors] = React.useState<FormErrors>({})
-
   const isErrors = Object.keys(errors).length > 0
 
-  const [formPending, startFormTransition] = useTransition()
+  const [formPending, startFormTransition] = React.useTransition()
 
   ///////////////////////////////////////////////////////////////////////////
   //
@@ -155,9 +155,9 @@ export const RegisterForm = () => {
       // Alternatively destructure out:
       // const { name: _name, ...rest } = prev
       // return rest
-      const next = { ...prev }
-      delete next.name
-      return next
+      const newErrors: FormErrors = { ...prev }
+      delete newErrors.name
+      return newErrors
     })
   }
 
@@ -184,9 +184,9 @@ export const RegisterForm = () => {
     }
 
     setErrors((prev) => {
-      const next = { ...prev }
-      delete next.email
-      return next
+      const newErrors: FormErrors = { ...prev }
+      delete newErrors.email
+      return newErrors
     })
   }
 
@@ -206,7 +206,6 @@ export const RegisterForm = () => {
             ...prev,
             password: error
           }
-
           return newErrors
         })
       }
@@ -214,9 +213,9 @@ export const RegisterForm = () => {
     }
 
     setErrors((prev) => {
-      const next = { ...prev }
-      delete next.password
-      return next
+      const newErrors: FormErrors = { ...prev }
+      delete newErrors.password
+      return newErrors
     })
   }
 
@@ -224,9 +223,12 @@ export const RegisterForm = () => {
   validateConfirmPassword()
   ====================== */
 
-  const validateConfirmPassword = (value?: string) => {
+  const validateConfirmPassword = (value?: string, pass?: string) => {
     value = typeof value === 'string' ? value : confirmPassword
-    const validationResult = FormSchema.shape.confirmPassword.safeParse(value)
+    pass = typeof pass === 'string' ? pass : password
+
+    const FreshConfirmPasswordSchema = getConfirmPasswordSchema(pass)
+    const validationResult = FreshConfirmPasswordSchema.safeParse(value)
 
     if (validationResult.success === false) {
       const error = validationResult.error.issues[0]?.message
@@ -236,7 +238,6 @@ export const RegisterForm = () => {
             ...prev,
             confirmPassword: error
           }
-
           return newErrors
         })
       }
@@ -244,9 +245,113 @@ export const RegisterForm = () => {
     }
 
     setErrors((prev) => {
-      const next = { ...prev }
-      delete next.confirmPassword
-      return next
+      const newErrors: FormErrors = { ...prev }
+      delete newErrors.confirmPassword
+      return newErrors
+    })
+  }
+
+  /* ======================
+        handleSubmit()
+  ====================== */
+
+  const handleSubmit = async (zodData: ZodData) => {
+    startFormTransition(async () => {
+      try {
+        ///////////////////////////////////////////////////////////////////////////
+        //
+        // One could also use authClient.signUp.email().
+        //
+        //   const { data, error } = await authClient.signUp.email({
+        //     name: name,
+        //     email,
+        //     password
+        //     // I believe that this callback URL is only used when email verification is enabled.
+        //     callbackURL: '/login?verified=true'
+        //   })
+        //
+        // However, in this case, it's easier to use a server action + auth.api.signUpEmail()
+        // so we can perform server-side validation. One could use authClient.signUp.email()
+        // in conjunction with a before hook, but I prefer this approach - despite it making
+        // a server call from the server.
+        //
+        // ⚠️ Here we're using a server function, which works in this specific case because
+        // we're not logging the user in automatically. However, if we were doing that
+        // then the UI would likely not update on the client.
+        //
+        // Ultimately, which approach you take depends on your use case.
+        //
+        ///////////////////////////////////////////////////////////////////////////
+
+        const res = await register({
+          data: {
+            name: zodData.name,
+            email: zodData.email,
+            password: zodData.password,
+            confirmPassword: zodData.confirmPassword
+          }
+        })
+
+        if (res.success === true) {
+          toast.success(
+            "Registration success! If this email isn't already associated with an account, we've sent a confirmation link to it."
+          )
+          // ❌ toast.success('Registration success!')
+
+          ///////////////////////////////////////////////////////////////////////////
+          //
+          // Because we're using requireEmailVerification: true, we can instead
+          // use the callbackURL in the Better Auth signUp function. It won't redirect
+          // until AFTER the email is verified. Actually, the redirect will open in a
+          // new tab, rather than from the current application tab. We still want the
+          // current application flow to go to '/login'
+          //
+          ///////////////////////////////////////////////////////////////////////////
+          navigate({ to: '/login' })
+          return
+        }
+
+        if (res.code === 'EMAIL_BLACKLISTED') {
+          toast.error('This email is blacklisted.', {
+            duration: Infinity
+          })
+          return
+        }
+
+        toast.error(
+          "Unable to register. Ensure you're using a valid email/password and not already registered through a social provider.",
+          {
+            duration: Infinity
+          }
+        )
+
+        ///////////////////////////////////////////////////////////////////////////
+        //
+        // If you wanted to automatically sign the user in after registering
+        // you can import { signIn } from 'next-auth/react' then do this:
+        //
+        //   signIn('credentials', { email, password, callbackUrl: '/user' })
+        //
+        // However, it's probably better to not do this and instead create
+        // an additional step whereby the user must verify their email prior
+        // to logging in for the first time.
+        //
+        ///////////////////////////////////////////////////////////////////////////
+      } catch (_err) {
+        toast.error(
+          "Unable to register. Ensure you're using a valid email/password and not already registered through a social provider.",
+          {
+            duration: Infinity
+          }
+        )
+      } finally {
+        setName('')
+        setEmail('')
+        setPassword('')
+        setConfirmPassword('')
+        setErrors({})
+        setResetKey((v) => v + 1)
+      }
     })
   }
 
@@ -275,122 +380,26 @@ export const RegisterForm = () => {
         //
         ///////////////////////////////////////////////////////////////////////////
         onFormSubmit={async (_formValues, _eventDetails) => {
-          /* ======================
-                  Validation
-          ====================== */
-
-          const validationResult = await FormSchema.safeParseAsync({
+          // Validation...
+          const {
+            data: zodData,
+            error: zodError,
+            success: zodSuccess
+          } = await FormSchema.safeParseAsync({
             name,
             email,
             password,
             confirmPassword
           })
 
-          if (!validationResult.success) {
-            const errors = formatZodErrors(validationResult.error)
-            setErrors(errors)
+          if (!zodSuccess) {
+            const formattedZodErrors = formatZodErrors(zodError)
+            setErrors(formattedZodErrors)
             return
           }
 
-          startFormTransition(async () => {
-            try {
-              ///////////////////////////////////////////////////////////////////////////
-              //
-              // One could also use authClient.signUp.email().
-              //
-              //   const { data, error } = await authClient.signUp.email({
-              //     name: name,
-              //     email,
-              //     password
-              //     // I believe that this callback URL is only used when email verification is enabled.
-              //     callbackURL: '/login?verified=true'
-              //   })
-              //
-              // However, in this case, it's easier to use a server action + auth.api.signUpEmail()
-              // so we can perform server-side validation. One could use authClient.signUp.email()
-              // in conjunction with a before hook, but I prefer this approach - despite it making
-              // a server call from the server.
-              //
-              // ⚠️ Here we're using a server function, which works in this specific case because
-              // we're not logging the user in automatically. However, if we were doing that
-              // then the UI would likely not update on the client.
-              //
-              // Ultimately, which approach you take depends on your use case.
-              //
-              ///////////////////////////////////////////////////////////////////////////
-
-              const res = await register({
-                data: {
-                  name: validationResult.data.name,
-                  email: validationResult.data.email,
-                  password: validationResult.data.password,
-                  confirmPassword: validationResult.data.confirmPassword
-                }
-              })
-
-              if (res.success === true) {
-                toast.success(
-                  "Registration success! If this email isn't already associated with an account, we've sent a confirmation link to it."
-                )
-                // ❌ toast.success('Registration success!')
-
-                ///////////////////////////////////////////////////////////////////////////
-                //
-                // Because we're using requireEmailVerification: true, we can instead
-                // use the callbackURL in the Better Auth signUp function. It won't redirect
-                // until AFTER the email is verified. Actually, the redirect will open in a
-                // new tab, rather than from the current application tab. We still want the
-                // current application flow to go to '/login'
-                //
-                ///////////////////////////////////////////////////////////////////////////
-                navigate({ to: '/login' })
-
-                return
-              }
-
-              if (res.code === 'EMAIL_BLACKLISTED') {
-                toast.error('This email is blacklisted.', {
-                  duration: Infinity
-                })
-                return
-              }
-
-              toast.error(
-                "Unable to register. Ensure you're using a valid email/password and not already registered through a social provider.",
-                {
-                  duration: Infinity
-                }
-              )
-
-              ///////////////////////////////////////////////////////////////////////////
-              //
-              // If you wanted to automatically sign the user in after registering
-              // you can import { signIn } from 'next-auth/react' then do this:
-              //
-              //   signIn('credentials', { email, password, callbackUrl: '/user' })
-              //
-              // However, it's probably better to not do this and instead create
-              // an additional step whereby the user must verify their email prior
-              // to logging in for the first time.
-              //
-              ///////////////////////////////////////////////////////////////////////////
-            } catch (_err) {
-              console.log(_err)
-              toast.error(
-                "Unable to register. Ensure you're using a valid email/password and not already registered through a social provider.",
-                {
-                  duration: Infinity
-                }
-              )
-            } finally {
-              setName('')
-              setEmail('')
-              setPassword('')
-              setConfirmPassword('')
-              setErrors({})
-              setResetKey((v) => v + 1)
-            }
-          })
+          // Submission...
+          handleSubmit(zodData)
         }}
         // I don't think this is necessary if we're using onFormSubmit.
         onSubmit={(e) => e.preventDefault()}
@@ -470,6 +479,11 @@ export const RegisterForm = () => {
               if (passwordTouched) {
                 validatePassword(newValue)
               }
+
+              // ⚠️ Gotcha: confirmPassword validation also needs to run after every time newPassword changes.
+              if (confirmPasswordTouched) {
+                validateConfirmPassword(undefined, newValue)
+              }
             },
             placeholder: 'Password...',
             value: password
@@ -511,8 +525,9 @@ export const RegisterForm = () => {
 
         <Button
           className='flex w-full'
-          loading={formPending}
           disabled={isErrors}
+          loading={formPending}
+
           size='sm'
           type='submit'
           variant={isErrors ? 'destructive' : 'primary'}
@@ -521,6 +536,8 @@ export const RegisterForm = () => {
             <>
               <TriangleAlert /> Please Correct Errors...
             </>
+          ) : formPending ? (
+            'Registering...'
           ) : (
             'Register'
           )}

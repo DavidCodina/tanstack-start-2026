@@ -160,44 +160,47 @@ export const UpdateEmailForm = ({
   ====================== */
 
   return (
-    <form
-      {...otherProps}
-      onSubmit={(e) => e.preventDefault()}
-      className={cn(
-        'bg-card space-y-4 rounded-lg border p-4 shadow',
-        className
-      )}
-      noValidate
-    >
-      <Input
-        fieldRootProps={{}}
-
-        inputProps={{
-          fieldSize: 'sm',
-          name: 'email',
-          type: 'text',
-          onValueChange: (newValue) => {
-            setNewEmail(newValue)
-          },
-          placeholder: 'Email...',
-          value: newEmail
-        }}
-
-        fieldLabelProps={{
-          children: 'Email',
-          labelRequired: true
-        }}
-      />
-
-      <Button
-        className='flex w-full'
-        loading={pending}
-        onClick={handleUpdateEmail}
-        size='sm'
-        type='button'
+    <>
+      <h2 className='text-primary mb-1 text-4xl font-black'>Update Email</h2>
+      <form
+        {...otherProps}
+        onSubmit={(e) => e.preventDefault()}
+        className={cn(
+          'bg-card space-y-4 rounded-lg border p-4 shadow',
+          className
+        )}
+        noValidate
       >
-        {pending ? 'Saving...' : 'Save Changes'}
-      </Button>
-    </form>
+        <Input
+          fieldRootProps={{}}
+
+          inputProps={{
+            fieldSize: 'sm',
+            name: 'email',
+            type: 'text',
+            onValueChange: (newValue) => {
+              setNewEmail(newValue)
+            },
+            placeholder: 'Email...',
+            value: newEmail
+          }}
+
+          fieldLabelProps={{
+            children: 'Email',
+            labelRequired: true
+          }}
+        />
+
+        <Button
+          className='flex w-full'
+          loading={pending}
+          onClick={handleUpdateEmail}
+          size='sm'
+          type='button'
+        >
+          {pending ? 'Saving...' : 'Save Changes'}
+        </Button>
+      </form>
+    </>
   )
 }

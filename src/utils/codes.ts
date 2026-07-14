@@ -17,8 +17,11 @@ export const codes = {
   CONFLICT: 'CONFLICT',
 
   FORM_ERRORS: 'FORM_ERRORS',
-
-  LOGIN_FAILED: 'LOGIN_FAILED', // Previously: INVALID_CREDENTIALS: 'INVALID_CREDENTIALS',
+  // Previously I was using: INVALID_CREDENTIALS: 'INVALID_CREDENTIALS',
+  // However, it would be better to use "INVALID_EMAIL_OR_PASSWORD"
+  // because that's actually a listed BetterAuthErrorCode (see types directory).
+  // In any case, I prefer LOGIN_FAILED and REGISTRATION_FAILED.
+  LOGIN_FAILED: 'LOGIN_FAILED',
 
   REGISTRATION_FAILED: 'REGISTRATION_FAILED',
 

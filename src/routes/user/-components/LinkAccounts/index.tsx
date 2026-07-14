@@ -270,7 +270,7 @@ export const LinkAccounts = () => {
   }
 
   return (
-    <div className='mx-auto mb-6 max-w-[800px]'>
+    <>
       <h2 className='text-primary mb-1 text-4xl font-black'>Account Linking</h2>
 
       <div className='bg-card space-y-6 rounded-lg border p-4'>
@@ -278,6 +278,6 @@ export const LinkAccounts = () => {
         {renderUnlinkedSocialAccounts()}
         {renderLinkCredentialsForm()}
       </div>
-    </div>
+    </>
   )
 }

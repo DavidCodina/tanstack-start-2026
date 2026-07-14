@@ -93,14 +93,14 @@ export const ClientSession = () => {
     }
 
     return (
-      <div className='mx-auto mb-6 max-w-[800px]'>
+      <>
         <h2 className='text-primary mb-1 text-4xl font-black'>
           Client Session
         </h2>
         <pre className='bg-card overflow-scroll rounded-lg border p-4 text-sm shadow'>
           {JSON.stringify(data, null, 2)}
         </pre>
-      </div>
+      </>
     )
   }
 

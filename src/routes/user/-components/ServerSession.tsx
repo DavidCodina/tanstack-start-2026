@@ -25,11 +25,11 @@ export const ServerSession = () => {
   }
 
   return (
-    <div className='mx-auto mb-6 max-w-[800px]'>
+    <>
       <h2 className='text-primary mb-1 text-4xl font-black'>Server Session</h2>
       <pre className='bg-card overflow-scroll rounded-lg border p-4 text-sm shadow'>
         {JSON.stringify(session, null, 2)}
       </pre>
-    </div>
+    </>
   )
 }

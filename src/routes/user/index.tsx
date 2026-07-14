@@ -43,16 +43,16 @@ function PageUser() {
           _USER
         </h1>
 
-        <LinkAccounts />
-
         <div className='mx-auto mb-6 max-w-[800px] space-y-6'>
+          <LinkAccounts />
+
           <Profile />
           <SessionManagement />
           <DeleteUserButton />
-        </div>
 
-        <ServerSession />
-        <ClientSession />
+          <ServerSession />
+          <ClientSession />
+        </div>
       </PageContainer>
     </Page>
   )

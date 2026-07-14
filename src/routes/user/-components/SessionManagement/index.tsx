@@ -98,6 +98,9 @@ export const SessionManagement = () => {
 
   return (
     <>
+      <h2 className='text-primary mb-1 text-4xl font-black'>
+        Session Management
+      </h2>
       <div className='bg-card rounded-lg border shadow'>
         <h3 className='mx-4 mt-4 text-lg font-medium'>Sessions:</h3>
         {sessions.map((item) => {

@@ -37,6 +37,12 @@ const PasswordSchema = z
 // https://better-auth.com/docs/adapters/drizzle
 // https://www.better-auth.com/docs/concepts/cli
 
+// Todo: Update RegisterForm, UpdatePasswordForm, ResetPasswordForm,
+//# and LoginForm to all use a password input.
+
+// Todo: Update UpdateEmailForm, UpdateUserForm, ForgotPasswordForm to all use
+//# Form + Zod.
+
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: 'pg',
@@ -497,13 +503,30 @@ export const auth = betterAuth({
           const { /* data, */ error } = PasswordSchema.safeParse(password)
 
           if (error) {
-            // Obviously, 'PASSWORD_INVALID' is not very descriptive. This error
+            ///////////////////////////////////////////////////////////////////////////
+            //
+            // 'INVALID_PASSWORD' is already an official BetterAuthErrorCode.
+            // For example, if you were to try to call authClient.changePassword()
+            // with an invalid currentPassword, Better Auth would throw an error
+            // internally, resulting in this result.error:
+            //
+            //   {
+            //     code: 'INVALID_PASSWORD',
+            //     message: "Invalid password",
+            //     status: 400,
+            //     statusText: 'BAD_REQUEST'
+            //   }
+            //
+            // So here, we're essentially following a very similar pattern.
+            // Obviously, 'INVALID_PASSWORD' is not very descriptive. This error
             // is intended to be a failsafe to prevent an invalid password, but
             // ultimately, the client-side code should be performing similar validation
             // preemptively, that actually provides valuable feedback to the user.
+            //
+            ///////////////////////////////////////////////////////////////////////////
             throw new APIError('BAD_REQUEST', {
-              code: 'PASSWORD_INVALID',
-              message: 'The password is invalid.'
+              code: 'INVALID_PASSWORD',
+              message: 'Invalid password'
             })
           }
         }
