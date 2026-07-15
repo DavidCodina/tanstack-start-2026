@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { Link, useNavigate } from '@tanstack/react-router'
-import { Form } from '@base-ui/react/form'
 import { toast } from 'sonner'
 import * as z from 'zod'
 import { TriangleAlert } from 'lucide-react'
@@ -67,34 +66,44 @@ type FormErrors = Partial<Record<keyof ZodData, string>>
 ======================================================================== */
 ///////////////////////////////////////////////////////////////////////////
 //
-// Regarding Fine-Grained Validation Control:
+// This version of the RegisterForm works WITHOUT: import { Form } from '@base-ui/react/form'
+// The primary changes are the use of:
 //
-// For this demo we're using Base UI Form's onFormSubmit to initiate
-// form-level validation. Initially, I was also using Base UI Input's validate
-// prop for field-level validation. This mostly works, but the validationMode
-// can only be 'onBlur', 'onChange', or 'onSubmit'. This results in some
-// unusual behavior such that if 'onBlur' is selected, an invalid value
-// will trigger data-invalid, but as soon as you go back to the field and
-// begin typing again, it will be data-valid until another blur occurs.
+//   const getInvalid = (error: keyof typeof errors, touched: boolean) => {
+//     const isError = Boolean(errors[error])
+//     if (!touched) return undefined
+//     return isError
+//   }
 //
-// In other words, there's nothing analagous to validationMode="onBlurThenOnChange".
-// The best solution is to switch to using TanStack Form. However, we can also
-// manually implement touched state + validation onBlur + validation onValueChange.
-// This is the way...
 //
-// Note: it's still important to set validationMode to 'onBlur' either in each
-// field or in the <Form />.
+// And the following logic in each Input:
+//
+//   fieldRootProps={{
+//     invalid: getInvalid('name', nameTouched),
+//     touched: nameTouched
+//   }}
+//
+//   fieldErrorProps={{
+//     children: errors.name
+//   }}
+//
+// Overall, there's a little bit more code we have to manage manually.
+// And, this version absolutely depends on `invalid` plus the useValidationHack()
+// hook in the FieldControl definition. However, it's actually better than the
+// original version with <Form /> because we have COMPLETE control over the
+// invalid prop (e.g., can be invalid or not invalid on mount).
+//
+// That said, we can go back to using Form and still keep the fieldRootProps.invalid logic.
 //
 ///////////////////////////////////////////////////////////////////////////
 
-export const RegisterForm = () => {
+export const RegisterForm2 = () => {
   /* ======================
         state & refs
   ====================== */
 
   const navigate = useNavigate()
 
-  const actionsRef = React.useRef<Form.Actions>(null)
   const formRef = React.useRef<HTMLFormElement>(null)
 
   const [name, setName] = React.useState('')
@@ -114,17 +123,6 @@ export const RegisterForm = () => {
   const isErrors = Object.keys(errors).length > 0
 
   const [formPending, startFormTransition] = React.useTransition()
-
-  ///////////////////////////////////////////////////////////////////////////
-  //
-  // Calling setErrors({}) and setting each field's state value to '' is not enough
-  // to reset the form. The main issue with Base UI is that it never really resets
-  // the field control to its initial state because internally it uses the Constraint Validation API.
-  // The consequence is that even if you clear all errors, you'll still have a data-valid attribute
-  // on the input, rather than nothing. One solution to this is to reset the key prop on <Form />
-  // to completely remount the Form and all children.
-  //
-  ///////////////////////////////////////////////////////////////////////////
   const [resetKey, setResetKey] = React.useState(0)
 
   const FormSchema = getFormSchema(password)
@@ -152,9 +150,6 @@ export const RegisterForm = () => {
     }
 
     setErrors((prev) => {
-      // Alternatively destructure out:
-      // const { name: _name, ...rest } = prev
-      // return rest
       const newErrors: FormErrors = { ...prev }
       delete newErrors.name
       return newErrors
@@ -252,37 +247,22 @@ export const RegisterForm = () => {
   }
 
   /* ======================
+        getInvalid()
+  ====================== */
+
+  const getInvalid = (error: keyof typeof errors, touched: boolean) => {
+    const isError = Boolean(errors[error])
+    if (!touched) return undefined
+    return isError
+  }
+
+  /* ======================
         handleSubmit()
   ====================== */
 
   const handleSubmit = async (zodData: ZodData) => {
     startFormTransition(async () => {
       try {
-        ///////////////////////////////////////////////////////////////////////////
-        //
-        // One could also use authClient.signUp.email().
-        //
-        //   const { data, error } = await authClient.signUp.email({
-        //     name: name,
-        //     email,
-        //     password
-        //     // I believe that this callback URL is only used when email verification is enabled.
-        //     callbackURL: '/login?verified=true'
-        //   })
-        //
-        // However, in this case, it's easier to use a server action + auth.api.signUpEmail()
-        // so we can perform server-side validation. One could use authClient.signUp.email()
-        // in conjunction with a before hook, but I prefer this approach - despite it making
-        // a server call from the server.
-        //
-        // ⚠️ Here we're using a server function, which works in this specific case because
-        // we're not logging the user in automatically. However, if we were doing that
-        // then the UI would likely not update on the client.
-        //
-        // Ultimately, which approach you take depends on your use case.
-        //
-        ///////////////////////////////////////////////////////////////////////////
-
         const res = await register({
           data: {
             name: zodData.name,
@@ -296,17 +276,7 @@ export const RegisterForm = () => {
           toast.success(
             "Registration success! If this email isn't already associated with an account, we've sent a confirmation link to it."
           )
-          // ❌ toast.success('Registration success!')
 
-          ///////////////////////////////////////////////////////////////////////////
-          //
-          // Because we're using requireEmailVerification: true, we can instead
-          // use the callbackURL in the Better Auth signUp function. It won't redirect
-          // until AFTER the email is verified. Actually, the redirect will open in a
-          // new tab, rather than from the current application tab. We still want the
-          // current application flow to go to '/login'
-          //
-          ///////////////////////////////////////////////////////////////////////////
           navigate({ to: '/login' })
           return
         }
@@ -324,19 +294,6 @@ export const RegisterForm = () => {
             duration: Infinity
           }
         )
-
-        ///////////////////////////////////////////////////////////////////////////
-        //
-        // If you wanted to automatically sign the user in after registering
-        // you can import { signIn } from 'next-auth/react' then do this:
-        //
-        //   signIn('credentials', { email, password, callbackUrl: '/user' })
-        //
-        // However, it's probably better to not do this and instead create
-        // an additional step whereby the user must verify their email prior
-        // to logging in for the first time.
-        //
-        ///////////////////////////////////////////////////////////////////////////
       } catch (_err) {
         toast.error(
           "Unable to register. Ensure you're using a valid email/password and not already registered through a social provider.",
@@ -354,6 +311,8 @@ export const RegisterForm = () => {
         setConfirmPassword('')
         setConfirmPasswordTouched(false)
         setErrors({})
+        // Technically, setResetKey() should not be necessary since we're now manually controlling
+        // the invalid prop at all times. However, it's still a good practice to wipe the form.
         setResetKey((v) => v + 1)
       }
     })
@@ -365,25 +324,31 @@ export const RegisterForm = () => {
 
   return (
     <>
-      <Form
-        actionsRef={actionsRef}
+      {/* <Button
+        className='mx-auto mb-6 flex'
+        onClick={() => {
+          setName('')
+          setNameTouched(false)
+          setEmail('')
+          setEmailTouched(false)
+          setPassword('')
+          setPasswordTouched(false)
+          setConfirmPassword('')
+          setConfirmPasswordTouched(false)
+          setErrors({})
+          // setResetKey((v) => v + 1)
+        }}
+        size='sm'
+        variant='success'
+      >
+        Clear Form Values
+      </Button> */}
+      <form
         className='bg-card mx-auto mb-2 max-w-lg space-y-4 rounded-lg border p-4 shadow'
-        errors={errors}
         key={resetKey}
         noValidate
-
-        ///////////////////////////////////////////////////////////////////////////
-        //
-        // onFormSubmit only runs if  all the field-level validation passes.
-        // However, as noted earlier the field-level validate prop is problematic because it doesn't
-        // allow for fine-graned control over how/when validation runs.
-        //
-        // In practice, this means there's no way of externalizing errors that are triggered through
-        // field-level validate functions. That said, you can start from the other way around and run validation
-        // externally through Zod.
-        //
-        ///////////////////////////////////////////////////////////////////////////
-        onFormSubmit={async (_formValues, _eventDetails) => {
+        onSubmit={async (e) => {
+          e.preventDefault()
           // Validation...
           const {
             data: zodData,
@@ -405,16 +370,23 @@ export const RegisterForm = () => {
           // Submission...
           handleSubmit(zodData)
         }}
-        // I don't think this is necessary if we're using onFormSubmit.
-        onSubmit={(e) => e.preventDefault()}
         ref={formRef}
-        validationMode='onBlur'
       >
         <Input
           fieldRootProps={{
-            // This is just to explicitly show its not depending on forceValidity.
-            forceValidity: false,
+            // ⚠️ In order for the invalid prop to be responsive on mount, and after
+            // clearing all form values, we need forceValidity: true, which is already
+            // the default. This, in turn, triggers the useValidationHack() hook.
+            // Unfortunately, Base UI's FieldControl and Input will not work 100% of the
+            // time without this due to the limitations of its own internal Constraint
+            // Validation API.
+            invalid: getInvalid('name', nameTouched),
             touched: nameTouched
+          }}
+
+          fieldLabelProps={{
+            children: 'Full Name',
+            labelRequired: true
           }}
 
           inputProps={{
@@ -436,17 +408,20 @@ export const RegisterForm = () => {
             value: name
           }}
 
-          fieldLabelProps={{
-            children: 'Full Name',
-            labelRequired: true
+          fieldErrorProps={{
+            children: errors.name
           }}
         />
 
         <Input
           fieldRootProps={{
-            // This is just to explicitly show its not depending on forceValidity.
-            forceValidity: false,
+            invalid: getInvalid('email', emailTouched),
             touched: emailTouched
+          }}
+
+          fieldLabelProps={{
+            children: 'Email',
+            labelRequired: true
           }}
 
           inputProps={{
@@ -468,17 +443,20 @@ export const RegisterForm = () => {
             value: email
           }}
 
-          fieldLabelProps={{
-            children: 'Email',
-            labelRequired: true
+          fieldErrorProps={{
+            children: errors.email
           }}
         />
 
         <Input
           fieldRootProps={{
-            // This is just to explicitly show its not depending on forceValidity.
-            forceValidity: false,
+            invalid: getInvalid('password', passwordTouched),
             touched: passwordTouched
+          }}
+
+          fieldLabelProps={{
+            children: 'Password',
+            labelRequired: true
           }}
 
           inputProps={{
@@ -495,8 +473,6 @@ export const RegisterForm = () => {
               if (passwordTouched) {
                 validatePassword(newValue)
               }
-
-              // ⚠️ Gotcha: confirmPassword validation also needs to run after every time newPassword changes.
               if (confirmPasswordTouched) {
                 validateConfirmPassword(undefined, newValue)
               }
@@ -505,17 +481,20 @@ export const RegisterForm = () => {
             value: password
           }}
 
-          fieldLabelProps={{
-            children: 'Password',
-            labelRequired: true
+          fieldErrorProps={{
+            children: errors.password
           }}
         />
 
         <Input
           fieldRootProps={{
-            // This is just to explicitly show its not depending on forceValidity.
-            forceValidity: false,
+            invalid: getInvalid('confirmPassword', confirmPasswordTouched),
             touched: confirmPasswordTouched
+          }}
+
+          fieldLabelProps={{
+            children: 'Confirm Password',
+            labelRequired: true
           }}
 
           inputProps={{
@@ -537,9 +516,8 @@ export const RegisterForm = () => {
             value: confirmPassword
           }}
 
-          fieldLabelProps={{
-            children: 'Confirm Password',
-            labelRequired: true
+          fieldErrorProps={{
+            children: errors.confirmPassword
           }}
         />
 
@@ -562,7 +540,7 @@ export const RegisterForm = () => {
             'Register'
           )}
         </Button>
-      </Form>
+      </form>
 
       <div className='text-muted-foreground text-center text-sm'>
         Already have an account?{' '}

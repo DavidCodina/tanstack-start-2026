@@ -274,8 +274,11 @@ export const UpdatePasswordForm = ({
     } finally {
       setFormPending(false)
       setCurrentPassword('')
+      setCurrentPasswordTouched(false)
       setNewPassword('')
+      setNewPasswordTouched(false)
       setConfirmNewPassword('')
+      setConfirmNewPasswordTouched(false)
       setErrors({})
       setResetKey((v) => v + 1)
     }
@@ -326,7 +329,9 @@ export const UpdatePasswordForm = ({
         validationMode='onBlur'
       >
         <Input
-          fieldRootProps={{}}
+          fieldRootProps={{
+            touched: currentPasswordTouched
+          }}
 
           inputProps={{
             autoCapitalize: 'none',
@@ -361,7 +366,9 @@ export const UpdatePasswordForm = ({
         />
 
         <Input
-          fieldRootProps={{}}
+          fieldRootProps={{
+            touched: newPasswordTouched
+          }}
 
           inputProps={{
             autoCapitalize: 'none',
@@ -398,7 +405,9 @@ export const UpdatePasswordForm = ({
         />
 
         <Input
-          fieldRootProps={{}}
+          fieldRootProps={{
+            touched: confirmNewPasswordTouched
+          }}
 
           inputProps={{
             autoCapitalize: 'none',

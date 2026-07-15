@@ -37,8 +37,11 @@ const PasswordSchema = z
 // https://better-auth.com/docs/adapters/drizzle
 // https://www.better-auth.com/docs/concepts/cli
 
+//# Finish watching hooks tutorials...
+
 // Todo: Update RegisterForm, UpdatePasswordForm, ResetPasswordForm,
 //# and LoginForm to all use a password input.
+//# Make sure they all reset touched as well.
 
 // Todo: Update UpdateEmailForm, UpdateUserForm, ForgotPasswordForm to all use
 //# Form + Zod.
@@ -488,9 +491,18 @@ export const auth = betterAuth({
         //
         // Is It Redundant?
         //
-        // No. It's actually necessary as an added layer of validation to prevent anyone
-        // who might try to circumvent the normal channels by calling the Better Auth API
-        // endpoints directly.
+        // No. It's defense in depth. It's actually necessary as an added layer of validation to
+        // prevent anyone who might try to circumvent the normal channels by calling the Better Auth API
+        // endpoints directly. It's the only validation that's guaranteed to run no matter which door
+        // someone comes through. The other two layers are:
+        //
+        //   1. Client-side form validation — pure UX, zero trust, trivially bypassed
+        //   2. Server function validation (e.g., register.ts) — protects that specific call path,
+        //      but only if the person goes through your app's server function instead of hitting
+        //      Better Auth's endpoint directly..
+        //
+        // The hook is the one layer that sits at the actual trust boundary (inside the auth library itself),
+        // so it's arguably the most important of the three, not the least.
         //
         ///////////////////////////////////////////////////////////////////////////
         if (

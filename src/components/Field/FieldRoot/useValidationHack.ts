@@ -56,6 +56,7 @@ export const useValidationHack = ({
     const fieldLabels = fieldRoot.querySelectorAll("[data-slot='field-label']")
 
     const fieldControl = fieldRoot.querySelector("[data-slot='field-control']")
+    const input = fieldRoot.querySelector("[data-slot='input']")
 
     const fieldDescription = fieldRoot.querySelector(
       "[data-slot='field-description']"
@@ -143,6 +144,10 @@ export const useValidationHack = ({
 
     const sliderThumb = fieldRoot.querySelector("[data-slot='slider-thumb']")
 
+    /* ======================
+
+    ====================== */
+
     if (validating) {
       fieldRoot.setAttribute('data-validating', '')
 
@@ -156,6 +161,10 @@ export const useValidationHack = ({
 
       if (fieldControl) {
         fieldControl.setAttribute('data-validating', '')
+      }
+
+      if (input) {
+        input.setAttribute('data-validating', '')
       }
 
       if (fieldDescription) {
@@ -265,6 +274,10 @@ export const useValidationHack = ({
       return
     }
 
+    /* ======================
+
+    ====================== */
+
     if (!validating) {
       fieldRoot.removeAttribute('data-validating')
 
@@ -277,6 +290,8 @@ export const useValidationHack = ({
       })
 
       if (fieldControl) fieldControl.removeAttribute('data-validating')
+
+      if (input) input.removeAttribute('data-validating')
 
       if (fieldDescription) fieldDescription.removeAttribute('data-validating')
 
@@ -381,7 +396,11 @@ export const useValidationHack = ({
 
     if (forceValidity !== true) return
 
+    /* ======================
+
+    ====================== */
     // Otherwise, check invalid for true | false | undefined.
+
     if (invalid === true) {
       fieldRoot.setAttribute('data-invalid', '')
       fieldRoot.removeAttribute('data-valid')
@@ -399,6 +418,11 @@ export const useValidationHack = ({
       if (fieldControl) {
         fieldControl.setAttribute('data-invalid', '')
         fieldControl.removeAttribute('data-valid')
+      }
+
+      if (input) {
+        input.setAttribute('data-invalid', '')
+        input.removeAttribute('data-valid')
       }
 
       if (fieldDescription) {
@@ -534,6 +558,10 @@ export const useValidationHack = ({
       return
     }
 
+    /* ======================
+
+    ====================== */
+
     if (invalid === false) {
       fieldRoot.setAttribute('data-valid', '')
       fieldRoot.removeAttribute('data-invalid')
@@ -551,6 +579,11 @@ export const useValidationHack = ({
       if (fieldControl) {
         fieldControl.setAttribute('data-valid', '')
         fieldControl.removeAttribute('data-invalid')
+      }
+
+      if (input) {
+        input.setAttribute('data-valid', '')
+        input.removeAttribute('data-invalid')
       }
 
       if (fieldDescription) {
@@ -686,7 +719,11 @@ export const useValidationHack = ({
       return
     }
 
+    /* ======================
+
+    ====================== */
     // Otherwise, invalid is undefined
+
     fieldRoot.removeAttribute('data-valid')
     fieldRoot.removeAttribute('data-invalid')
 
@@ -703,6 +740,11 @@ export const useValidationHack = ({
     if (fieldControl) {
       fieldControl.removeAttribute('data-valid')
       fieldControl.removeAttribute('data-invalid')
+    }
+
+    if (input) {
+      input.removeAttribute('data-valid')
+      input.removeAttribute('data-invalid')
     }
 
     if (fieldDescription) {

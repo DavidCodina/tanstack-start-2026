@@ -272,7 +272,9 @@ export const ResetPasswordForm = () => {
         toast.error('Unable to reset password.')
       } finally {
         setNewPassword('')
+        setNewPasswordTouched(false)
         setConfirmNewPassword('')
+        setConfirmNewPasswordTouched(false)
         setErrors({})
         setResetKey((v) => v + 1)
       }
@@ -327,7 +329,9 @@ export const ResetPasswordForm = () => {
           validationMode='onBlur'
         >
           <Input
-            fieldRootProps={{}}
+            fieldRootProps={{
+              touched: newPasswordTouched
+            }}
 
             inputProps={{
               autoCapitalize: 'none',
@@ -373,7 +377,9 @@ export const ResetPasswordForm = () => {
           />
 
           <Input
-            fieldRootProps={{}}
+            fieldRootProps={{
+              touched: confirmNewPasswordTouched
+            }}
 
             inputProps={{
               autoCapitalize: 'none',
