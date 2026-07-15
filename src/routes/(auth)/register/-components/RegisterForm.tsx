@@ -6,6 +6,9 @@ import * as z from 'zod'
 import { TriangleAlert } from 'lucide-react'
 
 import { register } from '../-server-functions/register'
+
+import type { FieldRootActions } from '@base-ui/react'
+
 import { Button } from '@/components'
 import { Input } from '@/components/Input'
 import { InputPassword } from '@/components/InputPassword'
@@ -68,23 +71,15 @@ type FormErrors = Partial<Record<keyof ZodData, string>>
 ======================================================================== */
 ///////////////////////////////////////////////////////////////////////////
 //
-// Regarding Fine-Grained Validation Control:
+// This approach uses a dynamic field-level validationMode based on the touched state.
+// It's clever, but it seems to necesitate this specific approach to sync the confirmPassword
+// validation.
 //
-// For this demo we're using Base UI Form's onFormSubmit to initiate
-// form-level validation. Initially, I was also using Base UI Input's validate
-// prop for field-level validation. This mostly works, but the validationMode
-// can only be 'onBlur', 'onChange', or 'onSubmit'. This results in some
-// unusual behavior such that if 'onBlur' is selected, an invalid value
-// will trigger data-invalid, but as soon as you go back to the field and
-// begin typing again, it will be data-valid until another blur occurs.
+//   setTimeout(() => {
+//     confirmPasswordActionsRef.current?.validate()
+//   }, 0)
 //
-// In other words, there's nothing analagous to validationMode="onBlurThenOnChange".
-// The best solution is to switch to using TanStack Form. However, we can also
-// manually implement touched state + validation onBlur + validation onValueChange.
-// This is the way...
-//
-// Note: it's still important to set validationMode to 'onBlur' either in each
-// field or in the <Form />.
+// It works fine, but feels a little hacky...
 //
 ///////////////////////////////////////////////////////////////////////////
 
@@ -95,7 +90,7 @@ export const RegisterForm = () => {
 
   const navigate = useNavigate()
 
-  const actionsRef = React.useRef<Form.Actions>(null)
+  const formActionsRef = React.useRef<Form.Actions>(null)
   const formRef = React.useRef<HTMLFormElement>(null)
 
   const [name, setName] = React.useState('')
@@ -107,12 +102,14 @@ export const RegisterForm = () => {
   const [password, setPassword] = React.useState('')
   const [passwordTouched, setPasswordTouched] = React.useState(false)
 
+  const confirmPasswordActionsRef = React.useRef<FieldRootActions>(null)
   const [confirmPassword, setConfirmPassword] = React.useState('')
   const [confirmPasswordTouched, setConfirmPasswordTouched] =
     React.useState(false)
 
   const [errors, setErrors] = React.useState<FormErrors>({})
-  const isErrors = Object.keys(errors).length > 0
+  // const isErrors = Object.keys(errors).length > 0
+  const isErrors = Object.values(errors).some((value) => !!value)
 
   const [formPending, startFormTransition] = React.useTransition()
 
@@ -133,8 +130,12 @@ export const RegisterForm = () => {
   /* ======================
         validateName()
   ====================== */
+  // Note that each validator conforms to a type that returns string | null.
+  // This allows them to also be returned from the validate callback.
+  // It may seem redundant to also call setErrors(), but this is the only
+  // way to maintain an external record of the errors for `isErrors`, etc.
 
-  const validateName = (value?: string) => {
+  const validateName = (value?: string): string | null => {
     value = typeof value === 'string' ? value : name
     const validationResult = FormSchema.shape.name.safeParse(value)
 
@@ -148,25 +149,24 @@ export const RegisterForm = () => {
           }
           return newErrors
         })
+        return error
       }
-      return
     }
 
     setErrors((prev) => {
-      // Alternatively destructure out:
-      // const { name: _name, ...rest } = prev
-      // return rest
       const newErrors: FormErrors = { ...prev }
       delete newErrors.name
       return newErrors
     })
+
+    return null
   }
 
   /* ======================
       validateEmail()
   ====================== */
 
-  const validateEmail = (value?: string) => {
+  const validateEmail = (value?: string): string | null => {
     value = typeof value === 'string' ? value : email
     const validationResult = FormSchema.shape.email.safeParse(value)
 
@@ -180,8 +180,8 @@ export const RegisterForm = () => {
           }
           return newErrors
         })
+        return error
       }
-      return
     }
 
     setErrors((prev) => {
@@ -189,15 +189,30 @@ export const RegisterForm = () => {
       delete newErrors.email
       return newErrors
     })
+
+    return null
   }
 
   /* ======================
       validatePassword()
   ====================== */
 
-  const validatePassword = (value?: string) => {
+  const validatePassword = (value?: string): string | null => {
     value = typeof value === 'string' ? value : password
     const validationResult = FormSchema.shape.password.safeParse(value)
+
+    // ⚠️ Gotcha: confirmPassword validation also needs
+    // to run after every time newPassword changes.
+    if (confirmPasswordTouched) {
+      // setTimeout needed to ensure it happens last.
+      setTimeout(() => {
+        // Using the actionsRef is the most idiomatic and least error prone in this case.
+        confirmPasswordActionsRef.current?.validate()
+        // This approach seems prone to some kind of race condition,
+        // even inside of the setTimeout.
+        // ❌ validateConfirmPassword(confirmPassword, value)
+      }, 0)
+    }
 
     if (validationResult.success === false) {
       const error = validationResult.error.issues[0]?.message
@@ -209,8 +224,9 @@ export const RegisterForm = () => {
           }
           return newErrors
         })
+
+        return error
       }
-      return
     }
 
     setErrors((prev) => {
@@ -218,13 +234,18 @@ export const RegisterForm = () => {
       delete newErrors.password
       return newErrors
     })
+
+    return null
   }
 
   /* ======================
   validateConfirmPassword()
   ====================== */
 
-  const validateConfirmPassword = (value?: string, pass?: string) => {
+  const validateConfirmPassword = (
+    value?: string,
+    pass?: string
+  ): string | null => {
     value = typeof value === 'string' ? value : confirmPassword
     pass = typeof pass === 'string' ? pass : password
 
@@ -241,8 +262,8 @@ export const RegisterForm = () => {
           }
           return newErrors
         })
+        return error
       }
-      return
     }
 
     setErrors((prev) => {
@@ -250,10 +271,12 @@ export const RegisterForm = () => {
       delete newErrors.confirmPassword
       return newErrors
     })
+
+    return null
   }
 
   /* ======================
-        handleSubmit()
+      handleSubmit()
   ====================== */
 
   const handleSubmit = async (zodData: ZodData) => {
@@ -367,7 +390,7 @@ export const RegisterForm = () => {
   return (
     <>
       <Form
-        actionsRef={actionsRef}
+        actionsRef={formActionsRef}
         className='bg-card mx-auto mb-2 max-w-lg space-y-4 rounded-lg border p-4 shadow'
         errors={errors}
         key={resetKey}
@@ -385,6 +408,18 @@ export const RegisterForm = () => {
         //
         ///////////////////////////////////////////////////////////////////////////
         onFormSubmit={async (_formValues, _eventDetails) => {
+          // Set true on all toucher functions.
+          // This is important in order to subsequently allow validation onChange.
+          const touchers: React.Dispatch<React.SetStateAction<boolean>>[] = [
+            setNameTouched,
+            setEmailTouched,
+            setPasswordTouched,
+            setConfirmPasswordTouched
+          ]
+          touchers.forEach((toucher) => {
+            toucher(true)
+          })
+
           // Validation...
           const {
             data: zodData,
@@ -409,138 +444,131 @@ export const RegisterForm = () => {
         // I don't think this is necessary if we're using onFormSubmit.
         onSubmit={(e) => e.preventDefault()}
         ref={formRef}
-        validationMode='onBlur'
+        // Set valiationMode on EVERY field instead based dynamically on the touched state.
+        // ❌ validationMode='onBlur'
       >
         <Input
           fieldRootProps={{
             // This is just to explicitly show its not depending on forceValidity.
             forceValidity: false,
-            touched: nameTouched
-          }}
-
-          inputProps={{
-            fieldSize: 'sm',
-            name: 'name',
-            onBlur: (e) => {
-              const value = e.target.value
-              setNameTouched(true)
-              validateName(value)
-            },
-            onValueChange: (newValue) => {
-              setName(newValue)
-              if (nameTouched) {
-                validateName(newValue)
-              }
-            },
-
-            placeholder: 'Full Name...',
-            value: name
+            touched: nameTouched,
+            validationMode: nameTouched ? 'onChange' : 'onBlur',
+            validate: (value) => {
+              return validateName(value as string)
+            }
           }}
 
           fieldLabelProps={{
             children: 'Full Name',
             labelRequired: true
           }}
+
+          inputProps={{
+            fieldSize: 'sm',
+            name: 'name',
+            onBlur: (_e) => {
+              setNameTouched(true)
+            },
+            onValueChange: (newValue) => {
+              setName(newValue)
+            },
+
+            placeholder: 'Full Name...',
+            value: name
+          }}
         />
 
         <Input
           fieldRootProps={{
             // This is just to explicitly show its not depending on forceValidity.
             forceValidity: false,
-            touched: emailTouched
-          }}
-
-          inputProps={{
-            fieldSize: 'sm',
-            name: 'email',
-            type: 'email',
-            onBlur: (e) => {
-              const value = e.target.value
-              setEmailTouched(true)
-              validateEmail(value)
-            },
-            onValueChange: (newValue) => {
-              setEmail(newValue)
-              if (emailTouched) {
-                validateEmail(newValue)
-              }
-            },
-            placeholder: 'Email...',
-            value: email
+            touched: emailTouched,
+            validationMode: emailTouched ? 'onChange' : 'onBlur',
+            validate: (value) => {
+              return validateEmail(value as string)
+            }
           }}
 
           fieldLabelProps={{
             children: 'Email',
             labelRequired: true
           }}
+
+          inputProps={{
+            fieldSize: 'sm',
+            name: 'email',
+            type: 'email',
+            onBlur: (_e) => {
+              setEmailTouched(true)
+            },
+            onValueChange: (newValue) => {
+              setEmail(newValue)
+            },
+            placeholder: 'Email...',
+            value: email
+          }}
         />
 
         <InputPassword
           fieldRootProps={{
             // This is just to explicitly show its not depending on forceValidity.
             forceValidity: false,
-            touched: passwordTouched
-          }}
-
-          inputProps={{
-            fieldSize: 'sm',
-            name: 'password',
-            type: 'password',
-            onBlur: (e) => {
-              const value = e.target.value
-              setPasswordTouched(true)
-              validatePassword(value)
-            },
-            onValueChange: (newValue) => {
-              setPassword(newValue)
-              if (passwordTouched) {
-                validatePassword(newValue)
-              }
-
-              // ⚠️ Gotcha: confirmPassword validation also needs to run after every time newPassword changes.
-              if (confirmPasswordTouched) {
-                validateConfirmPassword(undefined, newValue)
-              }
-            },
-            placeholder: 'Password...',
-            value: password
+            touched: passwordTouched,
+            validationMode: passwordTouched ? 'onChange' : 'onBlur',
+            validate: (value) => {
+              return validatePassword(value as string)
+            }
           }}
 
           fieldLabelProps={{
             children: 'Password',
             labelRequired: true
           }}
+
+          inputProps={{
+            fieldSize: 'sm',
+            name: 'password',
+            type: 'password',
+            onBlur: (_e) => {
+              setPasswordTouched(true)
+            },
+            onValueChange: (newValue) => {
+              setPassword(newValue)
+            },
+            placeholder: 'Password...',
+            value: password
+          }}
         />
 
         <InputPassword
           fieldRootProps={{
+            actionsRef: confirmPasswordActionsRef,
             // This is just to explicitly show its not depending on forceValidity.
             forceValidity: false,
-            touched: confirmPasswordTouched
+            touched: confirmPasswordTouched,
+            validationMode: confirmPasswordTouched ? 'onChange' : 'onBlur',
+            validate: (value) => {
+              return validateConfirmPassword(value as string)
+            }
+          }}
+
+          fieldLabelProps={{
+            children: 'Confirm Password',
+            labelRequired: true
           }}
 
           inputProps={{
             fieldSize: 'sm',
             name: 'confirmPassword',
             type: 'password',
-            onBlur: (e) => {
-              const value = e.target.value
+            onBlur: (_e) => {
               setConfirmPasswordTouched(true)
-              validateConfirmPassword(value)
             },
             onValueChange: (newValue) => {
               setConfirmPassword(newValue)
-              if (confirmPasswordTouched) {
-                validateConfirmPassword(newValue)
-              }
             },
             placeholder: 'Confirm Password...',
             value: confirmPassword
-          }}
-
-          fieldLabelProps={{
-            children: 'Confirm Password',
-            labelRequired: true
           }}
         />
 

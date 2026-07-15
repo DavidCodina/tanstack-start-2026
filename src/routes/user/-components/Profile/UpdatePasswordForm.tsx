@@ -87,7 +87,6 @@ export const UpdatePasswordForm = ({
     React.useState(false)
 
   const [errors, setErrors] = React.useState<FormErrors>({})
-
   const isErrors = Object.values(errors).some((value) => !!value)
 
   const [formPending, setFormPending] = React.useState(false)
@@ -302,6 +301,17 @@ export const UpdatePasswordForm = ({
         key={resetKey}
         noValidate
         onFormSubmit={async (_formValues, _eventDetails) => {
+          // Set true on all toucher functions.
+          // This is important in order to subsequently allow validation onChange.
+          const touchers: React.Dispatch<React.SetStateAction<boolean>>[] = [
+            setCurrentPasswordTouched,
+            setNewPasswordTouched,
+            setConfirmNewPasswordTouched
+          ]
+          touchers.forEach((toucher) => {
+            toucher(true)
+          })
+
           // Validation...
           const {
             data: zodData,

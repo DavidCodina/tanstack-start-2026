@@ -1,23 +1,45 @@
-'use client'
-
 import * as React from 'react'
+import { Form } from '@base-ui/react/form'
 import { toast } from 'sonner'
-import { authClient } from '@/lib/auth-client'
-// import { z } from 'zod'
+import { z } from 'zod'
+import { TriangleAlert } from 'lucide-react'
 
+import { authClient } from '@/lib/auth-client'
 import { Button } from '@/components'
 import { Input } from '@/components/Input'
-import { cn } from '@/utils'
+import { cn, formatZodErrors } from '@/utils'
 
+//! This is wrong!
 type UpdateEmailFormProps = React.ComponentProps<'form'> & {
   currentEmail: string
 }
 
-// const updateEmailSchema = z.object({
-//   newEmail: z.email({ message: 'Enter a valid email' })
-// })
+/* ======================
+      Zod Schema
+====================== */
 
-// type UpdateEmailValues = z.infer<typeof updateEmailSchema>
+const getNewEmailSchema = (currentEmail: unknown) => {
+  const NewEmailSchema = z.email().refine(
+    (value) => {
+      return value !== currentEmail
+    },
+    {
+      error: 'The email is the same.'
+    }
+  )
+
+  return NewEmailSchema
+}
+const getFormSchema = (currentEmail: unknown) => {
+  const FormSchema = z.object({
+    newEmail: getNewEmailSchema(currentEmail)
+  })
+  return FormSchema
+}
+
+type FormSchemaType = ReturnType<typeof getFormSchema>
+type ZodData = z.infer<FormSchemaType>
+type FormErrors = Partial<Record<keyof ZodData, string>>
 
 /* ========================================================================
 
@@ -47,42 +69,71 @@ export const UpdateEmailForm = ({
   currentEmail = '',
   ...otherProps
 }: UpdateEmailFormProps) => {
+  /* ======================
+        state & refs
+  ====================== */
+
+  const formActionsRef = React.useRef<Form.Actions>(null)
+  const formRef = React.useRef<HTMLFormElement>(null)
+
   const [newEmail, setNewEmail] = React.useState(() => {
     if (currentEmail && typeof currentEmail === 'string') {
       return currentEmail
     }
     return ''
   })
+  const [newEmailTouched, setNewEmailTouched] = React.useState(false)
 
-  const [pending, setPending] = React.useState(false)
+  const [errors, setErrors] = React.useState<FormErrors>({})
+  // const isErrors = Object.keys(errors).length > 0
+  const isErrors = Object.values(errors).some((value) => !!value)
+
+  const [formPending, setFormPending] = React.useState(false)
+  const [resetKey, setResetKey] = React.useState(0)
+
+  const FormSchema = getFormSchema(currentEmail)
 
   /* ======================
-
+      validateNewEmail()
   ====================== */
 
-  const handleUpdateEmail = async (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ) => {
-    e.preventDefault()
+  const validateNewEmail = (value?: string): void => {
+    value = typeof value === 'string' ? value : newEmail
+    const validationResult = FormSchema.shape.newEmail.safeParse(value)
 
-    // We could do this, but what if we wanted to update the image, but not the email?
-    // if (newEmail === currentEmail) {
-    //   toast.error("You can't use the same email address.")
-    //   return
-    // }
-
-    //# Validation!!!
-    if (!newEmail) {
+    if (validationResult.success === false) {
+      const error = validationResult.error.issues[0]?.message
+      if (typeof error === 'string') {
+        setErrors((prev) => {
+          const newErrors: FormErrors = {
+            ...prev,
+            newEmail: error
+          }
+          return newErrors
+        })
+      }
       return
     }
 
-    setPending(true)
+    setErrors((prev) => {
+      const newErrors: FormErrors = { ...prev }
+      delete newErrors.newEmail
+      return newErrors
+    })
+  }
+
+  /* ======================
+        handleSubmit()
+  ====================== */
+
+  const handleSubmit = async (zodData: ZodData) => {
+    setFormPending(true)
 
     try {
       // This works against OAuth or credential signups. Changing email
       // for a user with an Oath account does not break the login flow.
       const { data, error } = await authClient.changeEmail({
-        newEmail,
+        newEmail: zodData.newEmail,
         callbackURL: '/user?email_updated=true'
       })
 
@@ -91,7 +142,17 @@ export const UpdateEmailForm = ({
         //
         // If the newEmail is submitted and it matches the current email, then an
         // error will occur:
-        // {message: 'Email is the same', status: 400, statusText: 'BAD_REQUEST'}
+        //
+        //   {message: 'Email is the same', status: 400, statusText: 'BAD_REQUEST'}
+        //
+        ///////////////////////////////////////////////////////////////////////////
+
+        if (error.message === 'Email is the same') {
+          toast.error(error.message)
+          return
+        }
+
+        ///////////////////////////////////////////////////////////////////////////
         //
         // Note: If a user attempts to submit a newEmail that already exists on another user,
         // it will not error out, and instead silently do nothing (i.e., no verification email sent).
@@ -111,6 +172,7 @@ export const UpdateEmailForm = ({
         //
         ///////////////////////////////////////////////////////////////////////////
         toast.error('Unable to send email verification.')
+
         return
       }
 
@@ -118,14 +180,20 @@ export const UpdateEmailForm = ({
         // The trade-off for the security measure above is that we can't rely on the API
         // response to tell the user "that email is taken."
         toast.success(
-          "If this email isn't already associated with an account, we've sent a confirmation link to it."
+          "If the email isn't already associated with an account, we've sent a confirmation link to it."
         )
         return
       }
     } catch (_err) {
       toast.error('Unable to send email verification.')
     } finally {
-      setPending(false)
+      setFormPending(false)
+      // Not necessary to clear the email. The success flow entails sending an email
+      // then redirecting back to a new tab/window.
+      // setNewEmail('')
+      setNewEmailTouched(false)
+      setErrors({})
+      setResetKey((v) => v + 1)
     }
   }
 
@@ -162,45 +230,103 @@ export const UpdateEmailForm = ({
   return (
     <>
       <h2 className='text-primary mb-1 text-4xl font-black'>Update Email</h2>
-      <form
+      <Form
         {...otherProps}
-        onSubmit={(e) => e.preventDefault()}
+        actionsRef={formActionsRef}
+
         className={cn(
           'bg-card space-y-4 rounded-lg border p-4 shadow',
           className
         )}
+        errors={errors}
+        key={resetKey}
         noValidate
+
+        onFormSubmit={async (_formValues, _eventDetails) => {
+          // Set true on all toucher functions.
+          // This is important in order to subsequently allow validation onChange.s
+          const touchers: React.Dispatch<React.SetStateAction<boolean>>[] = [
+            setNewEmailTouched
+          ]
+
+          touchers.forEach((toucher) => {
+            toucher(true)
+          })
+
+          // Validation...
+          const {
+            data: zodData,
+            error: zodError,
+            success: zodSuccess
+          } = await FormSchema.safeParseAsync({
+            newEmail
+          })
+
+          if (!zodSuccess) {
+            const formattedZodErrors = formatZodErrors(zodError)
+            setErrors(formattedZodErrors)
+            return
+          }
+          // Submission...
+          handleSubmit(zodData)
+        }}
+        // I don't think this is necessary if we're using onFormSubmit.
+        onSubmit={(e) => e.preventDefault()}
+        ref={formRef}
+        validationMode='onBlur'
       >
         <Input
-          fieldRootProps={{}}
-
-          inputProps={{
-            fieldSize: 'sm',
-            name: 'email',
-            type: 'text',
-            onValueChange: (newValue) => {
-              setNewEmail(newValue)
-            },
-            placeholder: 'Email...',
-            value: newEmail
+          fieldRootProps={{
+            // This is just to explicitly show its not depending on forceValidity.
+            forceValidity: false,
+            touched: newEmailTouched
           }}
 
           fieldLabelProps={{
             children: 'Email',
             labelRequired: true
           }}
+
+          inputProps={{
+            fieldSize: 'sm',
+            name: 'newEmail',
+            type: 'text',
+
+            onBlur: (e) => {
+              const value = e.target.value
+              setNewEmailTouched(true)
+              validateNewEmail(value)
+            },
+            onValueChange: (newValue) => {
+              setNewEmail(newValue)
+              if (newEmailTouched) {
+                validateNewEmail(newValue)
+              }
+            },
+            placeholder: 'Email...',
+            value: newEmail
+          }}
         />
 
         <Button
           className='flex w-full'
-          loading={pending}
-          onClick={handleUpdateEmail}
+          disabled={isErrors}
+          loading={formPending}
           size='sm'
-          type='button'
+          type='submit'
+          variant={isErrors ? 'destructive' : 'primary'}
         >
-          {pending ? 'Saving...' : 'Save Changes'}
+          {isErrors ? (
+            <>
+              <TriangleAlert /> Please Correct Errors...
+            </>
+          ) : formPending ? (
+            'Saving...'
+          ) : (
+            'Save Changes'
+          )}
         </Button>
-      </form>
+      </Form>
     </>
   )
 }

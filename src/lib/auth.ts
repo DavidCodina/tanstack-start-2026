@@ -37,7 +37,12 @@ const PasswordSchema = z
 // https://better-auth.com/docs/adapters/drizzle
 // https://www.better-auth.com/docs/concepts/cli
 
-// Todo: Update LoginForm, UpdateEmailForm, UpdateUserForm, ForgotPasswordForm to all use Form + Zod.
+// Todo: Update
+//# ❎ LoginForm,
+//# ❎ LinkCredentialsForm,
+// ✅  UpdateEmailForm,
+// ✅ UpdateUserForm,
+// ✅ ForgotPasswordForm
 
 //# Create a RegisterForm3 that works with TanStack Form.
 

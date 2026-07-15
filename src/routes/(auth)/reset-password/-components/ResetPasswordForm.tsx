@@ -301,6 +301,16 @@ export const ResetPasswordForm = () => {
               return
             }
 
+            // Set true on all toucher functions.
+            // This is important in order to subsequently allow validation onChange.
+            const touchers: React.Dispatch<React.SetStateAction<boolean>>[] = [
+              setNewPasswordTouched,
+              setConfirmNewPasswordTouched
+            ]
+            touchers.forEach((toucher) => {
+              toucher(true)
+            })
+
             // Validation...
             const {
               data: zodData,

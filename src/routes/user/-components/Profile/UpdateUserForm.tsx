@@ -1,25 +1,30 @@
-'use client'
-
 import * as React from 'react'
+// import { useRouter } from '@tanstack/react-router'
+import { Form } from '@base-ui/react/form'
 import { toast } from 'sonner'
-import { useRouter } from '@tanstack/react-router'
-import { authClient } from '@/lib/auth-client'
-// import { z } from 'zod'
+import { z } from 'zod'
+import { TriangleAlert } from 'lucide-react'
 
+import { authClient } from '@/lib/auth-client'
 import { Button } from '@/components'
 import { Input } from '@/components/Input'
-import { cn } from '@/utils'
+import { cn, formatZodErrors } from '@/utils'
 
-// const updateProfileSchema = z.object({
-//   name: z.string().trim().min(1, { message: 'Name is required' }),
-//   image: z.string().optional().nullable() // Better to make this a string URL.
-// })
-
-// type UpdateProfileValues = z.infer<typeof updateProfileSchema>
-
+//! This is wrong!
 type UpdateUserFormProps = React.ComponentProps<'form'> & {
   currentName: string
 }
+
+/* ======================
+      Zod Schema
+====================== */
+
+const FormSchema = z.object({
+  name: z.string().min(1, { error: 'A name is required' })
+})
+
+type ZodData = z.infer<typeof FormSchema>
+type FormErrors = Partial<Record<keyof ZodData, string>>
 
 /* ========================================================================
 
@@ -33,7 +38,14 @@ export const UpdateUserForm = ({
   currentName = '',
   ...otherProps
 }: UpdateUserFormProps) => {
-  const router = useRouter()
+  // const router = useRouter()
+
+  /* ======================
+        state & refs
+  ====================== */
+
+  const formActionsRef = React.useRef<Form.Actions>(null)
+  const formRef = React.useRef<HTMLFormElement>(null)
 
   const [name, setName] = React.useState(() => {
     if (currentName && typeof currentName === 'string') {
@@ -41,20 +53,50 @@ export const UpdateUserForm = ({
     }
     return ''
   })
+  const [nameTouched, setNameTouched] = React.useState(false)
 
-  const [pending, setPending] = React.useState(false)
+  const [errors, setErrors] = React.useState<FormErrors>({})
+  // const isErrors = Object.keys(errors).length > 0
+  const isErrors = Object.values(errors).some((value) => !!value)
+
+  const [formPending, setFormPending] = React.useState(false)
+  const [resetKey, setResetKey] = React.useState(0)
 
   /* ======================
-
+        validateName()
   ====================== */
 
-  const handleUpdateUser = async (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ) => {
-    e.preventDefault()
-    setPending(true)
+  const validateName = (value?: string): void => {
+    value = typeof value === 'string' ? value : name
+    const validationResult = FormSchema.shape.name.safeParse(value)
 
-    //# Validation!!!
+    if (validationResult.success === false) {
+      const error = validationResult.error.issues[0]?.message
+      if (typeof error === 'string') {
+        setErrors((prev) => {
+          const newErrors: FormErrors = {
+            ...prev,
+            name: error
+          }
+          return newErrors
+        })
+      }
+      return
+    }
+
+    setErrors((prev) => {
+      const newErrors: FormErrors = { ...prev }
+      delete newErrors.name
+      return newErrors
+    })
+  }
+
+  /* ======================
+        handleSubmit()
+  ====================== */
+
+  const handleSubmit = async (zodData: ZodData) => {
+    setFormPending(true)
 
     try {
       ///////////////////////////////////////////////////////////////////////////
@@ -70,8 +112,8 @@ export const UpdateUserForm = ({
       // However, all we really need is a string URL. Currently, I haven't focused much on image s.
       //
       ///////////////////////////////////////////////////////////////////////////
-      const { data, error } = await authClient.updateUser({
-        name: name
+      const result = await authClient.updateUser({
+        name: zodData.name
         // isCool: true
 
         //# Programming with Atiq at 1:28:55 uses upload thing:
@@ -79,6 +121,8 @@ export const UpdateUserForm = ({
         //# image
         // fetchOptions: {}
       })
+
+      const { data, error } = result
 
       if (error) {
         toast.error('Unable to update user.')
@@ -100,14 +144,19 @@ export const UpdateUserForm = ({
         // a better approach implements a useEffect() to watch for changes to user.
         //
         ///////////////////////////////////////////////////////////////////////////
-        router.invalidate()
+        // router.invalidate()
 
         return
       }
     } catch (_err) {
       toast.error('Unable to update user.')
     } finally {
-      setPending(false)
+      setFormPending(false)
+      // Not necessary since we're setting name state again in useEffect on next tick.
+      // setName('')
+      setNameTouched(false)
+      setErrors({})
+      setResetKey((v) => v + 1)
     }
   }
 
@@ -129,49 +178,105 @@ export const UpdateUserForm = ({
   return (
     <>
       <h2 className='text-primary mb-1 text-4xl font-black'>Update User</h2>
-      <form
+      <Form
         {...otherProps}
-        onSubmit={(e) => e.preventDefault()}
+
+        actionsRef={formActionsRef}
         className={cn(
           'bg-card space-y-4 rounded-lg border p-4 shadow',
           className
         )}
+        errors={errors}
+        key={resetKey}
         noValidate
+
+        onFormSubmit={async (_formValues, _eventDetails) => {
+          // Set true on all toucher functions.
+          // This is important in order to subsequently allow validation onChange.
+          const touchers: React.Dispatch<React.SetStateAction<boolean>>[] = [
+            setNameTouched
+          ]
+          touchers.forEach((toucher) => {
+            toucher(true)
+          })
+
+          // Validation...
+          const {
+            data: zodData,
+            error: zodError,
+            success: zodSuccess
+          } = await FormSchema.safeParseAsync({
+            name
+          })
+
+          if (!zodSuccess) {
+            const formattedZodErrors = formatZodErrors(zodError)
+            setErrors(formattedZodErrors)
+            return
+          }
+          // Submission...
+          handleSubmit(zodData)
+        }}
+        // I don't think this is necessary if we're using onFormSubmit.
+        onSubmit={(e) => e.preventDefault()}
+        ref={formRef}
+
+        validationMode='onBlur'
       >
         <Input
-          fieldRootProps={{}}
+          fieldRootProps={{
+            // This is just to explicitly show its not depending on forceValidity.
+            forceValidity: false,
+            touched: nameTouched
+          }}
+          fieldLabelProps={{
+            children: 'Full Name',
+            labelRequired: true
+          }}
 
           inputProps={{
             fieldSize: 'sm',
             name: 'fullName',
             type: 'text',
+            onBlur: (e) => {
+              const value = e.target.value
+              setNameTouched(true)
+              validateName(value)
+            },
             onValueChange: (newValue) => {
               setName(newValue)
+              if (nameTouched) {
+                validateName(newValue)
+              }
             },
             placeholder: 'Full Name...',
             value: name
           }}
-
-          fieldLabelProps={{
-            children: 'Full Name',
-            labelRequired: true
-          }}
         />
 
         {/* 
-      //# Add image logic here...
+        //# Add image logic here...
        */}
 
         <Button
           className='flex w-full'
-          loading={pending}
-          onClick={handleUpdateUser}
+          disabled={isErrors}
+          loading={formPending}
           size='sm'
-          type='button'
+          type='submit'
+          variant={isErrors ? 'destructive' : 'primary'}
         >
-          {pending ? 'Saving...' : 'Save Changes'}
+          {isErrors ? (
+            <>
+              <TriangleAlert /> Please Correct Errors...
+            </>
+          ) : formPending ? (
+            'Saving...'
+          ) : (
+            'Save Changes'
+          )}
         </Button>
-      </form>
+      </Form>
     </>
   )
 }
