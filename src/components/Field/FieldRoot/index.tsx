@@ -44,13 +44,25 @@ export const FieldRoot = ({
   //
   // See https://github.com/mui/base-ui/issues/3777
   // invalid={false} before validation does nothing.
+  //
   // invalid={undefined} after validation falls back
-  // to the internal validity state. Ultimately, this
-  // means that the invalid prop is NOT the final arbiter
-  // of the field's data-valid/data-invalid attributes.
+  // to the internal validity state.
+  //
+  // Ultimately, this means that the invalid prop is NOT the final
+  // arbiter of the field's data-valid/data-invalid attributes.
   // This hack attempts to correct for that.
   //
   // Issues still exists as of v1.3.0
+  //
+  // Note: Before this hack, I tried rebuilding FieldRoot from the source code,
+  // but it's way too complex and has many weird dependencies. An alternative
+  // solution would be to allow invalid to be null (or 'initial'), then change
+  // it to undefined before passing it to FieldRoot. The custom invalid
+  // could then be passed to the Field.Label and Field.Error which
+  // would subsequently use it to determine CSS/Tailwind styles.
+  //
+  // In other words, we could entirely move away from relying on the data attributes
+  // for styling since they are applied in a counter-intuitive/unreliable manner.
   //
   ///////////////////////////////////////////////////////////////////////////
 
