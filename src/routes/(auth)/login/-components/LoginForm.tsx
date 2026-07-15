@@ -10,6 +10,7 @@ import { authClient } from '@/lib/auth-client'
 
 import { Button } from '@/components'
 import { Input } from '@/components/Input'
+import { InputPassword } from '@/components/InputPassword'
 import { login } from '@/server-functions/login'
 import { DEFAULT_LOGIN_REDIRECT } from '@/lib/routes'
 
@@ -337,7 +338,7 @@ const LoginForm = () => {
             }}
           />
 
-          <Input
+          <InputPassword
             fieldRootProps={{}}
 
             inputProps={{

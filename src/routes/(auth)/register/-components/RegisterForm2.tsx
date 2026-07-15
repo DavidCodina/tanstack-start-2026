@@ -7,6 +7,7 @@ import { TriangleAlert } from 'lucide-react'
 import { register } from '../-server-functions/register'
 import { Button } from '@/components'
 import { Input } from '@/components/Input'
+import { InputPassword } from '@/components/InputPassword'
 import { formatZodErrors } from '@/utils'
 
 /* ======================
@@ -313,6 +314,7 @@ export const RegisterForm2 = () => {
         setErrors({})
         // Technically, setResetKey() should not be necessary since we're now manually controlling
         // the invalid prop at all times. However, it's still a good practice to wipe the form.
+        // In this case, it also helps reset the InputPassword components to type="password"
         setResetKey((v) => v + 1)
       }
     })
@@ -448,7 +450,7 @@ export const RegisterForm2 = () => {
           }}
         />
 
-        <Input
+        <InputPassword
           fieldRootProps={{
             invalid: getInvalid('password', passwordTouched),
             touched: passwordTouched
@@ -486,7 +488,7 @@ export const RegisterForm2 = () => {
           }}
         />
 
-        <Input
+        <InputPassword
           fieldRootProps={{
             invalid: getInvalid('confirmPassword', confirmPasswordTouched),
             touched: confirmPasswordTouched

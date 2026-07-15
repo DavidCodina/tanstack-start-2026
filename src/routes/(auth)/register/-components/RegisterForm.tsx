@@ -8,6 +8,7 @@ import { TriangleAlert } from 'lucide-react'
 import { register } from '../-server-functions/register'
 import { Button } from '@/components'
 import { Input } from '@/components/Input'
+import { InputPassword } from '@/components/InputPassword'
 import { formatZodErrors } from '@/utils'
 
 /* ======================
@@ -474,7 +475,7 @@ export const RegisterForm = () => {
           }}
         />
 
-        <Input
+        <InputPassword
           fieldRootProps={{
             // This is just to explicitly show its not depending on forceValidity.
             forceValidity: false,
@@ -511,7 +512,7 @@ export const RegisterForm = () => {
           }}
         />
 
-        <Input
+        <InputPassword
           fieldRootProps={{
             // This is just to explicitly show its not depending on forceValidity.
             forceValidity: false,

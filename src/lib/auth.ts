@@ -37,14 +37,9 @@ const PasswordSchema = z
 // https://better-auth.com/docs/adapters/drizzle
 // https://www.better-auth.com/docs/concepts/cli
 
-//# Finish watching hooks tutorials...
+// Todo: Update LoginForm, UpdateEmailForm, UpdateUserForm, ForgotPasswordForm to all use Form + Zod.
 
-// Todo: Update RegisterForm, UpdatePasswordForm, ResetPasswordForm,
-//# and LoginForm to all use a password input.
-//# Make sure they all reset touched as well.
-
-// Todo: Update UpdateEmailForm, UpdateUserForm, ForgotPasswordForm to all use
-//# Form + Zod.
+//# Create a RegisterForm3 that works with TanStack Form.
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {

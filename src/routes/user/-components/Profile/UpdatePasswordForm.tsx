@@ -6,7 +6,7 @@ import { TriangleAlert } from 'lucide-react'
 
 import { authClient } from '@/lib/auth-client'
 import { Button } from '@/components'
-import { Input } from '@/components/Input'
+import { InputPassword } from '@/components/InputPassword'
 import { cn, formatZodErrors } from '@/utils'
 
 //! This is wrong!
@@ -328,7 +328,7 @@ export const UpdatePasswordForm = ({
         ref={formRef}
         validationMode='onBlur'
       >
-        <Input
+        <InputPassword
           fieldRootProps={{
             touched: currentPasswordTouched
           }}
@@ -365,7 +365,7 @@ export const UpdatePasswordForm = ({
           }}
         />
 
-        <Input
+        <InputPassword
           fieldRootProps={{
             touched: newPasswordTouched
           }}
@@ -404,7 +404,7 @@ export const UpdatePasswordForm = ({
           }}
         />
 
-        <Input
+        <InputPassword
           fieldRootProps={{
             touched: confirmNewPasswordTouched
           }}

@@ -1,5 +1,4 @@
 import * as React from 'react'
-
 import { useNavigate, useSearch } from '@tanstack/react-router'
 import { toast } from 'sonner'
 import { Form } from '@base-ui/react/form'
@@ -8,7 +7,7 @@ import { AlertCircle, TriangleAlert } from 'lucide-react'
 
 import { authClient } from '@/lib/auth-client'
 import { Alert, Button } from '@/components'
-import { Input } from '@/components/Input'
+import { InputPassword } from '@/components/InputPassword'
 import { formatZodErrors } from '@/utils'
 
 /* ======================
@@ -62,7 +61,6 @@ type FormErrors = Partial<Record<keyof ZodData, string>>
 /* ========================================================================
 
 ======================================================================== */
-//# Switch to using InputPassword component.
 
 export const ResetPasswordForm = () => {
   const navigate = useNavigate()
@@ -328,7 +326,7 @@ export const ResetPasswordForm = () => {
           ref={formRef}
           validationMode='onBlur'
         >
-          <Input
+          <InputPassword
             fieldRootProps={{
               touched: newPasswordTouched
             }}
@@ -376,7 +374,7 @@ export const ResetPasswordForm = () => {
             }}
           />
 
-          <Input
+          <InputPassword
             fieldRootProps={{
               touched: confirmNewPasswordTouched
             }}
