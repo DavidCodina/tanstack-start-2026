@@ -1,7 +1,8 @@
 import { createFileRoute /* , useRouter */ } from '@tanstack/react-router'
-// import { z } from 'zod'
+
 import { Page, PageContainer } from '@/components'
-// import { formatZodErrors } from '@/utils'
+
+import { Playground } from '@/components/Input/demos/Playground'
 
 export const Route = createFileRoute('/')({ component: PageHome })
 
@@ -61,6 +62,8 @@ function PageHome() {
         >
           _HOME
         </h1>
+
+        <Playground />
       </PageContainer>
     </Page>
   )

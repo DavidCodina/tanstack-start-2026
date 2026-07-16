@@ -1,7 +1,6 @@
 import * as React from 'react'
-// ❌ import { Form } from '@base-ui/react/form'
 import { toast } from 'sonner'
-import { useForm /* , useStore */ } from '@tanstack/react-form-start'
+import { useForm, useStore } from '@tanstack/react-form-start'
 import { z } from 'zod'
 import { Input } from '../.'
 import { Button } from '../../Button'
@@ -32,16 +31,8 @@ const defaultValues: z.infer<typeof FormSchema> = {
 /* ========================================================================
 
 ======================================================================== */
-///////////////////////////////////////////////////////////////////////////
-//
-// This is an example of a basic Tanstack Form setup.
-// In practice, I would not generally recommend using a top-level FormSchema,
-// even if it's consumed piecemeal by field-level validators. That said, in
-// this case it kind of makes sense since we're using an address object.
-//
-///////////////////////////////////////////////////////////////////////////
 
-export const BasicTSF = () => {
+export const Playground = () => {
   const [resetKey, setResetKey] = React.useState(0)
 
   /* ======================
@@ -106,7 +97,7 @@ export const BasicTSF = () => {
     //}
   })
 
-  // const values = useStore(form.store, (state) => state.values)
+  const values = useStore(form.store, (state) => state.values)
   // console.log('values:', values)
 
   // const isSubmitting = useStore(form.store, (state) => state.isSubmitting)
@@ -150,7 +141,8 @@ export const BasicTSF = () => {
           // probably make the most sense to define the field-level schema direclty in the
           // validator.
 
-          onBlur: ({ value }) => {
+          onBlur: (param) => {
+            const { value } = param
             // const result = FormSchema.shape.firstName.safeParse(value)
             const result = z
               .string()
@@ -216,6 +208,7 @@ export const BasicTSF = () => {
 
                 onBlur: field.handleBlur,
 
+                //# Why are we using onChange? Why not use onValueChange?
                 onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
                   field.handleChange(e.target.value)
                   if (isBlurred || hasSubmitted) {

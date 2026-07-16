@@ -6,6 +6,7 @@ import type { FieldRootProps } from '@base-ui/react/field'
 
 type Validate = FieldRootProps['validate']
 
+// Using Validate here is actually wrong because it's not returning a Promise.
 const validateName: Validate = (value, _formValues) => {
   let error = ''
 

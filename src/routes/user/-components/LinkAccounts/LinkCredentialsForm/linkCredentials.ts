@@ -91,7 +91,8 @@ export const linkCredentials = createServerFn({
     try {
       const headers = getRequestHeaders()
 
-      /* const _result =  */ await auth.api.setPassword({
+      // https://better-auth.com/docs/concepts/users-accounts#set-password
+      await auth.api.setPassword({
         body: { newPassword: password },
         headers: headers
       })

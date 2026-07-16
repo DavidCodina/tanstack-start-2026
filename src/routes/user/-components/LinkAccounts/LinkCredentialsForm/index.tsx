@@ -1,15 +1,44 @@
 import * as React from 'react'
+import { Form } from '@base-ui/react/form'
 import { toast } from 'sonner'
+import { z } from 'zod'
+import { TriangleAlert } from 'lucide-react'
 
 import { linkCredentials } from './linkCredentials'
 import { Button } from '@/components'
 import { InputPassword } from '@/components/InputPassword'
-import { cn } from '@/utils'
+import { cn, formatZodErrors } from '@/utils'
 
+//! This is wrong!
 type SetPasswordFormProps = {
   className?: string
   onSuccess: () => void
 }
+
+/* ======================
+      Zod Schema
+====================== */
+
+const NewPasswordSchema = z
+  .string()
+  .min(1, { error: 'Password is required' })
+  .min(8, { error: 'Password must be at least 8 characters long' })
+  // Matches "anything that isn't a letter or digit"
+  .regex(/[a-zA-Z]/, {
+    message: 'Password must contain at least one letter'
+  })
+  .regex(/[0-9]/, { message: 'Password must contain at least one number' })
+  // Matches "anything that isn't a letter or digit"
+  .regex(/[^a-zA-Z0-9]/, {
+    message: 'Password must contain at least one special character.'
+  })
+
+const FormSchema = z.object({
+  newPassword: NewPasswordSchema
+})
+
+type ZodData = z.infer<typeof FormSchema>
+type FormErrors = Partial<Record<keyof ZodData, string>>
 
 /* ========================================================================
 
@@ -63,41 +92,110 @@ type SetPasswordFormProps = {
 //# Add Form, and password validation.
 //# Add confirmPassword field.
 
+//# Test that this all works as expected.
+//# Change the CSS for this since it will look differnt with confirmNewPassword field.
+
 export const LinkCredentialsForm = ({
   className = '',
   onSuccess
 }: SetPasswordFormProps) => {
-  const [newPassword, setNewPassword] = React.useState('')
-  const [pending, startTransition] = React.useTransition()
-
   /* ======================
-
+        state & refs
   ====================== */
 
-  const handleLinkCredentials = async (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ) => {
-    e.preventDefault()
+  const actionsRef = React.useRef<Form.Actions>(null)
+  const formRef = React.useRef<HTMLFormElement>(null)
 
-    //# Use the same Zod schema as is being used currently by linkCredentials.
-    if (!newPassword || typeof newPassword !== 'string') {
-      toast.error('Email is required.')
-      setNewPassword('')
+  const [newPassword, setNewPassword] = React.useState('')
+  const [newPasswordTouched, setNewPasswordTouched] = React.useState(false)
+
+  const [confirmNewPassword, setConfirmNewPassword] = React.useState('')
+  const [confirmNewPasswordTouched, setConfirmNewPasswordTouched] =
+    React.useState(false)
+
+  const [errors, setErrors] = React.useState<FormErrors>({})
+  const isErrors = Object.values(errors).some((value) => !!value)
+
+  const [formPending, startFormTransition] = React.useTransition()
+  const [resetKey, setResetKey] = React.useState(0)
+
+  //# const FormSchema = getFormSchema(newPassword)
+
+  /* ======================
+    validateNewPassword()
+  ====================== */
+
+  const validateNewPassword = (value?: string) => {
+    value = typeof value === 'string' ? value : newPassword
+    const validationResult = FormSchema.shape.newPassword.safeParse(value)
+
+    if (validationResult.success === false) {
+      const error = validationResult.error.issues[0]?.message
+      if (typeof error === 'string') {
+        setErrors((prev) => {
+          const newErrors: FormErrors = {
+            ...prev,
+            newPassword: error
+          }
+          return newErrors
+        })
+      }
       return
     }
 
-    if (newPassword.length < 8) {
-      toast.error('Password must be at least 8 characters.')
-      setNewPassword('')
-      return
-    }
+    setErrors((prev) => {
+      const newErrors: FormErrors = { ...prev }
+      delete newErrors.newPassword
+      return newErrors
+    })
+  }
 
-    startTransition(async () => {
+  /* ======================
+  validateConfirmNewPassword()
+  ====================== */
+
+  // const validateConfirmNewPassword = (value?: string, newPass?: string) => {
+  //   value = typeof value === 'string' ? value : confirmNewPassword
+  //   newPass = typeof newPass === 'string' ? newPass : newPassword
+
+  //   const FreshConfirmNewPasswordSchema = getConfirmNewPasswordSchema(newPass)
+  //   const validationResult = FreshConfirmNewPasswordSchema.safeParse(value)
+
+  //   if (validationResult.success === false) {
+  //     const error = validationResult.error.issues[0]?.message
+  //     if (typeof error === 'string') {
+  //       setErrors((prev) => {
+  //         const newErrors: FormErrors = {
+  //           ...prev,
+  //           confirmNewPassword: error
+  //         }
+  //         return newErrors
+  //       })
+  //     }
+  //     return
+  //   }
+
+  //   setErrors((prev) => {
+  //     const newErrors: FormErrors = { ...prev }
+  //     delete newErrors.confirmNewPassword
+  //     return newErrors
+  //   })
+  // }
+
+  /* ======================
+        handleSubmit()
+  ====================== */
+
+  const handleSubmit = async (zodData: ZodData) => {
+    startFormTransition(async () => {
       try {
         // ⚠️ setPassword can't be called from the client for security reasons.
         const { code, success } = await linkCredentials({
           data: {
-            password: newPassword,
+            //! Change this to newPassword and confirmNewPassword.
+            //! So change linkCredentials() server function.
+            //! The actual auth.api.setPassword() takes a body.newPassword.
+            password: zodData.newPassword,
             confirmPassword: newPassword
           }
         })
@@ -117,6 +215,11 @@ export const LinkCredentialsForm = ({
         toast.error('Unable to set password.')
       } finally {
         setNewPassword('')
+        setNewPasswordTouched(false)
+        setConfirmNewPassword('')
+        setConfirmNewPasswordTouched(false)
+        setErrors({})
+        setResetKey((v) => v + 1)
       }
     })
   }
@@ -126,14 +229,51 @@ export const LinkCredentialsForm = ({
   ====================== */
 
   return (
-    <form
-      onSubmit={(e) => e.preventDefault()}
+    <Form
+      actionsRef={actionsRef}
       className={cn('flex max-w-sm flex-wrap items-end gap-2', className)}
+      errors={errors}
+      key={resetKey}
       noValidate
+
+      onFormSubmit={async (_formValues, _eventDetails) => {
+        // Set true on all toucher functions.
+        // This is important in order to subsequently allow validation onChange.
+        const touchers: React.Dispatch<React.SetStateAction<boolean>>[] = [
+          setNewPasswordTouched,
+          setConfirmNewPasswordTouched
+        ]
+        touchers.forEach((toucher) => {
+          toucher(true)
+        })
+
+        // Validation...
+        const {
+          data: zodData,
+          error: zodError,
+          success: zodSuccess
+        } = await FormSchema.safeParseAsync({
+          newPassword
+          //# confirmNewPassword
+        })
+
+        if (!zodSuccess) {
+          const formattedZodErrors = formatZodErrors(zodError)
+          setErrors(formattedZodErrors)
+          return
+        }
+
+        // Submission...
+        handleSubmit(zodData)
+      }}
+      // I don't think this is necessary if we're using onFormSubmit.
+      onSubmit={(e) => e.preventDefault()}
+      ref={formRef}
+      validationMode='onBlur'
     >
       <InputPassword
         fieldLabelProps={{
-          children: 'Password',
+          children: 'New Password',
           labelRequired: true
         }}
 
@@ -144,8 +284,21 @@ export const LinkCredentialsForm = ({
         inputProps={{
           fieldSize: 'sm',
           name: 'newPassword',
+          onBlur: (e) => {
+            const value = e.target.value
+            setNewPasswordTouched(true)
+            validateNewPassword(value)
+          },
           onValueChange: (newValue) => {
             setNewPassword(newValue)
+            if (newPasswordTouched) {
+              validateNewPassword(newValue)
+            }
+
+            // ⚠️ Gotcha: confirmNewPassword validation also needs to run after every time newPassword changes.
+            if (confirmNewPasswordTouched) {
+              //#   validateConfirmNewPassword(undefined, newValue)
+            }
           },
           placeholder: 'New Password...',
           value: newPassword
@@ -154,13 +307,22 @@ export const LinkCredentialsForm = ({
 
       <Button
         className='flex'
-        loading={pending}
-        onClick={handleLinkCredentials}
+        disabled={isErrors}
+        loading={formPending}
         size='sm'
-        type='button'
+        type='submit'
+        variant={isErrors ? 'destructive' : 'primary'}
       >
-        {pending ? 'Submitting...' : 'Submit'}
+        {isErrors ? (
+          <>
+            <TriangleAlert /> Fix Errors...
+          </>
+        ) : formPending ? (
+          'Submitting...'
+        ) : (
+          'Submit'
+        )}
       </Button>
-    </form>
+    </Form>
   )
 }
