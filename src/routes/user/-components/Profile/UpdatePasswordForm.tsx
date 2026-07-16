@@ -365,7 +365,6 @@ export const UpdatePasswordForm = ({
               }
             },
             placeholder: 'Current Password...',
-            type: 'password',
             value: currentPassword
           }}
 
@@ -404,7 +403,6 @@ export const UpdatePasswordForm = ({
               }
             },
             placeholder: 'New Password...',
-            type: 'password',
             value: newPassword
           }}
 
@@ -438,7 +436,6 @@ export const UpdatePasswordForm = ({
               }
             },
             placeholder: 'Confirm New Password...',
-            type: 'password',
             value: confirmNewPassword
           }}
 

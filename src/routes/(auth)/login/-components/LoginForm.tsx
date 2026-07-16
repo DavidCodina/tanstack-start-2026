@@ -150,7 +150,7 @@ const LoginForm = () => {
     startEmailLoginTransition(async () => {
       try {
         // https://www.better-auth.com/docs/basic-usage#sign-in
-        const { /* data,*/ error } = await authClient.signIn.email(
+        const { /* data, */ error } = await authClient.signIn.email(
           {
             email,
             password
@@ -163,41 +163,35 @@ const LoginForm = () => {
             // rememberMe: false
           },
           {
+            ///////////////////////////////////////////////////////////////////////////
+            //
             // Can be used for setting loading states if one wasn't using a transition.
-            // onRequest: (ctx) => {},
-            // onResponse: (ctx) => {},
-            // onSuccess: (ctx) => {
-            //   const { data, request, response } = ctx
-            // },
-            // onError: (ctx) => {
-            //   const { error, request, response } = ctx
-            //   const { message } = error
-            // }
+            //
+            //   onRequest: (ctx) => {},
+            //
+            //   onResponse: (ctx) => {},
+            //
+            //   onSuccess: (ctx) => {
+            //     const { data, request, response } = ctx
+            //   },
+            //
+            //   onError: (ctx) => {
+            //     const { error, request, response } = ctx
+            //     const { message } = error
+            //   }
+            //
+            ///////////////////////////////////////////////////////////////////////////
           }
         )
 
         // The data and error are a discriminated union.
         if (error) {
-          ///////////////////////////////////////////////////////////////////////////
-          //
-          // The error will have the following shape:
-          //
-          //   {
-          //     code?: string | undefined | undefined;
-          //     message?: string | undefined | undefined;
-          //     status: number;
-          //     statusText: string;
-          //   }
-          //
-          ///////////////////////////////////////////////////////////////////////////
-
-          const errorMessage =
-            typeof error.message === 'string'
-              ? error.message
-              : 'Unable to log in.'
-
           // {message: 'Email not verified', code: 'EMAIL_NOT_VERIFIED', status: 403, statusText: 'FORBIDDEN'}
           if (error.code === 'EMAIL_NOT_VERIFIED') {
+            //# Here we're resending the verification email automatically. However, there's
+            //# currently no way to explicitly allow the user to request a new verification
+            //# email. What we could do instead is look for this error and then have the UI
+            //# render a button that the user can click to resend a verification email.
             resendVerificationEmail(email)
             toast.error(
               'Email not verified. Please check your email for a verification link.',
@@ -206,15 +200,35 @@ const LoginForm = () => {
               }
             )
           } else {
-            toast.error(errorMessage, {
-              // duration: Infinity
-            })
+            ///////////////////////////////////////////////////////////////////////////
+            //
+            // More often the error will be something like this:
+            //
+            //   {
+            //     code: "INVALID_EMAIL_OR_PASSWORD",
+            //     message: "Invalid email or password",
+            //     status: 401,
+            //     statusText: "UNAUTHORIZED"
+            //   }
+            //
+            // The general shape being:
+            //
+            //   {
+            //     code?: string | undefined | undefined;
+            //     message?: string | undefined | undefined;
+            //     status: number;
+            //     statusText: string;
+            //   }
+            //
+            ///////////////////////////////////////////////////////////////////////////
+
+            toast.error('Invalid email or password')
           }
 
           return
         }
 
-        // Otherwise... (i.e., if data)
+        // Otherwise if data...
 
         ///////////////////////////////////////////////////////////////////////////
         //
@@ -222,12 +236,12 @@ const LoginForm = () => {
         //
         //   {
         //     redirect: false,
-        //     token: '3OWZv...',
+        //     token: 'abc123...',
         //     user: {
         //       createdAt: 'Thu Dec 18 2025 16:31:53 GMT-0700 (Mountain Standard Time)',
         //       email: 'david@example.com',
-        //       emailVerified: false,
-        //       id: 'abc123',
+        //       emailVerified: true,
+        //       id: "36c7765e-15c9-43f9-9f67-3f8618675d7d",
         //       image: null,
         //       name: 'David Codina',
         //       updatedAt: 'Thu Dec 18 2025 16:31:53 GMT-0700 (Mountain Standard Time)'
@@ -243,8 +257,6 @@ const LoginForm = () => {
           replace: true
         })
       } catch (_err) {
-        // console.log('\nError from authClient.signIn.email()')
-        // console.log(err)
         toast.error('Unable to log in.')
       } finally {
         setEmail('')
@@ -344,7 +356,6 @@ const LoginForm = () => {
             inputProps={{
               fieldSize: 'sm',
               name: 'password',
-              type: 'password',
               onValueChange: (newValue) => {
                 setPassword(newValue)
               },

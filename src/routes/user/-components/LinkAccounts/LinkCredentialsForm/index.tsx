@@ -1,11 +1,9 @@
-'use client'
-
 import * as React from 'react'
 import { toast } from 'sonner'
 
 import { linkCredentials } from './linkCredentials'
 import { Button } from '@/components'
-import { Input } from '@/components/Input'
+import { InputPassword } from '@/components/InputPassword'
 import { cn } from '@/utils'
 
 type SetPasswordFormProps = {
@@ -62,8 +60,8 @@ type SetPasswordFormProps = {
 //
 ///////////////////////////////////////////////////////////////////////////
 
-//# Add confirm password field.
-//# Switch to using InputPassword component.
+//# Add Form, and password validation.
+//# Add confirmPassword field.
 
 export const LinkCredentialsForm = ({
   className = '',
@@ -97,7 +95,7 @@ export const LinkCredentialsForm = ({
     startTransition(async () => {
       try {
         // ⚠️ setPassword can't be called from the client for security reasons.
-        const { message, success } = await linkCredentials({
+        const { code, success } = await linkCredentials({
           data: {
             password: newPassword,
             confirmPassword: newPassword
@@ -105,11 +103,12 @@ export const LinkCredentialsForm = ({
         })
 
         if (success !== true) {
-          const errorMessage =
-            typeof message === 'string' ? message : 'Unable to set password.'
-          toast.error(errorMessage, {
-            // duration: Infinity
-          })
+          if (code === 'INVALID_PASSWORD') {
+            toast.error('Invalid password')
+            return
+          }
+
+          toast.error('Unable to set password.')
         } else if (success === true) {
           onSuccess?.()
           toast.success('Password set success.')
@@ -132,25 +131,24 @@ export const LinkCredentialsForm = ({
       className={cn('flex max-w-sm flex-wrap items-end gap-2', className)}
       noValidate
     >
-      <Input
+      <InputPassword
+        fieldLabelProps={{
+          children: 'Password',
+          labelRequired: true
+        }}
+
         fieldRootProps={{
           className: 'flex-1'
         }}
 
         inputProps={{
           fieldSize: 'sm',
-          name: 'new_password',
+          name: 'newPassword',
           onValueChange: (newValue) => {
             setNewPassword(newValue)
           },
           placeholder: 'New Password...',
-          type: 'password',
           value: newPassword
-        }}
-
-        fieldLabelProps={{
-          children: 'Full Name',
-          labelRequired: true
         }}
       />
 

@@ -37,9 +37,10 @@ const PasswordSchema = z
 // https://better-auth.com/docs/adapters/drizzle
 // https://www.better-auth.com/docs/concepts/cli
 
-// Todo: Update
-//# ❎ LoginForm,
+// Todo: Update all server functions away from deprecated .inputValidator() syntax.
+
 //# ❎ LinkCredentialsForm,
+// ✅  LoginForm,
 // ✅  UpdateEmailForm,
 // ✅ UpdateUserForm,
 // ✅ ForgotPasswordForm
@@ -402,13 +403,13 @@ export const auth = betterAuth({
     before: createAuthMiddleware(
       // https://better-auth.com/docs/concepts/hooks#ctx
       async (ctx) => {
-        // console.log({
-        //   path: ctx.path,
-        //   body: ctx.body,
-        //   session: ctx.context.session,
-        //   newSession: ctx.context.newSession
-        //   // context: ctx.context
-        // })
+        console.log({
+          path: ctx.path,
+          body: ctx.body,
+          session: ctx.context.session,
+          newSession: ctx.context.newSession
+          // context: ctx.context
+        })
 
         ///////////////////////////////////////////////////////////////////////////
         //
@@ -508,7 +509,9 @@ export const auth = betterAuth({
         if (
           ctx.path === '/sign-up/email' ||
           ctx.path === '/reset-password' ||
-          ctx.path === '/change-password' // i.e., authClient.changePassword()
+          ctx.path === '/change-password' || // i.e., authClient.changePassword()
+          // ⚠️ Calling auth.api.setPassword seems to result in a path of '/'.
+          (ctx.path === '/' && 'newPassword' in ctx.body)
         ) {
           const password = ctx.body.password || ctx.body.newPassword
 

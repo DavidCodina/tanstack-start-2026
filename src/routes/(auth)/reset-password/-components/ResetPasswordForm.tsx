@@ -374,7 +374,6 @@ export const ResetPasswordForm = () => {
               },
               placeholder: 'New Password...',
               spellCheck: false,
-              type: 'password',
               value: newPassword
             }}
 
@@ -408,7 +407,6 @@ export const ResetPasswordForm = () => {
                 }
               },
               placeholder: 'Confirm New Password...',
-              type: 'password',
               value: confirmNewPassword
             }}
 

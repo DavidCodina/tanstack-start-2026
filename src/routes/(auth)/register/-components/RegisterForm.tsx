@@ -528,7 +528,6 @@ export const RegisterForm = () => {
           inputProps={{
             fieldSize: 'sm',
             name: 'password',
-            type: 'password',
             onBlur: (_e) => {
               setPasswordTouched(true)
             },
@@ -560,7 +559,6 @@ export const RegisterForm = () => {
           inputProps={{
             fieldSize: 'sm',
             name: 'confirmPassword',
-            type: 'password',
             onBlur: (_e) => {
               setConfirmPasswordTouched(true)
             },

@@ -494,7 +494,7 @@ export const RegisterForm2 = () => {
           inputProps={{
             fieldSize: 'sm',
             name: 'password',
-            type: 'password',
+
             onBlur: (e) => {
               const value = e.target.value
               setPasswordTouched(true)
@@ -531,7 +531,7 @@ export const RegisterForm2 = () => {
           inputProps={{
             fieldSize: 'sm',
             name: 'confirmPassword',
-            type: 'password',
+
             onBlur: (e) => {
               const value = e.target.value
               setConfirmPasswordTouched(true)

@@ -8,6 +8,9 @@ import type { ResponsePromise } from '@/types'
 import { auth } from '@/lib/auth'
 import { codes, formatZodErrors, sleep } from '@/utils'
 
+//! This is wrong! It should match other password validation rules.
+//! However, it is currently falling back to the hooks validation as a last resort.
+
 const getLinkCredentialsSchema = (password: unknown) => {
   const LinkCredentialsSchema = z.object({
     password: z.string().min(5, {
@@ -71,12 +74,12 @@ export const linkCredentials = createServerFn({
     const validationResult = LinkCredentialsSchema.safeParse(data)
 
     if (!validationResult.success) {
-      const errors = formatZodErrors(validationResult.error)
+      const formattedErrors = formatZodErrors(validationResult.error)
 
       return {
         code: codes.BAD_REQUEST,
         data: null,
-        errors: errors,
+        errors: formattedErrors,
         message: 'The data failed validation.',
         success: false
       }
@@ -88,7 +91,7 @@ export const linkCredentials = createServerFn({
     try {
       const headers = getRequestHeaders()
 
-      /* const _result = */ await auth.api.setPassword({
+      /* const _result =  */ await auth.api.setPassword({
         body: { newPassword: password },
         headers: headers
       })
@@ -106,14 +109,16 @@ export const linkCredentials = createServerFn({
       }
     } catch (err) {
       if (err instanceof APIError) {
-        // ...
+        if (err.body?.code === 'INVALID_PASSWORD') {
+          return {
+            code: codes.INVALID_PASSWORD,
+            data: null,
+            message: 'Invalid password',
+            success: false
+          }
+        }
       }
 
-      if (err instanceof Error) {
-        //^ Better Auth enforces longer passwords by default, so use: 12345678
-        // Example: { name: 'APIError', message: 'Password too short' }
-        // console.log({ name: err.name, message: err.message })
-      }
       return {
         code: codes.INTERNAL_SERVER_ERROR,
         data: null,
