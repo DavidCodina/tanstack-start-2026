@@ -101,7 +101,7 @@ export const ResetPasswordForm = () => {
     validateNewPassword()
   ====================== */
 
-  const validateNewPassword = (value?: string) => {
+  const validateNewPassword = (value?: string): void => {
     value = typeof value === 'string' ? value : newPassword
     const validationResult = FormSchema.shape.newPassword.safeParse(value)
 
@@ -210,7 +210,10 @@ export const ResetPasswordForm = () => {
   validateConfirmNewPassword()
   ====================== */
 
-  const validateConfirmNewPassword = (value?: string, newPass?: string) => {
+  const validateConfirmNewPassword = (
+    value?: string,
+    newPass?: string
+  ): void => {
     value = typeof value === 'string' ? value : confirmNewPassword
     newPass = typeof newPass === 'string' ? newPass : newPassword
 
@@ -341,6 +344,11 @@ export const ResetPasswordForm = () => {
               touched: newPasswordTouched
             }}
 
+            fieldLabelProps={{
+              children: 'New Password',
+              labelRequired: true
+            }}
+
             inputProps={{
               autoCapitalize: 'none',
               // Browsers often ignore ❌ autoComplete='off'. Even with
@@ -376,16 +384,16 @@ export const ResetPasswordForm = () => {
               spellCheck: false,
               value: newPassword
             }}
-
-            fieldLabelProps={{
-              children: 'New Password',
-              labelRequired: true
-            }}
           />
 
           <InputPassword
             fieldRootProps={{
               touched: confirmNewPasswordTouched
+            }}
+
+            fieldLabelProps={{
+              children: 'Confirm New Password',
+              labelRequired: true
             }}
 
             inputProps={{
@@ -408,11 +416,6 @@ export const ResetPasswordForm = () => {
               },
               placeholder: 'Confirm New Password...',
               value: confirmNewPassword
-            }}
-
-            fieldLabelProps={{
-              children: 'Confirm New Password',
-              labelRequired: true
             }}
           />
 

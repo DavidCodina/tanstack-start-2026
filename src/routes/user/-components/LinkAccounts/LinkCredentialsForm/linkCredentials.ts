@@ -8,49 +8,49 @@ import type { ResponsePromise } from '@/types'
 import { auth } from '@/lib/auth'
 import { codes, formatZodErrors, sleep } from '@/utils'
 
-//! This is wrong! It should match other password validation rules.
-//! However, it is currently falling back to the hooks validation as a last resort.
-
-const getLinkCredentialsSchema = (password: unknown) => {
-  const LinkCredentialsSchema = z.object({
-    password: z.string().min(5, {
-      message: 'A password must be at least 5 characters. (Server)'
-    }),
-    confirmPassword: z.string().refine(
-      (value) => {
-        return value === password
-      },
-      {
-        error: 'The passwords must match. (Server)'
-      }
-    )
+const NewPasswordSchema = z
+  .string()
+  .min(1, { error: 'Password is required' })
+  .min(8, { error: 'Password must be at least 8 characters long' })
+  // Matches "anything that isn't a letter or digit"
+  .regex(/[a-zA-Z]/, {
+    message: 'Password must contain at least one letter'
   })
-  ///////////////////////////////////////////////////////////////////////////
-  //
-  // ⚠️ Gotcha: Having .refine() on the outside of the z.object() seems
-  // like a good idea because it allows you to access both values.password
-  // and values.confirmPassword. However, it will short-circuit
-  // if there are any errors in z.object().
-  //
-  //   .refine((values) => values.password === values.confirmPassword, {
-  //     message: 'Passwords do not match.',
-  //     path: ['confirmPassword'] // attaches the error to this field
-  //   })
-  //
-  // Solution: wrap the Zod schema in a functon and pass it the password from the
-  // outside, or create a secondary schema just for the password confirmation.
-  //
-  ///////////////////////////////////////////////////////////////////////////
+  .regex(/[0-9]/, { message: 'Password must contain at least one number' })
+  // Matches "anything that isn't a letter or digit"
+  .regex(/[^a-zA-Z0-9]/, {
+    message: 'Password must contain at least one special character.'
+  })
 
-  return LinkCredentialsSchema
+const getConfirmNewPasswordSchema = (newPassword: unknown) => {
+  const ConfirmNewPasswordSchema = z
+    .string()
+    .min(8, {
+      error: 'Must be at least 8 characters long'
+    })
+    .refine(
+      (value) => {
+        return value === newPassword
+      },
+      { error: 'The passwords must match.' }
+    )
+  return ConfirmNewPasswordSchema
 }
 
-type LinkCredentialsSchemaType = ReturnType<typeof getLinkCredentialsSchema>
+const getInputSchema = (newPassword: unknown) => {
+  const InputSchema = z.object({
+    newPassword: NewPasswordSchema,
+    confirmNewPassword: getConfirmNewPasswordSchema(newPassword)
+  })
+  return InputSchema
+}
 
-type LinkCredentialsInput = z.infer<LinkCredentialsSchemaType>
+type InputSchemaType = ReturnType<typeof getInputSchema>
 
-type Data = null
-type LinkCredentialsResponsePromise = ResponsePromise<Data>
+type LinkCredentialsInput = z.infer<InputSchemaType>
+
+type ResponseData = null
+type LinkCredentialsResponsePromise = ResponsePromise<ResponseData>
 
 /* ========================================================================
      
@@ -66,12 +66,12 @@ export const linkCredentials = createServerFn({
     const { data } = ctx
 
     const dataPassword =
-      data && typeof data === 'object' && 'password' in data
-        ? data.password
+      data && typeof data === 'object' && 'newPassword' in data
+        ? data.newPassword
         : undefined
 
-    const LinkCredentialsSchema = getLinkCredentialsSchema(dataPassword)
-    const validationResult = LinkCredentialsSchema.safeParse(data)
+    const InputSchema = getInputSchema(dataPassword)
+    const validationResult = InputSchema.safeParse(data)
 
     if (!validationResult.success) {
       const formattedErrors = formatZodErrors(validationResult.error)
@@ -86,14 +86,14 @@ export const linkCredentials = createServerFn({
     }
 
     // Always use sanitized data from Zod here.
-    const { password } = validationResult.data
+    const { newPassword } = validationResult.data
 
     try {
       const headers = getRequestHeaders()
 
       // https://better-auth.com/docs/concepts/users-accounts#set-password
       await auth.api.setPassword({
-        body: { newPassword: password },
+        body: { newPassword: newPassword },
         headers: headers
       })
 

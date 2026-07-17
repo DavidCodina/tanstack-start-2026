@@ -33,11 +33,31 @@ const NewPasswordSchema = z
     message: 'Password must contain at least one special character.'
   })
 
-const FormSchema = z.object({
-  newPassword: NewPasswordSchema
-})
+const getConfirmNewPasswordSchema = (newPassword: unknown) => {
+  const ConfirmNewPasswordSchema = z
+    .string()
+    .min(8, {
+      error: 'Must be at least 8 characters long'
+    })
+    .refine(
+      (value) => {
+        return value === newPassword
+      },
+      { error: 'The passwords must match.' }
+    )
 
-type ZodData = z.infer<typeof FormSchema>
+  return ConfirmNewPasswordSchema
+}
+
+const getFormSchema = (newPassword: unknown) => {
+  const FormSchema = z.object({
+    newPassword: NewPasswordSchema,
+    confirmNewPassword: getConfirmNewPasswordSchema(newPassword)
+  })
+  return FormSchema
+}
+type FormSchemaType = ReturnType<typeof getFormSchema>
+type ZodData = z.infer<FormSchemaType>
 type FormErrors = Partial<Record<keyof ZodData, string>>
 
 /* ========================================================================
@@ -89,12 +109,6 @@ type FormErrors = Partial<Record<keyof ZodData, string>>
 //
 ///////////////////////////////////////////////////////////////////////////
 
-//# Add Form, and password validation.
-//# Add confirmPassword field.
-
-//# Test that this all works as expected.
-//# Change the CSS for this since it will look differnt with confirmNewPassword field.
-
 export const LinkCredentialsForm = ({
   className = '',
   onSuccess
@@ -119,13 +133,13 @@ export const LinkCredentialsForm = ({
   const [formPending, startFormTransition] = React.useTransition()
   const [resetKey, setResetKey] = React.useState(0)
 
-  //# const FormSchema = getFormSchema(newPassword)
+  const FormSchema = getFormSchema(newPassword)
 
   /* ======================
     validateNewPassword()
   ====================== */
 
-  const validateNewPassword = (value?: string) => {
+  const validateNewPassword = (value?: string): void => {
     value = typeof value === 'string' ? value : newPassword
     const validationResult = FormSchema.shape.newPassword.safeParse(value)
 
@@ -154,33 +168,36 @@ export const LinkCredentialsForm = ({
   validateConfirmNewPassword()
   ====================== */
 
-  // const validateConfirmNewPassword = (value?: string, newPass?: string) => {
-  //   value = typeof value === 'string' ? value : confirmNewPassword
-  //   newPass = typeof newPass === 'string' ? newPass : newPassword
+  const validateConfirmNewPassword = (
+    value?: string,
+    newPass?: string
+  ): void => {
+    value = typeof value === 'string' ? value : confirmNewPassword
+    newPass = typeof newPass === 'string' ? newPass : newPassword
 
-  //   const FreshConfirmNewPasswordSchema = getConfirmNewPasswordSchema(newPass)
-  //   const validationResult = FreshConfirmNewPasswordSchema.safeParse(value)
+    const FreshConfirmNewPasswordSchema = getConfirmNewPasswordSchema(newPass)
+    const validationResult = FreshConfirmNewPasswordSchema.safeParse(value)
 
-  //   if (validationResult.success === false) {
-  //     const error = validationResult.error.issues[0]?.message
-  //     if (typeof error === 'string') {
-  //       setErrors((prev) => {
-  //         const newErrors: FormErrors = {
-  //           ...prev,
-  //           confirmNewPassword: error
-  //         }
-  //         return newErrors
-  //       })
-  //     }
-  //     return
-  //   }
+    if (validationResult.success === false) {
+      const error = validationResult.error.issues[0]?.message
+      if (typeof error === 'string') {
+        setErrors((prev) => {
+          const newErrors: FormErrors = {
+            ...prev,
+            confirmNewPassword: error
+          }
+          return newErrors
+        })
+      }
+      return
+    }
 
-  //   setErrors((prev) => {
-  //     const newErrors: FormErrors = { ...prev }
-  //     delete newErrors.confirmNewPassword
-  //     return newErrors
-  //   })
-  // }
+    setErrors((prev) => {
+      const newErrors: FormErrors = { ...prev }
+      delete newErrors.confirmNewPassword
+      return newErrors
+    })
+  }
 
   /* ======================
         handleSubmit()
@@ -192,11 +209,8 @@ export const LinkCredentialsForm = ({
         // ⚠️ setPassword can't be called from the client for security reasons.
         const { code, success } = await linkCredentials({
           data: {
-            //! Change this to newPassword and confirmNewPassword.
-            //! So change linkCredentials() server function.
-            //! The actual auth.api.setPassword() takes a body.newPassword.
-            password: zodData.newPassword,
-            confirmPassword: newPassword
+            newPassword: zodData.newPassword,
+            confirmNewPassword: zodData.confirmNewPassword
           }
         })
 
@@ -231,7 +245,7 @@ export const LinkCredentialsForm = ({
   return (
     <Form
       actionsRef={actionsRef}
-      className={cn('flex max-w-sm flex-wrap items-end gap-2', className)}
+      className={cn('bg-card space-y-4 rounded-lg border p-4', className)}
       errors={errors}
       key={resetKey}
       noValidate
@@ -253,8 +267,8 @@ export const LinkCredentialsForm = ({
           error: zodError,
           success: zodSuccess
         } = await FormSchema.safeParseAsync({
-          newPassword
-          //# confirmNewPassword
+          newPassword,
+          confirmNewPassword
         })
 
         if (!zodSuccess) {
@@ -272,16 +286,20 @@ export const LinkCredentialsForm = ({
       validationMode='onBlur'
     >
       <InputPassword
+        fieldRootProps={{
+          touched: newPasswordTouched
+        }}
         fieldLabelProps={{
           children: 'New Password',
           labelRequired: true
         }}
 
-        fieldRootProps={{
-          className: 'flex-1'
-        }}
-
         inputProps={{
+          autoCapitalize: 'none',
+          // Browsers often ignore ❌ autoComplete='off'. Even with
+          // 'new-password', Chrome still auto completes values.
+          autoComplete: 'new-password',
+          autoCorrect: 'off',
           fieldSize: 'sm',
           name: 'newPassword',
           onBlur: (e) => {
@@ -297,16 +315,50 @@ export const LinkCredentialsForm = ({
 
             // ⚠️ Gotcha: confirmNewPassword validation also needs to run after every time newPassword changes.
             if (confirmNewPasswordTouched) {
-              //#   validateConfirmNewPassword(undefined, newValue)
+              validateConfirmNewPassword(undefined, newValue)
             }
           },
           placeholder: 'New Password...',
+          spellCheck: false,
           value: newPassword
         }}
       />
 
+      <InputPassword
+        fieldRootProps={{
+          touched: confirmNewPasswordTouched
+        }}
+
+        fieldLabelProps={{
+          children: 'Confirm New Password',
+          labelRequired: true
+        }}
+
+        inputProps={{
+          autoCapitalize: 'none',
+          autoComplete: 'new-password',
+          autoCorrect: 'off',
+          spellCheck: false,
+          fieldSize: 'sm',
+          name: 'confirmNewPassword',
+          onBlur: (e) => {
+            const value = e.target.value
+            setConfirmNewPasswordTouched(true)
+            validateConfirmNewPassword(value)
+          },
+          onValueChange: (newValue) => {
+            setConfirmNewPassword(newValue)
+            if (confirmNewPasswordTouched) {
+              validateConfirmNewPassword(newValue)
+            }
+          },
+          placeholder: 'Confirm New Password...',
+          value: confirmNewPassword
+        }}
+      />
+
       <Button
-        className='flex'
+        className='flex w-full'
         disabled={isErrors}
         loading={formPending}
         size='sm'
@@ -315,12 +367,12 @@ export const LinkCredentialsForm = ({
       >
         {isErrors ? (
           <>
-            <TriangleAlert /> Fix Errors...
+            <TriangleAlert /> Please Correct Errors...
           </>
         ) : formPending ? (
-          'Submitting...'
+          'Adding Credential Account...'
         ) : (
-          'Submit'
+          'Add Credential Account'
         )}
       </Button>
     </Form>
