@@ -49,7 +49,7 @@
     "@tanstack/match-sorter-utils": "^8.19.4",
     "@tanstack/react-devtools": "latest",
     "@tanstack/react-form-devtools": "latest",
-    "@tanstack/react-form-start": "^1.27.7",
+    "@tanstack/react-form-start": "^1.33.2",
     "@tanstack/react-pacer": "^0.19.4",
     "@tanstack/react-query": "^5.90.12",
     "@tanstack/react-query-devtools": "latest",

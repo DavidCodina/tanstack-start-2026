@@ -53,7 +53,7 @@ export const isZodIssues = (value: unknown): value is ZodIssues => {
 ====================== */
 
 export const formatZodIssues = (issues: ZodIssues) => {
-  const errors: Record<string, string> = {}
+  const errorsMap: Record<string, string[]> = {}
 
   for (const issue of issues) {
     if (issue?.path?.length) {
@@ -61,17 +61,35 @@ export const formatZodIssues = (issues: ZodIssues) => {
       //
       // In most cases, Zod will short circuit when it encounters an error.
       // For example, z.string().min(5) will not return an two errors if
-      // it's not a string. There may be edge cases where two erros occur
-      // for a single value, but it's rare. Possibly revisit this later.
+      // it's not a string.
       //
-      //   const UserSchema = z.object({
-      //     name: z.string().min(5, 'Must be at least 5 characters.'),
+      // However, there are also cases where Zod will return multiple issues.
+      //
+      //   const FormSchema = z.object({
+      //     firstName: z.string()
+      //       .min(5, 'First name must be at least five characters')
+      //       .regex(/^[A-Za-z\s'-]+$/, 'First name can only contain letters'), // 👈🏻👈🏻👈🏻 Potential multiple issues.
+      //
       //     address: z.object({
       //       city: z.string().min(1, 'A city is required.'),
       //       zip: z.string().min(1, 'A zip is required.')
       //     }),
       //     hobbies: z.array(z.string())
       //   })
+      //
+      //   const result = FormSchema.safeParse({
+      //     firstName: '1',
+      //     address: { city: 'Georgetown', zip: null },
+      //     hobbies: ['Programming']
+      //   })
+      //
+      //   if (result.success === false) {
+      //     const formattedZodErrors = formatZodErrors(result.error)
+      //     console.log('Issues:', result.error.issues)
+      //     console.log('formattedZodErrors:', formattedZodErrors)
+      //   } else {
+      //     console.log('Form is valid!')
+      //   }
       //
       // An error that occurred in a nested object with be concatenated
       // with dot notation such that [ 'address', 'zip' ] => 'address.zip'.
@@ -80,9 +98,23 @@ export const formatZodIssues = (issues: ZodIssues) => {
       //
       ///////////////////////////////////////////////////////////////////////////
       const key = issue.path.join('.')
-      errors[key] = issue.message
+      if (!errorsMap[key]) {
+        errorsMap[key] = []
+      }
+      errorsMap[key].push(issue.message)
     }
   }
+
+  const errors: Record<string, string> = {}
+
+  // Alternative syntax:
+  //for (const [key, messages] of Object.entries(errorsMap)) {  errors[key] = messages.join(', ') }
+  for (const key in errorsMap) {
+    if (Object.hasOwn(errorsMap, key)) {
+      errors[key] = errorsMap[key].join(', ')
+    }
+  }
+
   return errors
 }
 

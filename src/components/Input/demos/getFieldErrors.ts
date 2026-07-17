@@ -6,15 +6,15 @@ export const getFieldErrors = (fieldMeta: Record<string, unknown>): any[] => {
   const allFieldErrors: any[] = []
 
   Object.keys(fieldMeta).forEach((fieldName) => {
-    const fieldEntry = fieldMeta[fieldName]
+    const fieldData = fieldMeta[fieldName]
 
     if (
-      fieldEntry &&
-      typeof fieldEntry === 'object' &&
-      'errors' in fieldEntry &&
-      Array.isArray(fieldEntry.errors)
+      fieldData &&
+      typeof fieldData === 'object' &&
+      'errors' in fieldData &&
+      Array.isArray(fieldData.errors)
     ) {
-      allFieldErrors.push(...fieldEntry.errors)
+      allFieldErrors.push(...fieldData.errors)
     }
   })
 

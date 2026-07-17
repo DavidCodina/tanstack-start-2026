@@ -1,12 +1,12 @@
 import * as React from 'react'
 // ❌ import { Form } from '@base-ui/react/form'
 import { toast } from 'sonner'
-import { useForm /* , useStore */ } from '@tanstack/react-form-start'
+import { useForm /* , useSelector */ } from '@tanstack/react-form-start'
 import { z } from 'zod'
 import { Input } from '../.'
 import { Button } from '../../Button'
 
-import { getFieldErrors } from './getFieldErrors'
+import { tanstackFormGetFieldErrors } from '@/utils'
 
 const AddressSchema = z.object({
   city: z.string().min(2, 'City must be at least 2 characters'),
@@ -106,11 +106,14 @@ export const BasicTSF = () => {
     //}
   })
 
-  // const values = useStore(form.store, (state) => state.values)
+  // const store = useSelector(form.store /*, (state) => state */)
+  // console.log('store:', store)
+
+  // const values = useSelector(form.store, (state) => state.values)
   // console.log('values:', values)
 
-  // const isSubmitting = useStore(form.store, (state) => state.isSubmitting)
-  // const errors = useStore(form.store, (state) => state.errors)
+  // const isSubmitting =  useSelector(form.store, (state) => state.isSubmitting)
+  // const errors = useSelector(form.store, (state) => state.errors)
   // console.log('Top-level errors:', errors)
 
   /* ======================
@@ -486,8 +489,8 @@ export const BasicTSF = () => {
       {renderState()}
 
       {/* One could also get isSubmitting by doing this:
-      const isSubmitting = useStore(form.store, (state) => state.isSubmitting) 
-      form.Subscribe is essentially just a wrapper around useStore. However, by 
+      const isSubmitting = useSelector(form.store, (state) => state.isSubmitting) 
+      form.Subscribe is essentially just a wrapper around useSelector. However, by 
       implementing form.Subscribe, we're encapsulating the subscription, which 
       means we won't actually be rerendering the part outside of the form.Subscribe. */}
 
@@ -525,7 +528,7 @@ export const BasicTSF = () => {
         ///////////////////////////////////////////////////////////////////////////
 
         selector={(state) => {
-          const fieldErrors = getFieldErrors(state.fieldMeta)
+          const fieldErrors = tanstackFormGetFieldErrors(state.fieldMeta)
 
           return {
             canSubmit: state.canSubmit,

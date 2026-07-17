@@ -39,7 +39,9 @@ const PasswordSchema = z
 
 // Todo: Update all server functions away from deprecated .inputValidator() syntax.
 
-// Todo: Review  NextJS home and user coments
+// Todo: Review  NextJS home and user comments
+
+// Todo: Update validation so that name has max as well.
 
 //# ❎ LinkCredentialsForm,
 // ✅  LoginForm,
@@ -405,13 +407,13 @@ export const auth = betterAuth({
     before: createAuthMiddleware(
       // https://better-auth.com/docs/concepts/hooks#ctx
       async (ctx) => {
-        console.log({
-          path: ctx.path,
-          body: ctx.body,
-          session: ctx.context.session,
-          newSession: ctx.context.newSession
-          // context: ctx.context
-        })
+        // console.log({
+        //   path: ctx.path,
+        //   body: ctx.body,
+        //   session: ctx.context.session,
+        //   newSession: ctx.context.newSession
+        //   // context: ctx.context
+        // })
 
         ///////////////////////////////////////////////////////////////////////////
         //
