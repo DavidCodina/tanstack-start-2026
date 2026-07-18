@@ -9,6 +9,7 @@ export type FieldRootProps = Field.Root.Props & {
    * when not using a controlled invalid prop. */
   forceValidity?: boolean
   validating?: boolean
+  disableEnter?: boolean
 }
 
 // ⚠️ DO NOT add baseClasses beyond `group/root`. This component is used
@@ -22,7 +23,9 @@ const baseClasses = `group/root`
 
 export const FieldRoot = ({
   name,
+  onKeyDownCapture,
   dirty,
+  disableEnter = true,
   touched,
   disabled,
   invalid,
@@ -97,6 +100,21 @@ export const FieldRoot = ({
       validate={validate}
       validationDebounceTime={validationDebounceTime}
       validationMode={validationMode}
+
+      ///////////////////////////////////////////////////////////////////////////
+      //
+      // ⚠️ Gotcha: Base UI will run its own validation when Enter key is pressed.
+      // Assuming you have no <Form /> and no `validate` prop on Field.Control, Input, etc.
+      // it will then add a data-valid attribute. We definitely don't want that.
+      // This will block Base UI from receiving the Enter keypress.
+      //
+      /////////////////////////////////////////////////////////////////////////////
+      onKeyDownCapture={(e) => {
+        onKeyDownCapture?.(e)
+        if (e.key === 'Enter' && disableEnter) {
+          e.stopPropagation()
+        }
+      }}
       {...otherProps}
     />
   )

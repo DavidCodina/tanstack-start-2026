@@ -42,14 +42,7 @@ const PasswordSchema = z
 // Todo: Review  NextJS home and user comments
 
 // Todo: Update validation so that name has max as well.
-
-//# ❎ LinkCredentialsForm,
-// ✅  LoginForm,
-// ✅  UpdateEmailForm,
-// ✅ UpdateUserForm,
-// ✅ ForgotPasswordForm
-
-//# Create a RegisterForm3 that works with TanStack Form.
+//# This will be for RegisterForm 1/2/3, UpdateUserForm and in hooks.
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {

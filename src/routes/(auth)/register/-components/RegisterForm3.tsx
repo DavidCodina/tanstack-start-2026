@@ -16,16 +16,22 @@ import { formatZodErrors } from '@/utils'
 
 const PasswordSchema = z
   .string()
-  .min(1, { error: 'Password is required' })
-  .min(8, { error: 'Password must be at least 8 characters long' })
+  .min(1, {
+    abort: true,
+    error: 'Password is required'
+  })
+  .min(8, {
+    abort: true,
+    error: 'Password must be at least 8 characters long'
+  })
   // Matches "anything that isn't a letter or digit"
   .regex(/[a-zA-Z]/, {
-    message: 'Password must contain at least one letter'
+    error: 'Password must contain at least one letter'
   })
-  .regex(/[0-9]/, { message: 'Password must contain at least one number' })
+  .regex(/[0-9]/, { error: 'Password must contain at least one number' })
   // Matches "anything that isn't a letter or digit"
   .regex(/[^a-zA-Z0-9]/, {
-    message: 'Password must contain at least one special character.'
+    error: 'Password must contain at least one special character.'
   })
 
 const getConfirmPasswordSchema = (password: unknown) => {

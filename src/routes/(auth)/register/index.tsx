@@ -3,7 +3,7 @@ import { createFileRoute /* , useRouter */ } from '@tanstack/react-router'
 import { z } from 'zod'
 import { toast } from 'sonner'
 
-import { RegisterForm3 } from './-components/RegisterForm3'
+import { RegisterForm4 } from './-components/RegisterForm4'
 import { Page, PageContainer } from '@/components'
 
 const SearchParamsSchema = z.object({
@@ -56,7 +56,7 @@ function PageRegister() {
           _REGISTER
         </h1>
 
-        <RegisterForm3 />
+        <RegisterForm4 />
       </PageContainer>
     </Page>
   )
