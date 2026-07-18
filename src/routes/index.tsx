@@ -1,7 +1,6 @@
 import { createFileRoute /* , useRouter */ } from '@tanstack/react-router'
+
 import { Page, PageContainer } from '@/components'
-// import { Playground } from '@/components/Input/demos/Playground'
-// import { AsyncDemo2 } from '@/components/Input/demos/AsyncDemo2'
 
 export const Route = createFileRoute('/')({ component: PageHome })
 

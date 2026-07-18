@@ -19,16 +19,23 @@ import {
 
 const PasswordSchema = z
   .string()
-  .min(1, { error: 'Password is required' })
-  .min(8, { error: 'Password must be at least 8 characters long' })
+  .min(1, {
+    error: 'Password is required'
+  })
+  .min(8, {
+    error: 'Password must be at least 8 characters long'
+  })
+  .max(50, {
+    error: 'Password must be 50 characters or fewer'
+  })
   // Matches "anything that isn't a letter or digit"
   .regex(/[a-zA-Z]/, {
-    message: 'Password must contain at least one letter'
+    error: 'Password must contain at least one letter'
   })
-  .regex(/[0-9]/, { message: 'Password must contain at least one number' })
+  .regex(/[0-9]/, { error: 'Password must contain at least one number' })
   // Matches "anything that isn't a letter or digit"
   .regex(/[^a-zA-Z0-9]/, {
-    message: 'Password must contain at least one special character.'
+    error: 'Password must contain at least one special character.'
   })
 
 /* ======================
@@ -82,7 +89,11 @@ export const register = createServerFn({
 
     const getRegisterSchema = (password: unknown) => {
       const RegisterSchema = z.object({
-        name: z.string().min(1, { error: 'Name is required' }),
+        name: z
+          .string()
+          .min(1, { error: 'A name is required' })
+          .max(100, { error: 'Name must be 100 characters or fewer' }),
+
         email: z
 
           // Could also use z.regex()
@@ -147,25 +158,6 @@ export const register = createServerFn({
             }
           )
       })
-
-      ///////////////////////////////////////////////////////////////////////////
-      //
-      // ⚠️ Gotcha: Having .refine() on the outside of the z.object() seems
-      // like a good idea because it allows you to access both values.password
-      // and values.confirmPassword. However, it will short-circuit if there
-      // are any errors in z.object().
-      //
-      //   .refine((values) => values.password === values.confirmPassword, {
-      //     message: 'Passwords do not match.',
-      //     path: ['confirmPassword'] // attaches the error to this field
-      //   })
-      //
-      // Solution: wrap the Zod schema in a functon and pass it the password from the
-      // outside. Then use .refine() directly on the confirmPassword Zod validation definition.
-      //
-      // Alternatively, create a secondary schema just for the password confirmation.
-      //
-      ///////////////////////////////////////////////////////////////////////////
 
       return RegisterSchema
     }

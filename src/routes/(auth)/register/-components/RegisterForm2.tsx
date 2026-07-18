@@ -45,6 +45,29 @@ const getConfirmPasswordSchema = (password: unknown) => {
     .min(8, {
       error: 'Must be at least 8 characters long'
     })
+
+    ///////////////////////////////////////////////////////////////////////////
+    //
+    // Note: It's often easier to append the .refine() to the outside of the z.object():
+    //
+    //   .refine(
+    //     ({ password, confirmPassword }) => {
+    //       return password === confirmPassword
+    //     },
+    //     {
+    //       error: 'The passwords must match.',
+    //       path: ['confirmPassword']
+    //     }
+    //   )
+    //
+    // In most cases that would work fine. However, if any of the fields implement
+    // an abort:true configuration and are invalid, they will always short-circuit
+    // the outer .refine(). For this reason, it's often a more flexible solution to
+    // append the .refine() to the actual field. The trade-off is that validating the
+    // password becomes more complicated because we actually need to be in scope
+    // - hence the use of getFormSchema() function.
+    //
+    ///////////////////////////////////////////////////////////////////////////
     .refine(
       (value) => {
         return value === password

@@ -40,9 +40,6 @@ const PasswordSchema = z
   })
 
 const FormSchema = z.object({
-  //# Name should probably be more restrictive, check for whitespace, etc.
-  //# Should be change here, v2, and v1, as well as UpdateUserForm.
-  //# Also add a hook for this.
   name: z
     .string()
     .min(1, { error: 'A name is required' })
@@ -76,6 +73,11 @@ export const RegisterForm4 = () => {
   ====================== */
 
   const form = useForm({
+    //# ???
+    //# validationLogic: () => {},
+
+    //# ???
+    //# transform() {},
     defaultValues: defaultValues,
 
     // This only runs when the form validation passes...

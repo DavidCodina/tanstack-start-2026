@@ -58,7 +58,6 @@ type LinkCredentialsResponsePromise = ResponsePromise<ResponseData>
 /* ========================================================================
      
 ======================================================================== */
-// ❌ 'inputValidator' is deprecated.
 
 export const linkCredentials = createServerFn({
   method: 'POST'
