@@ -123,7 +123,7 @@ getSerializedZodErrors()
 ====================== */
 // This utility is specifically for checking for Zod issues
 // that have been serialized into the error.message by
-// Tanstack Start from within a server function .inputValidator().
+// Tanstack Start from within a server function .validator().
 // Use this utility from within a catch block when consuming a
 // server function on the client.
 

@@ -24,7 +24,7 @@ export const updateTodo = createServerFn({ method: 'POST' })
   // not warn you that data is unknown.
   //
   ///////////////////////////////////////////////////////////////////////////
-  .inputValidator((input: UpdateTodoInput) => input)
+  .validator((input: UpdateTodoInput) => input)
   .handler(async (ctx) => {
     const { data } = ctx
 

@@ -40,8 +40,6 @@ const PasswordSchema = z
 // https://better-auth.com/docs/adapters/drizzle
 // https://www.better-auth.com/docs/concepts/cli
 
-// Todo: Update all server functions away from deprecated .inputValidator() syntax.
-
 // Todo: Review  NextJS home and user comments
 
 // Todo: Update validation so that name has max as well.

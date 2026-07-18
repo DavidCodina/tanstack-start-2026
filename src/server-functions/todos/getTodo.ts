@@ -13,7 +13,7 @@ type GetTodoInput = z.infer<typeof GetTodoSchema>
 export const getTodo = createServerFn({
   method: 'GET'
 })
-  .inputValidator((input: GetTodoInput) => input)
+  .validator((input: GetTodoInput) => input)
 
   .handler(async (ctx) => {
     const { data } = ctx

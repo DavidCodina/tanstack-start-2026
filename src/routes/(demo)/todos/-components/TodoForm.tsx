@@ -40,7 +40,7 @@ export const TodoForm = ({ handleGetTodos, invalidating }: TodoFormProps) => {
       // Instead, prefer passing context to the server function, and handling it
       // internally there. This way you can avoid potential uncaught errors.
       //
-      // However, if you throw from .inputValidator(), then you will also need
+      // However, if you throw from .validator(), then you will also need
       // to catch it here when consuming.
       //
       // Note: you generally don't need to wrap addTodo in useServerFn(addTodo)
@@ -109,7 +109,7 @@ export const TodoForm = ({ handleGetTodos, invalidating }: TodoFormProps) => {
       //
       ///////////////////////////////////////////////////////////////////////////
 
-      // ⚠️ Ultimately, I decided against using .inputValidator().
+      // ⚠️ Ultimately, I decided against using .validator().
       // ⚠️ I don't like the flow of throwing and then catching here.
       // ⚠️ Instead, I think it's a better convention to simply validate
       // ⚠️ at the top of .handler().

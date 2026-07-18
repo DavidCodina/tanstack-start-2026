@@ -21,7 +21,7 @@ export const deleteTodo = createServerFn({ method: 'POST' })
   // not warn you that data is unknown.
   //
   ///////////////////////////////////////////////////////////////////////////
-  .inputValidator((input: DeletTodoInput) => input)
+  .validator((input: DeletTodoInput) => input)
   .handler(async (ctx) => {
     const { data } = ctx
 

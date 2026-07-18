@@ -63,7 +63,7 @@ type RegisterResponsePromise = ResponsePromise<Data>
 export const register = createServerFn({
   method: 'POST'
 })
-  .inputValidator((input: RegisterSchemaInput) => input)
+  .validator((input: RegisterSchemaInput) => input)
 
   .handler(async (ctx): RegisterResponsePromise => {
     // await sleep(1000)

@@ -71,7 +71,7 @@ type RequestData = {
 export const login = createServerFn({
   method: 'POST'
 })
-  .inputValidator((input: RequestData) => input)
+  .validator((input: RequestData) => input)
 
   .handler(async (ctx) => {
     // await sleep(1000)

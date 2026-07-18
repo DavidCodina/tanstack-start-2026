@@ -58,11 +58,12 @@ type LinkCredentialsResponsePromise = ResponsePromise<ResponseData>
 /* ========================================================================
      
 ======================================================================== */
+// ❌ 'inputValidator' is deprecated.
 
 export const linkCredentials = createServerFn({
   method: 'POST'
 })
-  .inputValidator((input: LinkCredentialsInput) => input)
+  .validator((input: LinkCredentialsInput) => input)
 
   .handler(async (ctx): LinkCredentialsResponsePromise => {
     await sleep(1500)

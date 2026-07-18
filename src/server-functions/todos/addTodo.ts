@@ -46,7 +46,7 @@ export const addTodo = createServerFn({ method: 'POST' })
   //   - A parse() method (Zod schemas have this)
   //   - Conformance to the Standard Schema interface
   //
-  // When you pass TodoSchema to .inputValidator(), TanStack Start checks if it's
+  // When you pass TodoSchema to .validator(), TanStack Start checks if it's
   // a Standard Schema-compatible object (like a Zod schema) and handles it accordingly.
   //
   // Duck Typing with .parse(): TanStack Start doesn't specifically know about Zod.
@@ -68,7 +68,7 @@ export const addTodo = createServerFn({ method: 'POST' })
   //
   ///////////////////////////////////////////////////////////////////////////
 
-  // .inputValidator(
+  // .validator(
   //   // Can pass TodoSchema inline.
   //   z.object({
   //     name: z.string().min(5, 'Must be at least 5 characters.')
@@ -85,7 +85,7 @@ export const addTodo = createServerFn({ method: 'POST' })
   //
   ///////////////////////////////////////////////////////////////////////////
 
-  .inputValidator((input: CreateTodoInput) => input)
+  .validator((input: CreateTodoInput) => input)
 
   ///////////////////////////////////////////////////////////////////////////
   //
@@ -93,7 +93,7 @@ export const addTodo = createServerFn({ method: 'POST' })
   // However, if you need to pass your own data as errors, then you can
   // follow the same serialization trick.
   //
-  //   .inputValidator((input: AddTodoInput) => {
+  //   .validator((input: AddTodoInput) => {
   //     const { name } = input
   //     if (name === 'fail validation') {
   //       const errors = { name: 'That name sucks!' }
@@ -116,7 +116,7 @@ export const addTodo = createServerFn({ method: 'POST' })
   // confidently use just getSerializedZodErrors(err) on the client.
   //
   // It's important that there be some kind of convention for what to expect.
-  // After playing around with .inputValidator() for a while, I've decided that
+  // After playing around with .validator() for a while, I've decided that
   // I actually don't like throwing from it at all. Instead, I prefer to
   // immediately validate from within .handler().
   //
