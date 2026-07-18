@@ -20,7 +20,10 @@ type UpdateUserFormProps = React.ComponentProps<'form'> & {
 ====================== */
 
 const FormSchema = z.object({
-  name: z.string().min(1, { error: 'A name is required' })
+  name: z
+    .string()
+    .min(1, { error: 'A name is required' })
+    .max(100, { error: 'Name must be 100 characters or fewer' })
 })
 
 type ZodData = z.infer<typeof FormSchema>

@@ -12,6 +12,9 @@ const NewPasswordSchema = z
   .string()
   .min(1, { error: 'Password is required' })
   .min(8, { error: 'Password must be at least 8 characters long' })
+  .max(50, {
+    error: 'Password must be 50 characters or fewer'
+  })
   // Matches "anything that isn't a letter or digit"
   .regex(/[a-zA-Z]/, {
     message: 'Password must contain at least one letter'

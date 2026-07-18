@@ -25,6 +25,10 @@ const PasswordSchema = z
     abort: true,
     error: 'Password must be at least 8 characters long'
   })
+  .max(50, {
+    abort: true,
+    error: 'Password must be 50 characters or fewer'
+  })
   // Matches "anything that isn't a letter or digit"
   .regex(/[a-zA-Z]/, {
     error: 'Password must contain at least one letter'
@@ -55,7 +59,10 @@ const getConfirmPasswordSchema = (password: unknown) => {
 
 const getFormSchema = (password: unknown) => {
   const FormSchema = z.object({
-    name: z.string().min(1, { error: 'A name is required' }),
+    name: z
+      .string()
+      .min(1, { error: 'A name is required' })
+      .max(100, { error: 'Name must be 100 characters or fewer' }),
     email: z.email(),
     password: PasswordSchema,
     confirmPassword: getConfirmPasswordSchema(password)

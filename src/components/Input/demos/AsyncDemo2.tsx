@@ -53,7 +53,10 @@ const EmailSchema = z.email().refine(
 // })
 
 const FormSchema = z.object({
-  firstName: z.string().min(2, 'First name must be at least 2 characters'),
+  firstName: z
+    .string()
+    .min(1, { error: 'A name is required' })
+    .max(100, { error: 'Name must be 100 characters or fewer' }),
   email: EmailSchema
 })
 
