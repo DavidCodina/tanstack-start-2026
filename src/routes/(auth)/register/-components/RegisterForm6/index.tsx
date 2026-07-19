@@ -13,7 +13,9 @@ import { formOptions, useCustomForm } from './utils'
 /* ========================================================================
 
 ======================================================================== */
-// This version builds on RegisterForm5.
+// This version builds on RegisterForm5. It implements withForm() HOC
+// to fully abstract away the implementation details of each field.
+// See Ali Alaa at 2:07:00 - https://www.youtube.com/watch?v=H2T21r5wu3g
 
 export const RegisterForm6 = () => {
   const navigate = useNavigate()

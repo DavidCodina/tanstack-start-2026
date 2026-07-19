@@ -42,17 +42,6 @@ const PasswordSchema = z
 // https://www.better-auth.com/docs/concepts/cli
 
 // Todo: Review NextJS home and user comments
-//# Add a hook for name validation.
-//# Resolve issue with vite-tsconfi-paths.
-
-//# Test and double-check assumtpion on line 164 of register.ts.
-//# In fact, the assumption is wrong, and in most cases, a .refine() on
-//# the end of a z.object() will work, provided no validator in the ojbect
-//# is configured to as `abort:true`. It's tempting to sometimes use abort:true,
-//# but ultimately, this will always short-circuite the outer .refine().
-//# So... What I actually want to do is try to go back to many of the
-//# password/confirmPassword validations and rewrite them. Actually,
-//# just rewrite and test register.ts.
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -397,6 +386,8 @@ export const auth = betterAuth({
   // ❎ Syntax at 15:40,
   //
   ///////////////////////////////////////////////////////////////////////////
+
+  //# Add hook logic for name validation.
   hooks: {
     ///////////////////////////////////////////////////////////////////////////
     //
