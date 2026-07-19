@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearch } from '@tanstack/react-router'
 
 import { toast } from 'sonner'
 
+import { login } from '../-server-functions/login'
 import { GitHub } from './GitHub'
 import { Google } from './Google'
 import { LinkedIn } from './LinkedIn'
@@ -11,24 +12,51 @@ import { authClient } from '@/lib/auth-client'
 import { Button } from '@/components'
 import { Input } from '@/components/Input'
 import { InputPassword } from '@/components/InputPassword'
-import { login } from '@/server-functions/login'
 import { DEFAULT_LOGIN_REDIRECT } from '@/lib/routes'
 
 /* ========================================================================
 
 ======================================================================== */
 
-const LoginForm = () => {
+export const LoginForm = () => {
   const navigate = useNavigate()
   const searchParams = useSearch({ strict: false })
 
-  //# What happens if your callackUrl has search params of its own?
-  const { callbackUrl, verified } = searchParams as {
+  // ⚠️ At present, if the user tries to go to
+  const { callbackUrl, verified, ...otherSearchParams } = searchParams as {
     callbackUrl?: string
     // In Next.js the value would be a string, but in TanStack Start,
     // the searchParams automatically coerces the value to a boolean.
     verified?: boolean | string
   }
+
+  const enhancedCallbackUrl = (() => {
+    if (
+      callbackUrl &&
+      typeof callbackUrl === 'string' &&
+      Object.keys(otherSearchParams).length > 0
+    ) {
+      // Use otherSearchParams to construct a string such that
+      // for each other search param, we append it to the callbackUrl.
+      // Thus the result might look something like this:
+      // '/about?test=abc123&foo=bar'
+      const params = new URLSearchParams()
+
+      for (const [key, value] of Object.entries(otherSearchParams)) {
+        if (value === undefined) continue
+        params.append(key, String(value))
+      }
+
+      const queryString = params.toString()
+
+      if (queryString) {
+        const separator = callbackUrl.includes('?') ? '&' : '?'
+        return `${callbackUrl}${separator}${queryString}`
+      }
+    }
+
+    return callbackUrl
+  })()
 
   const [email, setEmail] = React.useState('')
   const [password, setPassword] = React.useState('')
@@ -253,7 +281,9 @@ const LoginForm = () => {
         toast.success('Login success.')
 
         navigate({
-          to: callbackUrl ? callbackUrl : DEFAULT_LOGIN_REDIRECT,
+          to: enhancedCallbackUrl
+            ? enhancedCallbackUrl
+            : DEFAULT_LOGIN_REDIRECT,
           replace: true
         })
       } catch (_err) {
@@ -274,7 +304,9 @@ const LoginForm = () => {
     try {
       const _data = await authClient.signIn.social({
         provider: provider,
-        callbackURL: '/user'
+        callbackURL: enhancedCallbackUrl
+          ? enhancedCallbackUrl
+          : DEFAULT_LOGIN_REDIRECT
       })
     } catch (_err) {
       // ...
@@ -406,13 +438,3 @@ const LoginForm = () => {
     </>
   )
 }
-
-const LoginFormWithSuspense = () => {
-  return (
-    <React.Suspense>
-      <LoginForm />
-    </React.Suspense>
-  )
-}
-
-export { LoginFormWithSuspense as LoginForm }

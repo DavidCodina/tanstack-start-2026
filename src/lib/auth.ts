@@ -43,6 +43,10 @@ const PasswordSchema = z
 
 // Todo: Review NextJS home and user comments
 
+// Todo: Review all files.
+
+// Todo: Improve email templates in lib/
+
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: 'pg',
@@ -387,7 +391,6 @@ export const auth = betterAuth({
   //
   ///////////////////////////////////////////////////////////////////////////
 
-  //# Add hook logic for name validation.
   hooks: {
     ///////////////////////////////////////////////////////////////////////////
     //
@@ -429,6 +432,9 @@ export const auth = betterAuth({
         ///////////////////////////////////////////////////////////////////////////
 
         if (ctx.path === '/sign-up/email') {
+          //# Add hook logic for name validation.
+          //# Also add it for when user updates their name.
+
           if (ctx.body.email === 'blacklisted@example.com') {
             ///////////////////////////////////////////////////////////////////////////
             //
