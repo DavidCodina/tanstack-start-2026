@@ -17,16 +17,10 @@ import { formOptions, useCustomForm } from './utils'
 // create and abstract the following components:
 //
 //   - InputField
-//   - ❌ NameField
-//   - ❌ EmailField
 //   - InputPasswordField
-//   - ❌ PasswordField
-//   - ❌ ConfirmPasswordField
 //   - SubmitButton
 //
-// Note: Rather than using NameField, EmailField, PasswordField and ConfirmPasswordField,
-// we can just make a generic InputField and InputPasswordField. In this way we accomplish
-// two goals:
+//  In this way we accomplish two goals:
 //
 // 1. Bloat reduction through abstraction.
 // 2. Reusability through making the field components generic.

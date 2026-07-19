@@ -1,11 +1,18 @@
 import { useFieldContext } from './utils'
-import { Input } from '@/components/Input'
+
+import type { InputPasswordProps } from '@/components/InputPassword'
+import { InputPassword } from '@/components/InputPassword'
 
 /* ========================================================================
 
 ======================================================================== */
 
-export const EmailField = () => {
+export const InputPasswordField = ({
+  fieldRootProps,
+  inputProps,
+  fieldErrorProps,
+  ...otherProps
+}: InputPasswordProps) => {
   const field = useFieldContext<string>()
   const errors = field.state.meta.errors
   const isErrors = errors.length > 0
@@ -21,35 +28,33 @@ export const EmailField = () => {
   ====================== */
 
   return (
-    <Input
+    <InputPassword
+      {...otherProps}
+
       fieldRootProps={{
+        ...fieldRootProps,
         name: field.name,
         invalid: isInvalid,
         dirty: isDirty,
         touched: isBlurred
       }}
 
-      fieldLabelProps={{
-        children: 'Email',
-        labelRequired: true
-      }}
-
       inputProps={{
-        fieldSize: 'sm',
+        ...inputProps,
         value: field.state.value,
         onBlur: field.handleBlur,
+
         onChange: (e) => {
+          inputProps?.onChange?.(e)
           field.handleChange(e.target.value)
           if (isBlurred || hasSubmitted) {
             field.validate('blur')
           }
-        },
-
-        placeholder: 'Email...'
+        }
       }}
 
-      fieldDescriptionProps={{}}
       fieldErrorProps={{
+        ...fieldErrorProps,
         children: isInvalid
           ? errors
               .filter(Boolean)
