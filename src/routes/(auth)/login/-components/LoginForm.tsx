@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { Link, useNavigate, useSearch } from '@tanstack/react-router'
-
 import { toast } from 'sonner'
 
 import { login } from '../-server-functions/login'

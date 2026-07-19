@@ -47,6 +47,8 @@ const PasswordSchema = z
 
 // Todo: Improve email templates in lib/
 
+// Todo: Update BasicSidebar so auth-only links are only show when authed.
+
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: 'pg',
