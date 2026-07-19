@@ -53,66 +53,6 @@ const PasswordSchema = z
 //# So... What I actually want to do is try to go back to many of the
 //# password/confirmPassword validations and rewrite them. Actually,
 //# just rewrite and test register.ts.
-//
-
-// const PasswordSchema = z
-//   .string()
-//   .min(1, {
-//     error: 'Password is required'
-//   })
-//   .min(8, {
-//     error: 'Password must be at least 8 characters long'
-//   })
-//   .max(50, {
-//     error: 'Password must be 50 characters or fewer'
-//   })
-//   // Matches "anything that isn't a letter or digit"
-//   .regex(/[a-zA-Z]/, {
-//     error: 'Password must contain at least one letter'
-//   })
-//   .regex(/[0-9]/, { error: 'Password must contain at least one number' })
-//   // Matches "anything that isn't a letter or digit"
-//   .regex(/[^a-zA-Z0-9]/, {
-//     error: 'Password must contain at least one special character.'
-//   })
-
-// const FormSchema = z
-//   .object({
-//     name: z
-//       .string()
-//       .min(1, { error: 'A name is required' })
-//       .max(100, { error: 'Name must be 100 characters or fewer' }),
-
-//     email: z.email(),
-//     password: PasswordSchema,
-//     confirmPassword: z.string().min(8, {
-//       error: 'Must be at least 8 characters long'
-//     })
-//   })
-//   .refine(
-//     ({ password, confirmPassword }) => {
-//       return password === confirmPassword
-//     },
-//     {
-//       error: 'The passwords must match.',
-//       path: ['confirmPassword']
-//     }
-//   )
-
-// const validationResult = FormSchema.safeParse({
-//   name: 'David Codina',
-//   email: 'david@',
-//   password: 'Exodus123#',
-//   confirmPassword: 'Exodus123!'
-// })
-
-// if (!validationResult.success) {
-//   const errors = formatZodErrors(validationResult.error)
-//   //  errors: {password: 'Password must be at least 8 characters long'}
-//   console.log('errors:', errors)
-// } else {
-//   console.log('Form is valid!')
-// }
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {

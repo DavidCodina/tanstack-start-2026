@@ -2,7 +2,11 @@ import * as React from 'react'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { toast } from 'sonner'
 import * as z from 'zod'
-import { useForm /* , useSelector */ } from '@tanstack/react-form-start'
+import {
+  // revalidateLogic,
+  useForm
+  // useSelector
+} from '@tanstack/react-form-start'
 import { TriangleAlert } from 'lucide-react'
 
 import { register } from '../-server-functions/register'
@@ -14,6 +18,22 @@ import { tanstackFormGetFieldErrors } from '@/utils'
 /* ======================
       Zod Schema
 ====================== */
+///////////////////////////////////////////////////////////////////////////
+//
+// Note: As a general rule, using abort:true is often a bad idea.
+// The goal here is to not inundate the user with too many validation
+// errors for password. However, when used inside a z.object(), it ends
+// up short-circuitng any outer .refine()/.superRefine() calls. Normally,
+// an outer .refine() might be used for confirmPassword validation. However,
+// in this case we're using TanStack Form's `onBlurListenTo` feature, so we
+// can get away with this kind of Zod schema configuration.
+//
+// A similar argument can be made for RegisterForm3 where we're abstracting
+// FormSchema -> getFormSchema() and ConfirmPasswordSchema -> getConfirmPasswordSchema().
+// While that approach is somewhat verbose, it also avoids the need for an outer
+// .refine(), which then permits the developer to implement abort:true as desired.
+//
+///////////////////////////////////////////////////////////////////////////
 
 const PasswordSchema = z
   .string()
@@ -71,13 +91,10 @@ export const RegisterForm4 = () => {
   /* ======================
         useForm()
   ====================== */
+  //# ???
+  //# transform() {},
 
   const form = useForm({
-    //# ???
-    //# validationLogic: () => {},
-
-    //# ???
-    //# transform() {},
     defaultValues: defaultValues,
 
     // This only runs when the form validation passes...
@@ -359,7 +376,9 @@ export const RegisterForm4 = () => {
         name='confirmPassword'
         validators={{
           // There's also an onChangeListenTo, but that's not the one we want.
+
           onBlurListenTo: ['password'],
+
           onBlur: ({ value, fieldApi }) => {
             const password = fieldApi.form.getFieldValue('password')
             const result = FormSchema.shape.confirmPassword

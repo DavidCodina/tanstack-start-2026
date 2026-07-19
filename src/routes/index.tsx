@@ -1,6 +1,7 @@
 import { createFileRoute /* , useRouter */ } from '@tanstack/react-router'
 
 import { Page, PageContainer } from '@/components'
+import { DynamicDemo } from '@/components/Input/demos/DynamicDemo'
 
 export const Route = createFileRoute('/')({ component: PageHome })
 
@@ -60,6 +61,8 @@ function PageHome() {
         >
           _HOME
         </h1>
+
+        <DynamicDemo />
       </PageContainer>
     </Page>
   )

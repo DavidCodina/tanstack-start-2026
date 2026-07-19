@@ -13,7 +13,7 @@ import type { InputPrimitiveProps } from '../Input/InputPrimitive'
 
 import { cn } from '@/utils'
 
-export type InputProps = {
+export type InputPasswordProps = {
   fieldRootProps?: FieldRootProps
   fieldLabelProps?: FieldLabelProps
   inputProps?: InputPrimitiveProps
@@ -31,7 +31,7 @@ export const InputPassword = ({
   fieldLabelProps = {},
   fieldErrorProps = {},
   fieldDescriptionProps = {}
-}: InputProps) => {
+}: InputPasswordProps) => {
   const [inputType, setInputType] = React.useState<'password' | 'text'>(
     'password'
   )
