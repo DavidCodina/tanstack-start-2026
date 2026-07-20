@@ -224,146 +224,136 @@ export const BasicSidebar = () => {
           <span className='font-medium'>Test</span>
         </Link>
 
-        {/* Demo Links Start */}
-
-        {/* Demo Links Start */}
-
-        <Link
-          to='/todos'
-          onClick={() => setIsOpen(false)}
-          className={linkClassName}
-          activeProps={{
-            className: activeClassName
-          }}
-        >
-          <SquareFunction size={20} />
-          <span className='font-medium'>Todos</span>
-        </Link>
-
-        <Link
-          to='/todos2'
-          onClick={() => setIsOpen(false)}
-          className={linkClassName}
-          activeProps={{
-            className: activeClassName
-          }}
-        >
-          <SquareFunction size={20} />
-          <span className='font-medium'>Todos 2</span>
-        </Link>
-
-        <Link
-          to='/tanstack-query'
-          onClick={() => setIsOpen(false)}
-          className={linkClassName}
-          activeProps={{
-            className: activeClassName
-          }}
-        >
-          <Network size={20} />
-          <span className='font-medium'>TanStack Query</span>
-        </Link>
-
-        <Link
-          to='/about'
-          onClick={() => setIsOpen(false)}
-          className={linkClassName}
-          activeProps={{
-            className: activeClassName
-          }}
-        >
-          <Info size={20} />
-          <span className='font-medium'>About</span>
-        </Link>
-
-        <Link
-          to='/start/api-request'
-          onClick={() => setIsOpen(false)}
-          className={linkClassName}
-          activeProps={{
-            className: activeClassName
-          }}
-        >
-          <Network size={20} />
-          <span className='font-medium'>Start - API Request</span>
-        </Link>
-
-        <div className='flex flex-row justify-between'>
+        <SignedIn>
           <Link
-            to='/start/ssr'
+            to='/todos'
             onClick={() => setIsOpen(false)}
-            className={cn(linkClassName, 'flex-1')}
+            className={linkClassName}
             activeProps={{
               className: activeClassName
             }}
           >
-            <StickyNote size={20} />
-            <span className='font-medium'>Start - SSR Demos</span>
+            <SquareFunction size={20} />
+            <span className='font-medium'>Todos</span>
           </Link>
-          <button
+
+          <Link
+            to='/todos2'
+            onClick={() => setIsOpen(false)}
             className={linkClassName}
-            onClick={() =>
-              setGroupedExpanded((prev) => ({
-                ...prev,
-                StartSSRDemo: !prev.StartSSRDemo
-              }))
-            }
-            type='button'
+            activeProps={{
+              className: activeClassName
+            }}
           >
-            {groupedExpanded.StartSSRDemo ? (
-              <ChevronDown size={20} />
-            ) : (
-              <ChevronRight size={20} />
-            )}
-          </button>
-        </div>
-        {groupedExpanded.StartSSRDemo && (
-          <div className='ml-4 flex flex-col'>
-            <Link
-              to='/start/ssr/spa-mode'
-              onClick={() => setIsOpen(false)}
-              className={linkClassName}
-              activeProps={{
-                className: activeClassName
-              }}
-            >
-              <StickyNote size={20} />
-              <span className='font-medium'>SPA Mode</span>
-            </Link>
+            <SquareFunction size={20} />
+            <span className='font-medium'>Todos 2</span>
+          </Link>
 
-            <Link
-              to='/start/ssr/full-ssr'
-              onClick={() => setIsOpen(false)}
-              className={linkClassName}
-              activeProps={{
-                className: activeClassName
-              }}
-            >
-              <StickyNote size={20} />
-              <span className='font-medium'>Full SSR</span>
-            </Link>
+          <Link
+            to='/tanstack-query'
+            onClick={() => setIsOpen(false)}
+            className={linkClassName}
+            activeProps={{
+              className: activeClassName
+            }}
+          >
+            <Network size={20} />
+            <span className='font-medium'>TanStack Query</span>
+          </Link>
 
+          <Link
+            to='/about'
+            onClick={() => setIsOpen(false)}
+            className={linkClassName}
+            activeProps={{
+              className: activeClassName
+            }}
+          >
+            <Info size={20} />
+            <span className='font-medium'>About</span>
+          </Link>
+
+          <Link
+            to='/start/api-request'
+            onClick={() => setIsOpen(false)}
+            className={linkClassName}
+            activeProps={{
+              className: activeClassName
+            }}
+          >
+            <Network size={20} />
+            <span className='font-medium'>Start - API Request</span>
+          </Link>
+
+          <div className='flex flex-row justify-between'>
             <Link
-              to='/start/ssr/data-only'
+              to='/start/ssr'
               onClick={() => setIsOpen(false)}
-              className={linkClassName}
+              className={cn(linkClassName, 'flex-1')}
               activeProps={{
                 className: activeClassName
               }}
             >
               <StickyNote size={20} />
-              <span className='font-medium'>Data Only</span>
+              <span className='font-medium'>Start - SSR Demos</span>
             </Link>
+            <button
+              className={linkClassName}
+              onClick={() =>
+                setGroupedExpanded((prev) => ({
+                  ...prev,
+                  StartSSRDemo: !prev.StartSSRDemo
+                }))
+              }
+              type='button'
+            >
+              {groupedExpanded.StartSSRDemo ? (
+                <ChevronDown size={20} />
+              ) : (
+                <ChevronRight size={20} />
+              )}
+            </button>
           </div>
-        )}
+          {groupedExpanded.StartSSRDemo && (
+            <div className='ml-4 flex flex-col'>
+              <Link
+                to='/start/ssr/spa-mode'
+                onClick={() => setIsOpen(false)}
+                className={linkClassName}
+                activeProps={{
+                  className: activeClassName
+                }}
+              >
+                <StickyNote size={20} />
+                <span className='font-medium'>SPA Mode</span>
+              </Link>
 
-        {/* Demo Links End */}
+              <Link
+                to='/start/ssr/full-ssr'
+                onClick={() => setIsOpen(false)}
+                className={linkClassName}
+                activeProps={{
+                  className: activeClassName
+                }}
+              >
+                <StickyNote size={20} />
+                <span className='font-medium'>Full SSR</span>
+              </Link>
 
-        {/* 
-        //# This is temporary... Eventually, they will be wrapped in SignedOut/SignedIn
-        */}
+              <Link
+                to='/start/ssr/data-only'
+                onClick={() => setIsOpen(false)}
+                className={linkClassName}
+                activeProps={{
+                  className: activeClassName
+                }}
+              >
+                <StickyNote size={20} />
+                <span className='font-medium'>Data Only</span>
+              </Link>
+            </div>
+          )}
 
-        <SignedIn>
           <Link
             to='/user'
             onClick={() => setIsOpen(false)}

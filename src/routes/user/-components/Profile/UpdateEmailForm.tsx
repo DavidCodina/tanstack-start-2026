@@ -9,8 +9,7 @@ import { Button } from '@/components'
 import { Input } from '@/components/Input'
 import { cn, formatZodErrors } from '@/utils'
 
-//! This is wrong!
-type UpdateEmailFormProps = React.ComponentProps<'form'> & {
+type UpdateEmailFormProps = Form.Props & {
   currentEmail: string
 }
 

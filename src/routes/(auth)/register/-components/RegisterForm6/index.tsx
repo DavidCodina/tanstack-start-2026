@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { toast } from 'sonner'
+// import { useSelector } from '@tanstack/react-form-start'
 
 import { register } from '../../-server-functions/register'
 import { NameField } from './NameField'
@@ -9,6 +10,7 @@ import { PasswordField } from './PasswordField'
 import { ConfirmPasswordField } from './ConfirmPasswordField'
 import { AppFormSubmitButton } from './AppFormSubmitButton'
 import { formOptions, useCustomForm } from './utils'
+// import { tanstackFormGetFieldErrors } from '@/utils'
 
 /* ========================================================================
 
@@ -85,6 +87,9 @@ export const RegisterForm6 = () => {
     }
   })
 
+  // const errors = useSelector(form.store, (state) => tanstackFormGetFieldErrors(state.fieldMeta))
+  // console.log('errors', errors)
+
   /* ======================
           return
   ====================== */
@@ -106,6 +111,7 @@ export const RegisterForm6 = () => {
         <ConfirmPasswordField form={form} />
         {/* Instead of doing this: <form.AppForm><form.SubmitButton /></form.AppForm>,
         We can also abtract the SubmitButton. However, it's a bit overkill */}
+
         <AppFormSubmitButton form={form} />
       </form>
 

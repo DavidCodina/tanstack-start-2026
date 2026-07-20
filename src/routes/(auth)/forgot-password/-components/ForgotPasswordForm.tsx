@@ -108,13 +108,7 @@ export const ForgotPasswordForm = () => {
         const { data, error } = result
 
         if (error) {
-          //! Don't do this in production!
-          const errorMessage =
-            typeof error.message === 'string'
-              ? error.message
-              : 'Unable to send password reset email.'
-
-          toast.error(errorMessage, {
+          toast.error('Unable to send password reset email.', {
             // duration: Infinity
           })
           return

@@ -25,6 +25,11 @@ type FieldErrors = AnyFieldLikeMeta['errors']
 //     }}
 //   > ... </form.Subscribe>
 //
+// Or can also use in conjunction with useSelector:
+//
+//   const errors = useSelector(form.store, (state) => tanstackFormGetFieldErrors(state.fieldMeta))
+//   console.log('errors', errors)
+//
 ///////////////////////////////////////////////////////////////////////////
 
 export const tanstackFormGetFieldErrors = (

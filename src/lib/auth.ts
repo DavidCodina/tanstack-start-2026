@@ -35,19 +35,52 @@ const PasswordSchema = z
 /* ========================================================================
 
 ======================================================================== */
-
 // https://better-auth.com/docs/installation
 // https://better-auth.com/docs/integrations/tanstack
 // https://better-auth.com/docs/adapters/drizzle
 // https://www.better-auth.com/docs/concepts/cli
 
-// Todo: Review NextJS home and user comments
+///////////////////////////////////////////////////////////////////////////
+//
+// Todo: Consider refactoring the beforeLoad logic in __root.tsx.
+// Instead switch to something like this:
+// src/routes/
+//   __root.tsx
+//   (public)/
+//     route.tsx        <- no auth check at all
+//     login.tsx
+//     register.tsx
+//     about.tsx
+//   _authed/
+//     route.tsx         <- pathless layout, requires session
+//     dashboard.tsx
+//     settings.tsx
+//     (admin)/
+//       route.tsx        <- nested, requires role === 'admin'
+//       users.tsx
+//
+// __root.tsx — now just resolves the session and hands it down as context. No pathname matching at all:
+//
+// beforeLoad: async () => {
+//   const session = await getServerSession()
+//   return { session }
+// },
+//
+///////////////////////////////////////////////////////////////////////////
 
-// Todo: Review all files.
+// Todo: Possibly add a confirmEmail field to src/routes/user/-components/Profile/UpdateEmailForm.tsx
+
+// Todo: Review BasicSidebar
 
 // Todo: Improve email templates in lib/
 
-// Todo: Update BasicSidebar so auth-only links are only show when authed.
+// Todo: Review NextJS home and user comments
+
+// Todo: Update Sonner toast components.
+
+// Todo: Update Card.
+
+// Todo: Review UpdateUserForm and build out way to update user image.
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {

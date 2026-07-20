@@ -4,6 +4,7 @@
 export const publicRoutes = [
   '/',
   '/test',
+  '/test/nested',
   '/forbidden',
   '/reset-password'
   // '/about'

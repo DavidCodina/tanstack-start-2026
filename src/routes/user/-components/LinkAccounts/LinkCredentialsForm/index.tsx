@@ -9,9 +9,9 @@ import { Button } from '@/components'
 import { InputPassword } from '@/components/InputPassword'
 import { cn, formatZodErrors } from '@/utils'
 
-//! This is wrong!
-type SetPasswordFormProps = {
-  className?: string
+export type FormProps = Form.Props
+
+type SetPasswordFormProps = Form.Props & {
   onSuccess: () => void
 }
 

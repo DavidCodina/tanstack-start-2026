@@ -9,8 +9,7 @@ import { Button } from '@/components'
 import { InputPassword } from '@/components/InputPassword'
 import { cn, formatZodErrors } from '@/utils'
 
-//! This is wrong!
-type UpdatePasswordFormProps = React.ComponentProps<'form'>
+type UpdatePasswordFormProps = Form.Props
 
 /* ======================
       Zod Schema

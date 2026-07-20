@@ -10,8 +10,7 @@ import { Button } from '@/components'
 import { Input } from '@/components/Input'
 import { cn, formatZodErrors } from '@/utils'
 
-//! This is wrong!
-type UpdateUserFormProps = React.ComponentProps<'form'> & {
+type UpdateUserFormProps = Form.Props & {
   currentName: string
 }
 

@@ -22,8 +22,14 @@ export const LoginForm = () => {
   const searchParams = useSearch({ strict: false })
 
   // ⚠️ At present, if the user tries to go to
-  const { callbackUrl, verified, ...otherSearchParams } = searchParams as {
+  const {
+    callbackUrl,
+    code: _code, // Destructure out so it's not included in otherSearchParams/enhancedCallbackUrl
+    verified,
+    ...otherSearchParams
+  } = searchParams as {
     callbackUrl?: string
+    code?: string
     // In Next.js the value would be a string, but in TanStack Start,
     // the searchParams automatically coerces the value to a boolean.
     verified?: boolean | string
@@ -215,15 +221,38 @@ export const LoginForm = () => {
         if (error) {
           // {message: 'Email not verified', code: 'EMAIL_NOT_VERIFIED', status: 403, statusText: 'FORBIDDEN'}
           if (error.code === 'EMAIL_NOT_VERIFIED') {
-            //# Here we're resending the verification email automatically. However, there's
-            //# currently no way to explicitly allow the user to request a new verification
-            //# email. What we could do instead is look for this error and then have the UI
-            //# render a button that the user can click to resend a verification email.
-            resendVerificationEmail(email)
+            // This code searchParam is not currently being used, but one could conditionally
+            // render a Button in the UI based on the presence of this param. At present, the
+            // button is simply in the toast notification.
+            navigate({
+              to: '/login',
+              search: { code: 'EMAIL_NOT_VERIFIED' }
+            })
+
             toast.error(
-              'Email not verified. Please check your email for a verification link.',
+              'Email not verified.',
+
               {
-                // duration: Infinity
+                duration: Infinity,
+                // closeButton: true,
+                description:
+                  'Click send to resend verification link to your email.',
+                actionButtonStyle: {
+                  minWidth: 50,
+
+                  justifyContent: 'center'
+                },
+                action: {
+                  label: 'Send',
+                  onClick: () => {
+                    // console.log('Sending verification email to:', email)
+                    resendVerificationEmail(email)
+                  }
+                },
+                cancel: {
+                  label: 'Cancel'
+                  // onClick: () => console.log('Cancel!')
+                }
               }
             )
           } else {

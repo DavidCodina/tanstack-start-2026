@@ -21,6 +21,10 @@ export const ConfirmPasswordField = withForm({
           onBlurListenTo: ['password'],
 
           onBlur: ({ value, fieldApi }) => {
+            const isBlurred = fieldApi.state.meta.isBlurred
+            // ⚠️ Gotcha: Prevent password field from validating if confirmPassword isn't blurred.
+            if (!isBlurred) return
+
             const password = fieldApi.form.getFieldValue('password')
             const result = FormSchema.shape.confirmPassword
               // ⚠️ Why do we need .pipe() here? Because...
