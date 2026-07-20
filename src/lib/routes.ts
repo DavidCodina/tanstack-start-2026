@@ -6,7 +6,8 @@ export const publicRoutes = [
   '/test',
   '/test/nested',
   '/forbidden',
-  '/reset-password'
+  '/reset-password',
+  '/email-change-status' // This is the route that is redirected to after the user verifies their new email.
   // '/about'
 ]
 

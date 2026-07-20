@@ -32,6 +32,7 @@ import { Route as authResetPasswordIndexRouteImport } from './routes/(auth)/rese
 import { Route as authRegisterIndexRouteImport } from './routes/(auth)/register/index'
 import { Route as authLoginIndexRouteImport } from './routes/(auth)/login/index'
 import { Route as authForgotPasswordIndexRouteImport } from './routes/(auth)/forgot-password/index'
+import { Route as authEmailChangeStatusIndexRouteImport } from './routes/(auth)/email-change-status/index'
 import { Route as TestIdBonusRouteImport } from './routes/test/$id.bonus'
 import { Route as ApiTqTodosIdRouteImport } from './routes/api/tq-todos/$id'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
@@ -165,6 +166,12 @@ const authForgotPasswordIndexRoute = authForgotPasswordIndexRouteImport.update({
   path: '/forgot-password/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const authEmailChangeStatusIndexRoute =
+  authEmailChangeStatusIndexRouteImport.update({
+    id: '/(auth)/email-change-status/',
+    path: '/email-change-status/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const TestIdBonusRoute = TestIdBonusRouteImport.update({
   id: '/bonus',
   path: '/bonus',
@@ -262,6 +269,7 @@ export interface FileRoutesByFullPath {
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/tq-todos/$id': typeof ApiTqTodosIdRoute
   '/test/$id/bonus': typeof TestIdBonusRoute
+  '/email-change-status/': typeof authEmailChangeStatusIndexRoute
   '/forgot-password/': typeof authForgotPasswordIndexRoute
   '/login/': typeof authLoginIndexRoute
   '/register/': typeof authRegisterIndexRoute
@@ -301,6 +309,7 @@ export interface FileRoutesByTo {
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/tq-todos/$id': typeof ApiTqTodosIdRoute
   '/test/$id/bonus': typeof TestIdBonusRoute
+  '/email-change-status': typeof authEmailChangeStatusIndexRoute
   '/forgot-password': typeof authForgotPasswordIndexRoute
   '/login': typeof authLoginIndexRoute
   '/register': typeof authRegisterIndexRoute
@@ -342,6 +351,7 @@ export interface FileRoutesById {
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/tq-todos/$id': typeof ApiTqTodosIdRoute
   '/test/$id/bonus': typeof TestIdBonusRoute
+  '/(auth)/email-change-status/': typeof authEmailChangeStatusIndexRoute
   '/(auth)/forgot-password/': typeof authForgotPasswordIndexRoute
   '/(auth)/login/': typeof authLoginIndexRoute
   '/(auth)/register/': typeof authRegisterIndexRoute
@@ -384,6 +394,7 @@ export interface FileRouteTypes {
     | '/api/auth/$'
     | '/api/tq-todos/$id'
     | '/test/$id/bonus'
+    | '/email-change-status/'
     | '/forgot-password/'
     | '/login/'
     | '/register/'
@@ -423,6 +434,7 @@ export interface FileRouteTypes {
     | '/api/auth/$'
     | '/api/tq-todos/$id'
     | '/test/$id/bonus'
+    | '/email-change-status'
     | '/forgot-password'
     | '/login'
     | '/register'
@@ -463,6 +475,7 @@ export interface FileRouteTypes {
     | '/api/auth/$'
     | '/api/tq-todos/$id'
     | '/test/$id/bonus'
+    | '/(auth)/email-change-status/'
     | '/(auth)/forgot-password/'
     | '/(auth)/login/'
     | '/(auth)/register/'
@@ -501,6 +514,7 @@ export interface RootRouteChildren {
   demoTodos2IdRoute: typeof demoTodos2IdRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiTqTodosIdRoute: typeof ApiTqTodosIdRoute
+  authEmailChangeStatusIndexRoute: typeof authEmailChangeStatusIndexRoute
   authForgotPasswordIndexRoute: typeof authForgotPasswordIndexRoute
   authLoginIndexRoute: typeof authLoginIndexRoute
   authRegisterIndexRoute: typeof authRegisterIndexRoute
@@ -685,6 +699,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authForgotPasswordIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(auth)/email-change-status/': {
+      id: '/(auth)/email-change-status/'
+      path: '/email-change-status'
+      fullPath: '/email-change-status/'
+      preLoaderRoute: typeof authEmailChangeStatusIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/test/$id/bonus': {
       id: '/test/$id/bonus'
       path: '/bonus'
@@ -836,6 +857,7 @@ const rootRouteChildren: RootRouteChildren = {
   demoTodos2IdRoute: demoTodos2IdRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiTqTodosIdRoute: ApiTqTodosIdRoute,
+  authEmailChangeStatusIndexRoute: authEmailChangeStatusIndexRoute,
   authForgotPasswordIndexRoute: authForgotPasswordIndexRoute,
   authLoginIndexRoute: authLoginIndexRoute,
   authRegisterIndexRoute: authRegisterIndexRoute,

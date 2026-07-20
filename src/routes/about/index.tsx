@@ -19,8 +19,8 @@ export const Route = createFileRoute('/about/')({
   // loader: async (param) => {
   //   const { context } = param
   //   const { session } = context
-  //   // The access with:  const loaderData = Route.useLoaderData()
-  //   return session
+  //   // Then access with: const loaderData = Route.useLoaderData()
+  //   return { session }
   // }
 })
 

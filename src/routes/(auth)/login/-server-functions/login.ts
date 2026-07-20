@@ -6,13 +6,6 @@ import type {
   Code
   // ResponsePromise
 } from '@/types'
-// import { codes } from '@/utils'
-
-// import { isRedirectError } from 'next/dist/client/components/redirect-error'
-// import { DEFAULT_LOGIN_REDIRECT } from '@/routes'
-
-//# import { generateVerificationToken } from 'lib/tokens'
-//# import { sendVerificationEmail } from 'lib/mail'
 
 import { auth } from '@/lib/auth'
 

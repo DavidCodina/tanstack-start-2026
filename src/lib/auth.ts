@@ -11,6 +11,7 @@ import { z } from 'zod'
 import { sendVerificationEmail } from './sendVerificationEmail'
 import { sendResetPasswordEmail } from './sendResetPasswordEmail'
 import { sendDeleteAccountVerification } from './sendDeleteAccountVerification'
+import { sendChangeEmailConfirmation } from './sendChangeEmailConfirmation'
 import { db } from '@/db'
 
 import * as schema from '@/db/schema'
@@ -69,6 +70,8 @@ const PasswordSchema = z
 ///////////////////////////////////////////////////////////////////////////
 
 // Todo: Possibly add a confirmEmail field to src/routes/user/-components/Profile/UpdateEmailForm.tsx
+
+// Todo: Review login.ts against what I'm now doing in linkCredentials server function.
 
 // Todo: Review BasicSidebar
 
@@ -129,7 +132,7 @@ export const auth = betterAuth({
     // WDS at 2:02:30
     // Coding In Flow at 1:49:30
     changeEmail: {
-      enabled: true
+      enabled: true,
 
       ///////////////////////////////////////////////////////////////////////////
       //
@@ -145,31 +148,43 @@ export const auth = betterAuth({
       // The email is only updated after the user verifies the new email. This occurs through
       // the emailVerification implementation already set up in the registration flow.
       //
+      // ⚠️ This seems extremely insecure! If a user accidentally submits the wrong email then
+      // they could get locked out of their own account. Even worse, the owner of the new email
+      // could simply submit a forgot password request and then takeover the account!
+      //
       /////////////////////////
       //
-      // Confirming with Current Email:
+      // Confirming With Current Email:
       //
       // https://better-auth.com/docs/concepts/users-accounts#confirming-with-current-email
       // For added security, you can require users to confirm the change via their current
-      // email before the verification email is sent to the new address.
+      // email before the verification email is sent to the new address. While this is definitely
+      // more secure, the trade-off is that if a user is trying to change their email in this app
+      // because they no longer have access to their old email account, then they will now no longer
+      // be able to verify their old email address.
       //
-      // To do this, provide the sendChangeEmailConfirmation function. In Coding In Flow tutorial
-      // at 1:50:20, he says he doesn't really know what the best approach is. Currently, I'm
-      // using the less secure approach where the email verification goes to the NEW email. The
-      // problem with the more secure approach of sending it to the old email
+      // In other words, the problem with the more secure approach of sending it to the old email
       // (i.e. sendChangeEmailConfirmation) is that in many cases, a user may be trying to change
       // their email on this app because they no longer have access to their old email account.
       //
+      // In Coding In Flow tutorial at 1:50:20, he says he doesn't really know what the best approach is.
+      // To implement this feature, provide the sendChangeEmailConfirmation function.
+      //
       ///////////////////////////////////////////////////////////////////////////
 
-      // sendChangeEmailConfirmation: async (parameter, _request) => {
-      //   const { user, newEmail, url /* , token */ } = parameter
-      //   // https://better-auth.com/docs/concepts/users-accounts#change-email
-      //   // ⚠️ Avoid awaiting the email sending to prevent timing attacks.
-      //   // On serverless platforms, use waitUntil or similar to ensure the email is sent.
-      //
-      //   // Send the email to the new email address...
-      // }
+      sendChangeEmailConfirmation: async (parameter, _request) => {
+        const { user, newEmail, url /* , token */ } = parameter
+        // https://better-auth.com/docs/concepts/users-accounts#change-email
+        // ⚠️ Avoid awaiting the email sending to prevent timing attacks.
+        // On serverless platforms, use waitUntil or similar to ensure the email is sent.
+        // Send the email to the current email address (i.e., NOT new email address).
+        sendChangeEmailConfirmation({
+          email: user.email,
+          name: user.name,
+          newEmail,
+          url
+        })
+      }
     },
 
     additionalFields: {

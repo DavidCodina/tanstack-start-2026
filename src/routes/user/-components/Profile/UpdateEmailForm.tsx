@@ -57,9 +57,9 @@ type FormErrors = Partial<Record<keyof ZodData, string>>
 //
 ///////////////////////////////////////////////////////////////////////////
 
-//# Here we 100% need to have a confirm email field.
-//# Otherwise, there's an increased risk that the user will inadvertently
-//# update the email to the WRONG email and then get locked out.
+//# The Better Auth implementation is already using sendChangeEmailConfirmation in auth.ts
+//# However, it may still be useful for there to be a confirmEmail field in order to prevent
+//# wrong emails. Ask AI if this is being too defensive.
 
 //# Test what happens if we try to assign an email that already exists on another user.
 
@@ -133,7 +133,10 @@ export const UpdateEmailForm = ({
       // for a user with an Oath account does not break the login flow.
       const { data, error } = await authClient.changeEmail({
         newEmail: zodData.newEmail,
-        callbackURL: '/user?email_updated=true'
+        // Do this if you're NOT using sendChangeEmailConfirmation in auth.ts
+        // callbackURL: '/user?email_updated=true'
+        // Otherwise, use the /email-change-status route.
+        callbackURL: '/email-change-status?new_email=' + zodData.newEmail
       })
 
       if (error) {
@@ -178,8 +181,12 @@ export const UpdateEmailForm = ({
       if (data) {
         // The trade-off for the security measure above is that we can't rely on the API
         // response to tell the user "that email is taken."
+        // toast.success(
+        //   "If the email isn't already associated with an account, we've sent a confirmation link to it."
+        // )
+
         toast.success(
-          "If the email isn't already associated with an account, we've sent a confirmation link to it."
+          'A confirmation link has been sent to your current email.'
         )
         return
       }
