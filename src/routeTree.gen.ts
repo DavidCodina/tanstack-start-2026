@@ -9,49 +9,50 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TestRouteRouteImport } from './routes/test/route'
+import { Route as PrivateRouteRouteImport } from './routes/_private/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as UserIndexRouteImport } from './routes/user/index'
-import { Route as TestIndexRouteImport } from './routes/test/index'
-import { Route as ForbiddenIndexRouteImport } from './routes/forbidden/index'
-import { Route as AdminIndexRouteImport } from './routes/admin/index'
-import { Route as AboutIndexRouteImport } from './routes/about/index'
-import { Route as TestNoLayoutRouteImport } from './routes/test_/no-layout'
-import { Route as TestIdRouteImport } from './routes/test/$id'
-import { Route as TestNestedIndexRouteImport } from './routes/test/nested/index'
+import { Route as PrivateAdminRouteRouteImport } from './routes/_private/_admin/route'
+import { Route as publicTestRouteRouteImport } from './routes/(public)/test/route'
 import { Route as ApiTqTodosIndexRouteImport } from './routes/api/tq-todos/index'
-import { Route as AdminNestedIndexRouteImport } from './routes/admin/nested/index'
-import { Route as demoTodos2IndexRouteImport } from './routes/(demo)/todos2/index'
-import { Route as demoTodosIndexRouteImport } from './routes/(demo)/todos/index'
-import { Route as demoTanstackQueryIndexRouteImport } from './routes/(demo)/tanstack-query/index'
-import { Route as demoSuspenseIndexRouteImport } from './routes/(demo)/suspense/index'
-import { Route as demoServerPaginationIndexRouteImport } from './routes/(demo)/server-pagination/index'
-import { Route as demoClientPaginationIndexRouteImport } from './routes/(demo)/client-pagination/index'
-import { Route as demoAwaitWithCatchIndexRouteImport } from './routes/(demo)/await-with-catch/index'
-import { Route as authResetPasswordIndexRouteImport } from './routes/(auth)/reset-password/index'
-import { Route as authRegisterIndexRouteImport } from './routes/(auth)/register/index'
-import { Route as authLoginIndexRouteImport } from './routes/(auth)/login/index'
-import { Route as authForgotPasswordIndexRouteImport } from './routes/(auth)/forgot-password/index'
-import { Route as authEmailChangeStatusIndexRouteImport } from './routes/(auth)/email-change-status/index'
-import { Route as TestIdBonusRouteImport } from './routes/test/$id.bonus'
+import { Route as PrivateUserIndexRouteImport } from './routes/_private/user/index'
+import { Route as PrivateAboutIndexRouteImport } from './routes/_private/about/index'
+import { Route as publicTestIndexRouteImport } from './routes/(public)/test/index'
+import { Route as publicForbiddenIndexRouteImport } from './routes/(public)/forbidden/index'
 import { Route as ApiTqTodosIdRouteImport } from './routes/api/tq-todos/$id'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
-import { Route as demoTodos2IdRouteImport } from './routes/(demo)/todos2/$id'
-import { Route as demoTodosIdRouteImport } from './routes/(demo)/todos/$id'
-import { Route as demoTanstackQueryIdRouteImport } from './routes/(demo)/tanstack-query/$id'
-import { Route as demoStartApiRequestRouteImport } from './routes/(demo)/start.api-request'
-import { Route as demoOptionalChar123IdChar125RouteImport } from './routes/(demo)/optional/{-$id}'
-import { Route as demoApiNamesRouteImport } from './routes/(demo)/api.names'
-import { Route as demoTanstackQueryUseSuspenseQueryIndexRouteImport } from './routes/(demo)/tanstack-query/use-suspense-query/index'
-import { Route as demoStartSsrIndexRouteImport } from './routes/(demo)/start.ssr.index'
-import { Route as demoStartSsrSpaModeRouteImport } from './routes/(demo)/start.ssr.spa-mode'
-import { Route as demoStartSsrFullSsrRouteImport } from './routes/(demo)/start.ssr.full-ssr'
-import { Route as demoStartSsrDataOnlyRouteImport } from './routes/(demo)/start.ssr.data-only'
-import { Route as demoCatchAllIdSplatRouteImport } from './routes/(demo)/catch-all/$id.$'
+import { Route as publicTestNoLayoutRouteImport } from './routes/(public)/test_/no-layout'
+import { Route as publicTestIdRouteImport } from './routes/(public)/test/$id'
+import { Route as PrivateAdminAdminIndexRouteImport } from './routes/_private/_admin/admin/index'
+import { Route as publicTestNestedIndexRouteImport } from './routes/(public)/test/nested/index'
+import { Route as publicdemoTodos2IndexRouteImport } from './routes/(public)/(demo)/todos2/index'
+import { Route as publicdemoTodosIndexRouteImport } from './routes/(public)/(demo)/todos/index'
+import { Route as publicdemoTanstackQueryIndexRouteImport } from './routes/(public)/(demo)/tanstack-query/index'
+import { Route as publicdemoSuspenseIndexRouteImport } from './routes/(public)/(demo)/suspense/index'
+import { Route as publicdemoServerPaginationIndexRouteImport } from './routes/(public)/(demo)/server-pagination/index'
+import { Route as publicdemoClientPaginationIndexRouteImport } from './routes/(public)/(demo)/client-pagination/index'
+import { Route as publicdemoAwaitWithCatchIndexRouteImport } from './routes/(public)/(demo)/await-with-catch/index'
+import { Route as publicauthResetPasswordIndexRouteImport } from './routes/(public)/(auth)/reset-password/index'
+import { Route as publicauthRegisterIndexRouteImport } from './routes/(public)/(auth)/register/index'
+import { Route as publicauthLoginIndexRouteImport } from './routes/(public)/(auth)/login/index'
+import { Route as publicauthForgotPasswordIndexRouteImport } from './routes/(public)/(auth)/forgot-password/index'
+import { Route as publicauthEmailChangeStatusIndexRouteImport } from './routes/(public)/(auth)/email-change-status/index'
+import { Route as publicTestIdBonusRouteImport } from './routes/(public)/test/$id.bonus'
+import { Route as publicdemoTodos2IdRouteImport } from './routes/(public)/(demo)/todos2/$id'
+import { Route as publicdemoTodosIdRouteImport } from './routes/(public)/(demo)/todos/$id'
+import { Route as publicdemoTanstackQueryIdRouteImport } from './routes/(public)/(demo)/tanstack-query/$id'
+import { Route as publicdemoStartApiRequestRouteImport } from './routes/(public)/(demo)/start.api-request'
+import { Route as publicdemoOptionalChar123IdChar125RouteImport } from './routes/(public)/(demo)/optional/{-$id}'
+import { Route as publicdemoApiNamesRouteImport } from './routes/(public)/(demo)/api.names'
+import { Route as PrivateAdminAdminNestedIndexRouteImport } from './routes/_private/_admin/admin/nested/index'
+import { Route as publicdemoTanstackQueryUseSuspenseQueryIndexRouteImport } from './routes/(public)/(demo)/tanstack-query/use-suspense-query/index'
+import { Route as publicdemoStartSsrIndexRouteImport } from './routes/(public)/(demo)/start.ssr.index'
+import { Route as publicdemoStartSsrSpaModeRouteImport } from './routes/(public)/(demo)/start.ssr.spa-mode'
+import { Route as publicdemoStartSsrFullSsrRouteImport } from './routes/(public)/(demo)/start.ssr.full-ssr'
+import { Route as publicdemoStartSsrDataOnlyRouteImport } from './routes/(public)/(demo)/start.ssr.data-only'
+import { Route as publicdemoCatchAllIdSplatRouteImport } from './routes/(public)/(demo)/catch-all/$id.$'
 
-const TestRouteRoute = TestRouteRouteImport.update({
-  id: '/test',
-  path: '/test',
+const PrivateRouteRoute = PrivateRouteRouteImport.update({
+  id: '/_private',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -59,123 +60,39 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const UserIndexRoute = UserIndexRouteImport.update({
-  id: '/user/',
-  path: '/user/',
+const PrivateAdminRouteRoute = PrivateAdminRouteRouteImport.update({
+  id: '/_admin',
+  getParentRoute: () => PrivateRouteRoute,
+} as any)
+const publicTestRouteRoute = publicTestRouteRouteImport.update({
+  id: '/(public)/test',
+  path: '/test',
   getParentRoute: () => rootRouteImport,
-} as any)
-const TestIndexRoute = TestIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => TestRouteRoute,
-} as any)
-const ForbiddenIndexRoute = ForbiddenIndexRouteImport.update({
-  id: '/forbidden/',
-  path: '/forbidden/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminIndexRoute = AdminIndexRouteImport.update({
-  id: '/admin/',
-  path: '/admin/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AboutIndexRoute = AboutIndexRouteImport.update({
-  id: '/about/',
-  path: '/about/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TestNoLayoutRoute = TestNoLayoutRouteImport.update({
-  id: '/test_/no-layout',
-  path: '/test/no-layout',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TestIdRoute = TestIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => TestRouteRoute,
-} as any)
-const TestNestedIndexRoute = TestNestedIndexRouteImport.update({
-  id: '/nested/',
-  path: '/nested/',
-  getParentRoute: () => TestRouteRoute,
 } as any)
 const ApiTqTodosIndexRoute = ApiTqTodosIndexRouteImport.update({
   id: '/api/tq-todos/',
   path: '/api/tq-todos/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminNestedIndexRoute = AdminNestedIndexRouteImport.update({
-  id: '/admin/nested/',
-  path: '/admin/nested/',
-  getParentRoute: () => rootRouteImport,
+const PrivateUserIndexRoute = PrivateUserIndexRouteImport.update({
+  id: '/user/',
+  path: '/user/',
+  getParentRoute: () => PrivateRouteRoute,
 } as any)
-const demoTodos2IndexRoute = demoTodos2IndexRouteImport.update({
-  id: '/(demo)/todos2/',
-  path: '/todos2/',
-  getParentRoute: () => rootRouteImport,
+const PrivateAboutIndexRoute = PrivateAboutIndexRouteImport.update({
+  id: '/about/',
+  path: '/about/',
+  getParentRoute: () => PrivateRouteRoute,
 } as any)
-const demoTodosIndexRoute = demoTodosIndexRouteImport.update({
-  id: '/(demo)/todos/',
-  path: '/todos/',
-  getParentRoute: () => rootRouteImport,
+const publicTestIndexRoute = publicTestIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => publicTestRouteRoute,
 } as any)
-const demoTanstackQueryIndexRoute = demoTanstackQueryIndexRouteImport.update({
-  id: '/(demo)/tanstack-query/',
-  path: '/tanstack-query/',
+const publicForbiddenIndexRoute = publicForbiddenIndexRouteImport.update({
+  id: '/(public)/forbidden/',
+  path: '/forbidden/',
   getParentRoute: () => rootRouteImport,
-} as any)
-const demoSuspenseIndexRoute = demoSuspenseIndexRouteImport.update({
-  id: '/(demo)/suspense/',
-  path: '/suspense/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const demoServerPaginationIndexRoute =
-  demoServerPaginationIndexRouteImport.update({
-    id: '/(demo)/server-pagination/',
-    path: '/server-pagination/',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const demoClientPaginationIndexRoute =
-  demoClientPaginationIndexRouteImport.update({
-    id: '/(demo)/client-pagination/',
-    path: '/client-pagination/',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const demoAwaitWithCatchIndexRoute = demoAwaitWithCatchIndexRouteImport.update({
-  id: '/(demo)/await-with-catch/',
-  path: '/await-with-catch/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const authResetPasswordIndexRoute = authResetPasswordIndexRouteImport.update({
-  id: '/(auth)/reset-password/',
-  path: '/reset-password/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const authRegisterIndexRoute = authRegisterIndexRouteImport.update({
-  id: '/(auth)/register/',
-  path: '/register/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const authLoginIndexRoute = authLoginIndexRouteImport.update({
-  id: '/(auth)/login/',
-  path: '/login/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const authForgotPasswordIndexRoute = authForgotPasswordIndexRouteImport.update({
-  id: '/(auth)/forgot-password/',
-  path: '/forgot-password/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const authEmailChangeStatusIndexRoute =
-  authEmailChangeStatusIndexRouteImport.update({
-    id: '/(auth)/email-change-status/',
-    path: '/email-change-status/',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const TestIdBonusRoute = TestIdBonusRouteImport.update({
-  id: '/bonus',
-  path: '/bonus',
-  getParentRoute: () => TestIdRoute,
 } as any)
 const ApiTqTodosIdRoute = ApiTqTodosIdRouteImport.update({
   id: '/api/tq-todos/$id',
@@ -187,191 +104,297 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
-const demoTodos2IdRoute = demoTodos2IdRouteImport.update({
-  id: '/(demo)/todos2/$id',
+const publicTestNoLayoutRoute = publicTestNoLayoutRouteImport.update({
+  id: '/(public)/test_/no-layout',
+  path: '/test/no-layout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const publicTestIdRoute = publicTestIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => publicTestRouteRoute,
+} as any)
+const PrivateAdminAdminIndexRoute = PrivateAdminAdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
+  getParentRoute: () => PrivateAdminRouteRoute,
+} as any)
+const publicTestNestedIndexRoute = publicTestNestedIndexRouteImport.update({
+  id: '/nested/',
+  path: '/nested/',
+  getParentRoute: () => publicTestRouteRoute,
+} as any)
+const publicdemoTodos2IndexRoute = publicdemoTodos2IndexRouteImport.update({
+  id: '/(public)/(demo)/todos2/',
+  path: '/todos2/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const publicdemoTodosIndexRoute = publicdemoTodosIndexRouteImport.update({
+  id: '/(public)/(demo)/todos/',
+  path: '/todos/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const publicdemoTanstackQueryIndexRoute =
+  publicdemoTanstackQueryIndexRouteImport.update({
+    id: '/(public)/(demo)/tanstack-query/',
+    path: '/tanstack-query/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const publicdemoSuspenseIndexRoute = publicdemoSuspenseIndexRouteImport.update({
+  id: '/(public)/(demo)/suspense/',
+  path: '/suspense/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const publicdemoServerPaginationIndexRoute =
+  publicdemoServerPaginationIndexRouteImport.update({
+    id: '/(public)/(demo)/server-pagination/',
+    path: '/server-pagination/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const publicdemoClientPaginationIndexRoute =
+  publicdemoClientPaginationIndexRouteImport.update({
+    id: '/(public)/(demo)/client-pagination/',
+    path: '/client-pagination/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const publicdemoAwaitWithCatchIndexRoute =
+  publicdemoAwaitWithCatchIndexRouteImport.update({
+    id: '/(public)/(demo)/await-with-catch/',
+    path: '/await-with-catch/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const publicauthResetPasswordIndexRoute =
+  publicauthResetPasswordIndexRouteImport.update({
+    id: '/(public)/(auth)/reset-password/',
+    path: '/reset-password/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const publicauthRegisterIndexRoute = publicauthRegisterIndexRouteImport.update({
+  id: '/(public)/(auth)/register/',
+  path: '/register/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const publicauthLoginIndexRoute = publicauthLoginIndexRouteImport.update({
+  id: '/(public)/(auth)/login/',
+  path: '/login/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const publicauthForgotPasswordIndexRoute =
+  publicauthForgotPasswordIndexRouteImport.update({
+    id: '/(public)/(auth)/forgot-password/',
+    path: '/forgot-password/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const publicauthEmailChangeStatusIndexRoute =
+  publicauthEmailChangeStatusIndexRouteImport.update({
+    id: '/(public)/(auth)/email-change-status/',
+    path: '/email-change-status/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const publicTestIdBonusRoute = publicTestIdBonusRouteImport.update({
+  id: '/bonus',
+  path: '/bonus',
+  getParentRoute: () => publicTestIdRoute,
+} as any)
+const publicdemoTodos2IdRoute = publicdemoTodos2IdRouteImport.update({
+  id: '/(public)/(demo)/todos2/$id',
   path: '/todos2/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
-const demoTodosIdRoute = demoTodosIdRouteImport.update({
-  id: '/(demo)/todos/$id',
+const publicdemoTodosIdRoute = publicdemoTodosIdRouteImport.update({
+  id: '/(public)/(demo)/todos/$id',
   path: '/todos/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
-const demoTanstackQueryIdRoute = demoTanstackQueryIdRouteImport.update({
-  id: '/(demo)/tanstack-query/$id',
-  path: '/tanstack-query/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const demoStartApiRequestRoute = demoStartApiRequestRouteImport.update({
-  id: '/(demo)/start/api-request',
-  path: '/start/api-request',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const demoOptionalChar123IdChar125Route =
-  demoOptionalChar123IdChar125RouteImport.update({
-    id: '/(demo)/optional/{-$id}',
+const publicdemoTanstackQueryIdRoute =
+  publicdemoTanstackQueryIdRouteImport.update({
+    id: '/(public)/(demo)/tanstack-query/$id',
+    path: '/tanstack-query/$id',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const publicdemoStartApiRequestRoute =
+  publicdemoStartApiRequestRouteImport.update({
+    id: '/(public)/(demo)/start/api-request',
+    path: '/start/api-request',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const publicdemoOptionalChar123IdChar125Route =
+  publicdemoOptionalChar123IdChar125RouteImport.update({
+    id: '/(public)/(demo)/optional/{-$id}',
     path: '/optional/{-$id}',
     getParentRoute: () => rootRouteImport,
   } as any)
-const demoApiNamesRoute = demoApiNamesRouteImport.update({
-  id: '/(demo)/api/names',
+const publicdemoApiNamesRoute = publicdemoApiNamesRouteImport.update({
+  id: '/(public)/(demo)/api/names',
   path: '/api/names',
   getParentRoute: () => rootRouteImport,
 } as any)
-const demoTanstackQueryUseSuspenseQueryIndexRoute =
-  demoTanstackQueryUseSuspenseQueryIndexRouteImport.update({
-    id: '/(demo)/tanstack-query/use-suspense-query/',
+const PrivateAdminAdminNestedIndexRoute =
+  PrivateAdminAdminNestedIndexRouteImport.update({
+    id: '/admin/nested/',
+    path: '/admin/nested/',
+    getParentRoute: () => PrivateAdminRouteRoute,
+  } as any)
+const publicdemoTanstackQueryUseSuspenseQueryIndexRoute =
+  publicdemoTanstackQueryUseSuspenseQueryIndexRouteImport.update({
+    id: '/(public)/(demo)/tanstack-query/use-suspense-query/',
     path: '/tanstack-query/use-suspense-query/',
     getParentRoute: () => rootRouteImport,
   } as any)
-const demoStartSsrIndexRoute = demoStartSsrIndexRouteImport.update({
-  id: '/(demo)/start/ssr/',
+const publicdemoStartSsrIndexRoute = publicdemoStartSsrIndexRouteImport.update({
+  id: '/(public)/(demo)/start/ssr/',
   path: '/start/ssr/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const demoStartSsrSpaModeRoute = demoStartSsrSpaModeRouteImport.update({
-  id: '/(demo)/start/ssr/spa-mode',
-  path: '/start/ssr/spa-mode',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const demoStartSsrFullSsrRoute = demoStartSsrFullSsrRouteImport.update({
-  id: '/(demo)/start/ssr/full-ssr',
-  path: '/start/ssr/full-ssr',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const demoStartSsrDataOnlyRoute = demoStartSsrDataOnlyRouteImport.update({
-  id: '/(demo)/start/ssr/data-only',
-  path: '/start/ssr/data-only',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const demoCatchAllIdSplatRoute = demoCatchAllIdSplatRouteImport.update({
-  id: '/(demo)/catch-all/$id/$',
-  path: '/catch-all/$id/$',
-  getParentRoute: () => rootRouteImport,
-} as any)
+const publicdemoStartSsrSpaModeRoute =
+  publicdemoStartSsrSpaModeRouteImport.update({
+    id: '/(public)/(demo)/start/ssr/spa-mode',
+    path: '/start/ssr/spa-mode',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const publicdemoStartSsrFullSsrRoute =
+  publicdemoStartSsrFullSsrRouteImport.update({
+    id: '/(public)/(demo)/start/ssr/full-ssr',
+    path: '/start/ssr/full-ssr',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const publicdemoStartSsrDataOnlyRoute =
+  publicdemoStartSsrDataOnlyRouteImport.update({
+    id: '/(public)/(demo)/start/ssr/data-only',
+    path: '/start/ssr/data-only',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const publicdemoCatchAllIdSplatRoute =
+  publicdemoCatchAllIdSplatRouteImport.update({
+    id: '/(public)/(demo)/catch-all/$id/$',
+    path: '/catch-all/$id/$',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/test': typeof TestRouteRouteWithChildren
-  '/test/$id': typeof TestIdRouteWithChildren
-  '/test/no-layout': typeof TestNoLayoutRoute
-  '/about/': typeof AboutIndexRoute
-  '/admin/': typeof AdminIndexRoute
-  '/forbidden/': typeof ForbiddenIndexRoute
-  '/test/': typeof TestIndexRoute
-  '/user/': typeof UserIndexRoute
-  '/api/names': typeof demoApiNamesRoute
-  '/optional/{-$id}': typeof demoOptionalChar123IdChar125Route
-  '/start/api-request': typeof demoStartApiRequestRoute
-  '/tanstack-query/$id': typeof demoTanstackQueryIdRoute
-  '/todos/$id': typeof demoTodosIdRoute
-  '/todos2/$id': typeof demoTodos2IdRoute
+  '/test': typeof publicTestRouteRouteWithChildren
+  '/test/$id': typeof publicTestIdRouteWithChildren
+  '/test/no-layout': typeof publicTestNoLayoutRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/tq-todos/$id': typeof ApiTqTodosIdRoute
-  '/test/$id/bonus': typeof TestIdBonusRoute
-  '/email-change-status/': typeof authEmailChangeStatusIndexRoute
-  '/forgot-password/': typeof authForgotPasswordIndexRoute
-  '/login/': typeof authLoginIndexRoute
-  '/register/': typeof authRegisterIndexRoute
-  '/reset-password/': typeof authResetPasswordIndexRoute
-  '/await-with-catch/': typeof demoAwaitWithCatchIndexRoute
-  '/client-pagination/': typeof demoClientPaginationIndexRoute
-  '/server-pagination/': typeof demoServerPaginationIndexRoute
-  '/suspense/': typeof demoSuspenseIndexRoute
-  '/tanstack-query/': typeof demoTanstackQueryIndexRoute
-  '/todos/': typeof demoTodosIndexRoute
-  '/todos2/': typeof demoTodos2IndexRoute
-  '/admin/nested/': typeof AdminNestedIndexRoute
+  '/forbidden/': typeof publicForbiddenIndexRoute
+  '/test/': typeof publicTestIndexRoute
+  '/about/': typeof PrivateAboutIndexRoute
+  '/user/': typeof PrivateUserIndexRoute
   '/api/tq-todos/': typeof ApiTqTodosIndexRoute
-  '/test/nested/': typeof TestNestedIndexRoute
-  '/catch-all/$id/$': typeof demoCatchAllIdSplatRoute
-  '/start/ssr/data-only': typeof demoStartSsrDataOnlyRoute
-  '/start/ssr/full-ssr': typeof demoStartSsrFullSsrRoute
-  '/start/ssr/spa-mode': typeof demoStartSsrSpaModeRoute
-  '/start/ssr/': typeof demoStartSsrIndexRoute
-  '/tanstack-query/use-suspense-query/': typeof demoTanstackQueryUseSuspenseQueryIndexRoute
+  '/api/names': typeof publicdemoApiNamesRoute
+  '/optional/{-$id}': typeof publicdemoOptionalChar123IdChar125Route
+  '/start/api-request': typeof publicdemoStartApiRequestRoute
+  '/tanstack-query/$id': typeof publicdemoTanstackQueryIdRoute
+  '/todos/$id': typeof publicdemoTodosIdRoute
+  '/todos2/$id': typeof publicdemoTodos2IdRoute
+  '/test/$id/bonus': typeof publicTestIdBonusRoute
+  '/email-change-status/': typeof publicauthEmailChangeStatusIndexRoute
+  '/forgot-password/': typeof publicauthForgotPasswordIndexRoute
+  '/login/': typeof publicauthLoginIndexRoute
+  '/register/': typeof publicauthRegisterIndexRoute
+  '/reset-password/': typeof publicauthResetPasswordIndexRoute
+  '/await-with-catch/': typeof publicdemoAwaitWithCatchIndexRoute
+  '/client-pagination/': typeof publicdemoClientPaginationIndexRoute
+  '/server-pagination/': typeof publicdemoServerPaginationIndexRoute
+  '/suspense/': typeof publicdemoSuspenseIndexRoute
+  '/tanstack-query/': typeof publicdemoTanstackQueryIndexRoute
+  '/todos/': typeof publicdemoTodosIndexRoute
+  '/todos2/': typeof publicdemoTodos2IndexRoute
+  '/test/nested/': typeof publicTestNestedIndexRoute
+  '/admin/': typeof PrivateAdminAdminIndexRoute
+  '/catch-all/$id/$': typeof publicdemoCatchAllIdSplatRoute
+  '/start/ssr/data-only': typeof publicdemoStartSsrDataOnlyRoute
+  '/start/ssr/full-ssr': typeof publicdemoStartSsrFullSsrRoute
+  '/start/ssr/spa-mode': typeof publicdemoStartSsrSpaModeRoute
+  '/start/ssr/': typeof publicdemoStartSsrIndexRoute
+  '/tanstack-query/use-suspense-query/': typeof publicdemoTanstackQueryUseSuspenseQueryIndexRoute
+  '/admin/nested/': typeof PrivateAdminAdminNestedIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/test/$id': typeof TestIdRouteWithChildren
-  '/test/no-layout': typeof TestNoLayoutRoute
-  '/about': typeof AboutIndexRoute
-  '/admin': typeof AdminIndexRoute
-  '/forbidden': typeof ForbiddenIndexRoute
-  '/test': typeof TestIndexRoute
-  '/user': typeof UserIndexRoute
-  '/api/names': typeof demoApiNamesRoute
-  '/optional/{-$id}': typeof demoOptionalChar123IdChar125Route
-  '/start/api-request': typeof demoStartApiRequestRoute
-  '/tanstack-query/$id': typeof demoTanstackQueryIdRoute
-  '/todos/$id': typeof demoTodosIdRoute
-  '/todos2/$id': typeof demoTodos2IdRoute
+  '/test/$id': typeof publicTestIdRouteWithChildren
+  '/test/no-layout': typeof publicTestNoLayoutRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/tq-todos/$id': typeof ApiTqTodosIdRoute
-  '/test/$id/bonus': typeof TestIdBonusRoute
-  '/email-change-status': typeof authEmailChangeStatusIndexRoute
-  '/forgot-password': typeof authForgotPasswordIndexRoute
-  '/login': typeof authLoginIndexRoute
-  '/register': typeof authRegisterIndexRoute
-  '/reset-password': typeof authResetPasswordIndexRoute
-  '/await-with-catch': typeof demoAwaitWithCatchIndexRoute
-  '/client-pagination': typeof demoClientPaginationIndexRoute
-  '/server-pagination': typeof demoServerPaginationIndexRoute
-  '/suspense': typeof demoSuspenseIndexRoute
-  '/tanstack-query': typeof demoTanstackQueryIndexRoute
-  '/todos': typeof demoTodosIndexRoute
-  '/todos2': typeof demoTodos2IndexRoute
-  '/admin/nested': typeof AdminNestedIndexRoute
+  '/forbidden': typeof publicForbiddenIndexRoute
+  '/test': typeof publicTestIndexRoute
+  '/about': typeof PrivateAboutIndexRoute
+  '/user': typeof PrivateUserIndexRoute
   '/api/tq-todos': typeof ApiTqTodosIndexRoute
-  '/test/nested': typeof TestNestedIndexRoute
-  '/catch-all/$id/$': typeof demoCatchAllIdSplatRoute
-  '/start/ssr/data-only': typeof demoStartSsrDataOnlyRoute
-  '/start/ssr/full-ssr': typeof demoStartSsrFullSsrRoute
-  '/start/ssr/spa-mode': typeof demoStartSsrSpaModeRoute
-  '/start/ssr': typeof demoStartSsrIndexRoute
-  '/tanstack-query/use-suspense-query': typeof demoTanstackQueryUseSuspenseQueryIndexRoute
+  '/api/names': typeof publicdemoApiNamesRoute
+  '/optional/{-$id}': typeof publicdemoOptionalChar123IdChar125Route
+  '/start/api-request': typeof publicdemoStartApiRequestRoute
+  '/tanstack-query/$id': typeof publicdemoTanstackQueryIdRoute
+  '/todos/$id': typeof publicdemoTodosIdRoute
+  '/todos2/$id': typeof publicdemoTodos2IdRoute
+  '/test/$id/bonus': typeof publicTestIdBonusRoute
+  '/email-change-status': typeof publicauthEmailChangeStatusIndexRoute
+  '/forgot-password': typeof publicauthForgotPasswordIndexRoute
+  '/login': typeof publicauthLoginIndexRoute
+  '/register': typeof publicauthRegisterIndexRoute
+  '/reset-password': typeof publicauthResetPasswordIndexRoute
+  '/await-with-catch': typeof publicdemoAwaitWithCatchIndexRoute
+  '/client-pagination': typeof publicdemoClientPaginationIndexRoute
+  '/server-pagination': typeof publicdemoServerPaginationIndexRoute
+  '/suspense': typeof publicdemoSuspenseIndexRoute
+  '/tanstack-query': typeof publicdemoTanstackQueryIndexRoute
+  '/todos': typeof publicdemoTodosIndexRoute
+  '/todos2': typeof publicdemoTodos2IndexRoute
+  '/test/nested': typeof publicTestNestedIndexRoute
+  '/admin': typeof PrivateAdminAdminIndexRoute
+  '/catch-all/$id/$': typeof publicdemoCatchAllIdSplatRoute
+  '/start/ssr/data-only': typeof publicdemoStartSsrDataOnlyRoute
+  '/start/ssr/full-ssr': typeof publicdemoStartSsrFullSsrRoute
+  '/start/ssr/spa-mode': typeof publicdemoStartSsrSpaModeRoute
+  '/start/ssr': typeof publicdemoStartSsrIndexRoute
+  '/tanstack-query/use-suspense-query': typeof publicdemoTanstackQueryUseSuspenseQueryIndexRoute
+  '/admin/nested': typeof PrivateAdminAdminNestedIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/test': typeof TestRouteRouteWithChildren
-  '/test/$id': typeof TestIdRouteWithChildren
-  '/test_/no-layout': typeof TestNoLayoutRoute
-  '/about/': typeof AboutIndexRoute
-  '/admin/': typeof AdminIndexRoute
-  '/forbidden/': typeof ForbiddenIndexRoute
-  '/test/': typeof TestIndexRoute
-  '/user/': typeof UserIndexRoute
-  '/(demo)/api/names': typeof demoApiNamesRoute
-  '/(demo)/optional/{-$id}': typeof demoOptionalChar123IdChar125Route
-  '/(demo)/start/api-request': typeof demoStartApiRequestRoute
-  '/(demo)/tanstack-query/$id': typeof demoTanstackQueryIdRoute
-  '/(demo)/todos/$id': typeof demoTodosIdRoute
-  '/(demo)/todos2/$id': typeof demoTodos2IdRoute
+  '/_private': typeof PrivateRouteRouteWithChildren
+  '/(public)/test': typeof publicTestRouteRouteWithChildren
+  '/_private/_admin': typeof PrivateAdminRouteRouteWithChildren
+  '/(public)/test/$id': typeof publicTestIdRouteWithChildren
+  '/(public)/test_/no-layout': typeof publicTestNoLayoutRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/tq-todos/$id': typeof ApiTqTodosIdRoute
-  '/test/$id/bonus': typeof TestIdBonusRoute
-  '/(auth)/email-change-status/': typeof authEmailChangeStatusIndexRoute
-  '/(auth)/forgot-password/': typeof authForgotPasswordIndexRoute
-  '/(auth)/login/': typeof authLoginIndexRoute
-  '/(auth)/register/': typeof authRegisterIndexRoute
-  '/(auth)/reset-password/': typeof authResetPasswordIndexRoute
-  '/(demo)/await-with-catch/': typeof demoAwaitWithCatchIndexRoute
-  '/(demo)/client-pagination/': typeof demoClientPaginationIndexRoute
-  '/(demo)/server-pagination/': typeof demoServerPaginationIndexRoute
-  '/(demo)/suspense/': typeof demoSuspenseIndexRoute
-  '/(demo)/tanstack-query/': typeof demoTanstackQueryIndexRoute
-  '/(demo)/todos/': typeof demoTodosIndexRoute
-  '/(demo)/todos2/': typeof demoTodos2IndexRoute
-  '/admin/nested/': typeof AdminNestedIndexRoute
+  '/(public)/forbidden/': typeof publicForbiddenIndexRoute
+  '/(public)/test/': typeof publicTestIndexRoute
+  '/_private/about/': typeof PrivateAboutIndexRoute
+  '/_private/user/': typeof PrivateUserIndexRoute
   '/api/tq-todos/': typeof ApiTqTodosIndexRoute
-  '/test/nested/': typeof TestNestedIndexRoute
-  '/(demo)/catch-all/$id/$': typeof demoCatchAllIdSplatRoute
-  '/(demo)/start/ssr/data-only': typeof demoStartSsrDataOnlyRoute
-  '/(demo)/start/ssr/full-ssr': typeof demoStartSsrFullSsrRoute
-  '/(demo)/start/ssr/spa-mode': typeof demoStartSsrSpaModeRoute
-  '/(demo)/start/ssr/': typeof demoStartSsrIndexRoute
-  '/(demo)/tanstack-query/use-suspense-query/': typeof demoTanstackQueryUseSuspenseQueryIndexRoute
+  '/(public)/(demo)/api/names': typeof publicdemoApiNamesRoute
+  '/(public)/(demo)/optional/{-$id}': typeof publicdemoOptionalChar123IdChar125Route
+  '/(public)/(demo)/start/api-request': typeof publicdemoStartApiRequestRoute
+  '/(public)/(demo)/tanstack-query/$id': typeof publicdemoTanstackQueryIdRoute
+  '/(public)/(demo)/todos/$id': typeof publicdemoTodosIdRoute
+  '/(public)/(demo)/todos2/$id': typeof publicdemoTodos2IdRoute
+  '/(public)/test/$id/bonus': typeof publicTestIdBonusRoute
+  '/(public)/(auth)/email-change-status/': typeof publicauthEmailChangeStatusIndexRoute
+  '/(public)/(auth)/forgot-password/': typeof publicauthForgotPasswordIndexRoute
+  '/(public)/(auth)/login/': typeof publicauthLoginIndexRoute
+  '/(public)/(auth)/register/': typeof publicauthRegisterIndexRoute
+  '/(public)/(auth)/reset-password/': typeof publicauthResetPasswordIndexRoute
+  '/(public)/(demo)/await-with-catch/': typeof publicdemoAwaitWithCatchIndexRoute
+  '/(public)/(demo)/client-pagination/': typeof publicdemoClientPaginationIndexRoute
+  '/(public)/(demo)/server-pagination/': typeof publicdemoServerPaginationIndexRoute
+  '/(public)/(demo)/suspense/': typeof publicdemoSuspenseIndexRoute
+  '/(public)/(demo)/tanstack-query/': typeof publicdemoTanstackQueryIndexRoute
+  '/(public)/(demo)/todos/': typeof publicdemoTodosIndexRoute
+  '/(public)/(demo)/todos2/': typeof publicdemoTodos2IndexRoute
+  '/(public)/test/nested/': typeof publicTestNestedIndexRoute
+  '/_private/_admin/admin/': typeof PrivateAdminAdminIndexRoute
+  '/(public)/(demo)/catch-all/$id/$': typeof publicdemoCatchAllIdSplatRoute
+  '/(public)/(demo)/start/ssr/data-only': typeof publicdemoStartSsrDataOnlyRoute
+  '/(public)/(demo)/start/ssr/full-ssr': typeof publicdemoStartSsrFullSsrRoute
+  '/(public)/(demo)/start/ssr/spa-mode': typeof publicdemoStartSsrSpaModeRoute
+  '/(public)/(demo)/start/ssr/': typeof publicdemoStartSsrIndexRoute
+  '/(public)/(demo)/tanstack-query/use-suspense-query/': typeof publicdemoTanstackQueryUseSuspenseQueryIndexRoute
+  '/_private/_admin/admin/nested/': typeof PrivateAdminAdminNestedIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -380,19 +403,19 @@ export interface FileRouteTypes {
     | '/test'
     | '/test/$id'
     | '/test/no-layout'
-    | '/about/'
-    | '/admin/'
+    | '/api/auth/$'
+    | '/api/tq-todos/$id'
     | '/forbidden/'
     | '/test/'
+    | '/about/'
     | '/user/'
+    | '/api/tq-todos/'
     | '/api/names'
     | '/optional/{-$id}'
     | '/start/api-request'
     | '/tanstack-query/$id'
     | '/todos/$id'
     | '/todos2/$id'
-    | '/api/auth/$'
-    | '/api/tq-todos/$id'
     | '/test/$id/bonus'
     | '/email-change-status/'
     | '/forgot-password/'
@@ -406,33 +429,33 @@ export interface FileRouteTypes {
     | '/tanstack-query/'
     | '/todos/'
     | '/todos2/'
-    | '/admin/nested/'
-    | '/api/tq-todos/'
     | '/test/nested/'
+    | '/admin/'
     | '/catch-all/$id/$'
     | '/start/ssr/data-only'
     | '/start/ssr/full-ssr'
     | '/start/ssr/spa-mode'
     | '/start/ssr/'
     | '/tanstack-query/use-suspense-query/'
+    | '/admin/nested/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/test/$id'
     | '/test/no-layout'
-    | '/about'
-    | '/admin'
+    | '/api/auth/$'
+    | '/api/tq-todos/$id'
     | '/forbidden'
     | '/test'
+    | '/about'
     | '/user'
+    | '/api/tq-todos'
     | '/api/names'
     | '/optional/{-$id}'
     | '/start/api-request'
     | '/tanstack-query/$id'
     | '/todos/$id'
     | '/todos2/$id'
-    | '/api/auth/$'
-    | '/api/tq-todos/$id'
     | '/test/$id/bonus'
     | '/email-change-status'
     | '/forgot-password'
@@ -446,103 +469,102 @@ export interface FileRouteTypes {
     | '/tanstack-query'
     | '/todos'
     | '/todos2'
-    | '/admin/nested'
-    | '/api/tq-todos'
     | '/test/nested'
+    | '/admin'
     | '/catch-all/$id/$'
     | '/start/ssr/data-only'
     | '/start/ssr/full-ssr'
     | '/start/ssr/spa-mode'
     | '/start/ssr'
     | '/tanstack-query/use-suspense-query'
+    | '/admin/nested'
   id:
     | '__root__'
     | '/'
-    | '/test'
-    | '/test/$id'
-    | '/test_/no-layout'
-    | '/about/'
-    | '/admin/'
-    | '/forbidden/'
-    | '/test/'
-    | '/user/'
-    | '/(demo)/api/names'
-    | '/(demo)/optional/{-$id}'
-    | '/(demo)/start/api-request'
-    | '/(demo)/tanstack-query/$id'
-    | '/(demo)/todos/$id'
-    | '/(demo)/todos2/$id'
+    | '/_private'
+    | '/(public)/test'
+    | '/_private/_admin'
+    | '/(public)/test/$id'
+    | '/(public)/test_/no-layout'
     | '/api/auth/$'
     | '/api/tq-todos/$id'
-    | '/test/$id/bonus'
-    | '/(auth)/email-change-status/'
-    | '/(auth)/forgot-password/'
-    | '/(auth)/login/'
-    | '/(auth)/register/'
-    | '/(auth)/reset-password/'
-    | '/(demo)/await-with-catch/'
-    | '/(demo)/client-pagination/'
-    | '/(demo)/server-pagination/'
-    | '/(demo)/suspense/'
-    | '/(demo)/tanstack-query/'
-    | '/(demo)/todos/'
-    | '/(demo)/todos2/'
-    | '/admin/nested/'
+    | '/(public)/forbidden/'
+    | '/(public)/test/'
+    | '/_private/about/'
+    | '/_private/user/'
     | '/api/tq-todos/'
-    | '/test/nested/'
-    | '/(demo)/catch-all/$id/$'
-    | '/(demo)/start/ssr/data-only'
-    | '/(demo)/start/ssr/full-ssr'
-    | '/(demo)/start/ssr/spa-mode'
-    | '/(demo)/start/ssr/'
-    | '/(demo)/tanstack-query/use-suspense-query/'
+    | '/(public)/(demo)/api/names'
+    | '/(public)/(demo)/optional/{-$id}'
+    | '/(public)/(demo)/start/api-request'
+    | '/(public)/(demo)/tanstack-query/$id'
+    | '/(public)/(demo)/todos/$id'
+    | '/(public)/(demo)/todos2/$id'
+    | '/(public)/test/$id/bonus'
+    | '/(public)/(auth)/email-change-status/'
+    | '/(public)/(auth)/forgot-password/'
+    | '/(public)/(auth)/login/'
+    | '/(public)/(auth)/register/'
+    | '/(public)/(auth)/reset-password/'
+    | '/(public)/(demo)/await-with-catch/'
+    | '/(public)/(demo)/client-pagination/'
+    | '/(public)/(demo)/server-pagination/'
+    | '/(public)/(demo)/suspense/'
+    | '/(public)/(demo)/tanstack-query/'
+    | '/(public)/(demo)/todos/'
+    | '/(public)/(demo)/todos2/'
+    | '/(public)/test/nested/'
+    | '/_private/_admin/admin/'
+    | '/(public)/(demo)/catch-all/$id/$'
+    | '/(public)/(demo)/start/ssr/data-only'
+    | '/(public)/(demo)/start/ssr/full-ssr'
+    | '/(public)/(demo)/start/ssr/spa-mode'
+    | '/(public)/(demo)/start/ssr/'
+    | '/(public)/(demo)/tanstack-query/use-suspense-query/'
+    | '/_private/_admin/admin/nested/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  TestRouteRoute: typeof TestRouteRouteWithChildren
-  TestNoLayoutRoute: typeof TestNoLayoutRoute
-  AboutIndexRoute: typeof AboutIndexRoute
-  AdminIndexRoute: typeof AdminIndexRoute
-  ForbiddenIndexRoute: typeof ForbiddenIndexRoute
-  UserIndexRoute: typeof UserIndexRoute
-  demoApiNamesRoute: typeof demoApiNamesRoute
-  demoOptionalChar123IdChar125Route: typeof demoOptionalChar123IdChar125Route
-  demoStartApiRequestRoute: typeof demoStartApiRequestRoute
-  demoTanstackQueryIdRoute: typeof demoTanstackQueryIdRoute
-  demoTodosIdRoute: typeof demoTodosIdRoute
-  demoTodos2IdRoute: typeof demoTodos2IdRoute
+  PrivateRouteRoute: typeof PrivateRouteRouteWithChildren
+  publicTestRouteRoute: typeof publicTestRouteRouteWithChildren
+  publicTestNoLayoutRoute: typeof publicTestNoLayoutRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiTqTodosIdRoute: typeof ApiTqTodosIdRoute
-  authEmailChangeStatusIndexRoute: typeof authEmailChangeStatusIndexRoute
-  authForgotPasswordIndexRoute: typeof authForgotPasswordIndexRoute
-  authLoginIndexRoute: typeof authLoginIndexRoute
-  authRegisterIndexRoute: typeof authRegisterIndexRoute
-  authResetPasswordIndexRoute: typeof authResetPasswordIndexRoute
-  demoAwaitWithCatchIndexRoute: typeof demoAwaitWithCatchIndexRoute
-  demoClientPaginationIndexRoute: typeof demoClientPaginationIndexRoute
-  demoServerPaginationIndexRoute: typeof demoServerPaginationIndexRoute
-  demoSuspenseIndexRoute: typeof demoSuspenseIndexRoute
-  demoTanstackQueryIndexRoute: typeof demoTanstackQueryIndexRoute
-  demoTodosIndexRoute: typeof demoTodosIndexRoute
-  demoTodos2IndexRoute: typeof demoTodos2IndexRoute
-  AdminNestedIndexRoute: typeof AdminNestedIndexRoute
+  publicForbiddenIndexRoute: typeof publicForbiddenIndexRoute
   ApiTqTodosIndexRoute: typeof ApiTqTodosIndexRoute
-  demoCatchAllIdSplatRoute: typeof demoCatchAllIdSplatRoute
-  demoStartSsrDataOnlyRoute: typeof demoStartSsrDataOnlyRoute
-  demoStartSsrFullSsrRoute: typeof demoStartSsrFullSsrRoute
-  demoStartSsrSpaModeRoute: typeof demoStartSsrSpaModeRoute
-  demoStartSsrIndexRoute: typeof demoStartSsrIndexRoute
-  demoTanstackQueryUseSuspenseQueryIndexRoute: typeof demoTanstackQueryUseSuspenseQueryIndexRoute
+  publicdemoApiNamesRoute: typeof publicdemoApiNamesRoute
+  publicdemoOptionalChar123IdChar125Route: typeof publicdemoOptionalChar123IdChar125Route
+  publicdemoStartApiRequestRoute: typeof publicdemoStartApiRequestRoute
+  publicdemoTanstackQueryIdRoute: typeof publicdemoTanstackQueryIdRoute
+  publicdemoTodosIdRoute: typeof publicdemoTodosIdRoute
+  publicdemoTodos2IdRoute: typeof publicdemoTodos2IdRoute
+  publicauthEmailChangeStatusIndexRoute: typeof publicauthEmailChangeStatusIndexRoute
+  publicauthForgotPasswordIndexRoute: typeof publicauthForgotPasswordIndexRoute
+  publicauthLoginIndexRoute: typeof publicauthLoginIndexRoute
+  publicauthRegisterIndexRoute: typeof publicauthRegisterIndexRoute
+  publicauthResetPasswordIndexRoute: typeof publicauthResetPasswordIndexRoute
+  publicdemoAwaitWithCatchIndexRoute: typeof publicdemoAwaitWithCatchIndexRoute
+  publicdemoClientPaginationIndexRoute: typeof publicdemoClientPaginationIndexRoute
+  publicdemoServerPaginationIndexRoute: typeof publicdemoServerPaginationIndexRoute
+  publicdemoSuspenseIndexRoute: typeof publicdemoSuspenseIndexRoute
+  publicdemoTanstackQueryIndexRoute: typeof publicdemoTanstackQueryIndexRoute
+  publicdemoTodosIndexRoute: typeof publicdemoTodosIndexRoute
+  publicdemoTodos2IndexRoute: typeof publicdemoTodos2IndexRoute
+  publicdemoCatchAllIdSplatRoute: typeof publicdemoCatchAllIdSplatRoute
+  publicdemoStartSsrDataOnlyRoute: typeof publicdemoStartSsrDataOnlyRoute
+  publicdemoStartSsrFullSsrRoute: typeof publicdemoStartSsrFullSsrRoute
+  publicdemoStartSsrSpaModeRoute: typeof publicdemoStartSsrSpaModeRoute
+  publicdemoStartSsrIndexRoute: typeof publicdemoStartSsrIndexRoute
+  publicdemoTanstackQueryUseSuspenseQueryIndexRoute: typeof publicdemoTanstackQueryUseSuspenseQueryIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/test': {
-      id: '/test'
-      path: '/test'
-      fullPath: '/test'
-      preLoaderRoute: typeof TestRouteRouteImport
+    '/_private': {
+      id: '/_private'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof PrivateRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -552,61 +574,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/user/': {
-      id: '/user/'
-      path: '/user'
-      fullPath: '/user/'
-      preLoaderRoute: typeof UserIndexRouteImport
+    '/_private/_admin': {
+      id: '/_private/_admin'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof PrivateAdminRouteRouteImport
+      parentRoute: typeof PrivateRouteRoute
+    }
+    '/(public)/test': {
+      id: '/(public)/test'
+      path: '/test'
+      fullPath: '/test'
+      preLoaderRoute: typeof publicTestRouteRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/test/': {
-      id: '/test/'
-      path: '/'
-      fullPath: '/test/'
-      preLoaderRoute: typeof TestIndexRouteImport
-      parentRoute: typeof TestRouteRoute
-    }
-    '/forbidden/': {
-      id: '/forbidden/'
-      path: '/forbidden'
-      fullPath: '/forbidden/'
-      preLoaderRoute: typeof ForbiddenIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/': {
-      id: '/admin/'
-      path: '/admin'
-      fullPath: '/admin/'
-      preLoaderRoute: typeof AdminIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/about/': {
-      id: '/about/'
-      path: '/about'
-      fullPath: '/about/'
-      preLoaderRoute: typeof AboutIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/test_/no-layout': {
-      id: '/test_/no-layout'
-      path: '/test/no-layout'
-      fullPath: '/test/no-layout'
-      preLoaderRoute: typeof TestNoLayoutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/test/$id': {
-      id: '/test/$id'
-      path: '/$id'
-      fullPath: '/test/$id'
-      preLoaderRoute: typeof TestIdRouteImport
-      parentRoute: typeof TestRouteRoute
-    }
-    '/test/nested/': {
-      id: '/test/nested/'
-      path: '/nested'
-      fullPath: '/test/nested/'
-      preLoaderRoute: typeof TestNestedIndexRouteImport
-      parentRoute: typeof TestRouteRoute
     }
     '/api/tq-todos/': {
       id: '/api/tq-todos/'
@@ -615,103 +595,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiTqTodosIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/nested/': {
-      id: '/admin/nested/'
-      path: '/admin/nested'
-      fullPath: '/admin/nested/'
-      preLoaderRoute: typeof AdminNestedIndexRouteImport
-      parentRoute: typeof rootRouteImport
+    '/_private/user/': {
+      id: '/_private/user/'
+      path: '/user'
+      fullPath: '/user/'
+      preLoaderRoute: typeof PrivateUserIndexRouteImport
+      parentRoute: typeof PrivateRouteRoute
     }
-    '/(demo)/todos2/': {
-      id: '/(demo)/todos2/'
-      path: '/todos2'
-      fullPath: '/todos2/'
-      preLoaderRoute: typeof demoTodos2IndexRouteImport
-      parentRoute: typeof rootRouteImport
+    '/_private/about/': {
+      id: '/_private/about/'
+      path: '/about'
+      fullPath: '/about/'
+      preLoaderRoute: typeof PrivateAboutIndexRouteImport
+      parentRoute: typeof PrivateRouteRoute
     }
-    '/(demo)/todos/': {
-      id: '/(demo)/todos/'
-      path: '/todos'
-      fullPath: '/todos/'
-      preLoaderRoute: typeof demoTodosIndexRouteImport
-      parentRoute: typeof rootRouteImport
+    '/(public)/test/': {
+      id: '/(public)/test/'
+      path: '/'
+      fullPath: '/test/'
+      preLoaderRoute: typeof publicTestIndexRouteImport
+      parentRoute: typeof publicTestRouteRoute
     }
-    '/(demo)/tanstack-query/': {
-      id: '/(demo)/tanstack-query/'
-      path: '/tanstack-query'
-      fullPath: '/tanstack-query/'
-      preLoaderRoute: typeof demoTanstackQueryIndexRouteImport
+    '/(public)/forbidden/': {
+      id: '/(public)/forbidden/'
+      path: '/forbidden'
+      fullPath: '/forbidden/'
+      preLoaderRoute: typeof publicForbiddenIndexRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/(demo)/suspense/': {
-      id: '/(demo)/suspense/'
-      path: '/suspense'
-      fullPath: '/suspense/'
-      preLoaderRoute: typeof demoSuspenseIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/(demo)/server-pagination/': {
-      id: '/(demo)/server-pagination/'
-      path: '/server-pagination'
-      fullPath: '/server-pagination/'
-      preLoaderRoute: typeof demoServerPaginationIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/(demo)/client-pagination/': {
-      id: '/(demo)/client-pagination/'
-      path: '/client-pagination'
-      fullPath: '/client-pagination/'
-      preLoaderRoute: typeof demoClientPaginationIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/(demo)/await-with-catch/': {
-      id: '/(demo)/await-with-catch/'
-      path: '/await-with-catch'
-      fullPath: '/await-with-catch/'
-      preLoaderRoute: typeof demoAwaitWithCatchIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/(auth)/reset-password/': {
-      id: '/(auth)/reset-password/'
-      path: '/reset-password'
-      fullPath: '/reset-password/'
-      preLoaderRoute: typeof authResetPasswordIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/(auth)/register/': {
-      id: '/(auth)/register/'
-      path: '/register'
-      fullPath: '/register/'
-      preLoaderRoute: typeof authRegisterIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/(auth)/login/': {
-      id: '/(auth)/login/'
-      path: '/login'
-      fullPath: '/login/'
-      preLoaderRoute: typeof authLoginIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/(auth)/forgot-password/': {
-      id: '/(auth)/forgot-password/'
-      path: '/forgot-password'
-      fullPath: '/forgot-password/'
-      preLoaderRoute: typeof authForgotPasswordIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/(auth)/email-change-status/': {
-      id: '/(auth)/email-change-status/'
-      path: '/email-change-status'
-      fullPath: '/email-change-status/'
-      preLoaderRoute: typeof authEmailChangeStatusIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/test/$id/bonus': {
-      id: '/test/$id/bonus'
-      path: '/bonus'
-      fullPath: '/test/$id/bonus'
-      preLoaderRoute: typeof TestIdBonusRouteImport
-      parentRoute: typeof TestIdRoute
     }
     '/api/tq-todos/$id': {
       id: '/api/tq-todos/$id'
@@ -727,157 +637,311 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/(demo)/todos2/$id': {
-      id: '/(demo)/todos2/$id'
+    '/(public)/test_/no-layout': {
+      id: '/(public)/test_/no-layout'
+      path: '/test/no-layout'
+      fullPath: '/test/no-layout'
+      preLoaderRoute: typeof publicTestNoLayoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(public)/test/$id': {
+      id: '/(public)/test/$id'
+      path: '/$id'
+      fullPath: '/test/$id'
+      preLoaderRoute: typeof publicTestIdRouteImport
+      parentRoute: typeof publicTestRouteRoute
+    }
+    '/_private/_admin/admin/': {
+      id: '/_private/_admin/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof PrivateAdminAdminIndexRouteImport
+      parentRoute: typeof PrivateAdminRouteRoute
+    }
+    '/(public)/test/nested/': {
+      id: '/(public)/test/nested/'
+      path: '/nested'
+      fullPath: '/test/nested/'
+      preLoaderRoute: typeof publicTestNestedIndexRouteImport
+      parentRoute: typeof publicTestRouteRoute
+    }
+    '/(public)/(demo)/todos2/': {
+      id: '/(public)/(demo)/todos2/'
+      path: '/todos2'
+      fullPath: '/todos2/'
+      preLoaderRoute: typeof publicdemoTodos2IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(public)/(demo)/todos/': {
+      id: '/(public)/(demo)/todos/'
+      path: '/todos'
+      fullPath: '/todos/'
+      preLoaderRoute: typeof publicdemoTodosIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(public)/(demo)/tanstack-query/': {
+      id: '/(public)/(demo)/tanstack-query/'
+      path: '/tanstack-query'
+      fullPath: '/tanstack-query/'
+      preLoaderRoute: typeof publicdemoTanstackQueryIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(public)/(demo)/suspense/': {
+      id: '/(public)/(demo)/suspense/'
+      path: '/suspense'
+      fullPath: '/suspense/'
+      preLoaderRoute: typeof publicdemoSuspenseIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(public)/(demo)/server-pagination/': {
+      id: '/(public)/(demo)/server-pagination/'
+      path: '/server-pagination'
+      fullPath: '/server-pagination/'
+      preLoaderRoute: typeof publicdemoServerPaginationIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(public)/(demo)/client-pagination/': {
+      id: '/(public)/(demo)/client-pagination/'
+      path: '/client-pagination'
+      fullPath: '/client-pagination/'
+      preLoaderRoute: typeof publicdemoClientPaginationIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(public)/(demo)/await-with-catch/': {
+      id: '/(public)/(demo)/await-with-catch/'
+      path: '/await-with-catch'
+      fullPath: '/await-with-catch/'
+      preLoaderRoute: typeof publicdemoAwaitWithCatchIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(public)/(auth)/reset-password/': {
+      id: '/(public)/(auth)/reset-password/'
+      path: '/reset-password'
+      fullPath: '/reset-password/'
+      preLoaderRoute: typeof publicauthResetPasswordIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(public)/(auth)/register/': {
+      id: '/(public)/(auth)/register/'
+      path: '/register'
+      fullPath: '/register/'
+      preLoaderRoute: typeof publicauthRegisterIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(public)/(auth)/login/': {
+      id: '/(public)/(auth)/login/'
+      path: '/login'
+      fullPath: '/login/'
+      preLoaderRoute: typeof publicauthLoginIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(public)/(auth)/forgot-password/': {
+      id: '/(public)/(auth)/forgot-password/'
+      path: '/forgot-password'
+      fullPath: '/forgot-password/'
+      preLoaderRoute: typeof publicauthForgotPasswordIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(public)/(auth)/email-change-status/': {
+      id: '/(public)/(auth)/email-change-status/'
+      path: '/email-change-status'
+      fullPath: '/email-change-status/'
+      preLoaderRoute: typeof publicauthEmailChangeStatusIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(public)/test/$id/bonus': {
+      id: '/(public)/test/$id/bonus'
+      path: '/bonus'
+      fullPath: '/test/$id/bonus'
+      preLoaderRoute: typeof publicTestIdBonusRouteImport
+      parentRoute: typeof publicTestIdRoute
+    }
+    '/(public)/(demo)/todos2/$id': {
+      id: '/(public)/(demo)/todos2/$id'
       path: '/todos2/$id'
       fullPath: '/todos2/$id'
-      preLoaderRoute: typeof demoTodos2IdRouteImport
+      preLoaderRoute: typeof publicdemoTodos2IdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/(demo)/todos/$id': {
-      id: '/(demo)/todos/$id'
+    '/(public)/(demo)/todos/$id': {
+      id: '/(public)/(demo)/todos/$id'
       path: '/todos/$id'
       fullPath: '/todos/$id'
-      preLoaderRoute: typeof demoTodosIdRouteImport
+      preLoaderRoute: typeof publicdemoTodosIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/(demo)/tanstack-query/$id': {
-      id: '/(demo)/tanstack-query/$id'
+    '/(public)/(demo)/tanstack-query/$id': {
+      id: '/(public)/(demo)/tanstack-query/$id'
       path: '/tanstack-query/$id'
       fullPath: '/tanstack-query/$id'
-      preLoaderRoute: typeof demoTanstackQueryIdRouteImport
+      preLoaderRoute: typeof publicdemoTanstackQueryIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/(demo)/start/api-request': {
-      id: '/(demo)/start/api-request'
+    '/(public)/(demo)/start/api-request': {
+      id: '/(public)/(demo)/start/api-request'
       path: '/start/api-request'
       fullPath: '/start/api-request'
-      preLoaderRoute: typeof demoStartApiRequestRouteImport
+      preLoaderRoute: typeof publicdemoStartApiRequestRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/(demo)/optional/{-$id}': {
-      id: '/(demo)/optional/{-$id}'
+    '/(public)/(demo)/optional/{-$id}': {
+      id: '/(public)/(demo)/optional/{-$id}'
       path: '/optional/{-$id}'
       fullPath: '/optional/{-$id}'
-      preLoaderRoute: typeof demoOptionalChar123IdChar125RouteImport
+      preLoaderRoute: typeof publicdemoOptionalChar123IdChar125RouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/(demo)/api/names': {
-      id: '/(demo)/api/names'
+    '/(public)/(demo)/api/names': {
+      id: '/(public)/(demo)/api/names'
       path: '/api/names'
       fullPath: '/api/names'
-      preLoaderRoute: typeof demoApiNamesRouteImport
+      preLoaderRoute: typeof publicdemoApiNamesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/(demo)/tanstack-query/use-suspense-query/': {
-      id: '/(demo)/tanstack-query/use-suspense-query/'
+    '/_private/_admin/admin/nested/': {
+      id: '/_private/_admin/admin/nested/'
+      path: '/admin/nested'
+      fullPath: '/admin/nested/'
+      preLoaderRoute: typeof PrivateAdminAdminNestedIndexRouteImport
+      parentRoute: typeof PrivateAdminRouteRoute
+    }
+    '/(public)/(demo)/tanstack-query/use-suspense-query/': {
+      id: '/(public)/(demo)/tanstack-query/use-suspense-query/'
       path: '/tanstack-query/use-suspense-query'
       fullPath: '/tanstack-query/use-suspense-query/'
-      preLoaderRoute: typeof demoTanstackQueryUseSuspenseQueryIndexRouteImport
+      preLoaderRoute: typeof publicdemoTanstackQueryUseSuspenseQueryIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/(demo)/start/ssr/': {
-      id: '/(demo)/start/ssr/'
+    '/(public)/(demo)/start/ssr/': {
+      id: '/(public)/(demo)/start/ssr/'
       path: '/start/ssr'
       fullPath: '/start/ssr/'
-      preLoaderRoute: typeof demoStartSsrIndexRouteImport
+      preLoaderRoute: typeof publicdemoStartSsrIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/(demo)/start/ssr/spa-mode': {
-      id: '/(demo)/start/ssr/spa-mode'
+    '/(public)/(demo)/start/ssr/spa-mode': {
+      id: '/(public)/(demo)/start/ssr/spa-mode'
       path: '/start/ssr/spa-mode'
       fullPath: '/start/ssr/spa-mode'
-      preLoaderRoute: typeof demoStartSsrSpaModeRouteImport
+      preLoaderRoute: typeof publicdemoStartSsrSpaModeRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/(demo)/start/ssr/full-ssr': {
-      id: '/(demo)/start/ssr/full-ssr'
+    '/(public)/(demo)/start/ssr/full-ssr': {
+      id: '/(public)/(demo)/start/ssr/full-ssr'
       path: '/start/ssr/full-ssr'
       fullPath: '/start/ssr/full-ssr'
-      preLoaderRoute: typeof demoStartSsrFullSsrRouteImport
+      preLoaderRoute: typeof publicdemoStartSsrFullSsrRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/(demo)/start/ssr/data-only': {
-      id: '/(demo)/start/ssr/data-only'
+    '/(public)/(demo)/start/ssr/data-only': {
+      id: '/(public)/(demo)/start/ssr/data-only'
       path: '/start/ssr/data-only'
       fullPath: '/start/ssr/data-only'
-      preLoaderRoute: typeof demoStartSsrDataOnlyRouteImport
+      preLoaderRoute: typeof publicdemoStartSsrDataOnlyRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/(demo)/catch-all/$id/$': {
-      id: '/(demo)/catch-all/$id/$'
+    '/(public)/(demo)/catch-all/$id/$': {
+      id: '/(public)/(demo)/catch-all/$id/$'
       path: '/catch-all/$id/$'
       fullPath: '/catch-all/$id/$'
-      preLoaderRoute: typeof demoCatchAllIdSplatRouteImport
+      preLoaderRoute: typeof publicdemoCatchAllIdSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
 }
 
-interface TestIdRouteChildren {
-  TestIdBonusRoute: typeof TestIdBonusRoute
+interface PrivateAdminRouteRouteChildren {
+  PrivateAdminAdminIndexRoute: typeof PrivateAdminAdminIndexRoute
+  PrivateAdminAdminNestedIndexRoute: typeof PrivateAdminAdminNestedIndexRoute
 }
 
-const TestIdRouteChildren: TestIdRouteChildren = {
-  TestIdBonusRoute: TestIdBonusRoute,
+const PrivateAdminRouteRouteChildren: PrivateAdminRouteRouteChildren = {
+  PrivateAdminAdminIndexRoute: PrivateAdminAdminIndexRoute,
+  PrivateAdminAdminNestedIndexRoute: PrivateAdminAdminNestedIndexRoute,
 }
 
-const TestIdRouteWithChildren =
-  TestIdRoute._addFileChildren(TestIdRouteChildren)
+const PrivateAdminRouteRouteWithChildren =
+  PrivateAdminRouteRoute._addFileChildren(PrivateAdminRouteRouteChildren)
 
-interface TestRouteRouteChildren {
-  TestIdRoute: typeof TestIdRouteWithChildren
-  TestIndexRoute: typeof TestIndexRoute
-  TestNestedIndexRoute: typeof TestNestedIndexRoute
+interface PrivateRouteRouteChildren {
+  PrivateAdminRouteRoute: typeof PrivateAdminRouteRouteWithChildren
+  PrivateAboutIndexRoute: typeof PrivateAboutIndexRoute
+  PrivateUserIndexRoute: typeof PrivateUserIndexRoute
 }
 
-const TestRouteRouteChildren: TestRouteRouteChildren = {
-  TestIdRoute: TestIdRouteWithChildren,
-  TestIndexRoute: TestIndexRoute,
-  TestNestedIndexRoute: TestNestedIndexRoute,
+const PrivateRouteRouteChildren: PrivateRouteRouteChildren = {
+  PrivateAdminRouteRoute: PrivateAdminRouteRouteWithChildren,
+  PrivateAboutIndexRoute: PrivateAboutIndexRoute,
+  PrivateUserIndexRoute: PrivateUserIndexRoute,
 }
 
-const TestRouteRouteWithChildren = TestRouteRoute._addFileChildren(
-  TestRouteRouteChildren,
+const PrivateRouteRouteWithChildren = PrivateRouteRoute._addFileChildren(
+  PrivateRouteRouteChildren,
+)
+
+interface publicTestIdRouteChildren {
+  publicTestIdBonusRoute: typeof publicTestIdBonusRoute
+}
+
+const publicTestIdRouteChildren: publicTestIdRouteChildren = {
+  publicTestIdBonusRoute: publicTestIdBonusRoute,
+}
+
+const publicTestIdRouteWithChildren = publicTestIdRoute._addFileChildren(
+  publicTestIdRouteChildren,
+)
+
+interface publicTestRouteRouteChildren {
+  publicTestIdRoute: typeof publicTestIdRouteWithChildren
+  publicTestIndexRoute: typeof publicTestIndexRoute
+  publicTestNestedIndexRoute: typeof publicTestNestedIndexRoute
+}
+
+const publicTestRouteRouteChildren: publicTestRouteRouteChildren = {
+  publicTestIdRoute: publicTestIdRouteWithChildren,
+  publicTestIndexRoute: publicTestIndexRoute,
+  publicTestNestedIndexRoute: publicTestNestedIndexRoute,
+}
+
+const publicTestRouteRouteWithChildren = publicTestRouteRoute._addFileChildren(
+  publicTestRouteRouteChildren,
 )
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  TestRouteRoute: TestRouteRouteWithChildren,
-  TestNoLayoutRoute: TestNoLayoutRoute,
-  AboutIndexRoute: AboutIndexRoute,
-  AdminIndexRoute: AdminIndexRoute,
-  ForbiddenIndexRoute: ForbiddenIndexRoute,
-  UserIndexRoute: UserIndexRoute,
-  demoApiNamesRoute: demoApiNamesRoute,
-  demoOptionalChar123IdChar125Route: demoOptionalChar123IdChar125Route,
-  demoStartApiRequestRoute: demoStartApiRequestRoute,
-  demoTanstackQueryIdRoute: demoTanstackQueryIdRoute,
-  demoTodosIdRoute: demoTodosIdRoute,
-  demoTodos2IdRoute: demoTodos2IdRoute,
+  PrivateRouteRoute: PrivateRouteRouteWithChildren,
+  publicTestRouteRoute: publicTestRouteRouteWithChildren,
+  publicTestNoLayoutRoute: publicTestNoLayoutRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiTqTodosIdRoute: ApiTqTodosIdRoute,
-  authEmailChangeStatusIndexRoute: authEmailChangeStatusIndexRoute,
-  authForgotPasswordIndexRoute: authForgotPasswordIndexRoute,
-  authLoginIndexRoute: authLoginIndexRoute,
-  authRegisterIndexRoute: authRegisterIndexRoute,
-  authResetPasswordIndexRoute: authResetPasswordIndexRoute,
-  demoAwaitWithCatchIndexRoute: demoAwaitWithCatchIndexRoute,
-  demoClientPaginationIndexRoute: demoClientPaginationIndexRoute,
-  demoServerPaginationIndexRoute: demoServerPaginationIndexRoute,
-  demoSuspenseIndexRoute: demoSuspenseIndexRoute,
-  demoTanstackQueryIndexRoute: demoTanstackQueryIndexRoute,
-  demoTodosIndexRoute: demoTodosIndexRoute,
-  demoTodos2IndexRoute: demoTodos2IndexRoute,
-  AdminNestedIndexRoute: AdminNestedIndexRoute,
+  publicForbiddenIndexRoute: publicForbiddenIndexRoute,
   ApiTqTodosIndexRoute: ApiTqTodosIndexRoute,
-  demoCatchAllIdSplatRoute: demoCatchAllIdSplatRoute,
-  demoStartSsrDataOnlyRoute: demoStartSsrDataOnlyRoute,
-  demoStartSsrFullSsrRoute: demoStartSsrFullSsrRoute,
-  demoStartSsrSpaModeRoute: demoStartSsrSpaModeRoute,
-  demoStartSsrIndexRoute: demoStartSsrIndexRoute,
-  demoTanstackQueryUseSuspenseQueryIndexRoute:
-    demoTanstackQueryUseSuspenseQueryIndexRoute,
+  publicdemoApiNamesRoute: publicdemoApiNamesRoute,
+  publicdemoOptionalChar123IdChar125Route:
+    publicdemoOptionalChar123IdChar125Route,
+  publicdemoStartApiRequestRoute: publicdemoStartApiRequestRoute,
+  publicdemoTanstackQueryIdRoute: publicdemoTanstackQueryIdRoute,
+  publicdemoTodosIdRoute: publicdemoTodosIdRoute,
+  publicdemoTodos2IdRoute: publicdemoTodos2IdRoute,
+  publicauthEmailChangeStatusIndexRoute: publicauthEmailChangeStatusIndexRoute,
+  publicauthForgotPasswordIndexRoute: publicauthForgotPasswordIndexRoute,
+  publicauthLoginIndexRoute: publicauthLoginIndexRoute,
+  publicauthRegisterIndexRoute: publicauthRegisterIndexRoute,
+  publicauthResetPasswordIndexRoute: publicauthResetPasswordIndexRoute,
+  publicdemoAwaitWithCatchIndexRoute: publicdemoAwaitWithCatchIndexRoute,
+  publicdemoClientPaginationIndexRoute: publicdemoClientPaginationIndexRoute,
+  publicdemoServerPaginationIndexRoute: publicdemoServerPaginationIndexRoute,
+  publicdemoSuspenseIndexRoute: publicdemoSuspenseIndexRoute,
+  publicdemoTanstackQueryIndexRoute: publicdemoTanstackQueryIndexRoute,
+  publicdemoTodosIndexRoute: publicdemoTodosIndexRoute,
+  publicdemoTodos2IndexRoute: publicdemoTodos2IndexRoute,
+  publicdemoCatchAllIdSplatRoute: publicdemoCatchAllIdSplatRoute,
+  publicdemoStartSsrDataOnlyRoute: publicdemoStartSsrDataOnlyRoute,
+  publicdemoStartSsrFullSsrRoute: publicdemoStartSsrFullSsrRoute,
+  publicdemoStartSsrSpaModeRoute: publicdemoStartSsrSpaModeRoute,
+  publicdemoStartSsrIndexRoute: publicdemoStartSsrIndexRoute,
+  publicdemoTanstackQueryUseSuspenseQueryIndexRoute:
+    publicdemoTanstackQueryUseSuspenseQueryIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
